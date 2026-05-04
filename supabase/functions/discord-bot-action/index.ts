@@ -65,15 +65,20 @@ Deno.serve(async (req) => {
       .maybeSingle();
     const cfg: any = cfgRow?.value ?? {};
 
-    // Load server status for status action
-    let server: any = null;
+    // Load live MC server status (same source as homepage) for status action
+    let mc: any = null;
+    let serverIp = "play.zyphoramc.net";
     if (action === "status") {
-      const { data } = await supabase
-        .from("server_status")
-        .select("*")
-        .eq("id", 1)
+      const { data: ipRow } = await supabase
+        .from("site_content")
+        .select("value")
+        .eq("key", "server")
         .maybeSingle();
-      server = data;
+      serverIp = (ipRow?.value as any)?.ip ?? serverIp;
+      try {
+        const r = await fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(serverIp)}`);
+        mc = await r.json();
+      } catch (_) { mc = null; }
     }
 
     if (action === "announce") {
@@ -97,15 +102,23 @@ Deno.serve(async (req) => {
     if (action === "status") {
       const channelId = body.channelId || cfg.statusChannelId;
       if (!channelId) return json({ ok: false, error: "No status channel configured" });
-      const online = !!server?.online;
+      const online = !!mc?.online;
+      const motd = Array.isArray(mc?.motd?.clean) ? mc.motd.clean.join(" ") : null;
+      const version = mc?.version ?? "—";
+      const players = `${mc?.players?.online ?? 0} / ${mc?.players?.max ?? 0}`;
+      const icon = typeof mc?.icon === "string" && mc.icon.startsWith("data:image") ? mc.icon : null;
+
       const r = await discordPost(channelId, token, {
         embeds: [{
-          title: "🟢 Server Status",
+          title: online ? "🟢 ZyphoraMC — Online" : "🔴 ZyphoraMC — Offline",
+          description: motd ? `*${motd}*` : undefined,
           color: online ? 0x22c55e : 0xef4444,
+          thumbnail: icon ? { url: "attachment://server-icon.png" } : undefined,
           fields: [
-            { name: "Status", value: online ? "Online" : "Offline", inline: true },
-            { name: "Players", value: `${server?.players_online ?? 0} / ${server?.players_max ?? 0}`, inline: true },
-            { name: "MOTD", value: server?.motd || "—", inline: false },
+            { name: "Status", value: online ? "Live" : "Down", inline: true },
+            { name: "Players", value: players, inline: true },
+            { name: "Version", value: String(version), inline: true },
+            { name: "IP", value: `\`${serverIp}\``, inline: false },
           ],
           footer: { text: "ZyphoraMC · Live status" },
           timestamp: new Date().toISOString(),
