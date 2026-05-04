@@ -45,10 +45,11 @@ const Index = () => {
   const [news, setNews] = useState<News[]>([]);
   const [status, setStatus] = useState<Status | null>(null);
   const [content, setContent] = useState<SiteContent>({});
+  const [uptimeStart, setUptimeStart] = useState<number | null>(null);
+  const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
     supabase.from("news").select("id,title,excerpt,slug,created_at").eq("published", true).order("created_at", { ascending: false }).limit(3).then(({ data }) => setNews(data ?? []));
-    supabase.from("server_status").select("*").eq("id", 1).maybeSingle().then(({ data }) => setStatus(data as Status | null));
     supabase.from("site_content").select("*").then(({ data }) => {
       const map: SiteContent = {};
       (data ?? []).forEach((r: any) => (map[r.key] = r.value));
@@ -57,6 +58,40 @@ const Index = () => {
   }, []);
 
   const ip = content.server?.ip ?? "play.zyphoramc.net";
+
+  // Live Minecraft server status via mcsrvstat.us (no key required)
+  useEffect(() => {
+    let cancelled = false;
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(ip)}`);
+        const j = await res.json();
+        if (cancelled) return;
+        const s: Status = {
+          online: !!j.online,
+          players_online: j.players?.online ?? 0,
+          players_max: j.players?.max ?? 0,
+          motd: Array.isArray(j.motd?.clean) ? j.motd.clean.join(" ") : null,
+          version: j.version ?? null,
+        };
+        setStatus(s);
+        if (j.online) {
+          setUptimeStart((prev) => prev ?? Date.now());
+        } else {
+          setUptimeStart(null);
+        }
+      } catch {
+        if (!cancelled) setStatus({ online: false, players_online: 0, players_max: 0, motd: null });
+      }
+    };
+    fetchStatus();
+    const poll = setInterval(fetchStatus, 60_000);
+    const tick = setInterval(() => setNow(Date.now()), 1000);
+    return () => { cancelled = true; clearInterval(poll); clearInterval(tick); };
+  }, [ip]);
+
+  const uptime = uptimeStart ? formatUptime(now - uptimeStart) : "—";
+
   const heroTitle = content.hero?.title ?? "Join the Adventure";
   const heroSub = content.hero?.subtitle ?? "Explore, build, and forge legends in Zyphora's unique survival world.";
   const heroBadge = content.hero?.badge ?? "Minecraft 1.21.x • Paper";
