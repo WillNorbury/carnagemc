@@ -493,10 +493,31 @@ const BOT_KEY = "discord_bot";
 
 const BotDashboardSection = () => {
   const [cfg, setCfg] = useState<any>({ enabled: false, status: "offline", guildId: "", inviteUrl: "" });
+  const [testing, setTesting] = useState(false);
+  const [result, setResult] = useState<any>(null);
+
   useEffect(() => {
     supabase.from("site_content").select("value").eq("key", BOT_KEY).maybeSingle()
       .then(({ data }) => data?.value && setCfg((c: any) => ({ ...c, ...(data.value as any) })));
   }, []);
+
+  const runTest = async () => {
+    setTesting(true);
+    setResult(null);
+    const { data, error } = await supabase.functions.invoke("discord-bot-test", {
+      body: { guildId: cfg.guildId || undefined },
+    });
+    setTesting(false);
+    if (error) {
+      setResult({ ok: false, error: error.message });
+      toast.error("Connection test failed");
+    } else {
+      setResult(data);
+      if (data?.ok) toast.success(`Connected as ${data.bot?.username}`);
+      else toast.error(data?.error ?? "Test failed");
+    }
+  };
+
   const online = cfg.enabled && cfg.status === "online";
   return (
     <div className="space-y-6">
@@ -510,6 +531,39 @@ const BotDashboardSection = () => {
         <StatCard title="Guild ID" value={cfg.guildId || "—"} icon={ShieldCheck} color="bg-primary" />
         <StatCard title="Enabled" value={cfg.enabled ? "Yes" : "No"} icon={ShieldCheck} color={cfg.enabled ? "bg-sky-500" : "bg-muted"} />
       </div>
+
+      <Card className="p-6 space-y-4">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="font-bold">Connection test</h2>
+            <p className="text-sm text-muted-foreground">Verify the bot token and (optionally) guild access.</p>
+          </div>
+          <Button onClick={runTest} disabled={testing}>
+            {testing ? "Testing..." : "Test Connection"}
+          </Button>
+        </div>
+
+        {result && (
+          <div className={`p-4 rounded-lg border ${result.ok ? "border-emerald-500/40 bg-emerald-500/10" : "border-destructive/40 bg-destructive/10"} space-y-2 text-sm`}>
+            <div className="flex items-center gap-2">
+              <Badge variant={result.ok ? "default" : "destructive"}>{result.ok ? "SUCCESS" : "FAILED"}</Badge>
+              {result.ok
+                ? <span>Authenticated as <span className="font-mono">{result.bot?.username}</span> (id {result.bot?.id})</span>
+                : <span className="text-destructive-foreground">{result.error}</span>}
+            </div>
+            {result.ok && result.guild && (
+              <div className="text-muted-foreground">
+                Guild: <span className="text-foreground">{result.guild.name}</span> ({result.guild.id})
+                {typeof result.guild.memberCount === "number" && <> · ~{result.guild.memberCount} members</>}
+              </div>
+            )}
+            {result.ok && result.guildError && (
+              <div className="text-orange-400">Warning: {result.guildError}</div>
+            )}
+          </div>
+        )}
+      </Card>
+
       <Card className="p-6 space-y-3">
         <h2 className="font-bold">About the Discord Bot</h2>
         <p className="text-sm text-muted-foreground">
