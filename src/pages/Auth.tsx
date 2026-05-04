@@ -68,6 +68,14 @@ const Auth = () => {
     if (result.error) toast.error("Google sign-in failed");
   };
 
+  const discord = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "discord",
+      options: { redirectTo: `${window.location.origin}/` },
+    });
+    if (error) toast.error(error.message ?? "Discord sign-in failed. Enable Discord in your Supabase project.");
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-grid">
       <div className="absolute inset-0 -z-10" style={{ background: "var(--gradient-hero)" }} />
