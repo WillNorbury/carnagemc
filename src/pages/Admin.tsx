@@ -39,11 +39,13 @@ const Admin = () => {
             <TabsTrigger value="news">News</TabsTrigger>
             <TabsTrigger value="content">Site Content</TabsTrigger>
             <TabsTrigger value="status">Server Status</TabsTrigger>
+            <TabsTrigger value="logs">Admin Logs</TabsTrigger>
           </TabsList>
           <TabsContent value="users" className="mt-6"><UsersTab /></TabsContent>
           <TabsContent value="news" className="mt-6"><NewsTab /></TabsContent>
           <TabsContent value="content" className="mt-6"><ContentTab /></TabsContent>
           <TabsContent value="status" className="mt-6"><StatusTab /></TabsContent>
+          <TabsContent value="logs" className="mt-6"><LogsTab /></TabsContent>
         </Tabs>
       </div>
     </div>
