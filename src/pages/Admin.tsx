@@ -269,6 +269,50 @@ const StatusTab = () => {
       <Button onClick={save}>Save</Button>
     </Card>
   );
+const LogsTab = () => {
+  const [logs, setLogs] = useState<any[]>([]);
+  const [scope, setScope] = useState<"mine" | "all">("mine");
+  const { user } = useAuth();
+
+  const load = async () => {
+    let q = supabase.from("admin_check_logs").select("*").order("created_at", { ascending: false }).limit(100);
+    if (scope === "mine" && user) q = q.eq("user_id", user.id);
+    const { data, error } = await q;
+    if (error) toast.error(error.message);
+    setLogs(data ?? []);
+  };
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [scope]);
+
+  return (
+    <Card className="p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="font-bold">Admin role check logs</h2>
+        <div className="flex gap-2">
+          <Button size="sm" variant={scope === "mine" ? "default" : "outline"} onClick={() => setScope("mine")}>My checks</Button>
+          <Button size="sm" variant={scope === "all" ? "default" : "outline"} onClick={() => setScope("all")}>All (admin)</Button>
+          <Button size="sm" variant="ghost" onClick={load}>Refresh</Button>
+        </div>
+      </div>
+      <div className="space-y-2 max-h-[600px] overflow-auto">
+        {logs.length === 0 && <p className="text-sm text-muted-foreground">No logs yet. Reload pages that check admin access to generate entries.</p>}
+        {logs.map((l) => (
+          <div key={l.id} className="p-3 rounded-lg bg-secondary/40 text-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Badge variant={l.is_admin ? "default" : "destructive"}>{l.is_admin ? "ALLOWED" : "DENIED"}</Badge>
+                <span className="font-medium">{l.email ?? l.user_id?.slice(0, 8) ?? "anonymous"}</span>
+                <span className="text-xs text-muted-foreground">{l.context}</span>
+              </div>
+              <span className="text-xs text-muted-foreground">{new Date(l.created_at).toLocaleString()}</span>
+            </div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              roles: <span className="font-mono">{(l.roles_found ?? []).join(", ") || "(none)"}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
 };
 
 export default Admin;
