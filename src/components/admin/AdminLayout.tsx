@@ -66,7 +66,17 @@ export const AdminLayout = ({
           </div>
 
           <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-1">
-            {items.map((it) => {
+            {items.map((it, idx) => {
+              if (it.kind === "section") {
+                const SIcon = it.icon;
+                if (collapsed) return <div key={`s-${idx}`} className="my-2 border-t border-border/60" />;
+                return (
+                  <div key={`s-${idx}`} className="px-3 pt-4 pb-1 flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground/80">
+                    <SIcon className="h-3 w-3" />
+                    {it.title}
+                  </div>
+                );
+              }
               const Icon = it.icon;
               const active = it.id === current;
               const btn = (
@@ -91,6 +101,7 @@ export const AdminLayout = ({
               ) : <div key={it.id}>{btn}</div>;
             })}
           </nav>
+
 
           <div className="mt-auto border-t p-2">
             {!collapsed && user && (
