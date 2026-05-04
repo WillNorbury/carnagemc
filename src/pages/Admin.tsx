@@ -180,6 +180,12 @@ const NewsTab = () => {
 const ContentTab = () => {
   const [hero, setHero] = useState({ title: "", subtitle: "", badge: "" });
   const [server, setServer] = useState({ ip: "", discord: "", version: "", tagline: "" });
+  const [alerts, setAlerts] = useState({
+    onlineEnabled: true,
+    onlineMessage: "🟢 Server is back online — jump in!",
+    offlineEnabled: true,
+    offlineMessage: "🔴 Server is currently offline. We're working on it.",
+  });
 
   useEffect(() => {
     supabase.from("site_content").select("*").then(({ data }) => {
@@ -187,13 +193,16 @@ const ContentTab = () => {
       (data ?? []).forEach((r: any) => (map[r.key] = r.value));
       if (map.hero) setHero(map.hero);
       if (map.server) setServer(map.server);
+      if (map.alerts) setAlerts({ ...alerts, ...map.alerts });
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const save = async () => {
     const { error } = await supabase.from("site_content").upsert([
       { key: "hero", value: hero as any },
       { key: "server", value: server as any },
+      { key: "alerts", value: alerts as any },
     ]);
     if (error) return toast.error(error.message);
     toast.success("Site content saved");
@@ -213,6 +222,26 @@ const ContentTab = () => {
         <div><Label>Discord URL</Label><Input value={server.discord} onChange={(e) => setServer({ ...server, discord: e.target.value })} /></div>
         <div><Label>Version</Label><Input value={server.version} onChange={(e) => setServer({ ...server, version: e.target.value })} /></div>
         <div><Label>Tagline</Label><Input value={server.tagline} onChange={(e) => setServer({ ...server, tagline: e.target.value })} /></div>
+      </Card>
+      <Card className="p-6 space-y-4 md:col-span-2">
+        <h2 className="font-bold">Status alerts</h2>
+        <p className="text-sm text-muted-foreground">Banners shown on the homepage when the live Minecraft server status changes.</p>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-3 p-4 rounded-lg border border-border">
+            <div className="flex items-center gap-2">
+              <Switch checked={alerts.onlineEnabled} onCheckedChange={(c) => setAlerts({ ...alerts, onlineEnabled: c })} />
+              <Label>Notify when server goes ONLINE</Label>
+            </div>
+            <Textarea rows={2} value={alerts.onlineMessage} onChange={(e) => setAlerts({ ...alerts, onlineMessage: e.target.value })} />
+          </div>
+          <div className="space-y-3 p-4 rounded-lg border border-border">
+            <div className="flex items-center gap-2">
+              <Switch checked={alerts.offlineEnabled} onCheckedChange={(c) => setAlerts({ ...alerts, offlineEnabled: c })} />
+              <Label>Notify when server goes OFFLINE</Label>
+            </div>
+            <Textarea rows={2} value={alerts.offlineMessage} onChange={(e) => setAlerts({ ...alerts, offlineMessage: e.target.value })} />
+          </div>
+        </div>
       </Card>
       <div className="md:col-span-2"><Button onClick={save}>Save all</Button></div>
     </div>

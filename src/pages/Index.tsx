@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
@@ -9,7 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { supabase } from "@/integrations/supabase/client";
 import island from "@/assets/zyphora-island.png";
 import bg from "@/assets/zyphora-bg.png";
-import { Copy, Users, Server, MessageCircle, Shield, Coins, Heart } from "lucide-react";
+import { Copy, Users, Server, MessageCircle, Shield, Coins, Heart, X, CheckCircle2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 type News = { id: string; title: string; excerpt: string | null; slug: string; created_at: string };
@@ -60,6 +60,9 @@ const Index = () => {
   const ip = content.server?.ip ?? "play.zyphoramc.net";
 
   // Live Minecraft server status via mcsrvstat.us (no key required)
+  const [alert, setAlert] = useState<{ type: "online" | "offline"; message: string } | null>(null);
+  const prevOnlineRef = useRef<boolean | undefined>(undefined);
+
   useEffect(() => {
     let cancelled = false;
     const fetchStatus = async () => {
@@ -80,6 +83,21 @@ const Index = () => {
         } else {
           setUptimeStart(null);
         }
+        // Detect transitions
+        const prev = prevOnlineRef.current;
+        if (prev !== undefined && prev !== s.online) {
+          const a = content.alerts ?? {};
+          if (s.online && (a.onlineEnabled ?? true)) {
+            const msg = a.onlineMessage ?? "🟢 Server is back online — jump in!";
+            setAlert({ type: "online", message: msg });
+            toast.success(msg);
+          } else if (!s.online && (a.offlineEnabled ?? true)) {
+            const msg = a.offlineMessage ?? "🔴 Server is currently offline.";
+            setAlert({ type: "offline", message: msg });
+            toast.error(msg);
+          }
+        }
+        prevOnlineRef.current = s.online;
       } catch {
         if (!cancelled) setStatus({ online: false, players_online: 0, players_max: 0, motd: null });
       }
@@ -88,7 +106,7 @@ const Index = () => {
     const poll = setInterval(fetchStatus, 60_000);
     const tick = setInterval(() => setNow(Date.now()), 1000);
     return () => { cancelled = true; clearInterval(poll); clearInterval(tick); };
-  }, [ip]);
+  }, [ip, content.alerts]);
 
   const uptime = uptimeStart ? formatUptime(now - uptimeStart) : "—";
 
@@ -101,6 +119,18 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+
+      {alert && (
+        <div className={`fixed top-16 inset-x-0 z-40 px-4 animate-in slide-in-from-top duration-300`}>
+          <div className={`container max-w-3xl flex items-center gap-3 p-4 rounded-lg border backdrop-blur-xl shadow-elegant ${alert.type === "online" ? "bg-primary/15 border-primary/40 text-primary-foreground" : "bg-destructive/15 border-destructive/40"}`}>
+            {alert.type === "online" ? <CheckCircle2 className="h-5 w-5 text-primary shrink-0" /> : <AlertCircle className="h-5 w-5 text-destructive shrink-0" />}
+            <p className="flex-1 text-sm font-medium">{alert.message}</p>
+            <button onClick={() => setAlert(null)} className="opacity-70 hover:opacity-100 transition" aria-label="Dismiss">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Hero */}
       <section className="relative pt-24 pb-20 overflow-hidden">
