@@ -61,8 +61,7 @@ const Index = () => {
 
   // Live Minecraft server status via mcsrvstat.us (no key required)
   const [alert, setAlert] = useState<{ type: "online" | "offline"; message: string } | null>(null);
-  const prevOnlineRef = (globalThis as any).__zyphoraPrevOnline ?? { current: undefined as boolean | undefined };
-  (globalThis as any).__zyphoraPrevOnline = prevOnlineRef;
+  const prevOnlineRef = useRef<boolean | undefined>(undefined);
 
   useEffect(() => {
     let cancelled = false;
