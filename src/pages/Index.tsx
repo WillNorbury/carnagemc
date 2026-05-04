@@ -13,8 +13,19 @@ import { Copy, Users, Server, MessageCircle, Shield, Coins, Heart } from "lucide
 import { toast } from "sonner";
 
 type News = { id: string; title: string; excerpt: string | null; slug: string; created_at: string };
-type Status = { online: boolean; players_online: number; players_max: number; motd: string | null };
+type Status = { online: boolean; players_online: number; players_max: number; motd: string | null; version?: string | null };
 type SiteContent = Record<string, any>;
+
+const formatUptime = (ms: number) => {
+  if (ms <= 0) return "—";
+  const s = Math.floor(ms / 1000);
+  const d = Math.floor(s / 86400);
+  const h = Math.floor((s % 86400) / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+};
 
 const RULES = [
   { icon: Shield, title: "Fair Play", desc: "Hacks, macros, and x-ray are strictly forbidden. Suspicious activity is reviewed via logs." },
@@ -34,10 +45,11 @@ const Index = () => {
   const [news, setNews] = useState<News[]>([]);
   const [status, setStatus] = useState<Status | null>(null);
   const [content, setContent] = useState<SiteContent>({});
+  const [uptimeStart, setUptimeStart] = useState<number | null>(null);
+  const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
     supabase.from("news").select("id,title,excerpt,slug,created_at").eq("published", true).order("created_at", { ascending: false }).limit(3).then(({ data }) => setNews(data ?? []));
-    supabase.from("server_status").select("*").eq("id", 1).maybeSingle().then(({ data }) => setStatus(data as Status | null));
     supabase.from("site_content").select("*").then(({ data }) => {
       const map: SiteContent = {};
       (data ?? []).forEach((r: any) => (map[r.key] = r.value));
@@ -46,6 +58,40 @@ const Index = () => {
   }, []);
 
   const ip = content.server?.ip ?? "play.zyphoramc.net";
+
+  // Live Minecraft server status via mcsrvstat.us (no key required)
+  useEffect(() => {
+    let cancelled = false;
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(ip)}`);
+        const j = await res.json();
+        if (cancelled) return;
+        const s: Status = {
+          online: !!j.online,
+          players_online: j.players?.online ?? 0,
+          players_max: j.players?.max ?? 0,
+          motd: Array.isArray(j.motd?.clean) ? j.motd.clean.join(" ") : null,
+          version: j.version ?? null,
+        };
+        setStatus(s);
+        if (j.online) {
+          setUptimeStart((prev) => prev ?? Date.now());
+        } else {
+          setUptimeStart(null);
+        }
+      } catch {
+        if (!cancelled) setStatus({ online: false, players_online: 0, players_max: 0, motd: null });
+      }
+    };
+    fetchStatus();
+    const poll = setInterval(fetchStatus, 60_000);
+    const tick = setInterval(() => setNow(Date.now()), 1000);
+    return () => { cancelled = true; clearInterval(poll); clearInterval(tick); };
+  }, [ip]);
+
+  const uptime = uptimeStart ? formatUptime(now - uptimeStart) : "—";
+
   const heroTitle = content.hero?.title ?? "Join the Adventure";
   const heroSub = content.hero?.subtitle ?? "Explore, build, and forge legends in Zyphora's unique survival world.";
   const heroBadge = content.hero?.badge ?? "Minecraft 1.21.x • Paper";
@@ -87,10 +133,11 @@ const Index = () => {
               <button onClick={copyIp} className="w-full font-mono text-2xl font-bold py-3 rounded-lg bg-secondary hover:bg-secondary/70 transition border border-border">
                 {ip}
               </button>
-              <div className="grid grid-cols-3 gap-3 mt-5 text-center">
-                <Stat icon={<Users className="h-4 w-4" />} label="Online" value={status?.players_online ?? 0} />
-                <Stat icon={<Server className="h-4 w-4" />} label="Slots" value={status?.players_max ?? 0} />
+              <div className="grid grid-cols-2 gap-3 mt-5 text-center">
+                <Stat icon={<Users className="h-4 w-4" />} label="Players" value={`${status?.players_online ?? 0}/${status?.players_max ?? 0}`} />
                 <Stat icon={<div className={`h-2 w-2 rounded-full ${status?.online ? "bg-primary animate-pulse" : "bg-destructive"}`} />} label="Status" value={status?.online ? "Live" : "Down"} />
+                <Stat icon={<Server className="h-4 w-4" />} label="Uptime" value={uptime} />
+                <Stat icon={<MessageCircle className="h-4 w-4" />} label="Version" value={status?.version ?? "—"} />
               </div>
             </Card>
           </div>
