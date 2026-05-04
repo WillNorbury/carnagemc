@@ -60,6 +60,10 @@ const Index = () => {
   const ip = content.server?.ip ?? "play.zyphoramc.net";
 
   // Live Minecraft server status via mcsrvstat.us (no key required)
+  const [alert, setAlert] = useState<{ type: "online" | "offline"; message: string } | null>(null);
+  const prevOnlineRef = (globalThis as any).__zyphoraPrevOnline ?? { current: undefined as boolean | undefined };
+  (globalThis as any).__zyphoraPrevOnline = prevOnlineRef;
+
   useEffect(() => {
     let cancelled = false;
     const fetchStatus = async () => {
@@ -80,6 +84,21 @@ const Index = () => {
         } else {
           setUptimeStart(null);
         }
+        // Detect transitions
+        const prev = prevOnlineRef.current;
+        if (prev !== undefined && prev !== s.online) {
+          const a = content.alerts ?? {};
+          if (s.online && (a.onlineEnabled ?? true)) {
+            const msg = a.onlineMessage ?? "🟢 Server is back online — jump in!";
+            setAlert({ type: "online", message: msg });
+            toast.success(msg);
+          } else if (!s.online && (a.offlineEnabled ?? true)) {
+            const msg = a.offlineMessage ?? "🔴 Server is currently offline.";
+            setAlert({ type: "offline", message: msg });
+            toast.error(msg);
+          }
+        }
+        prevOnlineRef.current = s.online;
       } catch {
         if (!cancelled) setStatus({ online: false, players_online: 0, players_max: 0, motd: null });
       }
@@ -88,7 +107,7 @@ const Index = () => {
     const poll = setInterval(fetchStatus, 60_000);
     const tick = setInterval(() => setNow(Date.now()), 1000);
     return () => { cancelled = true; clearInterval(poll); clearInterval(tick); };
-  }, [ip]);
+  }, [ip, content.alerts]);
 
   const uptime = uptimeStart ? formatUptime(now - uptimeStart) : "—";
 
