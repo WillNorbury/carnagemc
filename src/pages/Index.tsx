@@ -120,6 +120,18 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
+      {alert && (
+        <div className={`fixed top-16 inset-x-0 z-40 px-4 animate-in slide-in-from-top duration-300`}>
+          <div className={`container max-w-3xl flex items-center gap-3 p-4 rounded-lg border backdrop-blur-xl shadow-elegant ${alert.type === "online" ? "bg-primary/15 border-primary/40 text-primary-foreground" : "bg-destructive/15 border-destructive/40"}`}>
+            {alert.type === "online" ? <CheckCircle2 className="h-5 w-5 text-primary shrink-0" /> : <AlertCircle className="h-5 w-5 text-destructive shrink-0" />}
+            <p className="flex-1 text-sm font-medium">{alert.message}</p>
+            <button onClick={() => setAlert(null)} className="opacity-70 hover:opacity-100 transition" aria-label="Dismiss">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Hero */}
       <section className="relative pt-24 pb-20 overflow-hidden">
         <img src={bg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-25" />
