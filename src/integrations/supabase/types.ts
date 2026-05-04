@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_check_logs: {
+        Row: {
+          context: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_admin: boolean
+          roles_found: string[] | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_admin: boolean
+          roles_found?: string[] | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          context?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_admin?: boolean
+          roles_found?: string[] | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       news: {
         Row: {
           author_id: string | null
@@ -151,6 +184,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_is_admin_logged: {
+        Args: { _context?: string; _user_agent?: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
