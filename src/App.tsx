@@ -7,6 +7,7 @@ import { AuthProvider } from "@/lib/auth";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import Admin from "./pages/Admin.tsx";
+import AdminRoles from "./pages/AdminRoles.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/roles" element={<AdminRoles />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
