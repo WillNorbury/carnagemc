@@ -269,6 +269,8 @@ const StatusTab = () => {
       <Button onClick={save}>Save</Button>
     </Card>
   );
+};
+
 const LogsTab = () => {
   const [logs, setLogs] = useState<any[]>([]);
   const [scope, setScope] = useState<"mine" | "all">("mine");
