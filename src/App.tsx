@@ -8,6 +8,10 @@ import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import Admin from "./pages/Admin.tsx";
 import AdminRoles from "./pages/AdminRoles.tsx";
+import News from "./pages/News.tsx";
+import NewsArticle from "./pages/NewsArticle.tsx";
+import Staff from "./pages/Staff.tsx";
+import Vote from "./pages/Vote.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -24,6 +28,10 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/roles" element={<AdminRoles />} />
+            <Route path="/news" element={<News />} />
+            <Route path="/news/:slug" element={<NewsArticle />} />
+            <Route path="/staff" element={<Staff />} />
+            <Route path="/vote" element={<Vote />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
