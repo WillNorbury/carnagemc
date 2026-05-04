@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
-import Navbar from "@/components/site/Navbar";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,54 +9,133 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Trash2, Plus, ShieldCheck, ShieldOff } from "lucide-react";
+import {
+  Trash2, Plus, ShieldCheck, ShieldOff, Users as UsersIcon, Newspaper,
+  Activity, Server as ServerIcon, X,
+} from "lucide-react";
+import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
+import { StatCard } from "@/components/admin/StatCard";
+import { ALL_ROLES, roleLabel, type AppRole } from "@/lib/roles";
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
-type RoleRow = { user_id: string; role: "admin" | "user" };
+type RoleRow = { id: string; user_id: string; role: AppRole };
 type News = { id: string; title: string; slug: string; excerpt: string | null; content: string; published: boolean; created_at: string };
+
+const sectionMeta: Record<AdminSection, { title: string; description: string }> = {
+  dashboard: { title: "Dashboard", description: "Overview of ZyphoraMC activity." },
+  users: { title: "Users", description: "Promote or demote admin access." },
+  roles: { title: "Roles", description: "Assign and manage roles for members." },
+  news: { title: "News", description: "Create and publish announcements." },
+  content: { title: "Site Content", description: "Edit hero copy, server info, and alerts." },
+  status: { title: "Server Status", description: "Manually override the live status display." },
+  logs: { title: "Admin Logs", description: "Audit trail of admin role checks." },
+};
 
 const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const initial: AdminSection = location.pathname.endsWith("/roles") ? "roles" : "dashboard";
+  const [section, setSection] = useState<AdminSection>(initial);
+
+  const onNavigate = (s: AdminSection) => {
+    setSection(s);
+    if (s === "roles" && location.pathname !== "/admin/roles") navigate("/admin/roles");
+    else if (s !== "roles" && location.pathname !== "/admin") navigate("/admin");
+  };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
   if (!user) return <Navigate to="/auth" replace />;
-  if (!isAdmin) return <NoAccess />;
+  if (!isAdmin) return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+      <ShieldOff className="h-12 w-12 text-destructive" />
+      <h1 className="text-2xl font-bold">Access denied</h1>
+      <p className="text-muted-foreground">You don't have admin permissions.</p>
+    </div>
+  );
+
+  const meta = sectionMeta[section];
 
   return (
-    <div className="min-h-screen">
-      <Navbar />
-      <div className="container pt-24 pb-12">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Admin Panel</h1>
-          <p className="text-muted-foreground">Manage ZyphoraMC users, content and server status.</p>
-        </div>
-        <Tabs defaultValue="users">
-          <TabsList>
-            <TabsTrigger value="users">Users & Roles</TabsTrigger>
-            <TabsTrigger value="news">News</TabsTrigger>
-            <TabsTrigger value="content">Site Content</TabsTrigger>
-            <TabsTrigger value="status">Server Status</TabsTrigger>
-            <TabsTrigger value="logs">Admin Logs</TabsTrigger>
-          </TabsList>
-          <TabsContent value="users" className="mt-6"><UsersTab /></TabsContent>
-          <TabsContent value="news" className="mt-6"><NewsTab /></TabsContent>
-          <TabsContent value="content" className="mt-6"><ContentTab /></TabsContent>
-          <TabsContent value="status" className="mt-6"><StatusTab /></TabsContent>
-          <TabsContent value="logs" className="mt-6"><LogsTab /></TabsContent>
-        </Tabs>
-      </div>
-    </div>
+    <AdminLayout current={section} onNavigate={onNavigate} title={meta.title} description={meta.description}>
+      {section === "dashboard" && <DashboardSection onNavigate={onNavigate} />}
+      {section === "users" && <UsersTab />}
+      {section === "roles" && <RolesSection />}
+      {section === "news" && <NewsTab />}
+      {section === "content" && <ContentTab />}
+      {section === "status" && <StatusTab />}
+      {section === "logs" && <LogsTab />}
+    </AdminLayout>
   );
 };
 
-const NoAccess = () => (
-  <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-    <ShieldOff className="h-12 w-12 text-destructive" />
-    <h1 className="text-2xl font-bold">Access denied</h1>
-    <p className="text-muted-foreground">You don't have admin permissions.</p>
-  </div>
-);
+const DashboardSection = ({ onNavigate }: { onNavigate: (s: AdminSection) => void }) => {
+  const [stats, setStats] = useState({ users: 0, news: 0, admins: 0, online: false, players: 0, max: 0 });
+  const [recent, setRecent] = useState<any[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const [{ count: users }, { count: news }, { data: roles }, { data: status }, { data: logs }] = await Promise.all([
+        supabase.from("profiles").select("*", { count: "exact", head: true }),
+        supabase.from("news").select("*", { count: "exact", head: true }),
+        supabase.from("user_roles").select("user_id, role").eq("role", "admin"),
+        supabase.from("server_status").select("*").eq("id", 1).maybeSingle(),
+        supabase.from("admin_check_logs").select("*").order("created_at", { ascending: false }).limit(5),
+      ]);
+      setStats({
+        users: users ?? 0,
+        news: news ?? 0,
+        admins: roles?.length ?? 0,
+        online: status?.online ?? false,
+        players: status?.players_online ?? 0,
+        max: status?.players_max ?? 0,
+      });
+      setRecent(logs ?? []);
+    })();
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard title="Total Users" value={stats.users} icon={UsersIcon} color="bg-sky-500" />
+        <StatCard title="Admins" value={stats.admins} icon={ShieldCheck} color="bg-primary" />
+        <StatCard title="News Posts" value={stats.news} icon={Newspaper} color="bg-orange-500" />
+        <StatCard
+          title="Server"
+          value={stats.online ? "Online" : "Offline"}
+          icon={ServerIcon}
+          color={stats.online ? "bg-emerald-500" : "bg-destructive"}
+          description={stats.online ? `${stats.players} / ${stats.max} players` : "currently down"}
+        />
+      </div>
+
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="font-bold flex items-center gap-2"><Activity className="h-4 w-4" /> Recent admin checks</h2>
+            <p className="text-xs text-muted-foreground">Latest 5 entries</p>
+          </div>
+          <Button size="sm" variant="outline" onClick={() => onNavigate("logs")}>View all</Button>
+        </div>
+        <div className="space-y-2">
+          {recent.length === 0 && <p className="text-sm text-muted-foreground">No activity yet.</p>}
+          {recent.map((l) => (
+            <div key={l.id} className="flex items-center justify-between text-sm p-2 rounded bg-secondary/30">
+              <div className="flex items-center gap-2">
+                <Badge variant={l.is_admin ? "default" : "destructive"}>{l.is_admin ? "ALLOWED" : "DENIED"}</Badge>
+                <span>{l.email ?? l.user_id?.slice(0, 8) ?? "anon"}</span>
+                <span className="text-xs text-muted-foreground">{l.context}</span>
+              </div>
+              <span className="text-xs text-muted-foreground">{new Date(l.created_at).toLocaleString()}</span>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+};
 
 const UsersTab = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -67,7 +144,7 @@ const UsersTab = () => {
   const load = async () => {
     const [{ data: p }, { data: r }] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-      supabase.from("user_roles").select("user_id, role"),
+      supabase.from("user_roles").select("id, user_id, role"),
     ]);
     setProfiles((p ?? []) as Profile[]);
     setRoles((r ?? []) as RoleRow[]);
@@ -108,6 +185,98 @@ const UsersTab = () => {
         ))}
       </div>
     </Card>
+  );
+};
+
+const RolesSection = () => {
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [roles, setRoles] = useState<RoleRow[]>([]);
+  const [search, setSearch] = useState("");
+  const [pending, setPending] = useState<Record<string, AppRole>>({});
+
+  const load = async () => {
+    const [{ data: p }, { data: r }] = await Promise.all([
+      supabase.from("profiles").select("id, display_name, mc_username, created_at").order("created_at", { ascending: false }),
+      supabase.from("user_roles").select("id, user_id, role"),
+    ]);
+    setProfiles((p ?? []) as Profile[]);
+    setRoles((r ?? []) as RoleRow[]);
+  };
+  useEffect(() => { load(); }, []);
+
+  const rolesFor = (uid: string) => roles.filter((r) => r.user_id === uid);
+
+  const removeRole = async (id: string) => {
+    const { error } = await supabase.from("user_roles").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Role removed");
+    load();
+  };
+
+  const addRole = async (uid: string) => {
+    const role = pending[uid];
+    if (!role) return;
+    if (rolesFor(uid).some((r) => r.role === role)) return toast.error("User already has that role");
+    const { error } = await supabase.from("user_roles").insert({ user_id: uid, role });
+    if (error) return toast.error(error.message);
+    setPending({ ...pending, [uid]: undefined as any });
+    toast.success(`Assigned ${roleLabel(role)}`);
+    load();
+  };
+
+  const filtered = useMemo(() => profiles.filter((p) =>
+    !search || (p.display_name ?? "").toLowerCase().includes(search.toLowerCase()) || p.id.includes(search)
+  ), [profiles, search]);
+
+  return (
+    <div className="space-y-4">
+      <Card className="p-4">
+        <div className="text-sm text-muted-foreground mb-2">Available roles</div>
+        <div className="flex flex-wrap gap-2">
+          {ALL_ROLES.map((r) => <Badge key={r.value} variant="secondary">{r.label}</Badge>)}
+        </div>
+      </Card>
+
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-4 gap-4">
+          <h2 className="font-bold">Members ({profiles.length})</h2>
+          <Input placeholder="Search by name or ID" value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-xs" />
+        </div>
+        <div className="space-y-3">
+          {filtered.map((p) => {
+            const ur = rolesFor(p.id);
+            return (
+              <div key={p.id} className="p-4 rounded-lg bg-secondary/40 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium">{p.display_name ?? "Unnamed"}</div>
+                    <div className="text-xs text-muted-foreground font-mono">{p.id.slice(0, 8)}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Select value={pending[p.id] ?? ""} onValueChange={(v) => setPending({ ...pending, [p.id]: v as AppRole })}>
+                      <SelectTrigger className="w-[180px]"><SelectValue placeholder="Pick role..." /></SelectTrigger>
+                      <SelectContent>
+                        {ALL_ROLES.map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <Button size="sm" onClick={() => addRole(p.id)}><Plus className="h-4 w-4 mr-1" />Add</Button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {ur.length === 0 && <span className="text-xs text-muted-foreground">No roles assigned</span>}
+                  {ur.map((r) => (
+                    <Badge key={r.id} variant="outline" className="gap-1">
+                      {roleLabel(r.role)}
+                      <button onClick={() => removeRole(r.id)} className="ml-1 hover:text-destructive"><X className="h-3 w-3" /></button>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+    </div>
   );
 };
 
@@ -195,9 +364,8 @@ const ContentTab = () => {
       (data ?? []).forEach((r: any) => (map[r.key] = r.value));
       if (map.hero) setHero(map.hero);
       if (map.server) setServer(map.server);
-      if (map.alerts) setAlerts({ ...alerts, ...map.alerts });
+      if (map.alerts) setAlerts((a) => ({ ...a, ...map.alerts }));
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const save = async () => {
