@@ -9,7 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { supabase } from "@/integrations/supabase/client";
 import island from "@/assets/zyphora-island.png";
 import bg from "@/assets/zyphora-bg.png";
-import { Copy, Users, Server, MessageCircle, Shield, Coins, Heart } from "lucide-react";
+import { Copy, Users, Server, MessageCircle, Shield, Coins, Heart, X, CheckCircle2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 type News = { id: string; title: string; excerpt: string | null; slug: string; created_at: string };
