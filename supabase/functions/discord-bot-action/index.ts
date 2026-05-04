@@ -59,7 +59,20 @@ Deno.serve(async (req) => {
   try {
     const authHeader = req.headers.get("Authorization") ?? "";
     const cronSecret = req.headers.get("x-cron-secret") ?? "";
-    const isCron = !!cronSecret && cronSecret === Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+    const adminClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+
+    let isCron = false;
+    if (cronSecret) {
+      const { data: secretRow } = await adminClient.from("site_content")
+        .select("value").eq("key", "cron_secret").maybeSingle();
+      const expected = (secretRow?.value as any)?.value;
+      isCron = !!expected && cronSecret === expected;
+    }
+
 
     const adminClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
