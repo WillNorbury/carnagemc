@@ -7,20 +7,28 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
-  PanelLeft, LogOut, Shield,
+  PanelLeft, LogOut, Shield, Bot, Code,
 } from "lucide-react";
 
 export type AdminSection =
-  | "dashboard" | "users" | "roles" | "news" | "content" | "status" | "logs";
+  | "dashboard" | "users" | "roles" | "news" | "content" | "status" | "logs"
+  | "bot-dashboard" | "bot-management";
 
-const items: { id: AdminSection; icon: any; label: string }[] = [
-  { id: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { id: "users", icon: Users, label: "Users" },
-  { id: "roles", icon: Shield, label: "Roles" },
-  { id: "news", icon: Newspaper, label: "News" },
-  { id: "content", icon: FileText, label: "Site Content" },
-  { id: "status", icon: Server, label: "Server Status" },
-  { id: "logs", icon: ScrollText, label: "Admin Logs" },
+type NavItem =
+  | { kind: "link"; id: AdminSection; icon: any; label: string }
+  | { kind: "section"; title: string; icon: any };
+
+const items: NavItem[] = [
+  { kind: "link", id: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { kind: "link", id: "users", icon: Users, label: "Users" },
+  { kind: "link", id: "roles", icon: Shield, label: "Roles" },
+  { kind: "link", id: "news", icon: Newspaper, label: "News" },
+  { kind: "link", id: "content", icon: FileText, label: "Site Content" },
+  { kind: "link", id: "status", icon: Server, label: "Server Status" },
+  { kind: "link", id: "logs", icon: ScrollText, label: "Admin Logs" },
+  { kind: "section", title: "Discord Bot", icon: Bot },
+  { kind: "link", id: "bot-dashboard", icon: LayoutDashboard, label: "Bot Dashboard" },
+  { kind: "link", id: "bot-management", icon: Code, label: "Management" },
 ];
 
 export const AdminLayout = ({
