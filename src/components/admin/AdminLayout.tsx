@@ -7,20 +7,28 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
-  PanelLeft, LogOut, Shield,
+  PanelLeft, LogOut, Shield, Bot, Code,
 } from "lucide-react";
 
 export type AdminSection =
-  | "dashboard" | "users" | "roles" | "news" | "content" | "status" | "logs";
+  | "dashboard" | "users" | "roles" | "news" | "content" | "status" | "logs"
+  | "bot-dashboard" | "bot-management";
 
-const items: { id: AdminSection; icon: any; label: string }[] = [
-  { id: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { id: "users", icon: Users, label: "Users" },
-  { id: "roles", icon: Shield, label: "Roles" },
-  { id: "news", icon: Newspaper, label: "News" },
-  { id: "content", icon: FileText, label: "Site Content" },
-  { id: "status", icon: Server, label: "Server Status" },
-  { id: "logs", icon: ScrollText, label: "Admin Logs" },
+type NavItem =
+  | { kind: "link"; id: AdminSection; icon: any; label: string }
+  | { kind: "section"; title: string; icon: any };
+
+const items: NavItem[] = [
+  { kind: "link", id: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { kind: "link", id: "users", icon: Users, label: "Users" },
+  { kind: "link", id: "roles", icon: Shield, label: "Roles" },
+  { kind: "link", id: "news", icon: Newspaper, label: "News" },
+  { kind: "link", id: "content", icon: FileText, label: "Site Content" },
+  { kind: "link", id: "status", icon: Server, label: "Server Status" },
+  { kind: "link", id: "logs", icon: ScrollText, label: "Admin Logs" },
+  { kind: "section", title: "Discord Bot", icon: Bot },
+  { kind: "link", id: "bot-dashboard", icon: LayoutDashboard, label: "Bot Dashboard" },
+  { kind: "link", id: "bot-management", icon: Code, label: "Management" },
 ];
 
 export const AdminLayout = ({
@@ -58,7 +66,17 @@ export const AdminLayout = ({
           </div>
 
           <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-1">
-            {items.map((it) => {
+            {items.map((it, idx) => {
+              if (it.kind === "section") {
+                const SIcon = it.icon;
+                if (collapsed) return <div key={`s-${idx}`} className="my-2 border-t border-border/60" />;
+                return (
+                  <div key={`s-${idx}`} className="px-3 pt-4 pb-1 flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground/80">
+                    <SIcon className="h-3 w-3" />
+                    {it.title}
+                  </div>
+                );
+              }
               const Icon = it.icon;
               const active = it.id === current;
               const btn = (
@@ -83,6 +101,7 @@ export const AdminLayout = ({
               ) : <div key={it.id}>{btn}</div>;
             })}
           </nav>
+
 
           <div className="mt-auto border-t p-2">
             {!collapsed && user && (

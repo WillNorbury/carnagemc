@@ -31,6 +31,8 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   content: { title: "Site Content", description: "Edit hero copy, server info, and alerts." },
   status: { title: "Server Status", description: "Manually override the live status display." },
   logs: { title: "Admin Logs", description: "Audit trail of admin role checks." },
+  "bot-dashboard": { title: "Discord Bot — Dashboard", description: "Status and overview of the ZyphoraMC Discord bot." },
+  "bot-management": { title: "Discord Bot — Management", description: "Configure commands and bot integration." },
 };
 
 const Admin = () => {
@@ -67,6 +69,8 @@ const Admin = () => {
       {section === "content" && <ContentTab />}
       {section === "status" && <StatusTab />}
       {section === "logs" && <LogsTab />}
+      {section === "bot-dashboard" && <BotDashboardSection />}
+      {section === "bot-management" && <BotManagementSection />}
     </AdminLayout>
   );
 };
@@ -485,4 +489,95 @@ const LogsTab = () => {
   );
 };
 
+const BOT_KEY = "discord_bot";
+
+const BotDashboardSection = () => {
+  const [cfg, setCfg] = useState<any>({ enabled: false, status: "offline", guildId: "", inviteUrl: "" });
+  useEffect(() => {
+    supabase.from("site_content").select("value").eq("key", BOT_KEY).maybeSingle()
+      .then(({ data }) => data?.value && setCfg((c: any) => ({ ...c, ...(data.value as any) })));
+  }, []);
+  const online = cfg.enabled && cfg.status === "online";
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <StatCard
+          title="Bot Status"
+          value={online ? "Online" : cfg.enabled ? "Connecting" : "Disabled"}
+          icon={Activity}
+          color={online ? "bg-emerald-500" : cfg.enabled ? "bg-orange-500" : "bg-muted"}
+        />
+        <StatCard title="Guild ID" value={cfg.guildId || "—"} icon={ShieldCheck} color="bg-primary" />
+        <StatCard title="Enabled" value={cfg.enabled ? "Yes" : "No"} icon={ShieldCheck} color={cfg.enabled ? "bg-sky-500" : "bg-muted"} />
+      </div>
+      <Card className="p-6 space-y-3">
+        <h2 className="font-bold">About the Discord Bot</h2>
+        <p className="text-sm text-muted-foreground">
+          Configure your bot in the Management section. When enabled, it can sync with your ZyphoraMC server
+          to deliver announcements, role assignments, and live server status to your Discord guild.
+        </p>
+        {cfg.inviteUrl && (
+          <a href={cfg.inviteUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary underline">
+            Open invite link →
+          </a>
+        )}
+      </Card>
+    </div>
+  );
+};
+
+const BotManagementSection = () => {
+  const [cfg, setCfg] = useState({
+    enabled: false,
+    status: "offline" as "online" | "offline",
+    guildId: "",
+    inviteUrl: "",
+    announceChannelId: "",
+    statusChannelId: "",
+    welcomeMessage: "Welcome to ZyphoraMC, {user}!",
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.from("site_content").select("value").eq("key", BOT_KEY).maybeSingle().then(({ data }) => {
+      if (data?.value) setCfg((c) => ({ ...c, ...(data.value as any) }));
+      setLoading(false);
+    });
+  }, []);
+
+  const save = async () => {
+    const { error } = await supabase.from("site_content").upsert([{ key: BOT_KEY, value: cfg as any }]);
+    if (error) return toast.error(error.message);
+    toast.success("Bot settings saved");
+  };
+
+  if (loading) return <Card className="p-6 text-sm text-muted-foreground">Loading...</Card>;
+
+  return (
+    <div className="grid md:grid-cols-2 gap-6">
+      <Card className="p-6 space-y-4">
+        <h2 className="font-bold">General</h2>
+        <div className="flex items-center gap-2">
+          <Switch checked={cfg.enabled} onCheckedChange={(c) => setCfg({ ...cfg, enabled: c })} />
+          <Label>Enable Discord bot</Label>
+        </div>
+        <div className="flex items-center gap-2">
+          <Switch checked={cfg.status === "online"} onCheckedChange={(c) => setCfg({ ...cfg, status: c ? "online" : "offline" })} />
+          <Label>Mark as online</Label>
+        </div>
+        <div><Label>Guild ID</Label><Input value={cfg.guildId} onChange={(e) => setCfg({ ...cfg, guildId: e.target.value })} /></div>
+        <div><Label>Bot invite URL</Label><Input value={cfg.inviteUrl} onChange={(e) => setCfg({ ...cfg, inviteUrl: e.target.value })} /></div>
+      </Card>
+
+      <Card className="p-6 space-y-4">
+        <h2 className="font-bold">Channels & Messages</h2>
+        <div><Label>Announcements channel ID</Label><Input value={cfg.announceChannelId} onChange={(e) => setCfg({ ...cfg, announceChannelId: e.target.value })} /></div>
+        <div><Label>Server status channel ID</Label><Input value={cfg.statusChannelId} onChange={(e) => setCfg({ ...cfg, statusChannelId: e.target.value })} /></div>
+        <div><Label>Welcome message</Label><Textarea rows={3} value={cfg.welcomeMessage} onChange={(e) => setCfg({ ...cfg, welcomeMessage: e.target.value })} /></div>
+      </Card>
+
+      <div className="md:col-span-2"><Button onClick={save}>Save bot settings</Button></div>
+    </div>
+  );
+};
 export default Admin;
