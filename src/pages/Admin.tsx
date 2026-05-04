@@ -636,6 +636,7 @@ const BotManagementSection = () => {
     inviteUrl: "",
     announceChannelId: "",
     statusChannelId: "",
+    welcomeChannelId: "",
     welcomeMessage: "Welcome to ZyphoraMC, {user}!",
   });
   const [loading, setLoading] = useState(true);
@@ -675,7 +676,15 @@ const BotManagementSection = () => {
         <h2 className="font-bold">Channels & Messages</h2>
         <div><Label>Announcements channel ID</Label><Input value={cfg.announceChannelId} onChange={(e) => setCfg({ ...cfg, announceChannelId: e.target.value })} /></div>
         <div><Label>Server status channel ID</Label><Input value={cfg.statusChannelId} onChange={(e) => setCfg({ ...cfg, statusChannelId: e.target.value })} /></div>
-        <div><Label>Welcome message</Label><Textarea rows={3} value={cfg.welcomeMessage} onChange={(e) => setCfg({ ...cfg, welcomeMessage: e.target.value })} /></div>
+        <div>
+          <Label>Welcome channel ID</Label>
+          <Input value={cfg.welcomeChannelId} onChange={(e) => setCfg({ ...cfg, welcomeChannelId: e.target.value })} placeholder="Channel where new members are greeted" />
+        </div>
+        <div>
+          <Label>Welcome message</Label>
+          <Textarea rows={3} value={cfg.welcomeMessage} onChange={(e) => setCfg({ ...cfg, welcomeMessage: e.target.value })} />
+          <p className="text-xs text-muted-foreground mt-1">Use <code>{"{user}"}</code> as a placeholder for the new member.</p>
+        </div>
       </Card>
 
       <div className="md:col-span-2"><Button onClick={save}>Save bot settings</Button></div>
