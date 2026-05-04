@@ -18,10 +18,10 @@ const Navbar = () => {
           </span>
         </Link>
         <div className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
-          <a href="/#news" className="hover:text-foreground transition">News</a>
+          <Link to="/news" className="hover:text-foreground transition">News</Link>
+          <Link to="/staff" className="hover:text-foreground transition">Staff</Link>
+          <Link to="/vote" className="hover:text-foreground transition">Vote</Link>
           <a href="/#rules" className="hover:text-foreground transition">Rules</a>
-          <a href="/#tos" className="hover:text-foreground transition">ToS</a>
-          <a href="/#privacy" className="hover:text-foreground transition">Privacy</a>
           <a href="/#faq" className="hover:text-foreground transition">FAQ</a>
         </div>
         <div className="flex items-center gap-2">
