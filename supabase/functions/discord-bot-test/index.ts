@@ -23,8 +23,13 @@ Deno.serve(async (req) => {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: userData.user.id, _role: "admin" });
-    if (!isAdmin) {
+    const { data: roleRow } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userData.user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!roleRow) {
       return new Response(JSON.stringify({ ok: false, error: "Forbidden — admin only" }), {
         status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
