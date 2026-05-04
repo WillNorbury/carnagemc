@@ -13,8 +13,19 @@ import { Copy, Users, Server, MessageCircle, Shield, Coins, Heart } from "lucide
 import { toast } from "sonner";
 
 type News = { id: string; title: string; excerpt: string | null; slug: string; created_at: string };
-type Status = { online: boolean; players_online: number; players_max: number; motd: string | null };
+type Status = { online: boolean; players_online: number; players_max: number; motd: string | null; version?: string | null };
 type SiteContent = Record<string, any>;
+
+const formatUptime = (ms: number) => {
+  if (ms <= 0) return "—";
+  const s = Math.floor(ms / 1000);
+  const d = Math.floor(s / 86400);
+  const h = Math.floor((s % 86400) / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+};
 
 const RULES = [
   { icon: Shield, title: "Fair Play", desc: "Hacks, macros, and x-ray are strictly forbidden. Suspicious activity is reviewed via logs." },
