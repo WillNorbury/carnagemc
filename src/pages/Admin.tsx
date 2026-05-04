@@ -492,9 +492,11 @@ const LogsTab = () => {
 const BOT_KEY = "discord_bot";
 
 const BotDashboardSection = () => {
-  const [cfg, setCfg] = useState<any>({ enabled: false, status: "offline", guildId: "", inviteUrl: "" });
+  const [cfg, setCfg] = useState<any>({ enabled: false, status: "offline", guildId: "", inviteUrl: "", announceChannelId: "", statusChannelId: "", welcomeMessage: "" });
   const [testing, setTesting] = useState(false);
   const [result, setResult] = useState<any>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [actionResults, setActionResults] = useState<Record<string, { ok: boolean; message: string }>>({});
 
   useEffect(() => {
     supabase.from("site_content").select("value").eq("key", BOT_KEY).maybeSingle()
@@ -518,16 +520,30 @@ const BotDashboardSection = () => {
     }
   };
 
+  const runAction = async (action: "announce" | "status" | "welcome") => {
+    setBusy(action);
+    const { data, error } = await supabase.functions.invoke("discord-bot-action", {
+      body: { action },
+    });
+    setBusy(null);
+    const payload = error ? { ok: false, message: error.message } : { ok: !!data?.ok, message: data?.ok ? data.message : (data?.error ?? "Failed") };
+    setActionResults((r) => ({ ...r, [action]: payload }));
+    if (payload.ok) toast.success(payload.message);
+    else toast.error(payload.message);
+  };
+
   const online = cfg.enabled && cfg.status === "online";
+  const tests: { key: "announce" | "status" | "welcome"; label: string; desc: string; channel: string | undefined }[] = [
+    { key: "announce", label: "Send test announcement", desc: "Posts an embed to the announcements channel.", channel: cfg.announceChannelId },
+    { key: "status",   label: "Post server status",     desc: "Sends a live status embed to the status channel.", channel: cfg.statusChannelId },
+    { key: "welcome",  label: "Preview welcome message", desc: "Renders the welcome template and posts it for preview.", channel: cfg.announceChannelId || cfg.statusChannelId },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <StatCard
-          title="Bot Status"
-          value={online ? "Online" : cfg.enabled ? "Connecting" : "Disabled"}
-          icon={Activity}
-          color={online ? "bg-emerald-500" : cfg.enabled ? "bg-orange-500" : "bg-muted"}
-        />
+        <StatCard title="Bot Status" value={online ? "Online" : cfg.enabled ? "Connecting" : "Disabled"} icon={Activity}
+          color={online ? "bg-emerald-500" : cfg.enabled ? "bg-orange-500" : "bg-muted"} />
         <StatCard title="Guild ID" value={cfg.guildId || "—"} icon={ShieldCheck} color="bg-primary" />
         <StatCard title="Enabled" value={cfg.enabled ? "Yes" : "No"} icon={ShieldCheck} color={cfg.enabled ? "bg-sky-500" : "bg-muted"} />
       </div>
@@ -538,18 +554,15 @@ const BotDashboardSection = () => {
             <h2 className="font-bold">Connection test</h2>
             <p className="text-sm text-muted-foreground">Verify the bot token and (optionally) guild access.</p>
           </div>
-          <Button onClick={runTest} disabled={testing}>
-            {testing ? "Testing..." : "Test Connection"}
-          </Button>
+          <Button onClick={runTest} disabled={testing}>{testing ? "Testing..." : "Test Connection"}</Button>
         </div>
-
         {result && (
           <div className={`p-4 rounded-lg border ${result.ok ? "border-emerald-500/40 bg-emerald-500/10" : "border-destructive/40 bg-destructive/10"} space-y-2 text-sm`}>
             <div className="flex items-center gap-2">
               <Badge variant={result.ok ? "default" : "destructive"}>{result.ok ? "SUCCESS" : "FAILED"}</Badge>
               {result.ok
                 ? <span>Authenticated as <span className="font-mono">{result.bot?.username}</span> (id {result.bot?.id})</span>
-                : <span className="text-destructive-foreground">{result.error}</span>}
+                : <span>{result.error}</span>}
             </div>
             {result.ok && result.guild && (
               <div className="text-muted-foreground">
@@ -557,11 +570,46 @@ const BotDashboardSection = () => {
                 {typeof result.guild.memberCount === "number" && <> · ~{result.guild.memberCount} members</>}
               </div>
             )}
-            {result.ok && result.guildError && (
-              <div className="text-orange-400">Warning: {result.guildError}</div>
-            )}
+            {result.ok && result.guildError && <div className="text-orange-400">Warning: {result.guildError}</div>}
           </div>
         )}
+      </Card>
+
+      <Card className="p-6 space-y-4">
+        <div>
+          <h2 className="font-bold">Live channel tests</h2>
+          <p className="text-sm text-muted-foreground">
+            Send real Discord messages using the channel IDs and welcome template configured in Management.
+          </p>
+        </div>
+        <div className="grid gap-3">
+          {tests.map((t) => {
+            const r = actionResults[t.key];
+            const disabled = !!busy || !t.channel;
+            return (
+              <div key={t.key} className="flex items-start justify-between gap-4 p-4 rounded-lg border border-border/50 bg-card/40">
+                <div className="min-w-0">
+                  <p className="font-medium">{t.label}</p>
+                  <p className="text-xs text-muted-foreground">{t.desc}</p>
+                  <p className="text-xs mt-1">
+                    Target channel:{" "}
+                    {t.channel
+                      ? <span className="font-mono text-foreground">{t.channel}</span>
+                      : <span className="text-destructive">not configured</span>}
+                  </p>
+                  {r && (
+                    <div className={`mt-2 text-xs ${r.ok ? "text-emerald-400" : "text-destructive"}`}>
+                      {r.ok ? "✓ " : "✗ "}{r.message}
+                    </div>
+                  )}
+                </div>
+                <Button size="sm" onClick={() => runAction(t.key)} disabled={disabled}>
+                  {busy === t.key ? "Sending..." : "Run test"}
+                </Button>
+              </div>
+            );
+          })}
+        </div>
       </Card>
 
       <Card className="p-6 space-y-3">
