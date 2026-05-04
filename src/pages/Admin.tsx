@@ -69,6 +69,8 @@ const Admin = () => {
       {section === "content" && <ContentTab />}
       {section === "status" && <StatusTab />}
       {section === "logs" && <LogsTab />}
+      {section === "bot-dashboard" && <BotDashboardSection />}
+      {section === "bot-management" && <BotManagementSection />}
     </AdminLayout>
   );
 };
