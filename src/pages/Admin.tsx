@@ -31,6 +31,8 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   content: { title: "Site Content", description: "Edit hero copy, server info, and alerts." },
   status: { title: "Server Status", description: "Manually override the live status display." },
   logs: { title: "Admin Logs", description: "Audit trail of admin role checks." },
+  "bot-dashboard": { title: "Discord Bot — Dashboard", description: "Status and overview of the ZyphoraMC Discord bot." },
+  "bot-management": { title: "Discord Bot — Management", description: "Configure commands and bot integration." },
 };
 
 const Admin = () => {
