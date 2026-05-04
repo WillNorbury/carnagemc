@@ -133,10 +133,11 @@ const Index = () => {
               <button onClick={copyIp} className="w-full font-mono text-2xl font-bold py-3 rounded-lg bg-secondary hover:bg-secondary/70 transition border border-border">
                 {ip}
               </button>
-              <div className="grid grid-cols-3 gap-3 mt-5 text-center">
-                <Stat icon={<Users className="h-4 w-4" />} label="Online" value={status?.players_online ?? 0} />
-                <Stat icon={<Server className="h-4 w-4" />} label="Slots" value={status?.players_max ?? 0} />
+              <div className="grid grid-cols-2 gap-3 mt-5 text-center">
+                <Stat icon={<Users className="h-4 w-4" />} label="Players" value={`${status?.players_online ?? 0}/${status?.players_max ?? 0}`} />
                 <Stat icon={<div className={`h-2 w-2 rounded-full ${status?.online ? "bg-primary animate-pulse" : "bg-destructive"}`} />} label="Status" value={status?.online ? "Live" : "Down"} />
+                <Stat icon={<Server className="h-4 w-4" />} label="Uptime" value={uptime} />
+                <Stat icon={<MessageCircle className="h-4 w-4" />} label="Version" value={status?.version ?? "—"} />
               </div>
             </Card>
           </div>
