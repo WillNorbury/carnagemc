@@ -439,6 +439,40 @@ const ContentTab = () => {
           </div>
         </div>
       </Card>
+      <Card className="p-6 space-y-4 md:col-span-2">
+        <h2 className="font-bold">Next event countdown</h2>
+        <p className="text-sm text-muted-foreground">Powers the homepage countdown timer. Leave blank to use the default (next Saturday 8pm).</p>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <Label>Event label</Label>
+            <Input
+              value={event.label}
+              maxLength={60}
+              onChange={(e) => setEvent({ ...event, label: e.target.value })}
+              placeholder="Next Event Reset"
+            />
+          </div>
+          <div>
+            <Label>Date & time (your local timezone)</Label>
+            <div className="flex gap-2">
+              <Input
+                type="datetime-local"
+                value={toLocalInput(event.targetMs ?? undefined)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setEvent({ ...event, targetMs: v ? new Date(v).getTime() : null });
+                }}
+              />
+              {event.targetMs && (
+                <Button variant="outline" type="button" onClick={() => setEvent({ ...event, targetMs: null })}>Clear</Button>
+              )}
+            </div>
+            {event.targetMs && (
+              <p className="text-xs text-muted-foreground mt-1">Counts down to: {new Date(event.targetMs).toLocaleString()}</p>
+            )}
+          </div>
+        </div>
+      </Card>
       <div className="md:col-span-2"><Button onClick={save}>Save all</Button></div>
     </div>
   );
