@@ -137,21 +137,6 @@ const Community = () => {
             )}
           </section>
 
-          {/* Gallery */}
-          <section>
-            <div className="text-xs uppercase tracking-[0.25em] text-primary mb-1">Gallery</div>
-            <h2 className="font-display text-3xl font-bold mb-6">Community Screenshots</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {GALLERY.map((src, i) => (
-                <div key={i} className="relative group overflow-hidden rounded-lg border border-border/50 aspect-[4/3]">
-                  <img src={src} alt={`Community screenshot ${i + 1}`} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent opacity-0 group-hover:opacity-100 transition flex items-end p-3">
-                    <ImageIcon className="h-4 w-4 text-primary" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
         </div>
       </main>
       <Footer />
