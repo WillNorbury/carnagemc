@@ -352,6 +352,13 @@ const NewsTab = () => {
   );
 };
 
+const toLocalInput = (ms?: number) => {
+  if (!ms) return "";
+  const d = new Date(ms);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
 const ContentTab = () => {
   const [hero, setHero] = useState({ title: "", subtitle: "", badge: "" });
   const [server, setServer] = useState({ ip: "", discord: "", version: "", tagline: "" });
@@ -361,6 +368,10 @@ const ContentTab = () => {
     offlineEnabled: true,
     offlineMessage: "🔴 Server is currently offline. We're working on it.",
   });
+  const [event, setEvent] = useState<{ label: string; targetMs: number | null }>({
+    label: "Next Event Reset",
+    targetMs: null,
+  });
 
   useEffect(() => {
     supabase.from("site_content").select("*").then(({ data }) => {
@@ -369,18 +380,29 @@ const ContentTab = () => {
       if (map.hero) setHero(map.hero);
       if (map.server) setServer(map.server);
       if (map.alerts) setAlerts((a) => ({ ...a, ...map.alerts }));
+      if (map.event) setEvent({ label: map.event.label ?? "Next Event Reset", targetMs: map.event.targetMs ?? null });
     });
   }, []);
 
   const save = async () => {
+    if (event.targetMs && event.targetMs < Date.now()) {
+      toast.error("Event date must be in the future");
+      return;
+    }
+    if (!event.label.trim()) {
+      toast.error("Event label cannot be empty");
+      return;
+    }
     const { error } = await supabase.from("site_content").upsert([
       { key: "hero", value: hero as any },
       { key: "server", value: server as any },
       { key: "alerts", value: alerts as any },
+      { key: "event", value: event as any },
     ]);
     if (error) return toast.error(error.message);
     toast.success("Site content saved");
   };
+
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
@@ -414,6 +436,40 @@ const ContentTab = () => {
               <Label>Notify when server goes OFFLINE</Label>
             </div>
             <Textarea rows={2} value={alerts.offlineMessage} onChange={(e) => setAlerts({ ...alerts, offlineMessage: e.target.value })} />
+          </div>
+        </div>
+      </Card>
+      <Card className="p-6 space-y-4 md:col-span-2">
+        <h2 className="font-bold">Next event countdown</h2>
+        <p className="text-sm text-muted-foreground">Powers the homepage countdown timer. Leave blank to use the default (next Saturday 8pm).</p>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <Label>Event label</Label>
+            <Input
+              value={event.label}
+              maxLength={60}
+              onChange={(e) => setEvent({ ...event, label: e.target.value })}
+              placeholder="Next Event Reset"
+            />
+          </div>
+          <div>
+            <Label>Date & time (your local timezone)</Label>
+            <div className="flex gap-2">
+              <Input
+                type="datetime-local"
+                value={toLocalInput(event.targetMs ?? undefined)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setEvent({ ...event, targetMs: v ? new Date(v).getTime() : null });
+                }}
+              />
+              {event.targetMs && (
+                <Button variant="outline" type="button" onClick={() => setEvent({ ...event, targetMs: null })}>Clear</Button>
+              )}
+            </div>
+            {event.targetMs && (
+              <p className="text-xs text-muted-foreground mt-1">Counts down to: {new Date(event.targetMs).toLocaleString()}</p>
+            )}
           </div>
         </div>
       </Card>
