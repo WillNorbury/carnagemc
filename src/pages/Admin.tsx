@@ -749,4 +749,214 @@ const BotManagementSection = () => {
     </div>
   );
 };
+
+// ============== Tickets admin ==============
+type AdminTicket = {
+  id: string;
+  user_id: string;
+  subject: string;
+  body: string;
+  category: string | null;
+  status: "open" | "in_progress" | "waiting_user" | "closed";
+  priority: "low" | "normal" | "high" | "urgent";
+  created_at: string;
+  updated_at: string;
+};
+type AdminMsg = { id: string; ticket_id: string; author_id: string; is_staff: boolean; body: string; created_at: string };
+
+const TICKET_STATUSES: AdminTicket["status"][] = ["open", "in_progress", "waiting_user", "closed"];
+
+const TicketsAdminSection = () => {
+  const { user } = useAuth();
+  const [tickets, setTickets] = useState<AdminTicket[]>([]);
+  const [profilesById, setProfilesById] = useState<Record<string, { display_name: string | null }>>({});
+  const [filter, setFilter] = useState<"all" | AdminTicket["status"]>("open");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<AdminMsg[]>([]);
+  const [reply, setReply] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    const { data } = await supabase.from("support_tickets").select("*").order("created_at", { ascending: false });
+    const list = (data ?? []) as AdminTicket[];
+    setTickets(list);
+    const ids = Array.from(new Set(list.map((t) => t.user_id)));
+    if (ids.length) {
+      const { data: profs } = await supabase.from("profiles").select("id, display_name").in("id", ids);
+      const map: Record<string, { display_name: string | null }> = {};
+      (profs ?? []).forEach((p: any) => { map[p.id] = { display_name: p.display_name }; });
+      setProfilesById(map);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    if (!selectedId) { setMessages([]); return; }
+    supabase.from("support_ticket_messages").select("*").eq("ticket_id", selectedId).order("created_at")
+      .then(({ data }) => setMessages((data ?? []) as AdminMsg[]));
+  }, [selectedId]);
+
+  const filtered = filter === "all" ? tickets : tickets.filter((t) => t.status === filter);
+  const selected = tickets.find((t) => t.id === selectedId) ?? null;
+
+  const updateStatus = async (id: string, status: AdminTicket["status"]) => {
+    const { error } = await supabase.from("support_tickets").update({ status }).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success(`Status: ${status}`);
+    load();
+  };
+  const updatePriority = async (id: string, priority: AdminTicket["priority"]) => {
+    const { error } = await supabase.from("support_tickets").update({ priority }).eq("id", id);
+    if (error) return toast.error(error.message);
+    load();
+  };
+
+  const sendReply = async () => {
+    if (!selected || !user || !reply.trim()) return;
+    setSending(true);
+    const { error } = await supabase.from("support_ticket_messages").insert({
+      ticket_id: selected.id,
+      author_id: user.id,
+      is_staff: true,
+      body: reply.trim(),
+    });
+    setSending(false);
+    if (error) return toast.error(error.message);
+    setReply("");
+    // Auto-set status to waiting_user
+    if (selected.status === "open") await updateStatus(selected.id, "waiting_user");
+    const { data } = await supabase.from("support_ticket_messages").select("*").eq("ticket_id", selected.id).order("created_at");
+    setMessages((data ?? []) as AdminMsg[]);
+  };
+
+  const deleteTicket = async (id: string) => {
+    if (!confirm("Delete this ticket and all its messages?")) return;
+    const { error } = await supabase.from("support_tickets").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    if (selectedId === id) setSelectedId(null);
+    load();
+  };
+
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { all: tickets.length, open: 0, in_progress: 0, waiting_user: 0, closed: 0 };
+    tickets.forEach((t) => { c[t.status]++; });
+    return c;
+  }, [tickets]);
+
+  return (
+    <div className="grid lg:grid-cols-[380px_1fr] gap-4">
+      <Card className="p-3 max-h-[78vh] overflow-y-auto">
+        <div className="flex flex-wrap gap-1 mb-3">
+          {(["all", ...TICKET_STATUSES] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => setFilter(s as any)}
+              className={`text-[11px] uppercase tracking-wider px-2 py-1 rounded border transition ${filter === s ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:border-primary/40"}`}
+            >
+              {s.replace("_", " ")} ({counts[s] ?? 0})
+            </button>
+          ))}
+        </div>
+        {loading ? (
+          <div className="p-6 text-sm text-muted-foreground text-center">Loading…</div>
+        ) : filtered.length === 0 ? (
+          <div className="p-6 text-sm text-muted-foreground text-center">No tickets in this view.</div>
+        ) : (
+          <div className="space-y-2">
+            {filtered.map((t) => {
+              const active = selectedId === t.id;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setSelectedId(t.id)}
+                  className={`w-full text-left p-3 rounded-lg border transition ${active ? "border-primary/60 bg-primary/5" : "border-border hover:border-primary/40 hover:bg-secondary/30"}`}
+                >
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <div className="font-semibold text-sm truncate">{t.subject}</div>
+                    <Badge variant="outline" className="text-[10px] shrink-0">{t.status.replace("_", " ")}</Badge>
+                  </div>
+                  <div className="text-xs text-muted-foreground line-clamp-2">{t.body}</div>
+                  <div className="text-[10px] text-muted-foreground mt-1.5 uppercase tracking-wider flex justify-between">
+                    <span>{profilesById[t.user_id]?.display_name ?? t.user_id.slice(0, 8)}</span>
+                    <span>{new Date(t.created_at).toLocaleDateString()}</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </Card>
+
+      <div>
+        {!selected ? (
+          <Card className="p-12 text-center text-muted-foreground">
+            <MessageSquare className="h-10 w-10 mx-auto mb-3 text-primary/60" />
+            <p>Select a ticket to view and reply.</p>
+          </Card>
+        ) : (
+          <Card className="p-6">
+            <div className="flex flex-wrap items-start justify-between gap-3 mb-4 pb-4 border-b">
+              <div className="min-w-0">
+                <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+                  #{selected.id.slice(0, 8)} · {selected.category ?? "General"} · From {profilesById[selected.user_id]?.display_name ?? selected.user_id.slice(0, 8)}
+                </div>
+                <h2 className="text-xl font-bold">{selected.subject}</h2>
+                <div className="text-xs text-muted-foreground mt-1">Opened {new Date(selected.created_at).toLocaleString()}</div>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Select value={selected.status} onValueChange={(v: any) => updateStatus(selected.id, v)}>
+                  <SelectTrigger className="w-[150px] h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {TICKET_STATUSES.map((s) => <SelectItem key={s} value={s}>{s.replace("_", " ")}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={selected.priority} onValueChange={(v: any) => updatePriority(selected.id, v)}>
+                  <SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {(["low", "normal", "high", "urgent"] as const).map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => deleteTicket(selected.id)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-3 max-h-[45vh] overflow-y-auto pr-1">
+              <div className="rounded-lg p-4 border bg-secondary/40">
+                <div className="text-xs font-bold uppercase tracking-wider mb-1">User · {new Date(selected.created_at).toLocaleString()}</div>
+                <div className="text-sm whitespace-pre-wrap break-words">{selected.body}</div>
+              </div>
+              {messages.map((m) => (
+                <div key={m.id} className={`rounded-lg p-4 border ${m.is_staff ? "bg-primary/10 border-primary/40" : "bg-secondary/40"}`}>
+                  <div className="text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-2">
+                    {m.is_staff ? <span className="text-primary">Staff</span> : "User"}
+                    <span className="text-muted-foreground font-normal">{new Date(m.created_at).toLocaleString()}</span>
+                  </div>
+                  <div className="text-sm whitespace-pre-wrap break-words">{m.body}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 pt-4 border-t space-y-2">
+              <Label>Staff reply</Label>
+              <Textarea rows={4} maxLength={4000} value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Reply to the user…" />
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" size="sm" onClick={() => updateStatus(selected.id, "closed")}>Close ticket</Button>
+                <Button size="sm" onClick={sendReply} disabled={sending || !reply.trim()}>
+                  <Send className="h-4 w-4 mr-2" /> Send reply
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default Admin;
