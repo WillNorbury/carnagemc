@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import ServerStatusWidget from "@/components/site/ServerStatusWidget";
 import { LifeBuoy, MessageCircle, Mail, Send, BookOpen, Wallet, KeyRound, Wrench } from "lucide-react";
 import { toast } from "sonner";
 
@@ -63,6 +64,12 @@ const Support = () => {
         </section>
 
         <div className="container pb-16 space-y-16">
+          {/* Live server status */}
+          <section className="max-w-3xl mx-auto -mt-4">
+            <ServerStatusWidget />
+          </section>
+
+
           {/* Quick contact tiles */}
           <section className="grid md:grid-cols-2 gap-4">
             <Card className="p-7 border-primary/30 hover-lift hover-glow">
