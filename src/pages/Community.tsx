@@ -7,19 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { MessageCircle, Image as ImageIcon, Megaphone, Users, ArrowRight } from "lucide-react";
+import { MessageCircle, Megaphone, Users, ArrowRight } from "lucide-react";
 
 type News = { id: string; title: string; excerpt: string | null; slug: string; created_at: string };
 type Profile = { id: string; display_name: string | null; avatar_url: string | null; mc_username: string | null };
 
-const GALLERY = [
-  "https://images.unsplash.com/photo-1607513746994-51f730a44832?w=600&q=70",
-  "https://images.unsplash.com/photo-1587573089734-09cb69c0f2b4?w=600&q=70",
-  "https://images.unsplash.com/photo-1624559888077-1a1a3e1e615f?w=600&q=70",
-  "https://images.unsplash.com/photo-1606503153255-59d8b8b1c4d7?w=600&q=70",
-  "https://images.unsplash.com/photo-1614680376408-81e91ffe3db7?w=600&q=70",
-  "https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=600&q=70",
-];
 
 const Community = () => {
   const [news, setNews] = useState<News[]>([]);
@@ -137,21 +129,6 @@ const Community = () => {
             )}
           </section>
 
-          {/* Gallery */}
-          <section>
-            <div className="text-xs uppercase tracking-[0.25em] text-primary mb-1">Gallery</div>
-            <h2 className="font-display text-3xl font-bold mb-6">Community Screenshots</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {GALLERY.map((src, i) => (
-                <div key={i} className="relative group overflow-hidden rounded-lg border border-border/50 aspect-[4/3]">
-                  <img src={src} alt={`Community screenshot ${i + 1}`} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent opacity-0 group-hover:opacity-100 transition flex items-end p-3">
-                    <ImageIcon className="h-4 w-4 text-primary" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
         </div>
       </main>
       <Footer />
