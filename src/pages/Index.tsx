@@ -68,25 +68,37 @@ const Index = () => {
     return () => clearTimeout(t);
   }, []);
 
-  // Fetch live Discord member count from invite
+  // Fetch live Discord member count via server-side proxy (reliable, no CORS/rate-limit issues)
   useEffect(() => {
-    const inviteUrl: string = content.server?.discord ?? "";
-    // Try to extract a discord invite code from the configured URL
-    const m = inviteUrl.match(/discord\.gg\/([a-zA-Z0-9-]+)/) ?? inviteUrl.match(/discord\.com\/invite\/([a-zA-Z0-9-]+)/);
-    const codes = m ? [m[1]] : ["zyphoramc", "zyphora"];
-    (async () => {
-      for (const code of codes) {
-        try {
-          const r = await fetch(`https://discord.com/api/v10/invites/${code}?with_counts=true`);
-          if (!r.ok) continue;
-          const j = await r.json();
-          if (typeof j.approximate_member_count === "number") {
-            setDiscordMembers(j.approximate_member_count);
-            return;
-          }
-        } catch {}
-      }
-    })();
+    const inviteRaw: string = content.server?.discord ?? "https://discord.gg/qAEs87VeXM";
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("discord-invite", {
+          body: null,
+          method: "GET",
+          // @ts-ignore - query is supported at runtime
+          query: { invite: inviteRaw },
+        } as any);
+        if (cancelled) return;
+        if (!error && data?.ok && typeof data.approximate_member_count === "number") {
+          setDiscordMembers(data.approximate_member_count);
+          return;
+        }
+        // Fallback: direct call to the function URL with query string
+        const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/discord-invite?invite=${encodeURIComponent(inviteRaw)}`;
+        const r = await fetch(url, { headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } });
+        const j = await r.json();
+        if (!cancelled && j?.ok && typeof j.approximate_member_count === "number") {
+          setDiscordMembers(j.approximate_member_count);
+        }
+      } catch { /* silent */ }
+    };
+
+    load();
+    const poll = setInterval(load, 5 * 60_000); // refresh every 5 minutes
+    return () => { cancelled = true; clearInterval(poll); };
   }, [content.server?.discord]);
 
   const ip = content.server?.ip ?? "play.zyphoramc.net";
