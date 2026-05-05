@@ -266,8 +266,8 @@ const Index = () => {
         <div className="container relative grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
             { label: "Online Players", value: status?.players_online ?? 0, icon: Users, suffix: "" },
-            { label: "Discord Members", value: 12480, icon: MessageCircle, suffix: "" },
-            { label: "Total Votes", value: 86420, icon: Star, suffix: "" },
+            { label: "Discord Members", value: discordMembers ?? 0, icon: MessageCircle, suffix: "" },
+            { label: "Total Votes", value: voteCount, icon: Star, suffix: "" },
             { label: "Uptime", value: 99.9, icon: Zap, suffix: "%", decimals: 1 },
           ].map((s) => (
             <Card key={s.label} className="p-6 text-center hover-lift hover-glow border-primary/10 bg-card/60 backdrop-blur">
