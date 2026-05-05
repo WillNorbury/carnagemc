@@ -27,6 +27,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   dashboard: { title: "Dashboard", description: "Overview of ZyphoraMC activity." },
   users: { title: "Users", description: "Promote or demote admin access." },
   roles: { title: "Roles", description: "Assign and manage roles for members." },
+  permissions: { title: "Permissions", description: "Define what each role can do." },
   news: { title: "News", description: "Create and publish announcements." },
   content: { title: "Site Content", description: "Edit hero copy, server info, and alerts." },
   status: { title: "Server Status", description: "Manually override the live status display." },
@@ -45,8 +46,9 @@ const Admin = () => {
 
   const onNavigate = (s: AdminSection) => {
     setSection(s);
-    if (s === "roles" && location.pathname !== "/admin/roles") navigate("/admin/roles");
-    else if (s !== "roles" && location.pathname !== "/admin") navigate("/admin");
+    if (s === "roles") { if (location.pathname !== "/admin/roles") navigate("/admin/roles"); return; }
+    if (s === "permissions") { navigate("/admin/permissions"); return; }
+    if (location.pathname !== "/admin") navigate("/admin");
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;

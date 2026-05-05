@@ -9,7 +9,7 @@ import {
   LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
   PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+
 
 export type AdminSection =
   | "dashboard" | "users" | "roles" | "permissions" | "news" | "content" | "status" | "logs" | "tickets"
