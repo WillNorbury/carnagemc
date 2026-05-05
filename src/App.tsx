@@ -8,6 +8,7 @@ import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import Admin from "./pages/Admin.tsx";
 import AdminRoles from "./pages/AdminRoles.tsx";
+import AdminPermissions from "./pages/AdminPermissions.tsx";
 import News from "./pages/News.tsx";
 import NewsArticle from "./pages/NewsArticle.tsx";
 import Staff from "./pages/Staff.tsx";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/roles" element={<AdminRoles />} />
+            <Route path="/admin/permissions" element={<AdminPermissions />} />
             <Route path="/news" element={<News />} />
             <Route path="/news/:slug" element={<NewsArticle />} />
             <Route path="/staff" element={<Staff />} />
