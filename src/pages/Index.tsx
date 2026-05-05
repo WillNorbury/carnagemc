@@ -50,6 +50,9 @@ const Index = () => {
   const [uptimeStart, setUptimeStart] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
   const [popupOpen, setPopupOpen] = useState(false);
+  const [activeFeature, setActiveFeature] = useState<typeof FEATURES[number] | null>(null);
+  const [discordMembers, setDiscordMembers] = useState<number | null>(null);
+  const [voteCount, setVoteCount] = useState<number>(0);
 
   useEffect(() => {
     supabase.from("news").select("id,title,excerpt,slug,created_at").eq("published", true).order("created_at", { ascending: false }).limit(3).then(({ data }) => setNews(data ?? []));
