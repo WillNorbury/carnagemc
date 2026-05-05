@@ -1,36 +1,57 @@
+import { Link } from "react-router-dom";
 import logo from "@/assets/zyphora-logo.png";
+import { Twitter, Youtube, MessageCircle, Twitch } from "lucide-react";
 
 const Footer = () => (
-  <footer className="border-t border-border/50 bg-card/40 mt-24">
-    <div className="container py-12 grid md:grid-cols-3 gap-10">
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <img src={logo} alt="ZyphoraMC" className="h-8 w-8" />
-          <span className="font-bold">Zyphora<span className="text-primary">MC</span></span>
+  <footer className="relative border-t border-primary/20 bg-card/40 mt-24 overflow-hidden">
+    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />
+    <div className="container py-14 grid md:grid-cols-4 gap-10">
+      <div className="md:col-span-2">
+        <div className="flex items-center gap-2 mb-4">
+          <img src={logo} alt="ZyphoraMC" className="h-9 w-9" />
+          <span className="font-display font-bold text-lg tracking-wider">
+            ZYPHORA<span className="text-gradient">MC</span>
+          </span>
         </div>
-        <p className="text-sm text-muted-foreground max-w-xs">
-          A premium Minecraft survival experience. Build, explore, conquer.
+        <p className="text-sm text-muted-foreground max-w-md">
+          The ultimate Minecraft Lifesteal & Economy experience. Forge your legend in a world that bites back.
         </p>
+        <div className="flex items-center gap-3 mt-5">
+          {[
+            { icon: MessageCircle, href: "https://discord.zyphoramc.net", label: "Discord" },
+            { icon: Twitter, href: "#", label: "Twitter" },
+            { icon: Youtube, href: "#", label: "YouTube" },
+            { icon: Twitch, href: "#", label: "Twitch" },
+          ].map((s) => (
+            <a key={s.label} href={s.href} aria-label={s.label} target="_blank" rel="noreferrer"
+              className="h-9 w-9 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/60 hover:shadow-[0_0_16px_hsl(var(--primary)/0.5)] transition">
+              <s.icon className="h-4 w-4" />
+            </a>
+          ))}
+        </div>
       </div>
       <div>
-        <h4 className="font-semibold mb-3">Server</h4>
+        <h4 className="font-display font-semibold mb-3 uppercase tracking-wider text-sm">Navigate</h4>
+        <ul className="space-y-2 text-sm text-muted-foreground">
+          <li><Link to="/" className="hover:text-primary transition">Home</Link></li>
+          <li><Link to="/vote" className="hover:text-primary transition">Vote</Link></li>
+          <li><Link to="/community" className="hover:text-primary transition">Community</Link></li>
+          <li><Link to="/rules" className="hover:text-primary transition">Rules</Link></li>
+          <li><Link to="/support" className="hover:text-primary transition">Support</Link></li>
+        </ul>
+      </div>
+      <div>
+        <h4 className="font-display font-semibold mb-3 uppercase tracking-wider text-sm">Server</h4>
         <ul className="space-y-2 text-sm text-muted-foreground">
           <li>IP: <span className="text-foreground font-mono">play.zyphoramc.net</span></li>
           <li>Version: 1.21.x Paper</li>
-          <li>Premium & Cracked supported</li>
-        </ul>
-      </div>
-      <div>
-        <h4 className="font-semibold mb-3">Community</h4>
-        <ul className="space-y-2 text-sm text-muted-foreground">
-          <li><a href="https://discord.zyphoramc.net" className="hover:text-primary">Discord</a></li>
-          <li><a href="#faq" className="hover:text-primary">FAQ</a></li>
-          <li><a href="#privacy" className="hover:text-primary">Privacy</a></li>
+          <li>Premium & Cracked</li>
+          <li><a href="https://discord.zyphoramc.net" className="hover:text-primary transition">Join Discord</a></li>
         </ul>
       </div>
     </div>
-    <div className="border-t border-border/50 py-5 text-center text-xs text-muted-foreground">
-      © {new Date().getFullYear()} ZyphoraMC — All rights reserved.
+    <div className="border-t border-border/50 py-5 text-center text-xs text-muted-foreground tracking-wider">
+      © {new Date().getFullYear()} ZYPHORAMC — All rights reserved. Not affiliated with Mojang or Microsoft.
     </div>
   </footer>
 );
