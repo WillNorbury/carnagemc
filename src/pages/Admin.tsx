@@ -352,6 +352,13 @@ const NewsTab = () => {
   );
 };
 
+const toLocalInput = (ms?: number) => {
+  if (!ms) return "";
+  const d = new Date(ms);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
 const ContentTab = () => {
   const [hero, setHero] = useState({ title: "", subtitle: "", badge: "" });
   const [server, setServer] = useState({ ip: "", discord: "", version: "", tagline: "" });
@@ -361,6 +368,10 @@ const ContentTab = () => {
     offlineEnabled: true,
     offlineMessage: "🔴 Server is currently offline. We're working on it.",
   });
+  const [event, setEvent] = useState<{ label: string; targetMs: number | null }>({
+    label: "Next Event Reset",
+    targetMs: null,
+  });
 
   useEffect(() => {
     supabase.from("site_content").select("*").then(({ data }) => {
@@ -369,18 +380,29 @@ const ContentTab = () => {
       if (map.hero) setHero(map.hero);
       if (map.server) setServer(map.server);
       if (map.alerts) setAlerts((a) => ({ ...a, ...map.alerts }));
+      if (map.event) setEvent({ label: map.event.label ?? "Next Event Reset", targetMs: map.event.targetMs ?? null });
     });
   }, []);
 
   const save = async () => {
+    if (event.targetMs && event.targetMs < Date.now()) {
+      toast.error("Event date must be in the future");
+      return;
+    }
+    if (!event.label.trim()) {
+      toast.error("Event label cannot be empty");
+      return;
+    }
     const { error } = await supabase.from("site_content").upsert([
       { key: "hero", value: hero as any },
       { key: "server", value: server as any },
       { key: "alerts", value: alerts as any },
+      { key: "event", value: event as any },
     ]);
     if (error) return toast.error(error.message);
     toast.success("Site content saved");
   };
+
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
