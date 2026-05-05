@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import {
   Trash2, Plus, ShieldCheck, ShieldOff, Users as UsersIcon, Newspaper,
-  Activity, Server as ServerIcon, X,
+  Activity, Server as ServerIcon, X, Ticket as TicketIcon, MessageSquare, Send,
 } from "lucide-react";
 import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
 import { StatCard } from "@/components/admin/StatCard";
@@ -30,6 +30,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   news: { title: "News", description: "Create and publish announcements." },
   content: { title: "Site Content", description: "Edit hero copy, server info, and alerts." },
   status: { title: "Server Status", description: "Manually override the live status display." },
+  tickets: { title: "Support Tickets", description: "Triage and reply to user tickets." },
   logs: { title: "Admin Logs", description: "Audit trail of admin role checks." },
   "bot-dashboard": { title: "Discord Bot — Dashboard", description: "Status and overview of the ZyphoraMC Discord bot." },
   "bot-management": { title: "Discord Bot — Management", description: "Configure commands and bot integration." },
@@ -68,6 +69,7 @@ const Admin = () => {
       {section === "news" && <NewsTab />}
       {section === "content" && <ContentTab />}
       {section === "status" && <StatusTab />}
+      {section === "tickets" && <TicketsAdminSection />}
       {section === "logs" && <LogsTab />}
       {section === "bot-dashboard" && <BotDashboardSection />}
       {section === "bot-management" && <BotManagementSection />}
