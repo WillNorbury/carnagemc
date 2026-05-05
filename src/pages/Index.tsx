@@ -6,6 +6,7 @@ import Particles from "@/components/site/Particles";
 import MouseTrail from "@/components/site/MouseTrail";
 import AnimatedCounter from "@/components/site/AnimatedCounter";
 import Countdown from "@/components/site/Countdown";
+import Reviews from "@/components/site/Reviews";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -39,11 +40,6 @@ const FEATURES = [
   { icon: Crown, title: "Ranked Seasons", desc: "Climb the leaderboard, earn exclusive cosmetics, and lock your name in our hall of fame." },
 ];
 
-const TESTIMONIALS = [
-  { name: "ShadowKnight_42", role: "Top 10 Lifesteal", text: "Best Lifesteal server I've played in years. The economy is balanced, the PvP feels weighty, and staff actually care." },
-  { name: "EmberQueen", role: "Faction Leader", text: "Finally a Minecraft server that doesn't pay-to-win. Pure skill, deep mechanics, and a community that respects the grind." },
-  { name: "CraftLord99", role: "Veteran Player", text: "Smoothest TPS I've seen. Custom enchants are insane. I've sunk 400 hours and barely scratched the surface." },
-];
 
 const Index = () => {
   const nav = useNavigate();
@@ -315,28 +311,10 @@ const Index = () => {
           </section>
         )}
 
-        {/* Testimonials */}
+        {/* Reviews */}
         <section>
           <SectionHead eyebrow="Reviews" title="What Players Say" sub="Real voices from the ZyphoraMC community." />
-          <div className="grid md:grid-cols-3 gap-5">
-            {TESTIMONIALS.map((t) => (
-              <Card key={t.name} className="p-6 hover-lift border-border/60 relative">
-                <div className="flex gap-1 mb-3 text-primary">
-                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
-                </div>
-                <p className="text-sm text-muted-foreground italic mb-5">"{t.text}"</p>
-                <div className="flex items-center gap-3 pt-4 border-t border-border/40">
-                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center font-display font-bold text-primary-foreground">
-                    {t.name[0]}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm">{t.name}</div>
-                    <div className="text-xs text-muted-foreground">{t.role}</div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+          <Reviews />
         </section>
 
         {/* CTA */}
