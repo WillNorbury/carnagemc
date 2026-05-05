@@ -369,7 +369,7 @@ const RolesSection = () => {
                 key={r.value}
                 disabled={disabled}
                 onClick={() => onToggle(r.value as AppRole)}
-                className={cnRow(checked, disabled)}
+                className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-accent ${checked ? "bg-accent/50" : ""} ${disabled ? "opacity-40 cursor-not-allowed" : ""}`}
               >
                 <span className="flex h-4 w-4 items-center justify-center rounded border border-border bg-background">
                   {checked && <Check className="h-3 w-3 text-primary" />}
@@ -470,7 +470,7 @@ const RolesSection = () => {
                               <button
                                 key={r.value}
                                 onClick={() => toggleDraftRole(p.id, r.value as AppRole)}
-                                className={cnRow(checked, false)}
+                                className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-accent ${checked ? "bg-accent/50" : ""}`}
                               >
                                 <span className="flex h-4 w-4 items-center justify-center rounded border border-border bg-background">
                                   {checked && <Check className="h-3 w-3 text-primary" />}
