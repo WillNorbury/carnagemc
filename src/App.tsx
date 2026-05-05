@@ -12,6 +12,9 @@ import News from "./pages/News.tsx";
 import NewsArticle from "./pages/NewsArticle.tsx";
 import Staff from "./pages/Staff.tsx";
 import Vote from "./pages/Vote.tsx";
+import Community from "./pages/Community.tsx";
+import Rules from "./pages/Rules.tsx";
+import Support from "./pages/Support.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -32,6 +35,9 @@ const App = () => (
             <Route path="/news/:slug" element={<NewsArticle />} />
             <Route path="/staff" element={<Staff />} />
             <Route path="/vote" element={<Vote />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/rules" element={<Rules />} />
+            <Route path="/support" element={<Support />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
