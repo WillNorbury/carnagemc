@@ -10,8 +10,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ServerStatusWidget from "@/components/site/ServerStatusWidget";
-import { LifeBuoy, MessageCircle, Mail, Send, BookOpen, Wallet, KeyRound, Wrench } from "lucide-react";
+import { LifeBuoy, MessageCircle, Mail, Send, BookOpen, Wallet, KeyRound, Wrench, Ticket as TicketIcon } from "lucide-react";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 const FAQS = [
   { q: "How do I link my Minecraft account?", a: "Run /link in-game to receive a one-time code, then use it on the website's profile page to bind your accounts." },
@@ -71,8 +72,26 @@ const Support = () => {
 
 
           {/* Quick contact tiles */}
-          <section className="grid md:grid-cols-2 gap-4">
-            <Card className="p-7 border-primary/30 hover-lift hover-glow">
+          <section className="grid md:grid-cols-3 gap-4">
+            <Card className="p-7 border-primary/40 hover-lift hover-glow relative overflow-hidden">
+              <div className="absolute inset-0 opacity-10" style={{ background: "var(--gradient-fire)" }} />
+              <div className="relative">
+                <div className="flex items-center gap-4 mb-3">
+                  <div className="h-12 w-12 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
+                    <TicketIcon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-display font-bold text-lg">Submit a Ticket</h3>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Trackable + private</p>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">Open a support ticket and chat directly with our staff. Track every reply.</p>
+                <Button asChild className="w-full glow">
+                  <Link to="/tickets">Open Tickets</Link>
+                </Button>
+              </div>
+            </Card>
+            <Card className="p-7 border-border hover-lift hover-glow">
               <div className="flex items-center gap-4 mb-3">
                 <div className="h-12 w-12 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
                   <MessageCircle className="h-5 w-5" />
