@@ -68,6 +68,27 @@ const Index = () => {
     return () => clearTimeout(t);
   }, []);
 
+  // Fetch live Discord member count from invite
+  useEffect(() => {
+    const inviteUrl: string = content.server?.discord ?? "";
+    // Try to extract a discord invite code from the configured URL
+    const m = inviteUrl.match(/discord\.gg\/([a-zA-Z0-9-]+)/) ?? inviteUrl.match(/discord\.com\/invite\/([a-zA-Z0-9-]+)/);
+    const codes = m ? [m[1]] : ["zyphoramc", "zyphora"];
+    (async () => {
+      for (const code of codes) {
+        try {
+          const r = await fetch(`https://discord.com/api/v10/invites/${code}?with_counts=true`);
+          if (!r.ok) continue;
+          const j = await r.json();
+          if (typeof j.approximate_member_count === "number") {
+            setDiscordMembers(j.approximate_member_count);
+            return;
+          }
+        } catch {}
+      }
+    })();
+  }, [content.server?.discord]);
+
   const ip = content.server?.ip ?? "play.zyphoramc.net";
 
   const [alert, setAlert] = useState<{ type: "online" | "offline"; message: string } | null>(null);
