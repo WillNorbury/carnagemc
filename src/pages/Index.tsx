@@ -10,6 +10,7 @@ import Reviews from "@/components/site/Reviews";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { Copy, Users, Server, MessageCircle, Shield, Coins, Heart, X, CheckCircle2, AlertCircle, Swords, Sparkles, Gift, PartyPopper, Zap, Crown, Vote as VoteIcon, ExternalLink, Star, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
