@@ -2,7 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import logo from "@/assets/zyphora-logo.png";
-import { LogIn, Shield, LogOut, Menu, X } from "lucide-react";
+import { LogIn, Shield, LogOut, Menu, X, LifeBuoy } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const links = [
@@ -58,6 +58,11 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          {user && (
+            <Button variant="ghost" size="sm" onClick={() => nav("/tickets")} className="hidden md:inline-flex">
+              <LifeBuoy className="h-4 w-4 mr-1" /> Tickets
+            </Button>
+          )}
           {isAdmin && (
             <Button variant="ghost" size="sm" onClick={() => nav("/admin")} className="hidden md:inline-flex">
               <Shield className="h-4 w-4 mr-1" /> Admin

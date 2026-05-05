@@ -158,6 +158,77 @@ export type Database = {
         }
         Relationships: []
       }
+      support_ticket_messages: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          is_staff: boolean
+          ticket_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          is_staff?: boolean
+          ticket_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          is_staff?: boolean
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          body: string
+          category: string | null
+          created_at: string
+          id: string
+          priority: Database["public"]["Enums"]["ticket_priority"]
+          status: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          priority?: Database["public"]["Enums"]["ticket_priority"]
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          priority?: Database["public"]["Enums"]["ticket_priority"]
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -184,6 +255,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_ticket: { Args: { _ticket_id: string }; Returns: boolean }
       check_is_admin_logged: {
         Args: { _context?: string; _user_agent?: string }
         Returns: boolean
@@ -216,6 +288,8 @@ export type Database = {
         | "vip"
         | "booster"
         | "default"
+      ticket_priority: "low" | "normal" | "high" | "urgent"
+      ticket_status: "open" | "in_progress" | "waiting_user" | "closed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -363,6 +437,8 @@ export const Constants = {
         "booster",
         "default",
       ],
+      ticket_priority: ["low", "normal", "high", "urgent"],
+      ticket_status: ["open", "in_progress", "waiting_user", "closed"],
     },
   },
 } as const

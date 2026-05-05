@@ -15,6 +15,7 @@ import Vote from "./pages/Vote.tsx";
 import Community from "./pages/Community.tsx";
 import Rules from "./pages/Rules.tsx";
 import Support from "./pages/Support.tsx";
+import Tickets from "./pages/Tickets.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/community" element={<Community />} />
             <Route path="/rules" element={<Rules />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/tickets" element={<Tickets />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
