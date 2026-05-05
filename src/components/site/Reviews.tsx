@@ -157,8 +157,39 @@ const Reviews = () => {
 
   const showForm = !myReview || editing;
 
+  const avg = reviews.length
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    : 0;
+
   return (
     <div className="space-y-6">
+      {/* Average rating summary */}
+      {reviews.length > 0 && (
+        <Card className="p-6 border-border/60 flex items-center justify-between gap-6 flex-wrap">
+          <div className="flex items-center gap-4">
+            <div className="font-display text-5xl font-bold text-gradient leading-none">
+              {avg.toFixed(1)}
+            </div>
+            <div>
+              <div className="flex gap-1 text-primary mb-1">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <Star
+                    key={n}
+                    className={`h-5 w-5 ${n <= Math.round(avg) ? "fill-current" : "opacity-30"}`}
+                  />
+                ))}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Based on {reviews.length} review{reviews.length === 1 ? "" : "s"}
+              </div>
+            </div>
+          </div>
+          <div className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+            Community rating
+          </div>
+        </Card>
+      )}
+
       {/* Submission card */}
       <Card className="p-6 border-border/60">
         {!user ? (
