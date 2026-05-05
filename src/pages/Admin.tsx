@@ -225,7 +225,11 @@ const RolesSection = () => {
     if (rolesFor(uid).some((r) => r.role === role)) return toast.error("User already has that role");
     const { error } = await supabase.from("user_roles").insert({ user_id: uid, role });
     if (error) return toast.error(error.message);
-    setPending({ ...pending, [uid]: undefined as any });
+    setPending((prev) => {
+      const next = { ...prev };
+      delete next[uid];
+      return next;
+    });
     toast.success(`Assigned ${roleLabel(role)}`);
     load();
   };
