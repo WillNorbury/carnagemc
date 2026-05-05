@@ -1,49 +1,141 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
+import Particles from "@/components/site/Particles";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Gift } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { ExternalLink, Gift, CheckCircle2, Crown, Sparkles, Coins } from "lucide-react";
+import { toast } from "sonner";
 
 const SITES = [
-  { name: "MinecraftServers.org", url: "https://minecraftservers.org/", reward: "1 vote crate key" },
-  { name: "MinecraftMP", url: "https://minecraft-mp.com/", reward: "1 vote crate key" },
-  { name: "PlanetMinecraft", url: "https://www.planetminecraft.com/", reward: "1 vote crate key" },
-  { name: "TopG", url: "https://topg.org/minecraft-servers/", reward: "1 vote crate key" },
+  { id: "mcservers", name: "MinecraftServers.org", url: "https://minecraftservers.org/", reward: "1 Vote Crate Key" },
+  { id: "mcmp", name: "MinecraftMP", url: "https://minecraft-mp.com/", reward: "1 Vote Crate Key" },
+  { id: "planetmc", name: "PlanetMinecraft", url: "https://www.planetminecraft.com/", reward: "1 Vote Crate Key" },
+  { id: "topg", name: "TopG", url: "https://topg.org/minecraft-servers/", reward: "1 Vote Crate Key" },
 ];
 
+const REWARDS = [
+  { icon: Gift, title: "Daily Vote Key", desc: "1 crate key per site, every 24h." },
+  { icon: Coins, title: "+250 Coins", desc: "Bonus coins each time you complete all sites in a day." },
+  { icon: Sparkles, title: "Streak Multiplier", desc: "7+ day streak doubles your crate rewards." },
+  { icon: Crown, title: "Monthly Top Voter", desc: "Win a custom rank, cosmetics, and a hall-of-fame slot." },
+];
+
+const STORAGE_KEY = "zyphora_votes";
+
 const Vote = () => {
+  const [voted, setVoted] = useState<Record<string, number>>({});
+
   useEffect(() => {
     document.title = "Vote — ZyphoraMC";
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) setVoted(JSON.parse(raw));
+    } catch {}
   }, []);
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <main className="container pt-28 pb-16">
-        <header className="mb-10 text-center max-w-2xl mx-auto">
-          <Gift className="h-10 w-10 mx-auto text-primary mb-3" />
-          <h1 className="text-4xl font-bold tracking-tight">Vote for ZyphoraMC</h1>
-          <p className="text-muted-foreground mt-2">
-            Vote daily on the sites below to support the server and earn in-game rewards.
-            Run <code className="text-foreground">/vote</code> in-game to claim.
-          </p>
-        </header>
+  const isFresh = (ts?: number) => ts && Date.now() - ts < 24 * 60 * 60 * 1000;
+  const completed = SITES.filter((s) => isFresh(voted[s.id])).length;
+  const progress = (completed / SITES.length) * 100;
 
-        <div className="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto">
-          {SITES.map((s) => (
-            <Card key={s.name} className="p-5 flex items-center justify-between gap-4">
+  const handleVote = (id: string, url: string) => {
+    const next = { ...voted, [id]: Date.now() };
+    setVoted(next);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    window.open(url, "_blank", "noopener,noreferrer");
+    toast.success("Vote registered! Run /vote in-game to claim your reward.");
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navbar />
+      <main className="flex-1">
+        {/* Hero */}
+        <section className="relative pt-28 pb-14 overflow-hidden">
+          <Particles count={25} />
+          <div className="absolute inset-0 bg-grid opacity-[0.08]" />
+          <div className="container relative text-center">
+            <Badge variant="secondary" className="mb-4 text-primary border-primary/40"><Gift className="h-3 w-3 mr-1" /> Daily Rewards</Badge>
+            <h1 className="font-display text-4xl md:text-6xl font-black mb-3">Vote for <span className="text-gradient">ZyphoraMC</span></h1>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Vote daily on each site to earn crate keys, coins, and exclusive rewards. Run <code className="text-foreground font-mono px-1.5 py-0.5 rounded bg-secondary">/vote</code> in-game to claim.
+            </p>
+          </div>
+        </section>
+
+        <div className="container pb-16 space-y-12">
+          {/* Progress tracker */}
+          <Card className="p-7 border-primary/30 max-w-3xl mx-auto">
+            <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="font-semibold">{s.name}</p>
-                <p className="text-xs text-muted-foreground">Reward: {s.reward}</p>
+                <div className="text-xs uppercase tracking-[0.25em] text-primary mb-1">Today's Progress</div>
+                <div className="font-display text-2xl font-bold">{completed} / {SITES.length} <span className="text-muted-foreground text-base">sites voted</span></div>
               </div>
-              <Button asChild size="sm">
-                <a href={s.url} target="_blank" rel="noreferrer noopener">
-                  Vote <ExternalLink className="h-4 w-4 ml-1" />
-                </a>
-              </Button>
-            </Card>
-          ))}
+              <div className="font-display text-3xl font-black text-gradient">{Math.round(progress)}%</div>
+            </div>
+            <Progress value={progress} className="h-3" />
+            {completed === SITES.length && (
+              <div className="mt-4 flex items-center gap-2 text-sm text-primary">
+                <CheckCircle2 className="h-4 w-4" />
+                All votes complete! Claim your bonus +250 coins in-game.
+              </div>
+            )}
+          </Card>
+
+          {/* Vote sites */}
+          <section>
+            <div className="text-center mb-6">
+              <div className="text-xs uppercase tracking-[0.3em] text-primary mb-2">Vote Sites</div>
+              <h2 className="font-display text-3xl font-bold">Cast Your Daily Votes</h2>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+              {SITES.map((s) => {
+                const done = isFresh(voted[s.id]);
+                return (
+                  <Card key={s.id} className={`p-5 flex items-center justify-between gap-4 hover-lift hover-glow ${done ? "border-primary/50" : "border-border/60"}`}>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 ${done ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"}`}>
+                        {done ? <CheckCircle2 className="h-5 w-5" /> : <Gift className="h-5 w-5" />}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-display font-bold truncate">{s.name}</p>
+                        <p className="text-xs text-muted-foreground">Reward: {s.reward}</p>
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant={done ? "outline" : "default"}
+                      className={done ? "" : "glow"}
+                      onClick={() => handleVote(s.id, s.url)}
+                    >
+                      {done ? "Voted" : "Vote"} <ExternalLink className="h-4 w-4 ml-1" />
+                    </Button>
+                  </Card>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Rewards */}
+          <section>
+            <div className="text-center mb-6">
+              <div className="text-xs uppercase tracking-[0.3em] text-primary mb-2">What You Earn</div>
+              <h2 className="font-display text-3xl font-bold">Vote Rewards</h2>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {REWARDS.map((r) => (
+                <Card key={r.title} className="p-5 hover-lift hover-glow text-center">
+                  <div className="h-12 w-12 mx-auto rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 text-primary flex items-center justify-center mb-3">
+                    <r.icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="font-display font-bold mb-1">{r.title}</h3>
+                  <p className="text-xs text-muted-foreground">{r.desc}</p>
+                </Card>
+              ))}
+            </div>
+          </section>
         </div>
       </main>
       <Footer />
