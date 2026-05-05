@@ -225,7 +225,11 @@ const RolesSection = () => {
     if (rolesFor(uid).some((r) => r.role === role)) return toast.error("User already has that role");
     const { error } = await supabase.from("user_roles").insert({ user_id: uid, role });
     if (error) return toast.error(error.message);
-    setPending({ ...pending, [uid]: undefined as any });
+    setPending((prev) => {
+      const next = { ...prev };
+      delete next[uid];
+      return next;
+    });
     toast.success(`Assigned ${roleLabel(role)}`);
     load();
   };
@@ -249,23 +253,43 @@ const RolesSection = () => {
           <Input placeholder="Search by name or ID" value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-xs" />
         </div>
         <div className="space-y-3">
+          {filtered.length === 0 && (
+            <div className="text-sm text-muted-foreground p-6 text-center">
+              No members match your search.
+            </div>
+          )}
           {filtered.map((p) => {
             const ur = rolesFor(p.id);
+            const taken = new Set(ur.map((r) => r.role));
+            const available = ALL_ROLES.filter((r) => !taken.has(r.value as AppRole));
             return (
               <div key={p.id} className="p-4 rounded-lg bg-secondary/40 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">{p.display_name ?? "Unnamed"}</div>
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <div className="min-w-0">
+                    <div className="font-medium truncate">{p.display_name ?? "Unnamed"}</div>
                     <div className="text-xs text-muted-foreground font-mono">{p.id.slice(0, 8)}</div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Select value={pending[p.id] ?? ""} onValueChange={(v) => setPending({ ...pending, [p.id]: v as AppRole })}>
-                      <SelectTrigger className="w-[180px]"><SelectValue placeholder="Pick role..." /></SelectTrigger>
+                    <Select
+                      value={pending[p.id] ?? undefined}
+                      onValueChange={(v) => setPending({ ...pending, [p.id]: v as AppRole })}
+                    >
+                      <SelectTrigger className="w-[200px]">
+                        <SelectValue placeholder={available.length ? "Pick role..." : "All roles assigned"} />
+                      </SelectTrigger>
                       <SelectContent>
-                        {ALL_ROLES.map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
+                        {available.length === 0 ? (
+                          <div className="px-2 py-1.5 text-xs text-muted-foreground">No more roles available</div>
+                        ) : (
+                          available.map((r) => (
+                            <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
-                    <Button size="sm" onClick={() => addRole(p.id)}><Plus className="h-4 w-4 mr-1" />Add</Button>
+                    <Button size="sm" onClick={() => addRole(p.id)} disabled={!pending[p.id]}>
+                      <Plus className="h-4 w-4 mr-1" />Add
+                    </Button>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -273,7 +297,9 @@ const RolesSection = () => {
                   {ur.map((r) => (
                     <Badge key={r.id} variant="outline" className="gap-1">
                       {roleLabel(r.role)}
-                      <button onClick={() => removeRole(r.id)} className="ml-1 hover:text-destructive"><X className="h-3 w-3" /></button>
+                      <button onClick={() => removeRole(r.id)} className="ml-1 hover:text-destructive" aria-label={`Remove ${roleLabel(r.role)}`}>
+                        <X className="h-3 w-3" />
+                      </button>
                     </Badge>
                   ))}
                 </div>
