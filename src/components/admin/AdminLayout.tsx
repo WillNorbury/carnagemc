@@ -7,11 +7,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
-  PanelLeft, LogOut, Shield, Bot, Code,
+  PanelLeft, LogOut, Shield, Bot, Code, Ticket,
 } from "lucide-react";
 
 export type AdminSection =
-  | "dashboard" | "users" | "roles" | "news" | "content" | "status" | "logs"
+  | "dashboard" | "users" | "roles" | "news" | "content" | "status" | "logs" | "tickets"
   | "bot-dashboard" | "bot-management";
 
 type NavItem =
@@ -25,6 +25,7 @@ const items: NavItem[] = [
   { kind: "link", id: "news", icon: Newspaper, label: "News" },
   { kind: "link", id: "content", icon: FileText, label: "Site Content" },
   { kind: "link", id: "status", icon: Server, label: "Server Status" },
+  { kind: "link", id: "tickets", icon: Ticket, label: "Support Tickets" },
   { kind: "link", id: "logs", icon: ScrollText, label: "Admin Logs" },
   { kind: "section", title: "Discord Bot", icon: Bot },
   { kind: "link", id: "bot-dashboard", icon: LayoutDashboard, label: "Bot Dashboard" },
