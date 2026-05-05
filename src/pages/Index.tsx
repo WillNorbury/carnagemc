@@ -1,15 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
+import Particles from "@/components/site/Particles";
+import MouseTrail from "@/components/site/MouseTrail";
+import AnimatedCounter from "@/components/site/AnimatedCounter";
+import Countdown from "@/components/site/Countdown";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { supabase } from "@/integrations/supabase/client";
-import island from "@/assets/zyphora-island.png";
-import bg from "@/assets/zyphora-bg.png";
-import { Copy, Users, Server, MessageCircle, Shield, Coins, Heart, X, CheckCircle2, AlertCircle } from "lucide-react";
+import { Copy, Users, Server, MessageCircle, Shield, Coins, Heart, X, CheckCircle2, AlertCircle, Swords, Sparkles, Gift, PartyPopper, Zap, Crown, Vote as VoteIcon, ExternalLink, Star, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 type News = { id: string; title: string; excerpt: string | null; slug: string; created_at: string };
@@ -27,17 +28,21 @@ const formatUptime = (ms: number) => {
   return `${m}m`;
 };
 
-const RULES = [
-  { icon: Shield, title: "Fair Play", desc: "Hacks, macros, and x-ray are strictly forbidden. Suspicious activity is reviewed via logs." },
-  { icon: Heart, title: "Community Respect", desc: "Hate speech, toxicity and discrimination result in permanent bans." },
-  { icon: Coins, title: "Economy Balance", desc: "Market manipulation and dupes are tracked. Offending accounts are reset." },
+const FEATURES = [
+  { icon: Swords, title: "Lifesteal PvP", desc: "Kill or be killed. Steal hearts from your enemies, lose yours when you die. Permadeath at zero." },
+  { icon: Coins, title: "Economy System", desc: "A player-driven market. Trade, auction, and build empires with our balanced economy." },
+  { icon: Sparkles, title: "Custom Enchants", desc: "Over 80 unique enchantments crafted to give you the edge in combat and survival." },
+  { icon: Gift, title: "Daily Rewards", desc: "Login streaks, vote crates, and seasonal bundles you can claim every single day." },
+  { icon: PartyPopper, title: "Events & Giveaways", desc: "Weekly tournaments, boss raids, and giveaways with real and in-game prizes." },
+  { icon: Zap, title: "Lag-Free Gameplay", desc: "Dedicated hardware, optimized Paper builds, and 99.9% uptime. Smooth at every TPS." },
+  { icon: Heart, title: "Friendly Community", desc: "An active Discord, dedicated staff, and zero tolerance for toxicity. You belong here." },
+  { icon: Crown, title: "Ranked Seasons", desc: "Climb the leaderboard, earn exclusive cosmetics, and lock your name in our hall of fame." },
 ];
 
-const FAQS = [
-  { q: "What version & mods does the server run?", a: "Paper 1.21.x with custom optimizations and ItemsAdder/Oraxen content packs." },
-  { q: "Can I join with a non-premium account?", a: "Yes. ZyphoraID lets cracked players join securely. 2FA is mandatory for non-premium accounts." },
-  { q: "Is the server stable? Any lag?", a: "We guarantee 99.9% uptime with a public TPS dashboard. All lag spikes are logged and reviewed." },
-  { q: "How are rules updated?", a: "Rules are reviewed at least once a year. Changes are posted on this site and announced in Discord." },
+const TESTIMONIALS = [
+  { name: "ShadowKnight_42", role: "Top 10 Lifesteal", text: "Best Lifesteal server I've played in years. The economy is balanced, the PvP feels weighty, and staff actually care." },
+  { name: "EmberQueen", role: "Faction Leader", text: "Finally a Minecraft server that doesn't pay-to-win. Pure skill, deep mechanics, and a community that respects the grind." },
+  { name: "CraftLord99", role: "Veteran Player", text: "Smoothest TPS I've seen. Custom enchants are insane. I've sunk 400 hours and barely scratched the surface." },
 ];
 
 const Index = () => {
@@ -47,6 +52,7 @@ const Index = () => {
   const [content, setContent] = useState<SiteContent>({});
   const [uptimeStart, setUptimeStart] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
+  const [popupOpen, setPopupOpen] = useState(false);
 
   useEffect(() => {
     supabase.from("news").select("id,title,excerpt,slug,created_at").eq("published", true).order("created_at", { ascending: false }).limit(3).then(({ data }) => setNews(data ?? []));
@@ -55,11 +61,15 @@ const Index = () => {
       (data ?? []).forEach((r: any) => (map[r.key] = r.value));
       setContent(map);
     });
+    const t = setTimeout(() => {
+      const dismissed = sessionStorage.getItem("zyphora_popup_dismissed");
+      if (!dismissed) setPopupOpen(true);
+    }, 1800);
+    return () => clearTimeout(t);
   }, []);
 
   const ip = content.server?.ip ?? "play.zyphoramc.net";
 
-  // Live Minecraft server status via mcsrvstat.us (no key required)
   const [alert, setAlert] = useState<{ type: "online" | "offline"; message: string } | null>(null);
   const prevOnlineRef = useRef<boolean | undefined>(undefined);
 
@@ -78,12 +88,8 @@ const Index = () => {
           version: j.version ?? null,
         };
         setStatus(s);
-        if (j.online) {
-          setUptimeStart((prev) => prev ?? Date.now());
-        } else {
-          setUptimeStart(null);
-        }
-        // Detect transitions
+        if (j.online) setUptimeStart((prev) => prev ?? Date.now());
+        else setUptimeStart(null);
         const prev = prevOnlineRef.current;
         if (prev !== undefined && prev !== s.online) {
           const a = content.alerts ?? {};
@@ -110,19 +116,61 @@ const Index = () => {
 
   const uptime = uptimeStart ? formatUptime(now - uptimeStart) : "—";
 
-  const heroTitle = content.hero?.title ?? "Join the Adventure";
-  const heroSub = content.hero?.subtitle ?? "Explore, build, and forge legends in Zyphora's unique survival world.";
-  const heroBadge = content.hero?.badge ?? "Minecraft 1.21.x • Paper";
+  const eventTarget = useMemo(() => {
+    const cfg = content.event?.targetMs;
+    if (cfg && typeof cfg === "number") return cfg;
+    // default: next Saturday 8pm local
+    const d = new Date();
+    const day = d.getDay();
+    const add = (6 - day + 7) % 7 || 7;
+    d.setDate(d.getDate() + add);
+    d.setHours(20, 0, 0, 0);
+    return d.getTime();
+  }, [content.event]);
+
+  const eventLabel = content.event?.label ?? "Next Event Reset";
+
+  const heroTitle = "Welcome to ZyphoraMC";
+  const heroSub = "The ultimate Minecraft Lifesteal & Economy experience.";
 
   const copyIp = () => { navigator.clipboard.writeText(ip); toast.success("Server IP copied"); };
+  const dismissPopup = () => { setPopupOpen(false); sessionStorage.setItem("zyphora_popup_dismissed", "1"); };
 
   return (
     <div className="min-h-screen flex flex-col">
+      <MouseTrail />
       <Navbar />
 
+      {/* Popup announcement */}
+      {popupOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/70 backdrop-blur-sm animate-in fade-in duration-300">
+          <Card className="relative max-w-md w-full p-7 border-primary/40 shadow-elegant overflow-hidden">
+            <div className="absolute inset-0 opacity-20" style={{ background: "var(--gradient-fire)" }} />
+            <button onClick={dismissPopup} className="absolute top-3 right-3 p-1 rounded hover:bg-secondary transition" aria-label="Close">
+              <X className="h-4 w-4" />
+            </button>
+            <div className="relative">
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/15 text-primary mb-4 animate-pulse-glow">
+                <PartyPopper className="h-5 w-5" />
+              </div>
+              <h3 className="font-display text-xl font-bold mb-2">Season 3 Launch — LIVE</h3>
+              <p className="text-sm text-muted-foreground mb-5">
+                New map, fresh economy, and exclusive launch crates for early players. Join now and claim your founder's reward.
+              </p>
+              <div className="flex gap-2">
+                <Button onClick={() => { copyIp(); dismissPopup(); }} className="flex-1 glow">
+                  <Copy className="h-4 w-4 mr-2" /> Copy IP
+                </Button>
+                <Button variant="outline" onClick={dismissPopup}>Later</Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+
       {alert && (
-        <div className={`fixed top-16 inset-x-0 z-40 px-4 animate-in slide-in-from-top duration-300`}>
-          <div className={`container max-w-3xl flex items-center gap-3 p-4 rounded-lg border backdrop-blur-xl shadow-elegant ${alert.type === "online" ? "bg-primary/15 border-primary/40 text-primary-foreground" : "bg-destructive/15 border-destructive/40"}`}>
+        <div className="fixed top-16 inset-x-0 z-40 px-4 animate-in slide-in-from-top duration-300">
+          <div className={`container max-w-3xl flex items-center gap-3 p-4 rounded-lg border backdrop-blur-xl shadow-elegant ${alert.type === "online" ? "bg-primary/15 border-primary/40" : "bg-destructive/15 border-destructive/40"}`}>
             {alert.type === "online" ? <CheckCircle2 className="h-5 w-5 text-primary shrink-0" /> : <AlertCircle className="h-5 w-5 text-destructive shrink-0" />}
             <p className="flex-1 text-sm font-medium">{alert.message}</p>
             <button onClick={() => setAlert(null)} className="opacity-70 hover:opacity-100 transition" aria-label="Dismiss">
@@ -133,140 +181,181 @@ const Index = () => {
       )}
 
       {/* Hero */}
-      <section className="relative pt-24 pb-20 overflow-hidden">
-        <img src={bg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-25" />
+      <section className="relative min-h-[92vh] flex items-center overflow-hidden pt-16">
         <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
-        <div className="absolute inset-0 bg-grid opacity-[0.07]" />
-        <div className="container relative grid lg:grid-cols-2 gap-10 items-center py-16">
-          <div>
-            <Badge variant="secondary" className="mb-5 text-primary border-primary/30">{heroBadge}</Badge>
-            <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-[1.05]">
-              {heroTitle.split(" ").slice(0, -1).join(" ")} <span className="text-gradient">{heroTitle.split(" ").slice(-1)[0]}</span>
-            </h1>
-            <p className="text-lg text-muted-foreground mb-8 max-w-xl">{heroSub}</p>
-            <div className="flex flex-wrap gap-3">
-              <Button size="lg" onClick={copyIp} className="glow">
-                <Copy className="h-4 w-4 mr-2" /> Copy Server IP
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <a href={content.server?.discord ?? "https://discord.zyphoramc.net"} target="_blank" rel="noreferrer">
-                  <MessageCircle className="h-4 w-4 mr-2" /> Join Discord
-                </a>
-              </Button>
-            </div>
+        <div className="absolute inset-0 bg-grid opacity-[0.15]" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background to-transparent" />
+        <Particles count={40} />
+        {/* glowing orbs */}
+        <div className="absolute -top-20 -left-20 h-96 w-96 rounded-full bg-primary/20 blur-[120px] animate-float" />
+        <div className="absolute -bottom-20 -right-20 h-96 w-96 rounded-full bg-accent/20 blur-[120px] animate-float" style={{ animationDelay: "2s" }} />
+
+        <div className="container relative z-10 text-center py-20">
+          <Badge variant="secondary" className="mb-6 text-primary border-primary/40 px-4 py-1.5 text-xs uppercase tracking-[0.2em] backdrop-blur-md">
+            <span className="h-2 w-2 rounded-full bg-primary animate-pulse mr-2" />
+            Season 3 — Now Live
+          </Badge>
+          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-[1.05]">
+            Welcome to <span className="text-gradient text-glow">ZyphoraMC</span>
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
+            {heroSub} Forge alliances. Steal hearts. Build legacies.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3 mb-12">
+            <Button size="lg" onClick={copyIp} className="glow font-display uppercase tracking-wider px-7 animate-pulse-glow">
+              <Server className="h-4 w-4 mr-2" /> Join Server
+            </Button>
+            <Button size="lg" variant="outline" asChild className="font-display uppercase tracking-wider px-7 border-primary/40 hover:border-primary hover:text-primary">
+              <a href={content.server?.discord ?? "https://discord.zyphoramc.net"} target="_blank" rel="noreferrer">
+                <MessageCircle className="h-4 w-4 mr-2" /> Discord
+              </a>
+            </Button>
+            <Button size="lg" variant="outline" onClick={() => nav("/vote")} className="font-display uppercase tracking-wider px-7 border-primary/40 hover:border-primary hover:text-primary">
+              <VoteIcon className="h-4 w-4 mr-2" /> Vote
+            </Button>
           </div>
-          <div className="relative">
-            <div className="absolute -inset-10 bg-primary/20 blur-3xl rounded-full" />
-            <Card className="relative p-8 bg-card/80 backdrop-blur-xl border-primary/20 shadow-elegant">
-              <img src={island} alt="Zyphora island" className="w-full h-56 object-contain mb-4" />
-              <div className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Server IP</div>
-              <button onClick={copyIp} className="w-full font-mono text-2xl font-bold py-3 rounded-lg bg-secondary hover:bg-secondary/70 transition border border-border">
-                {ip}
-              </button>
-              <div className="grid grid-cols-2 gap-3 mt-5 text-center">
-                <Stat icon={<Users className="h-4 w-4" />} label="Players" value={`${status?.players_online ?? 0}/${status?.players_max ?? 0}`} />
-                <Stat icon={<div className={`h-2 w-2 rounded-full ${status?.online ? "bg-primary animate-pulse" : "bg-destructive"}`} />} label="Status" value={status?.online ? "Live" : "Down"} />
-                <Stat icon={<Server className="h-4 w-4" />} label="Uptime" value={uptime} />
-                <Stat icon={<MessageCircle className="h-4 w-4" />} label="Version" value={status?.version ?? "—"} />
+
+          {/* IP card */}
+          <div className="max-w-lg mx-auto">
+            <button onClick={copyIp} className="group w-full relative">
+              <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-primary to-accent opacity-60 group-hover:opacity-100 blur transition" />
+              <div className="relative flex items-center justify-between gap-3 px-6 py-4 rounded-xl bg-card border border-primary/30">
+                <div className="text-left">
+                  <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Server IP</div>
+                  <div className="font-mono text-lg md:text-2xl font-bold">{ip}</div>
+                </div>
+                <div className="flex items-center gap-2 text-primary group-hover:scale-110 transition">
+                  <Copy className="h-5 w-5" />
+                  <span className="text-xs uppercase tracking-wider hidden sm:inline">Copy</span>
+                </div>
               </div>
-            </Card>
+            </button>
+            <div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <span className={`h-2 w-2 rounded-full ${status?.online ? "bg-primary animate-pulse" : "bg-destructive"}`} />
+              {status?.online ? `${status.players_online} players online` : "Server offline"}
+              {status?.version && <span className="opacity-60">• {status.version}</span>}
+            </div>
           </div>
         </div>
       </section>
 
-      <main className="container space-y-24 pb-12">
+      {/* Server stats counters */}
+      <section className="relative py-20 border-y border-primary/10">
+        <div className="absolute inset-0 bg-grid opacity-[0.07]" />
+        <div className="container relative grid grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            { label: "Online Players", value: status?.players_online ?? 0, icon: Users, suffix: "" },
+            { label: "Discord Members", value: 12480, icon: MessageCircle, suffix: "" },
+            { label: "Total Votes", value: 86420, icon: Star, suffix: "" },
+            { label: "Uptime", value: 99.9, icon: Zap, suffix: "%", decimals: 1 },
+          ].map((s) => (
+            <Card key={s.label} className="p-6 text-center hover-lift hover-glow border-primary/10 bg-card/60 backdrop-blur">
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary mb-3">
+                <s.icon className="h-5 w-5" />
+              </div>
+              <div className="font-display text-3xl md:text-4xl font-bold text-gradient">
+                <AnimatedCounter to={s.value} suffix={s.suffix} decimals={s.decimals ?? 0} />
+              </div>
+              <div className="text-xs uppercase tracking-widest text-muted-foreground mt-1">{s.label}</div>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <main className="container space-y-28 py-24">
+        {/* Features */}
+        <section id="features">
+          <SectionHead eyebrow="Features" title="Built for Legends" sub="Every system, every detail — engineered to make your gameplay matter." />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {FEATURES.map((f) => (
+              <Card key={f.title} className="group relative p-6 hover-lift hover-glow border-border/60 overflow-hidden">
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition" style={{ background: "linear-gradient(135deg, hsl(var(--primary)/0.06), transparent)" }} />
+                <div className="relative">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 text-primary flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-[0_0_20px_hsl(var(--primary)/0.5)] transition">
+                    <f.icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="font-display font-bold text-lg mb-2">{f.title}</h3>
+                  <p className="text-sm text-muted-foreground">{f.desc}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* Countdown */}
+        <section>
+          <Card className="relative p-10 md:p-14 overflow-hidden border-primary/30 text-center scan-line">
+            <div className="absolute inset-0 opacity-25" style={{ background: "var(--gradient-fire)" }} />
+            <div className="absolute inset-0 bg-grid opacity-[0.1]" />
+            <div className="relative">
+              <Badge variant="secondary" className="mb-4 text-primary border-primary/40">Mark your calendar</Badge>
+              <h2 className="font-display text-3xl md:text-5xl font-bold mb-2">Don't Miss the Action</h2>
+              <p className="text-muted-foreground mb-8">Big things drop weekly. Be here when the timer hits zero.</p>
+              <Countdown target={eventTarget} label={eventLabel} />
+            </div>
+          </Card>
+        </section>
+
         {/* News */}
-        <section id="news">
-          <SectionHead eyebrow="Updates" title="Latest News" sub="Patch notes, events and community announcements" />
-          {news.length === 0 ? (
-            <Card className="p-10 text-center text-muted-foreground">No news yet — admins can publish from the dashboard.</Card>
-          ) : (
+        {news.length > 0 && (
+          <section id="news">
+            <SectionHead eyebrow="Updates" title="Latest News" sub="Patch notes, events, and community announcements." />
             <div className="grid md:grid-cols-3 gap-5">
               {news.map((n) => (
-                <Card key={n.id} className="p-6 hover:border-primary/50 transition group cursor-pointer">
-                  <div className="text-xs text-muted-foreground mb-2">{new Date(n.created_at).toLocaleDateString()}</div>
-                  <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition">{n.title}</h3>
+                <Card key={n.id} onClick={() => nav(`/news/${n.slug}`)} className="p-6 hover-lift hover-glow cursor-pointer group">
+                  <div className="text-xs text-muted-foreground mb-2 uppercase tracking-wider">{new Date(n.created_at).toLocaleDateString()}</div>
+                  <h3 className="font-display font-bold text-lg mb-2 group-hover:text-primary transition">{n.title}</h3>
                   <p className="text-sm text-muted-foreground line-clamp-3">{n.excerpt}</p>
+                  <div className="mt-4 inline-flex items-center text-sm text-primary opacity-0 group-hover:opacity-100 transition">
+                    Read more <ArrowRight className="h-3 w-3 ml-1" />
+                  </div>
                 </Card>
               ))}
             </div>
-          )}
-        </section>
+          </section>
+        )}
 
-        {/* Rules */}
-        <section id="rules">
-          <SectionHead eyebrow="Rules" title="Server Rules" sub="Core principles that keep our community thriving" />
+        {/* Testimonials */}
+        <section>
+          <SectionHead eyebrow="Reviews" title="What Players Say" sub="Real voices from the ZyphoraMC community." />
           <div className="grid md:grid-cols-3 gap-5">
-            {RULES.map((r) => (
-              <Card key={r.title} className="p-6 hover:border-primary/40 transition">
-                <div className="h-11 w-11 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4">
-                  <r.icon className="h-5 w-5" />
+            {TESTIMONIALS.map((t) => (
+              <Card key={t.name} className="p-6 hover-lift border-border/60 relative">
+                <div className="flex gap-1 mb-3 text-primary">
+                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
                 </div>
-                <h3 className="font-bold text-lg mb-2">{r.title}</h3>
-                <p className="text-sm text-muted-foreground">{r.desc}</p>
+                <p className="text-sm text-muted-foreground italic mb-5">"{t.text}"</p>
+                <div className="flex items-center gap-3 pt-4 border-t border-border/40">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center font-display font-bold text-primary-foreground">
+                    {t.name[0]}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm">{t.name}</div>
+                    <div className="text-xs text-muted-foreground">{t.role}</div>
+                  </div>
+                </div>
               </Card>
             ))}
           </div>
-        </section>
-
-        {/* ToS */}
-        <section id="tos">
-          <SectionHead eyebrow="Legal" title="Terms of Service" sub="Using ZyphoraMC services constitutes acceptance of these terms" />
-          <div className="grid md:grid-cols-2 gap-5">
-            {[
-              ["Service Scope", "Server, web and launcher infrastructure are provided by ZyphoraMC. Reasonable effort is made to maintain service continuity."],
-              ["Account Responsibility", "Account security is the player's responsibility. Contact support for unauthorized access."],
-              ["Payments & Refunds", "Store purchases are digital content. Refund terms comply with applicable consumer protection laws."],
-              ["Sanctions", "Rule violations may result in warnings, temporary or permanent bans. All decisions include transparent reasoning."],
-            ].map(([t, d]) => (
-              <Card key={t} className="p-6">
-                <h3 className="font-bold mb-2">{t}</h3>
-                <p className="text-sm text-muted-foreground">{d}</p>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        {/* Privacy */}
-        <section id="privacy">
-          <SectionHead eyebrow="Privacy" title="Privacy Policy" sub="We take data protection seriously" />
-          <div className="grid md:grid-cols-3 gap-5">
-            {[
-              ["Data Collected", "IP address, in-game stats, store transactions, support records — all stored compliantly."],
-              ["Retention", "Data is encrypted while accounts remain active and anonymized after 12 months of inactivity."],
-              ["Your Rights", "Request access, correction, deletion or portability via privacy@zyphoramc.net."],
-            ].map(([t, d]) => (
-              <Card key={t} className="p-6">
-                <h3 className="font-bold mb-2">{t}</h3>
-                <p className="text-sm text-muted-foreground">{d}</p>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        {/* FAQ */}
-        <section id="faq">
-          <SectionHead eyebrow="Help" title="Frequently Asked Questions" sub="Everything you need to know" />
-          <Card className="p-2 md:p-6">
-            <Accordion type="single" collapsible>
-              {FAQS.map((f, i) => (
-                <AccordionItem key={i} value={`item-${i}`}>
-                  <AccordionTrigger className="text-left">{f.q}</AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </Card>
         </section>
 
         {/* CTA */}
         <section>
-          <Card className="p-12 text-center relative overflow-hidden border-primary/30">
-            <div className="absolute inset-0 opacity-30" style={{ background: "var(--gradient-primary)" }} />
+          <Card className="relative p-12 md:p-16 text-center overflow-hidden border-primary/40">
+            <div className="absolute inset-0 opacity-30" style={{ background: "var(--gradient-fire)" }} />
+            <div className="absolute inset-0 bg-grid opacity-[0.1]" />
+            <Particles count={20} />
             <div className="relative">
-              <h2 className="text-3xl md:text-4xl font-bold mb-3">Ready to play?</h2>
-              <p className="text-muted-foreground mb-6">Create your ZyphoraMC account and join thousands of players.</p>
-              <Button size="lg" onClick={() => nav("/auth")} className="glow">Create account</Button>
+              <h2 className="font-display text-3xl md:text-5xl font-bold mb-3">Ready to <span className="text-gradient">Dominate?</span></h2>
+              <p className="text-muted-foreground mb-7 max-w-xl mx-auto">Thousands of players. One server. Your story starts the moment you log in.</p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <Button size="lg" onClick={copyIp} className="glow font-display uppercase tracking-wider px-7">
+                  <Copy className="h-4 w-4 mr-2" /> Copy Server IP
+                </Button>
+                <Button size="lg" variant="outline" onClick={() => nav("/auth")} className="font-display uppercase tracking-wider px-7 border-primary/40 hover:border-primary">
+                  Create Account
+                </Button>
+              </div>
             </div>
           </Card>
         </section>
@@ -278,18 +367,10 @@ const Index = () => {
 };
 
 const SectionHead = ({ eyebrow, title, sub }: { eyebrow: string; title: string; sub: string }) => (
-  <div className="text-center mb-10">
-    <div className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{eyebrow}</div>
-    <h2 className="text-3xl md:text-4xl font-bold mb-2">{title}</h2>
-    <p className="text-muted-foreground">{sub}</p>
-  </div>
-);
-
-const Stat = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: any }) => (
-  <div className="rounded-lg bg-secondary/50 p-3">
-    <div className="flex items-center justify-center mb-1 text-primary">{icon}</div>
-    <div className="text-lg font-bold">{value}</div>
-    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+  <div className="text-center mb-12">
+    <div className="text-xs uppercase tracking-[0.3em] text-primary mb-3 font-semibold">{eyebrow}</div>
+    <h2 className="font-display text-3xl md:text-5xl font-bold mb-3">{title}</h2>
+    <p className="text-muted-foreground max-w-2xl mx-auto">{sub}</p>
   </div>
 );
 
