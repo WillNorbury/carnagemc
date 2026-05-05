@@ -7,19 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { MessageCircle, Image as ImageIcon, Megaphone, Users, ArrowRight } from "lucide-react";
+import { MessageCircle, Megaphone, Users, ArrowRight } from "lucide-react";
 
 type News = { id: string; title: string; excerpt: string | null; slug: string; created_at: string };
 type Profile = { id: string; display_name: string | null; avatar_url: string | null; mc_username: string | null };
 
-const GALLERY = [
-  "https://images.unsplash.com/photo-1607513746994-51f730a44832?w=600&q=70",
-  "https://images.unsplash.com/photo-1587573089734-09cb69c0f2b4?w=600&q=70",
-  "https://images.unsplash.com/photo-1624559888077-1a1a3e1e615f?w=600&q=70",
-  "https://images.unsplash.com/photo-1606503153255-59d8b8b1c4d7?w=600&q=70",
-  "https://images.unsplash.com/photo-1614680376408-81e91ffe3db7?w=600&q=70",
-  "https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=600&q=70",
-];
 
 const Community = () => {
   const [news, setNews] = useState<News[]>([]);
