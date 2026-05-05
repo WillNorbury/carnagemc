@@ -10,6 +10,7 @@ import Reviews from "@/components/site/Reviews";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { Copy, Users, Server, MessageCircle, Shield, Coins, Heart, X, CheckCircle2, AlertCircle, Swords, Sparkles, Gift, PartyPopper, Zap, Crown, Vote as VoteIcon, ExternalLink, Star, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
@@ -30,14 +31,14 @@ const formatUptime = (ms: number) => {
 };
 
 const FEATURES = [
-  { icon: Swords, title: "Lifesteal PvP", desc: "Kill or be killed. Steal hearts from your enemies, lose yours when you die. Permadeath at zero." },
-  { icon: Coins, title: "Economy System", desc: "A player-driven market. Trade, auction, and build empires with our balanced economy." },
-  { icon: Sparkles, title: "Custom Enchants", desc: "Over 80 unique enchantments crafted to give you the edge in combat and survival." },
-  { icon: Gift, title: "Daily Rewards", desc: "Login streaks, vote crates, and seasonal bundles you can claim every single day." },
-  { icon: PartyPopper, title: "Events & Giveaways", desc: "Weekly tournaments, boss raids, and giveaways with real and in-game prizes." },
-  { icon: Zap, title: "Lag-Free Gameplay", desc: "Dedicated hardware, optimized Paper builds, and 99.9% uptime. Smooth at every TPS." },
-  { icon: Heart, title: "Friendly Community", desc: "An active Discord, dedicated staff, and zero tolerance for toxicity. You belong here." },
-  { icon: Crown, title: "Ranked Seasons", desc: "Climb the leaderboard, earn exclusive cosmetics, and lock your name in our hall of fame." },
+  { icon: Swords, title: "Lifesteal PvP", desc: "Kill or be killed. Steal hearts from your enemies, lose yours when you die. Permadeath at zero.", long: "Every player starts with 10 hearts. Slay another player and steal one of theirs — lose all your hearts and you're banned from the server until the next season reset. Hearts can be crafted, traded, and even gambled. The risk is real, and so is the reward. Learn the meta, build your base, and rise to the top of the leaderboard." },
+  { icon: Coins, title: "Economy System", desc: "A player-driven market. Trade, auction, and build empires with our balanced economy.", long: "An entirely player-driven economy with shops, auctions, and a global marketplace. Set up your own shop, list rare drops in the auction house, and build wealth through trade. Currency is earned in-game — no pay-to-win shortcuts. Smart traders can corner markets and become server-renowned tycoons." },
+  { icon: Sparkles, title: "Custom Enchants", desc: "Over 80 unique enchantments crafted to give you the edge in combat and survival.", long: "More than 80 custom enchantments designed exclusively for ZyphoraMC. From Lifesteal V and Soulbound to Implants and Rocket Escape, every enchant is balanced for both PvP and PvE. Discover them through enchantment books found in crates, mob drops, and special events." },
+  { icon: Gift, title: "Daily Rewards", desc: "Login streaks, vote crates, and seasonal bundles you can claim every single day.", long: "Log in daily to claim escalating rewards — currency, keys, custom items, and exclusive cosmetics. Maintain your streak for bonus seasonal bundles. Vote on listing sites for additional crate keys, and claim seasonal pass rewards as you level up your account." },
+  { icon: PartyPopper, title: "Events & Giveaways", desc: "Weekly tournaments, boss raids, and giveaways with real and in-game prizes.", long: "Weekly PvP tournaments, world-boss raids, capture-the-flag, parkour challenges, and treasure hunts. Win in-game items, currency, and even real-world prizes including gift cards and merch. Special seasonal events run during holidays with exclusive cosmetics you can't get any other way." },
+  { icon: Zap, title: "Lag-Free Gameplay", desc: "Dedicated hardware, optimized Paper builds, and 99.9% uptime. Smooth at every TPS.", long: "Hosted on dedicated enterprise-grade hardware with NVMe storage, DDoS protection, and 99.9% uptime. Running optimized Paper and Purpur builds with custom plugins tuned for performance. Server-wide TPS rarely dips below 19.8 — even during massive raids and events." },
+  { icon: Heart, title: "Friendly Community", desc: "An active Discord, dedicated staff, and zero tolerance for toxicity. You belong here.", long: "Thousands of active members across our Discord and in-game. A dedicated, trained staff team is online 24/7 to help with questions, disputes, and reports. Strict zero-tolerance policy on harassment, slurs, and cheating. We pride ourselves on being one of the friendliest servers in the scene." },
+  { icon: Crown, title: "Ranked Seasons", desc: "Climb the leaderboard, earn exclusive cosmetics, and lock your name in our hall of fame.", long: "Compete across 3-month seasons for placement on the global leaderboard. Top players earn exclusive titles, cosmetic items, custom particles, and a permanent place in the ZyphoraMC Hall of Fame. Each new season brings a fresh map, balance updates, and new content to master." },
 ];
 
 
@@ -49,6 +50,9 @@ const Index = () => {
   const [uptimeStart, setUptimeStart] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
   const [popupOpen, setPopupOpen] = useState(false);
+  const [activeFeature, setActiveFeature] = useState<typeof FEATURES[number] | null>(null);
+  const [discordMembers, setDiscordMembers] = useState<number | null>(null);
+  const [voteCount, setVoteCount] = useState<number>(0);
 
   useEffect(() => {
     supabase.from("news").select("id,title,excerpt,slug,created_at").eq("published", true).order("created_at", { ascending: false }).limit(3).then(({ data }) => setNews(data ?? []));
@@ -63,6 +67,27 @@ const Index = () => {
     }, 1800);
     return () => clearTimeout(t);
   }, []);
+
+  // Fetch live Discord member count from invite
+  useEffect(() => {
+    const inviteUrl: string = content.server?.discord ?? "";
+    // Try to extract a discord invite code from the configured URL
+    const m = inviteUrl.match(/discord\.gg\/([a-zA-Z0-9-]+)/) ?? inviteUrl.match(/discord\.com\/invite\/([a-zA-Z0-9-]+)/);
+    const codes = m ? [m[1]] : ["zyphoramc", "zyphora"];
+    (async () => {
+      for (const code of codes) {
+        try {
+          const r = await fetch(`https://discord.com/api/v10/invites/${code}?with_counts=true`);
+          if (!r.ok) continue;
+          const j = await r.json();
+          if (typeof j.approximate_member_count === "number") {
+            setDiscordMembers(j.approximate_member_count);
+            return;
+          }
+        } catch {}
+      }
+    })();
+  }, [content.server?.discord]);
 
   const ip = content.server?.ip ?? "play.zyphoramc.net";
 
@@ -241,8 +266,8 @@ const Index = () => {
         <div className="container relative grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
             { label: "Online Players", value: status?.players_online ?? 0, icon: Users, suffix: "" },
-            { label: "Discord Members", value: 12480, icon: MessageCircle, suffix: "" },
-            { label: "Total Votes", value: 86420, icon: Star, suffix: "" },
+            { label: "Discord Members", value: discordMembers ?? 0, icon: MessageCircle, suffix: "" },
+            { label: "Total Votes", value: voteCount, icon: Star, suffix: "" },
             { label: "Uptime", value: 99.9, icon: Zap, suffix: "%", decimals: 1 },
           ].map((s) => (
             <Card key={s.label} className="p-6 text-center hover-lift hover-glow border-primary/10 bg-card/60 backdrop-blur">
@@ -264,7 +289,14 @@ const Index = () => {
           <SectionHead eyebrow="Features" title="Built for Legends" sub="Every system, every detail — engineered to make your gameplay matter." />
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {FEATURES.map((f) => (
-              <Card key={f.title} className="group relative p-6 hover-lift hover-glow border-border/60 overflow-hidden">
+              <Card
+                key={f.title}
+                onClick={() => setActiveFeature(f)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setActiveFeature(f); } }}
+                className="group relative p-6 hover-lift hover-glow border-border/60 overflow-hidden cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition" style={{ background: "linear-gradient(135deg, hsl(var(--primary)/0.06), transparent)" }} />
                 <div className="relative">
                   <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 text-primary flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-[0_0_20px_hsl(var(--primary)/0.5)] transition">
@@ -272,6 +304,9 @@ const Index = () => {
                   </div>
                   <h3 className="font-display font-bold text-lg mb-2">{f.title}</h3>
                   <p className="text-sm text-muted-foreground">{f.desc}</p>
+                  <div className="mt-3 inline-flex items-center text-xs text-primary opacity-0 group-hover:opacity-100 transition">
+                    Read more <ArrowRight className="h-3 w-3 ml-1" />
+                  </div>
                 </div>
               </Card>
             ))}
@@ -338,6 +373,26 @@ const Index = () => {
           </Card>
         </section>
       </main>
+
+      <Dialog open={!!activeFeature} onOpenChange={(o) => !o && setActiveFeature(null)}>
+        <DialogContent>
+          {activeFeature && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 text-primary flex items-center justify-center">
+                    <activeFeature.icon className="h-5 w-5" />
+                  </div>
+                  <DialogTitle className="font-display text-2xl">{activeFeature.title}</DialogTitle>
+                </div>
+                <DialogDescription className="text-base text-foreground/90 leading-relaxed">
+                  {activeFeature.long}
+                </DialogDescription>
+              </DialogHeader>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
