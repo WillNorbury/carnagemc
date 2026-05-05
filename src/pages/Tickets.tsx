@@ -201,7 +201,13 @@ const NewTicketForm = ({ onCancel, onCreated, userId }: { onCancel: () => void; 
     setSending(true);
     const { data, error } = await supabase
       .from("support_tickets")
-      .insert({ ...parsed.data, user_id: userId })
+      .insert({
+        subject: parsed.data.subject,
+        body: parsed.data.body,
+        category: parsed.data.category ?? null,
+        priority: parsed.data.priority,
+        user_id: userId,
+      })
       .select("id")
       .single();
     setSending(false);
