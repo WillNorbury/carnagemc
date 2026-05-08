@@ -663,6 +663,7 @@ const ContentTab = () => {
       { key: "server", value: server as any },
       { key: "alerts", value: alerts as any },
       { key: "event", value: event as any },
+      { key: "popup", value: popup as any },
     ]);
     if (error) return toast.error(error.message);
     toast.success("Site content saved");
