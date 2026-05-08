@@ -739,6 +739,41 @@ const ContentTab = () => {
           </div>
         </div>
       </Card>
+      <Card className="p-6 space-y-4 md:col-span-2">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-bold">Homepage popup</h2>
+            <p className="text-sm text-muted-foreground">The announcement modal shown to first-time visitors.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch checked={popup.enabled} onCheckedChange={(c) => setPopup({ ...popup, enabled: c })} />
+            <Label>Enabled</Label>
+          </div>
+        </div>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div><Label>Title</Label><Input value={popup.title} onChange={(e) => setPopup({ ...popup, title: e.target.value })} /></div>
+          <div>
+            <Label>Primary button label</Label>
+            <Input value={popup.primaryLabel} onChange={(e) => setPopup({ ...popup, primaryLabel: e.target.value })} />
+          </div>
+          <div className="md:col-span-2">
+            <Label>Description</Label>
+            <Textarea rows={3} value={popup.description} onChange={(e) => setPopup({ ...popup, description: e.target.value })} />
+          </div>
+          <div>
+            <Label>Primary button URL (optional)</Label>
+            <Input
+              value={popup.primaryUrl}
+              onChange={(e) => setPopup({ ...popup, primaryUrl: e.target.value })}
+              placeholder="Leave blank to copy server IP"
+            />
+          </div>
+          <div>
+            <Label>Secondary (dismiss) button label</Label>
+            <Input value={popup.secondaryLabel} onChange={(e) => setPopup({ ...popup, secondaryLabel: e.target.value })} />
+          </div>
+        </div>
+      </Card>
       <div className="md:col-span-2"><Button onClick={save}>Save all</Button></div>
     </div>
   );
