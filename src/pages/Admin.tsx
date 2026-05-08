@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import {
   Trash2, Plus, ShieldCheck, ShieldOff, Users as UsersIcon, Newspaper,
   Activity, Server as ServerIcon, X, Ticket as TicketIcon, MessageSquare, Send, Check, ChevronDown,
+  Puzzle,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
