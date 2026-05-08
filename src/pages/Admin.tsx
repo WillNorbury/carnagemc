@@ -628,6 +628,14 @@ const ContentTab = () => {
     label: "Next Event Reset",
     targetMs: null,
   });
+  const [popup, setPopup] = useState({
+    enabled: true,
+    title: "Season 3 Launch — LIVE",
+    description: "New map, fresh economy, and exclusive launch crates for early players. Join now and claim your founder's reward.",
+    primaryLabel: "Copy IP",
+    primaryUrl: "",
+    secondaryLabel: "Later",
+  });
 
   useEffect(() => {
     supabase.from("site_content").select("*").then(({ data }) => {
