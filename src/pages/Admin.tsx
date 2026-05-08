@@ -36,6 +36,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   status: { title: "Server Status", description: "Manually override the live status display." },
   tickets: { title: "Support Tickets", description: "Triage and reply to user tickets." },
   logs: { title: "Admin Logs", description: "Audit trail of admin role checks." },
+  plugins: { title: "Plugins", description: "Add, edit, and remove server plugins." },
   "bot-dashboard": { title: "Discord Bot — Dashboard", description: "Status and overview of the ZyphoraMC Discord bot." },
   "bot-management": { title: "Discord Bot — Management", description: "Configure commands and bot integration." },
 };
