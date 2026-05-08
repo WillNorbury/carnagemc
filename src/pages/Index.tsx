@@ -68,6 +68,15 @@ const Index = () => {
     return () => clearTimeout(t);
   }, []);
 
+  const popupCfg = {
+    enabled: content.popup?.enabled ?? true,
+    title: content.popup?.title ?? "Season 3 Launch — LIVE",
+    description: content.popup?.description ?? "New map, fresh economy, and exclusive launch crates for early players. Join now and claim your founder's reward.",
+    primaryLabel: content.popup?.primaryLabel ?? "Copy IP",
+    primaryUrl: content.popup?.primaryUrl ?? "",
+    secondaryLabel: content.popup?.secondaryLabel ?? "Later",
+  };
+
   // Fetch live Discord member count via server-side proxy (reliable, no CORS/rate-limit issues)
   useEffect(() => {
     const inviteRaw: string = content.server?.discord ?? "https://discord.gg/qAEs87VeXM";
