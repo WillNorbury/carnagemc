@@ -12,6 +12,7 @@ const links = [
   { to: "/staff", label: "Staff" },
   { to: "/vote", label: "Vote" },
   { to: "/rules", label: "Rules" },
+  { to: "/plugins", label: "Plugins" },
   { to: "/support", label: "Support" },
 ];
 

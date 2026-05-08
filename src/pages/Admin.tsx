@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import {
   Trash2, Plus, ShieldCheck, ShieldOff, Users as UsersIcon, Newspaper,
   Activity, Server as ServerIcon, X, Ticket as TicketIcon, MessageSquare, Send, Check, ChevronDown,
+  Puzzle,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -35,6 +36,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   status: { title: "Server Status", description: "Manually override the live status display." },
   tickets: { title: "Support Tickets", description: "Triage and reply to user tickets." },
   logs: { title: "Admin Logs", description: "Audit trail of admin role checks." },
+  plugins: { title: "Plugins", description: "Add, edit, and remove server plugins." },
   "bot-dashboard": { title: "Discord Bot — Dashboard", description: "Status and overview of the ZyphoraMC Discord bot." },
   "bot-management": { title: "Discord Bot — Management", description: "Configure commands and bot integration." },
 };
@@ -75,6 +77,8 @@ const Admin = () => {
       {section === "status" && <StatusTab />}
       {section === "tickets" && <TicketsAdminSection />}
       {section === "logs" && <LogsTab />}
+      {section === "logs" && <LogsTab />}
+      {section === "plugins" && <PluginsTab />}
       {section === "bot-dashboard" && <BotDashboardSection />}
       {section === "bot-management" && <BotManagementSection />}
     </AdminLayout>
@@ -1205,6 +1209,193 @@ const TicketsAdminSection = () => {
           </Card>
         )}
       </div>
+    </div>
+  );
+};
+
+type PluginRow = {
+  id: string;
+  short_id: string;
+  name: string;
+  description: string | null;
+  long_description: string | null;
+  version: string | null;
+  author: string | null;
+  download_url: string | null;
+  icon_url: string | null;
+  category: string | null;
+  tags: string[];
+  featured: boolean;
+  published: boolean;
+  created_at: string;
+};
+
+const emptyPluginForm = {
+  name: "", description: "", long_description: "", version: "", author: "",
+  download_url: "", icon_url: "", category: "", tags: "",
+  featured: false, published: true,
+};
+
+const PluginsTab = () => {
+  const [plugins, setPlugins] = useState<PluginRow[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState(emptyPluginForm);
+  const [saving, setSaving] = useState(false);
+
+  const load = async () => {
+    const { data } = await supabase
+      .from("plugins")
+      .select("*")
+      .order("created_at", { ascending: false });
+    setPlugins((data ?? []) as PluginRow[]);
+  };
+  useEffect(() => { load(); }, []);
+
+  const startEdit = (p: PluginRow) => {
+    setEditingId(p.id);
+    setForm({
+      name: p.name, description: p.description ?? "", long_description: p.long_description ?? "",
+      version: p.version ?? "", author: p.author ?? "", download_url: p.download_url ?? "",
+      icon_url: p.icon_url ?? "", category: p.category ?? "",
+      tags: (p.tags ?? []).join(", "),
+      featured: p.featured, published: p.published,
+    });
+  };
+
+  const reset = () => { setEditingId(null); setForm(emptyPluginForm); };
+
+  const submit = async () => {
+    if (!form.name.trim()) return toast.error("Name is required");
+    setSaving(true);
+    const payload = {
+      name: form.name.trim(),
+      description: form.description.trim() || null,
+      long_description: form.long_description.trim() || null,
+      version: form.version.trim() || null,
+      author: form.author.trim() || null,
+      download_url: form.download_url.trim() || null,
+      icon_url: form.icon_url.trim() || null,
+      category: form.category.trim() || null,
+      tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
+      featured: form.featured,
+      published: form.published,
+    };
+    const { error } = editingId
+      ? await supabase.from("plugins").update(payload).eq("id", editingId)
+      : await supabase.from("plugins").insert(payload);
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success(editingId ? "Plugin updated" : "Plugin added");
+    reset();
+    load();
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Delete this plugin?")) return;
+    const { error } = await supabase.from("plugins").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Plugin deleted");
+    if (editingId === id) reset();
+    load();
+  };
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-2">
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-bold flex items-center gap-2">
+            <Puzzle className="h-4 w-4" /> {editingId ? "Edit plugin" : "Add plugin"}
+          </h2>
+          {editingId && <Button size="sm" variant="ghost" onClick={reset}>Cancel</Button>}
+        </div>
+        <div className="space-y-3">
+          <div>
+            <Label>Name *</Label>
+            <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Version</Label>
+              <Input value={form.version} onChange={(e) => setForm({ ...form, version: e.target.value })} placeholder="1.0.0" />
+            </div>
+            <div>
+              <Label>Author</Label>
+              <Input value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
+            </div>
+          </div>
+          <div>
+            <Label>Category</Label>
+            <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Economy, PvP, ..." />
+          </div>
+          <div>
+            <Label>Short description</Label>
+            <Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          </div>
+          <div>
+            <Label>Long description</Label>
+            <Textarea rows={5} value={form.long_description} onChange={(e) => setForm({ ...form, long_description: e.target.value })} />
+          </div>
+          <div>
+            <Label>Icon URL</Label>
+            <Input value={form.icon_url} onChange={(e) => setForm({ ...form, icon_url: e.target.value })} />
+          </div>
+          <div>
+            <Label>Download URL</Label>
+            <Input value={form.download_url} onChange={(e) => setForm({ ...form, download_url: e.target.value })} />
+          </div>
+          <div>
+            <Label>Tags (comma separated)</Label>
+            <Input value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} placeholder="pvp, economy" />
+          </div>
+          <div className="flex items-center gap-6 pt-2">
+            <label className="flex items-center gap-2 text-sm">
+              <Switch checked={form.featured} onCheckedChange={(v) => setForm({ ...form, featured: v })} />
+              Featured
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <Switch checked={form.published} onCheckedChange={(v) => setForm({ ...form, published: v })} />
+              Published
+            </label>
+          </div>
+          <Button onClick={submit} disabled={saving} className="w-full">
+            <Plus className="h-4 w-4 mr-1" /> {editingId ? "Save changes" : "Add plugin"}
+          </Button>
+        </div>
+      </Card>
+
+      <Card className="p-6">
+        <h2 className="font-bold mb-4">All plugins ({plugins.length})</h2>
+        <div className="space-y-2 max-h-[700px] overflow-y-auto">
+          {plugins.length === 0 && <p className="text-sm text-muted-foreground">No plugins yet.</p>}
+          {plugins.map((p) => (
+            <div key={p.id} className="flex items-center justify-between gap-3 p-3 rounded-lg bg-secondary/40">
+              <div className="flex items-center gap-3 min-w-0">
+                {p.icon_url ? (
+                  <img src={p.icon_url} alt="" className="h-9 w-9 rounded object-cover border border-border" />
+                ) : (
+                  <div className="h-9 w-9 rounded bg-primary/10 border border-primary/30 flex items-center justify-center">
+                    <Puzzle className="h-4 w-4 text-primary" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <div className="font-medium truncate flex items-center gap-2">
+                    {p.name}
+                    {!p.published && <Badge variant="outline" className="text-xs">draft</Badge>}
+                    {p.featured && <Badge className="text-xs">featured</Badge>}
+                  </div>
+                  <div className="text-xs text-muted-foreground font-mono">#{p.short_id}{p.version ? ` · v${p.version}` : ""}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <Button size="sm" variant="outline" onClick={() => startEdit(p)}>Edit</Button>
+                <Button size="sm" variant="ghost" onClick={() => remove(p.id)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 };

@@ -20,6 +20,8 @@ import Tickets from "./pages/Tickets.tsx";
 import Profile from "./pages/Profile.tsx";
 import UserProfile from "./pages/UserProfile.tsx";
 import Users from "./pages/Users.tsx";
+import Plugins from "./pages/Plugins.tsx";
+import PluginDetail from "./pages/PluginDetail.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -48,6 +50,8 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/users" element={<Users />} />
             <Route path="/user/:shortId" element={<UserProfile />} />
+            <Route path="/plugins" element={<Plugins />} />
+            <Route path="/plugins/:shortId" element={<PluginDetail />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

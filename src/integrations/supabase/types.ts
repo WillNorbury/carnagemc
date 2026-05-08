@@ -86,6 +86,60 @@ export type Database = {
         }
         Relationships: []
       }
+      plugins: {
+        Row: {
+          author: string | null
+          category: string | null
+          created_at: string
+          description: string | null
+          download_url: string | null
+          featured: boolean
+          icon_url: string | null
+          id: string
+          long_description: string | null
+          name: string
+          published: boolean
+          short_id: string
+          tags: string[]
+          updated_at: string
+          version: string | null
+        }
+        Insert: {
+          author?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          download_url?: string | null
+          featured?: boolean
+          icon_url?: string | null
+          id?: string
+          long_description?: string | null
+          name: string
+          published?: boolean
+          short_id?: string
+          tags?: string[]
+          updated_at?: string
+          version?: string | null
+        }
+        Update: {
+          author?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          download_url?: string | null
+          featured?: boolean
+          icon_url?: string | null
+          id?: string
+          long_description?: string | null
+          name?: string
+          published?: boolean
+          short_id?: string
+          tags?: string[]
+          updated_at?: string
+          version?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -287,6 +341,7 @@ export type Database = {
         Args: { _context?: string; _user_agent?: string }
         Returns: boolean
       }
+      gen_plugin_short_id: { Args: never; Returns: string }
     }
     Enums: {
       app_role:
