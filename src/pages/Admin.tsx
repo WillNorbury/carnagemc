@@ -645,6 +645,7 @@ const ContentTab = () => {
       if (map.server) setServer(map.server);
       if (map.alerts) setAlerts((a) => ({ ...a, ...map.alerts }));
       if (map.event) setEvent({ label: map.event.label ?? "Next Event Reset", targetMs: map.event.targetMs ?? null });
+      if (map.popup) setPopup((p) => ({ ...p, ...map.popup }));
     });
   }, []);
 
