@@ -77,6 +77,8 @@ const Admin = () => {
       {section === "status" && <StatusTab />}
       {section === "tickets" && <TicketsAdminSection />}
       {section === "logs" && <LogsTab />}
+      {section === "logs" && <LogsTab />}
+      {section === "plugins" && <PluginsTab />}
       {section === "bot-dashboard" && <BotDashboardSection />}
       {section === "bot-management" && <BotManagementSection />}
     </AdminLayout>
