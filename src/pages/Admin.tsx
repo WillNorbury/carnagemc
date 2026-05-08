@@ -628,6 +628,14 @@ const ContentTab = () => {
     label: "Next Event Reset",
     targetMs: null,
   });
+  const [popup, setPopup] = useState({
+    enabled: true,
+    title: "Season 3 Launch — LIVE",
+    description: "New map, fresh economy, and exclusive launch crates for early players. Join now and claim your founder's reward.",
+    primaryLabel: "Copy IP",
+    primaryUrl: "",
+    secondaryLabel: "Later",
+  });
 
   useEffect(() => {
     supabase.from("site_content").select("*").then(({ data }) => {
@@ -637,6 +645,7 @@ const ContentTab = () => {
       if (map.server) setServer(map.server);
       if (map.alerts) setAlerts((a) => ({ ...a, ...map.alerts }));
       if (map.event) setEvent({ label: map.event.label ?? "Next Event Reset", targetMs: map.event.targetMs ?? null });
+      if (map.popup) setPopup((p) => ({ ...p, ...map.popup }));
     });
   }, []);
 
@@ -654,6 +663,7 @@ const ContentTab = () => {
       { key: "server", value: server as any },
       { key: "alerts", value: alerts as any },
       { key: "event", value: event as any },
+      { key: "popup", value: popup as any },
     ]);
     if (error) return toast.error(error.message);
     toast.success("Site content saved");
@@ -726,6 +736,41 @@ const ContentTab = () => {
             {event.targetMs && (
               <p className="text-xs text-muted-foreground mt-1">Counts down to: {new Date(event.targetMs).toLocaleString()}</p>
             )}
+          </div>
+        </div>
+      </Card>
+      <Card className="p-6 space-y-4 md:col-span-2">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-bold">Homepage popup</h2>
+            <p className="text-sm text-muted-foreground">The announcement modal shown to first-time visitors.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch checked={popup.enabled} onCheckedChange={(c) => setPopup({ ...popup, enabled: c })} />
+            <Label>Enabled</Label>
+          </div>
+        </div>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div><Label>Title</Label><Input value={popup.title} onChange={(e) => setPopup({ ...popup, title: e.target.value })} /></div>
+          <div>
+            <Label>Primary button label</Label>
+            <Input value={popup.primaryLabel} onChange={(e) => setPopup({ ...popup, primaryLabel: e.target.value })} />
+          </div>
+          <div className="md:col-span-2">
+            <Label>Description</Label>
+            <Textarea rows={3} value={popup.description} onChange={(e) => setPopup({ ...popup, description: e.target.value })} />
+          </div>
+          <div>
+            <Label>Primary button URL (optional)</Label>
+            <Input
+              value={popup.primaryUrl}
+              onChange={(e) => setPopup({ ...popup, primaryUrl: e.target.value })}
+              placeholder="Leave blank to copy server IP"
+            />
+          </div>
+          <div>
+            <Label>Secondary (dismiss) button label</Label>
+            <Input value={popup.secondaryLabel} onChange={(e) => setPopup({ ...popup, secondaryLabel: e.target.value })} />
           </div>
         </div>
       </Card>

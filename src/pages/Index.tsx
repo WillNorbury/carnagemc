@@ -68,6 +68,15 @@ const Index = () => {
     return () => clearTimeout(t);
   }, []);
 
+  const popupCfg = {
+    enabled: content.popup?.enabled ?? true,
+    title: content.popup?.title ?? "Season 3 Launch — LIVE",
+    description: content.popup?.description ?? "New map, fresh economy, and exclusive launch crates for early players. Join now and claim your founder's reward.",
+    primaryLabel: content.popup?.primaryLabel ?? "Copy IP",
+    primaryUrl: content.popup?.primaryUrl ?? "",
+    secondaryLabel: content.popup?.secondaryLabel ?? "Later",
+  };
+
   // Fetch live Discord member count via server-side proxy (reliable, no CORS/rate-limit issues)
   useEffect(() => {
     const inviteRaw: string = content.server?.discord ?? "https://discord.gg/qAEs87VeXM";
@@ -175,7 +184,7 @@ const Index = () => {
       <Navbar />
 
       {/* Popup announcement */}
-      {popupOpen && (
+      {popupOpen && popupCfg.enabled && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/70 backdrop-blur-sm animate-in fade-in duration-300">
           <Card className="relative max-w-md w-full p-7 border-primary/40 shadow-elegant overflow-hidden">
             <div className="absolute inset-0 opacity-20" style={{ background: "var(--gradient-fire)" }} />
@@ -186,20 +195,30 @@ const Index = () => {
               <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/15 text-primary mb-4 animate-pulse-glow">
                 <PartyPopper className="h-5 w-5" />
               </div>
-              <h3 className="font-display text-xl font-bold mb-2">Season 3 Launch — LIVE</h3>
-              <p className="text-sm text-muted-foreground mb-5">
-                New map, fresh economy, and exclusive launch crates for early players. Join now and claim your founder's reward.
-              </p>
+              <h3 className="font-display text-xl font-bold mb-2">{popupCfg.title}</h3>
+              <p className="text-sm text-muted-foreground mb-5">{popupCfg.description}</p>
               <div className="flex gap-2">
-                <Button onClick={() => { copyIp(); dismissPopup(); }} className="flex-1 glow">
-                  <Copy className="h-4 w-4 mr-2" /> Copy IP
+                <Button
+                  onClick={() => {
+                    if (popupCfg.primaryUrl) {
+                      window.open(popupCfg.primaryUrl, "_blank", "noopener,noreferrer");
+                    } else {
+                      copyIp();
+                    }
+                    dismissPopup();
+                  }}
+                  className="flex-1 glow"
+                >
+                  {!popupCfg.primaryUrl && <Copy className="h-4 w-4 mr-2" />}
+                  {popupCfg.primaryLabel}
                 </Button>
-                <Button variant="outline" onClick={dismissPopup}>Later</Button>
+                <Button variant="outline" onClick={dismissPopup}>{popupCfg.secondaryLabel}</Button>
               </div>
             </div>
           </Card>
         </div>
       )}
+
 
       {alert && (
         <div className="fixed top-16 inset-x-0 z-40 px-4 animate-in slide-in-from-top duration-300">
