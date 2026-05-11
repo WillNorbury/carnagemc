@@ -22,6 +22,15 @@ type Plugin = {
   tags: string[];
   featured: boolean;
   created_at: string;
+  jar_filename: string | null;
+  jar_size: number | null;
+};
+
+const formatBytes = (b: number | null) => {
+  if (!b) return "";
+  if (b < 1024) return `${b} B`;
+  if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`;
+  return `${(b / 1024 / 1024).toFixed(2)} MB`;
 };
 
 const PluginDetail = () => {
