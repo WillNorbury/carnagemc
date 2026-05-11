@@ -1273,6 +1273,9 @@ type PluginRow = {
   featured: boolean;
   published: boolean;
   created_at: string;
+  jar_path: string | null;
+  jar_filename: string | null;
+  jar_size: number | null;
 };
 
 const emptyPluginForm = {
