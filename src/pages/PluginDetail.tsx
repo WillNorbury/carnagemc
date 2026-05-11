@@ -116,10 +116,26 @@ const PluginDetail = () => {
               )}
 
               {plugin.download_url && (
-                <div className="mt-6">
-                  <Button asChild className="glow">
-                    <a href={plugin.download_url} target="_blank" rel="noreferrer">
-                      <Download className="h-4 w-4 mr-1" /> Download
+                <div className="mt-6 rounded-lg border border-primary/30 bg-primary/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="text-xs uppercase tracking-wider text-primary font-semibold mb-1">
+                      Download
+                    </div>
+                    <div className="text-sm font-mono truncate">
+                      {plugin.jar_filename ?? `${plugin.name}.jar`}
+                    </div>
+                    {plugin.jar_size && (
+                      <div className="text-xs text-muted-foreground">{formatBytes(plugin.jar_size)}</div>
+                    )}
+                  </div>
+                  <Button asChild size="lg" className="glow shrink-0">
+                    <a
+                      href={plugin.download_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      download={plugin.jar_filename ?? undefined}
+                    >
+                      <Download className="h-5 w-5 mr-2" /> Download .jar
                     </a>
                   </Button>
                 </div>
