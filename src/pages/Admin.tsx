@@ -1445,8 +1445,40 @@ const PluginsTab = () => {
             <Label>Icon URL</Label>
             <Input value={form.icon_url} onChange={(e) => setForm({ ...form, icon_url: e.target.value })} />
           </div>
+          <div className="space-y-2 rounded-lg border border-border bg-secondary/30 p-3">
+            <Label>Plugin JAR file</Label>
+            {form.jar_filename ? (
+              <div className="flex items-center justify-between gap-2 rounded-md bg-background px-3 py-2 border border-border">
+                <div className="min-w-0">
+                  <div className="text-sm font-mono truncate">{form.jar_filename}</div>
+                  <div className="text-xs text-muted-foreground">{formatBytes(form.jar_size)}</div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Button asChild size="sm" variant="outline">
+                    <label className="cursor-pointer">
+                      Replace
+                      <input type="file" accept=".jar,application/java-archive" className="hidden"
+                        onChange={(e) => e.target.files?.[0] && onJarSelected(e.target.files[0])} />
+                    </label>
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={removeJar}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button asChild variant="outline" disabled={uploading} className="w-full">
+                <label className="cursor-pointer">
+                  {uploading ? "Uploading..." : "Upload .jar file"}
+                  <input type="file" accept=".jar,application/java-archive" className="hidden"
+                    onChange={(e) => e.target.files?.[0] && onJarSelected(e.target.files[0])} />
+                </label>
+              </Button>
+            )}
+            <p className="text-xs text-muted-foreground">Max 100 MB. The download URL is filled automatically when you upload.</p>
+          </div>
           <div>
-            <Label>Download URL</Label>
+            <Label>Download URL (auto-filled from upload, or paste an external link)</Label>
             <Input value={form.download_url} onChange={(e) => setForm({ ...form, download_url: e.target.value })} />
           </div>
           <div>
