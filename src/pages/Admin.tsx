@@ -1321,6 +1321,48 @@ const PluginsTab = () => {
 
   const reset = () => { setEditingId(null); setForm(emptyPluginForm); };
 
+  const [uploading, setUploading] = useState(false);
+
+  const onJarSelected = async (file: File) => {
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith(".jar")) {
+      return toast.error("Please select a .jar file");
+    }
+    setUploading(true);
+    try {
+      // Remove old jar if replacing
+      if (form.jar_path) {
+        await supabase.storage.from("plugin-jars").remove([form.jar_path]);
+      }
+      const path = `${crypto.randomUUID()}/${file.name}`;
+      const { error } = await supabase.storage
+        .from("plugin-jars")
+        .upload(path, file, { contentType: "application/java-archive", upsert: false });
+      if (error) throw error;
+      const { data: pub } = supabase.storage.from("plugin-jars").getPublicUrl(path);
+      setForm((f) => ({
+        ...f,
+        jar_path: path,
+        jar_filename: file.name,
+        jar_size: file.size,
+        download_url: pub.publicUrl,
+      }));
+      toast.success("JAR uploaded");
+    } catch (e: any) {
+      toast.error(e.message ?? "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeJar = async () => {
+    if (!form.jar_path) return;
+    if (!confirm("Remove the uploaded JAR?")) return;
+    await supabase.storage.from("plugin-jars").remove([form.jar_path]);
+    setForm((f) => ({ ...f, jar_path: "", jar_filename: "", jar_size: 0, download_url: "" }));
+    toast.success("JAR removed");
+  };
+
   const submit = async () => {
     if (!form.name.trim()) return toast.error("Name is required");
     setSaving(true);
@@ -1336,6 +1378,9 @@ const PluginsTab = () => {
       tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
       featured: form.featured,
       published: form.published,
+      jar_path: form.jar_path || null,
+      jar_filename: form.jar_filename || null,
+      jar_size: form.jar_size || null,
     };
     const { error } = editingId
       ? await supabase.from("plugins").update(payload).eq("id", editingId)
@@ -1349,6 +1394,10 @@ const PluginsTab = () => {
 
   const remove = async (id: string) => {
     if (!confirm("Delete this plugin?")) return;
+    const target = plugins.find((p) => p.id === id);
+    if (target?.jar_path) {
+      await supabase.storage.from("plugin-jars").remove([target.jar_path]);
+    }
     const { error } = await supabase.from("plugins").delete().eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Plugin deleted");
