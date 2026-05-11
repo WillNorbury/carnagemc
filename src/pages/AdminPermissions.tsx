@@ -105,6 +105,16 @@ const AdminPermissions = () => {
       .filter((g) => g.permissions.length > 0);
   }, [search]);
 
+  if (authLoading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
+  if (!user) return <Navigate to="/auth" replace />;
+  if (!isAdmin) return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+      <ShieldOff className="h-12 w-12 text-destructive" />
+      <h1 className="text-2xl font-bold">Access denied</h1>
+      <p className="text-muted-foreground">You don't have admin permissions.</p>
+    </div>
+  );
+
   return (
     <AdminLayout
       current={"dashboard" as any}
