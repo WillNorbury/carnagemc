@@ -96,6 +96,9 @@ export type Database = {
           featured: boolean
           icon_url: string | null
           id: string
+          jar_filename: string | null
+          jar_path: string | null
+          jar_size: number | null
           long_description: string | null
           name: string
           published: boolean
@@ -113,6 +116,9 @@ export type Database = {
           featured?: boolean
           icon_url?: string | null
           id?: string
+          jar_filename?: string | null
+          jar_path?: string | null
+          jar_size?: number | null
           long_description?: string | null
           name: string
           published?: boolean
@@ -130,6 +136,9 @@ export type Database = {
           featured?: boolean
           icon_url?: string | null
           id?: string
+          jar_filename?: string | null
+          jar_path?: string | null
+          jar_size?: number | null
           long_description?: string | null
           name?: string
           published?: boolean
