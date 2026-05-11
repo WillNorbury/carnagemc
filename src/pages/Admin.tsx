@@ -1273,12 +1273,23 @@ type PluginRow = {
   featured: boolean;
   published: boolean;
   created_at: string;
+  jar_path: string | null;
+  jar_filename: string | null;
+  jar_size: number | null;
 };
 
 const emptyPluginForm = {
   name: "", description: "", long_description: "", version: "", author: "",
   download_url: "", icon_url: "", category: "", tags: "",
   featured: false, published: true,
+  jar_path: "" as string, jar_filename: "" as string, jar_size: 0 as number,
+};
+
+const formatBytes = (b: number) => {
+  if (!b) return "";
+  if (b < 1024) return `${b} B`;
+  if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`;
+  return `${(b / 1024 / 1024).toFixed(2)} MB`;
 };
 
 const PluginsTab = () => {
@@ -1304,10 +1315,53 @@ const PluginsTab = () => {
       icon_url: p.icon_url ?? "", category: p.category ?? "",
       tags: (p.tags ?? []).join(", "),
       featured: p.featured, published: p.published,
+      jar_path: p.jar_path ?? "", jar_filename: p.jar_filename ?? "", jar_size: p.jar_size ?? 0,
     });
   };
 
   const reset = () => { setEditingId(null); setForm(emptyPluginForm); };
+
+  const [uploading, setUploading] = useState(false);
+
+  const onJarSelected = async (file: File) => {
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith(".jar")) {
+      return toast.error("Please select a .jar file");
+    }
+    setUploading(true);
+    try {
+      // Remove old jar if replacing
+      if (form.jar_path) {
+        await supabase.storage.from("plugin-jars").remove([form.jar_path]);
+      }
+      const path = `${crypto.randomUUID()}/${file.name}`;
+      const { error } = await supabase.storage
+        .from("plugin-jars")
+        .upload(path, file, { contentType: "application/java-archive", upsert: false });
+      if (error) throw error;
+      const { data: pub } = supabase.storage.from("plugin-jars").getPublicUrl(path);
+      setForm((f) => ({
+        ...f,
+        jar_path: path,
+        jar_filename: file.name,
+        jar_size: file.size,
+        download_url: pub.publicUrl,
+      }));
+      toast.success("JAR uploaded");
+    } catch (e: any) {
+      toast.error(e.message ?? "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeJar = async () => {
+    if (!form.jar_path) return;
+    if (!confirm("Remove the uploaded JAR?")) return;
+    await supabase.storage.from("plugin-jars").remove([form.jar_path]);
+    setForm((f) => ({ ...f, jar_path: "", jar_filename: "", jar_size: 0, download_url: "" }));
+    toast.success("JAR removed");
+  };
 
   const submit = async () => {
     if (!form.name.trim()) return toast.error("Name is required");
@@ -1324,6 +1378,9 @@ const PluginsTab = () => {
       tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
       featured: form.featured,
       published: form.published,
+      jar_path: form.jar_path || null,
+      jar_filename: form.jar_filename || null,
+      jar_size: form.jar_size || null,
     };
     const { error } = editingId
       ? await supabase.from("plugins").update(payload).eq("id", editingId)
@@ -1337,6 +1394,10 @@ const PluginsTab = () => {
 
   const remove = async (id: string) => {
     if (!confirm("Delete this plugin?")) return;
+    const target = plugins.find((p) => p.id === id);
+    if (target?.jar_path) {
+      await supabase.storage.from("plugin-jars").remove([target.jar_path]);
+    }
     const { error } = await supabase.from("plugins").delete().eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Plugin deleted");
@@ -1384,8 +1445,40 @@ const PluginsTab = () => {
             <Label>Icon URL</Label>
             <Input value={form.icon_url} onChange={(e) => setForm({ ...form, icon_url: e.target.value })} />
           </div>
+          <div className="space-y-2 rounded-lg border border-border bg-secondary/30 p-3">
+            <Label>Plugin JAR file</Label>
+            {form.jar_filename ? (
+              <div className="flex items-center justify-between gap-2 rounded-md bg-background px-3 py-2 border border-border">
+                <div className="min-w-0">
+                  <div className="text-sm font-mono truncate">{form.jar_filename}</div>
+                  <div className="text-xs text-muted-foreground">{formatBytes(form.jar_size)}</div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Button asChild size="sm" variant="outline">
+                    <label className="cursor-pointer">
+                      Replace
+                      <input type="file" accept=".jar,application/java-archive" className="hidden"
+                        onChange={(e) => e.target.files?.[0] && onJarSelected(e.target.files[0])} />
+                    </label>
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={removeJar}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button asChild variant="outline" disabled={uploading} className="w-full">
+                <label className="cursor-pointer">
+                  {uploading ? "Uploading..." : "Upload .jar file"}
+                  <input type="file" accept=".jar,application/java-archive" className="hidden"
+                    onChange={(e) => e.target.files?.[0] && onJarSelected(e.target.files[0])} />
+                </label>
+              </Button>
+            )}
+            <p className="text-xs text-muted-foreground">Max 100 MB. The download URL is filled automatically when you upload.</p>
+          </div>
           <div>
-            <Label>Download URL</Label>
+            <Label>Download URL (auto-filled from upload, or paste an external link)</Label>
             <Input value={form.download_url} onChange={(e) => setForm({ ...form, download_url: e.target.value })} />
           </div>
           <div>
