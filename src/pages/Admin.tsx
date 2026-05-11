@@ -1279,6 +1279,14 @@ const emptyPluginForm = {
   name: "", description: "", long_description: "", version: "", author: "",
   download_url: "", icon_url: "", category: "", tags: "",
   featured: false, published: true,
+  jar_path: "" as string, jar_filename: "" as string, jar_size: 0 as number,
+};
+
+const formatBytes = (b: number) => {
+  if (!b) return "";
+  if (b < 1024) return `${b} B`;
+  if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`;
+  return `${(b / 1024 / 1024).toFixed(2)} MB`;
 };
 
 const PluginsTab = () => {
