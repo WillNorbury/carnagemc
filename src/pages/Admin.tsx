@@ -1313,7 +1313,7 @@ const PluginsTab = () => {
     setForm({
       name: p.name, description: p.description ?? "", long_description: p.long_description ?? "",
       version: p.version ?? "", author: p.author ?? "", download_url: p.download_url ?? "",
-      icon_url: p.icon_url ?? "", category: p.category ?? "",
+      icon_url: p.icon_url ?? "", category: p.category ?? "", platform: p.platform ?? "",
       tags: (p.tags ?? []).join(", "),
       featured: p.featured, published: p.published,
       jar_path: p.jar_path ?? "", jar_filename: p.jar_filename ?? "", jar_size: p.jar_size ?? 0,
