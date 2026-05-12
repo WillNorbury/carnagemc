@@ -33,6 +33,12 @@ const formatBytes = (b: number | null) => {
   return `${(b / 1024 / 1024).toFixed(2)} MB`;
 };
 
+const buildJarName = (plugin: Plugin) => {
+  const sanitize = (s: string | null) => (s ? s.replace(/\s+/g, "-") : "");
+  const parts = [sanitize(plugin.name), sanitize(plugin.category), sanitize(plugin.version)].filter(Boolean);
+  return parts.length > 0 ? `${parts.join("-")}.jar` : `${sanitize(plugin.name) || "plugin"}.jar`;
+};
+
 const PluginDetail = () => {
   const { shortId } = useParams<{ shortId: string }>();
   const [plugin, setPlugin] = useState<Plugin | null>(null);
@@ -122,7 +128,7 @@ const PluginDetail = () => {
                       Download
                     </div>
                     <div className="text-sm font-mono truncate">
-                      {plugin.jar_filename ?? `${plugin.name}.jar`}
+                      {buildJarName(plugin)}
                     </div>
                     {plugin.jar_size && (
                       <div className="text-xs text-muted-foreground">{formatBytes(plugin.jar_size)}</div>
@@ -133,7 +139,7 @@ const PluginDetail = () => {
                       href={plugin.download_url}
                       target="_blank"
                       rel="noreferrer"
-                      download={plugin.jar_filename ?? undefined}
+                      download={buildJarName(plugin)}
                     >
                       <Download className="h-5 w-5 mr-2" /> Download .jar
                     </a>
