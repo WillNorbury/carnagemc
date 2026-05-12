@@ -1476,19 +1476,17 @@ const PluginsTab = () => {
               </Button>
             )}
             <p className="text-xs text-muted-foreground">Max 100 MB. The download URL is filled automatically when you upload.</p>
-            {form.name && (form.category || form.version) && (
-              <div className="text-xs font-mono text-primary/80 pt-1">
-                Download filename: {(() => {
-                  const sanitize = (s: string) => s.replace(/\s+/g, "-");
-                  const parts = [
-                    sanitize(form.name),
-                    form.category ? sanitize(form.category) : "",
-                    form.version ? sanitize(form.version) : "",
-                  ].filter(Boolean);
-                  return `${parts.join("-")}.jar`;
-                })()}
-              </div>
-            )}
+            <div className="text-xs font-mono text-primary/80 pt-1">
+              Download filename: {(() => {
+                const sanitize = (s: string) => s.trim().replace(/\s+/g, "-");
+                const parts = [
+                  sanitize(form.name) || "Plugin",
+                  sanitize(form.category) || "Platform",
+                  sanitize(form.version) || "Version",
+                ];
+                return `${parts.join("-")}.jar`;
+              })()}
+            </div>
           </div>
           <div>
             <Label>Download URL (auto-filled from upload, or paste an external link)</Label>
