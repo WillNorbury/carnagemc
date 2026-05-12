@@ -1269,6 +1269,7 @@ type PluginRow = {
   download_url: string | null;
   icon_url: string | null;
   category: string | null;
+  platform: string | null;
   tags: string[];
   featured: boolean;
   published: boolean;
@@ -1280,7 +1281,7 @@ type PluginRow = {
 
 const emptyPluginForm = {
   name: "", description: "", long_description: "", version: "", author: "",
-  download_url: "", icon_url: "", category: "", tags: "",
+  download_url: "", icon_url: "", category: "", platform: "", tags: "",
   featured: false, published: true,
   jar_path: "" as string, jar_filename: "" as string, jar_size: 0 as number,
 };
