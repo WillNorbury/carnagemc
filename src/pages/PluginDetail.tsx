@@ -139,7 +139,7 @@ const PluginDetail = () => {
                       href={plugin.download_url}
                       target="_blank"
                       rel="noreferrer"
-                      download={plugin.jar_filename ?? undefined}
+                      download={buildJarName(plugin)}
                     >
                       <Download className="h-5 w-5 mr-2" /> Download .jar
                     </a>
