@@ -101,6 +101,7 @@ export type Database = {
           jar_size: number | null
           long_description: string | null
           name: string
+          platform: string | null
           published: boolean
           short_id: string
           tags: string[]
@@ -121,6 +122,7 @@ export type Database = {
           jar_size?: number | null
           long_description?: string | null
           name: string
+          platform?: string | null
           published?: boolean
           short_id?: string
           tags?: string[]
@@ -141,6 +143,7 @@ export type Database = {
           jar_size?: number | null
           long_description?: string | null
           name?: string
+          platform?: string | null
           published?: boolean
           short_id?: string
           tags?: string[]
