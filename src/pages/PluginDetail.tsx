@@ -19,6 +19,7 @@ type Plugin = {
   download_url: string | null;
   icon_url: string | null;
   category: string | null;
+  platform: string | null;
   tags: string[];
   featured: boolean;
   created_at: string;
@@ -35,7 +36,7 @@ const formatBytes = (b: number | null) => {
 
 const buildJarName = (plugin: Plugin) => {
   const sanitize = (s: string | null) => (s ? s.replace(/\s+/g, "-") : "");
-  const parts = [sanitize(plugin.name), sanitize(plugin.category), sanitize(plugin.version)].filter(Boolean);
+  const parts = [sanitize(plugin.name), sanitize(plugin.platform), sanitize(plugin.version)].filter(Boolean);
   return parts.length > 0 ? `${parts.join("-")}.jar` : `${sanitize(plugin.name) || "plugin"}.jar`;
 };
 
