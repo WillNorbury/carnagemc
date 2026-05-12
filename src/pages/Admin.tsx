@@ -1269,6 +1269,7 @@ type PluginRow = {
   download_url: string | null;
   icon_url: string | null;
   category: string | null;
+  platform: string | null;
   tags: string[];
   featured: boolean;
   published: boolean;
@@ -1280,7 +1281,7 @@ type PluginRow = {
 
 const emptyPluginForm = {
   name: "", description: "", long_description: "", version: "", author: "",
-  download_url: "", icon_url: "", category: "", tags: "",
+  download_url: "", icon_url: "", category: "", platform: "", tags: "",
   featured: false, published: true,
   jar_path: "" as string, jar_filename: "" as string, jar_size: 0 as number,
 };
@@ -1312,7 +1313,7 @@ const PluginsTab = () => {
     setForm({
       name: p.name, description: p.description ?? "", long_description: p.long_description ?? "",
       version: p.version ?? "", author: p.author ?? "", download_url: p.download_url ?? "",
-      icon_url: p.icon_url ?? "", category: p.category ?? "",
+      icon_url: p.icon_url ?? "", category: p.category ?? "", platform: p.platform ?? "",
       tags: (p.tags ?? []).join(", "),
       featured: p.featured, published: p.published,
       jar_path: p.jar_path ?? "", jar_filename: p.jar_filename ?? "", jar_size: p.jar_size ?? 0,
@@ -1375,6 +1376,7 @@ const PluginsTab = () => {
       download_url: form.download_url.trim() || null,
       icon_url: form.icon_url.trim() || null,
       category: form.category.trim() || null,
+      platform: form.platform.trim() || null,
       tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
       featured: form.featured,
       published: form.published,
@@ -1429,9 +1431,15 @@ const PluginsTab = () => {
               <Input value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
             </div>
           </div>
-          <div>
-            <Label>Category</Label>
-            <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Economy, PvP, ..." />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Category</Label>
+              <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Economy, PvP, ..." />
+            </div>
+            <div>
+              <Label>Platform</Label>
+              <Input value={form.platform} onChange={(e) => setForm({ ...form, platform: e.target.value })} placeholder="Bukkit, Spigot, Paper" />
+            </div>
           </div>
           <div>
             <Label>Short description</Label>
@@ -1481,7 +1489,7 @@ const PluginsTab = () => {
                 const sanitize = (s: string) => s.trim().replace(/\s+/g, "-");
                 const parts = [
                   sanitize(form.name) || "Plugin",
-                  sanitize(form.category) || "Platform",
+                  sanitize(form.platform) || "Platform",
                   sanitize(form.version) || "Version",
                 ];
                 return `${parts.join("-")}.jar`;

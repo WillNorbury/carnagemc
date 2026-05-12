@@ -1,0 +1,1 @@
+ALTER TABLE public.plugins ADD COLUMN IF NOT EXISTS platform text;
