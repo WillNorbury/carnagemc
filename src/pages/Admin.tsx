@@ -1489,7 +1489,7 @@ const PluginsTab = () => {
                 const sanitize = (s: string) => s.trim().replace(/\s+/g, "-");
                 const parts = [
                   sanitize(form.name) || "Plugin",
-                  sanitize(form.category) || "Platform",
+                  sanitize(form.platform) || "Platform",
                   sanitize(form.version) || "Version",
                 ];
                 return `${parts.join("-")}.jar`;
