@@ -1431,9 +1431,15 @@ const PluginsTab = () => {
               <Input value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
             </div>
           </div>
-          <div>
-            <Label>Category</Label>
-            <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Economy, PvP, ..." />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Category</Label>
+              <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Economy, PvP, ..." />
+            </div>
+            <div>
+              <Label>Platform</Label>
+              <Input value={form.platform} onChange={(e) => setForm({ ...form, platform: e.target.value })} placeholder="Bukkit, Spigot, Paper" />
+            </div>
           </div>
           <div>
             <Label>Short description</Label>
