@@ -1376,6 +1376,7 @@ const PluginsTab = () => {
       download_url: form.download_url.trim() || null,
       icon_url: form.icon_url.trim() || null,
       category: form.category.trim() || null,
+      platform: form.platform.trim() || null,
       tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
       featured: form.featured,
       published: form.published,
