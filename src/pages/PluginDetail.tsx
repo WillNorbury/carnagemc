@@ -33,6 +33,12 @@ const formatBytes = (b: number | null) => {
   return `${(b / 1024 / 1024).toFixed(2)} MB`;
 };
 
+const buildJarName = (plugin: Plugin) => {
+  const sanitize = (s: string | null) => (s ? s.replace(/\s+/g, "-") : "");
+  const parts = [sanitize(plugin.name), sanitize(plugin.category), sanitize(plugin.version)].filter(Boolean);
+  return parts.length > 0 ? `${parts.join("-")}.jar` : `${sanitize(plugin.name) || "plugin"}.jar`;
+};
+
 const PluginDetail = () => {
   const { shortId } = useParams<{ shortId: string }>();
   const [plugin, setPlugin] = useState<Plugin | null>(null);
