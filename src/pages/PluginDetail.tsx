@@ -128,7 +128,7 @@ const PluginDetail = () => {
                       Download
                     </div>
                     <div className="text-sm font-mono truncate">
-                      {plugin.jar_filename ?? `${plugin.name}.jar`}
+                      {buildJarName(plugin)}
                     </div>
                     {plugin.jar_size && (
                       <div className="text-xs text-muted-foreground">{formatBytes(plugin.jar_size)}</div>
