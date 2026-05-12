@@ -134,16 +134,21 @@ const PluginDetail = () => {
                       <div className="text-xs text-muted-foreground">{formatBytes(plugin.jar_size)}</div>
                     )}
                   </div>
-                  <Button asChild size="lg" className="glow shrink-0">
-                    <a
-                      href={plugin.download_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      download={buildJarName(plugin)}
-                    >
-                      <Download className="h-5 w-5 mr-2" /> Download .jar
-                    </a>
-                  </Button>
+                  <div className="flex flex-col items-center sm:items-end gap-1 shrink-0">
+                    <Button asChild size="lg" className="glow">
+                      <a
+                        href={plugin.download_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        download={buildJarName(plugin)}
+                      >
+                        <Download className="h-5 w-5 mr-2" /> Download .jar
+                      </a>
+                    </Button>
+                    <div className="text-[10px] font-mono text-muted-foreground truncate max-w-[200px]">
+                      {buildJarName(plugin)}
+                    </div>
+                  </div>
                 </div>
               )}
             </Card>
