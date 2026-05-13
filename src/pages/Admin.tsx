@@ -209,6 +209,14 @@ const DashboardSection = ({ onNavigate }: { onNavigate: (s: AdminSection) => voi
 const UsersTab = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [roles, setRoles] = useState<RoleRow[]>([]);
+  const [creating, setCreating] = useState(false);
+  const [newUser, setNewUser] = useState({
+    email: "",
+    password: "",
+    display_name: "",
+    mc_username: "",
+    is_admin: false,
+  });
 
   const load = async () => {
     const [{ data: p }, { data: r }] = await Promise.all([
@@ -235,27 +243,106 @@ const UsersTab = () => {
     load();
   };
 
+  const createUser = async () => {
+    if (!newUser.email || !newUser.password) {
+      toast.error("Email and password required");
+      return;
+    }
+    if (newUser.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    setCreating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-create-user", {
+        body: newUser,
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast.success("User created");
+      setNewUser({ email: "", password: "", display_name: "", mc_username: "", is_admin: false });
+      load();
+    } catch (e: any) {
+      toast.error(e.message ?? "Failed to create user");
+    } finally {
+      setCreating(false);
+    }
+  };
+
   return (
-    <Card className="p-6">
-      <h2 className="font-bold mb-4">Users ({profiles.length})</h2>
-      <div className="space-y-2">
-        {profiles.map((p) => (
-          <div key={p.id} className="flex items-center justify-between p-3 rounded-lg bg-secondary/40">
-            <div>
-              <div className="font-medium">{p.display_name ?? "Unnamed"}</div>
-              <div className="text-xs text-muted-foreground font-mono">{p.id.slice(0, 8)}</div>
-            </div>
-            <div className="flex items-center gap-2">
-              {isAdminFor(p.id) && <Badge>Admin</Badge>}
-              <Button size="sm" variant="outline" onClick={() => toggleAdmin(p.id)}>
-                <ShieldCheck className="h-4 w-4 mr-1" />
-                {isAdminFor(p.id) ? "Demote" : "Promote"}
-              </Button>
-            </div>
+    <div className="space-y-6">
+      <Card className="p-6">
+        <h2 className="font-bold mb-4">Create User</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <Label>Email</Label>
+            <Input
+              type="email"
+              value={newUser.email}
+              onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+              placeholder="user@example.com"
+            />
           </div>
-        ))}
-      </div>
-    </Card>
+          <div>
+            <Label>Password</Label>
+            <Input
+              type="password"
+              value={newUser.password}
+              onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+              placeholder="At least 6 characters"
+            />
+          </div>
+          <div>
+            <Label>Display Name (optional)</Label>
+            <Input
+              value={newUser.display_name}
+              onChange={(e) => setNewUser({ ...newUser, display_name: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label>MC Username (optional)</Label>
+            <Input
+              value={newUser.mc_username}
+              onChange={(e) => setNewUser({ ...newUser, mc_username: e.target.value })}
+            />
+          </div>
+        </div>
+        <div className="flex items-center justify-between mt-4">
+          <label className="flex items-center gap-2 text-sm">
+            <Switch
+              checked={newUser.is_admin}
+              onCheckedChange={(v) => setNewUser({ ...newUser, is_admin: v })}
+            />
+            Make admin
+          </label>
+          <Button onClick={createUser} disabled={creating}>
+            <Plus className="h-4 w-4 mr-1" />
+            {creating ? "Creating..." : "Create User"}
+          </Button>
+        </div>
+      </Card>
+
+      <Card className="p-6">
+        <h2 className="font-bold mb-4">Users ({profiles.length})</h2>
+        <div className="space-y-2">
+          {profiles.map((p) => (
+            <div key={p.id} className="flex items-center justify-between p-3 rounded-lg bg-secondary/40">
+              <div>
+                <div className="font-medium">{p.display_name ?? "Unnamed"}</div>
+                <div className="text-xs text-muted-foreground font-mono">{p.id.slice(0, 8)}</div>
+              </div>
+              <div className="flex items-center gap-2">
+                {isAdminFor(p.id) && <Badge>Admin</Badge>}
+                <Button size="sm" variant="outline" onClick={() => toggleAdmin(p.id)}>
+                  <ShieldCheck className="h-4 w-4 mr-1" />
+                  {isAdminFor(p.id) ? "Demote" : "Promote"}
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
   );
 };
 
