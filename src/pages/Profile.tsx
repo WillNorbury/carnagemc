@@ -37,9 +37,13 @@ const Profile = () => {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [prefs, setPrefs] = useState<Required<UserPreferences>>(DEFAULT_PREFS);
+  const [savedMc, setSavedMc] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [unlinking, setUnlinking] = useState(false);
+
+  const MC_RE = /^[A-Za-z0-9_]{3,16}$/;
+  const mcInvalid = !MC_RE.test(mcUsername.trim());
 
   useEffect(() => {
     document.title = "My Profile — ZyphoraMC";
@@ -55,6 +59,7 @@ const Profile = () => {
       ]);
       setDisplayName(p?.display_name ?? "");
       setMcUsername(p?.mc_username ?? "");
+      setSavedMc(p?.mc_username ?? null);
       setAvatarUrl(p?.avatar_url ?? "");
       setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
       const loaded = { ...DEFAULT_PREFS, ...((p?.preferences as UserPreferences) ?? {}) };
@@ -74,18 +79,26 @@ const Profile = () => {
 
   const save = async () => {
     if (!user) return;
+    if (mcInvalid) {
+      toast.error("Invalid Minecraft username — your previous value will be kept.");
+      setMcUsername(savedMc ?? "");
+      return;
+    }
+    const trimmedMc = mcUsername.trim();
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
       .update({
         display_name: displayName || null,
-        mc_username: mcUsername || null,
+        mc_username: trimmedMc,
         avatar_url: avatarUrl || null,
         preferences: prefs,
       })
       .eq("id", user.id);
     setSaving(false);
     if (error) return toast.error(error.message);
+    setSavedMc(trimmedMc);
+    setMcUsername(trimmedMc);
     toast.success("Profile saved");
   };
 
@@ -96,6 +109,7 @@ const Profile = () => {
     setUnlinking(false);
     if (error) return toast.error(error.message);
     setMcUsername("");
+    setSavedMc(null);
     toast.success("Minecraft account unlinked");
   };
 
