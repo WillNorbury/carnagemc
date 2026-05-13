@@ -32,7 +32,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Checkbox } from "@/components/ui/checkbox";
 import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
 import { StatCard } from "@/components/admin/StatCard";
-import { ALL_ROLES, roleLabel, type AppRole } from "@/lib/roles";
+import { ALL_ROLES, roleLabel, isStaffRole, type AppRole } from "@/lib/roles";
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
 type RoleRow = { id: string; user_id: string; role: AppRole };
@@ -391,6 +391,11 @@ const UsersTab = () => {
                 <div className="text-xs text-muted-foreground font-mono">{p.id.slice(0, 8)}</div>
               </div>
               <div className="flex items-center gap-2">
+                {roles.some((r) => r.user_id === p.id && isStaffRole(r.role)) && (
+                  <Badge variant="outline" className="border-primary/40 text-primary bg-primary/10">
+                    Staff
+                  </Badge>
+                )}
                 {isAdminFor(p.id) && <Badge>Admin</Badge>}
                 <Button size="sm" variant="outline" onClick={() => toggleAdmin(p.id)}>
                   <ShieldCheck className="h-4 w-4 mr-1" />
