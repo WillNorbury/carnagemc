@@ -27,7 +27,7 @@ import { useAuth } from "@/lib/auth";
 import { roleLabel, type AppRole } from "@/lib/roles";
 import { applyTheme, DEFAULT_PREFS, type UserPreferences } from "@/lib/preferences";
 import { toast } from "sonner";
-import { Bell, ExternalLink, Loader2, Palette, Unlink } from "lucide-react";
+import { Bell, ExternalLink, Loader2, Lock, Palette, Unlink } from "lucide-react";
 
 const Profile = () => {
   const { user, loading: authLoading, signOut } = useAuth();
