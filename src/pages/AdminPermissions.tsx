@@ -116,6 +116,13 @@ const AdminPermissions = () => {
       <p className="text-muted-foreground">You don't have admin permissions.</p>
     </div>
   );
+  if (!isOwner) return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+      <ShieldOff className="h-12 w-12 text-destructive" />
+      <h1 className="text-2xl font-bold">Access denied</h1>
+      <p className="text-muted-foreground">Only the owner can access this section.</p>
+    </div>
+  );
 
   return (
     <AdminLayout
