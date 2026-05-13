@@ -291,6 +291,7 @@ const Index = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Server stats counters */}
       <section className="relative py-20 border-y border-primary/10">
