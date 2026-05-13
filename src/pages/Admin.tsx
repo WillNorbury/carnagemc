@@ -218,6 +218,8 @@ const UsersTab = () => {
     display_name: "",
     mc_username: "",
   });
+  const [search, setSearch] = useState("");
+  const [staffOnly, setStaffOnly] = useState(false);
 
   const load = async () => {
     const [{ data: p }, { data: r }] = await Promise.all([
@@ -382,28 +384,72 @@ const UsersTab = () => {
       </Card>
 
       <Card className="p-6">
-        <h2 className="font-bold mb-4">Users ({profiles.length})</h2>
+        <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+          <h2 className="font-bold">Users ({profiles.length})</h2>
+          <div className="flex items-center gap-3 flex-wrap">
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search name, MC username, ID..."
+              className="h-9 w-64"
+            />
+            <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+              <Checkbox
+                checked={staffOnly}
+                onCheckedChange={(v) => setStaffOnly(v === true)}
+              />
+              Staff only
+            </label>
+          </div>
+        </div>
         <div className="space-y-2">
-          {profiles.map((p) => (
-            <div key={p.id} className="flex items-center justify-between p-3 rounded-lg bg-secondary/40">
-              <div>
-                <div className="font-medium">{p.display_name ?? "Unnamed"}</div>
-                <div className="text-xs text-muted-foreground font-mono">{p.id.slice(0, 8)}</div>
-              </div>
-              <div className="flex items-center gap-2">
-                {roles.some((r) => r.user_id === p.id && isStaffRole(r.role)) && (
-                  <Badge variant="outline" className="border-primary/40 text-primary bg-primary/10">
-                    Staff
-                  </Badge>
-                )}
-                {isAdminFor(p.id) && <Badge>Admin</Badge>}
-                <Button size="sm" variant="outline" onClick={() => toggleAdmin(p.id)}>
-                  <ShieldCheck className="h-4 w-4 mr-1" />
-                  {isAdminFor(p.id) ? "Demote" : "Promote"}
-                </Button>
-              </div>
-            </div>
-          ))}
+          {profiles
+            .filter((p) => {
+              const userRoles = roles.filter((r) => r.user_id === p.id);
+              if (staffOnly && !userRoles.some((r) => isStaffRole(r.role))) return false;
+              const q = search.trim().toLowerCase();
+              if (!q) return true;
+              return (
+                (p.display_name ?? "").toLowerCase().includes(q) ||
+                (p.mc_username ?? "").toLowerCase().includes(q) ||
+                p.id.toLowerCase().includes(q)
+              );
+            })
+            .map((p) => {
+              const staffRolesForUser = roles
+                .filter((r) => r.user_id === p.id && isStaffRole(r.role))
+                .map((r) => roleLabel(r.role));
+              return (
+                <div key={p.id} className="flex items-center justify-between p-3 rounded-lg bg-secondary/40">
+                  <div>
+                    <div className="font-medium">{p.display_name ?? "Unnamed"}</div>
+                    <div className="text-xs text-muted-foreground font-mono">{p.id.slice(0, 8)}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {staffRolesForUser.length > 0 && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge
+                            variant="outline"
+                            className="border-primary/40 text-primary bg-primary/10 cursor-help"
+                          >
+                            Staff
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {staffRolesForUser.join(", ")}
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                    {isAdminFor(p.id) && <Badge>Admin</Badge>}
+                    <Button size="sm" variant="outline" onClick={() => toggleAdmin(p.id)}>
+                      <ShieldCheck className="h-4 w-4 mr-1" />
+                      {isAdminFor(p.id) ? "Demote" : "Promote"}
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </Card>
     </div>
