@@ -192,8 +192,12 @@ const UserProfile = () => {
               </div>
 
               <div className="flex items-center gap-4 mt-4 text-sm">
-                <span><strong className="text-foreground">{followerCount}</strong> <span className="text-muted-foreground">followers</span></span>
-                <span><strong className="text-foreground">{followingCount}</strong> <span className="text-muted-foreground">following</span></span>
+                <button onClick={() => openList("followers")} className="hover:text-primary transition-colors">
+                  <strong className="text-foreground">{followerCount}</strong> <span className="text-muted-foreground">followers</span>
+                </button>
+                <button onClick={() => openList("following")} className="hover:text-primary transition-colors">
+                  <strong className="text-foreground">{followingCount}</strong> <span className="text-muted-foreground">following</span>
+                </button>
               </div>
 
               {user && user.id !== profile.id && (
