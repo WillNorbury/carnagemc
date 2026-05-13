@@ -1548,6 +1548,39 @@ const PluginsTab = () => {
             <Label>Download URL (auto-filled from upload, or paste an external link)</Label>
             <Input value={form.download_url} onChange={(e) => setForm({ ...form, download_url: e.target.value })} />
           </div>
+          <div className="space-y-2 rounded-lg border border-border bg-secondary/30 p-3">
+            <Label>Screenshots</Label>
+            {form.screenshots.length > 0 && (
+              <div className="grid grid-cols-3 gap-2">
+                {form.screenshots.map((url) => (
+                  <div key={url} className="relative group">
+                    <img src={url} alt="" className="w-full h-20 object-cover rounded border border-border" />
+                    <button
+                      type="button"
+                      onClick={() => removeScreenshot(url)}
+                      className="absolute top-1 right-1 bg-background/90 border border-border rounded p-1 opacity-0 group-hover:opacity-100 transition"
+                      aria-label="Remove screenshot"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <Button asChild variant="outline" disabled={uploadingShot} className="w-full">
+              <label className="cursor-pointer">
+                {uploadingShot ? "Uploading..." : "Upload screenshots (.png)"}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => { onScreenshotsSelected(e.target.files); e.target.value = ""; }}
+                />
+              </label>
+            </Button>
+            <p className="text-xs text-muted-foreground">PNG, JPG, or WebP. You can upload multiple at once.</p>
+          </div>
           <div>
             <Label>Tags (comma separated)</Label>
             <Input value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} placeholder="pvp, economy" />
