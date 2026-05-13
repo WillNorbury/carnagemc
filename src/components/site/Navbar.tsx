@@ -137,6 +137,13 @@ const Navbar = () => {
                 {l.label}
               </Link>
             ))}
+            {user && (
+              <>
+                <Link to="/dashboard" className="text-sm uppercase tracking-wider py-1 hover:text-primary transition">Dashboard</Link>
+                <Link to="/profile" className="text-sm uppercase tracking-wider py-1 hover:text-primary transition">Profile</Link>
+                <Link to="/tickets" className="text-sm uppercase tracking-wider py-1 hover:text-primary transition">Tickets</Link>
+              </>
+            )}
             {isAdmin && (
               <Button variant="ghost" size="sm" onClick={() => nav("/admin")} className="justify-start">
                 <Shield className="h-4 w-4 mr-1" /> Admin
