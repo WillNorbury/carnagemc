@@ -136,15 +136,31 @@ const PluginDetail = () => {
                     )}
                   </div>
                   <div className="flex flex-col items-center sm:items-end gap-1 shrink-0">
-                    <Button asChild size="lg" className="glow">
-                      <a
-                        href={plugin.download_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        download={buildJarName(plugin)}
-                      >
-                        <Download className="h-5 w-5 mr-2" /> Download .jar
-                      </a>
+                    <Button
+                      size="lg"
+                      className="glow"
+                      onClick={async () => {
+                        if (!plugin.download_url) return;
+                        const filename = buildJarName(plugin);
+                        try {
+                          const res = await fetch(plugin.download_url);
+                          if (!res.ok) throw new Error("Failed to download");
+                          const blob = await res.blob();
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = filename;
+                          document.body.appendChild(a);
+                          a.click();
+                          a.remove();
+                          URL.revokeObjectURL(url);
+                        } catch {
+                          // Fallback: open in new tab if blob fetch fails (CORS etc.)
+                          window.open(plugin.download_url, "_blank", "noopener");
+                        }
+                      }}
+                    >
+                      <Download className="h-5 w-5 mr-2" /> Download .jar
                     </Button>
                     <div className="text-[10px] font-mono text-muted-foreground truncate max-w-[200px]">
                       {buildJarName(plugin)}
