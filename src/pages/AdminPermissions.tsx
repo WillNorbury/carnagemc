@@ -10,7 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { ShieldOff, Save, RotateCcw, Search, Info, Loader2 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { ALL_ROLES, roleLabel, type AppRole } from "@/lib/roles";
+import { ALL_ROLES, roleLabel, isStaffRole, type AppRole } from "@/lib/roles";
 import {
   PERMISSION_CATALOG,
   ALL_PERMISSION_KEYS,
@@ -164,7 +164,14 @@ const AdminPermissions = () => {
                   <th className="text-left p-3 font-medium w-[280px] border-b">Permission</th>
                   {ALL_ROLES.map((r) => (
                     <th key={r.value} className="p-2 font-medium text-center border-b min-w-[80px]">
-                      <div className="text-xs">{r.label}</div>
+                      <div className="text-xs flex flex-col items-center gap-1">
+                        <span>{r.label}</span>
+                        {isStaffRole(r.value) && (
+                          <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/15 text-primary border border-primary/30">
+                            Staff
+                          </span>
+                        )}
+                      </div>
                     </th>
                   ))}
                 </tr>
@@ -234,7 +241,14 @@ const AdminPermissions = () => {
             const count = (matrix[r.value as AppRole] ?? []).length;
             return (
               <div key={r.value} className="flex items-center justify-between p-2 rounded bg-secondary/30">
-                <span className="text-sm">{roleLabel(r.value)}</span>
+                <span className="text-sm flex items-center gap-2">
+                  {roleLabel(r.value)}
+                  {isStaffRole(r.value) && (
+                    <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/15 text-primary border border-primary/30">
+                      Staff
+                    </span>
+                  )}
+                </span>
                 <Badge variant="secondary">{count} / {ALL_PERMISSION_KEYS.length}</Badge>
               </div>
             );
