@@ -36,8 +36,10 @@ const Profile = () => {
   const [mcUsername, setMcUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [roles, setRoles] = useState<AppRole[]>([]);
+  const [prefs, setPrefs] = useState<Required<UserPreferences>>(DEFAULT_PREFS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [unlinking, setUnlinking] = useState(false);
 
   useEffect(() => {
     document.title = "My Profile — ZyphoraMC";
@@ -48,16 +50,27 @@ const Profile = () => {
     if (!user) { navigate("/auth"); return; }
     (async () => {
       const [{ data: p }, { data: r }] = await Promise.all([
-        supabase.from("profiles").select("display_name, mc_username, avatar_url").eq("id", user.id).maybeSingle(),
+        supabase.from("profiles").select("display_name, mc_username, avatar_url, preferences").eq("id", user.id).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", user.id),
       ]);
       setDisplayName(p?.display_name ?? "");
       setMcUsername(p?.mc_username ?? "");
       setAvatarUrl(p?.avatar_url ?? "");
       setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
+      const loaded = { ...DEFAULT_PREFS, ...((p?.preferences as UserPreferences) ?? {}) };
+      setPrefs(loaded);
+      applyTheme(loaded.theme);
       setLoading(false);
     })();
   }, [user, authLoading, navigate]);
+
+  const updatePref = <K extends keyof Required<UserPreferences>>(key: K, value: Required<UserPreferences>[K]) => {
+    setPrefs((p) => {
+      const next = { ...p, [key]: value };
+      if (key === "theme") applyTheme(value as Required<UserPreferences>["theme"]);
+      return next;
+    });
+  };
 
   const save = async () => {
     if (!user) return;
@@ -68,11 +81,22 @@ const Profile = () => {
         display_name: displayName || null,
         mc_username: mcUsername || null,
         avatar_url: avatarUrl || null,
+        preferences: prefs,
       })
       .eq("id", user.id);
     setSaving(false);
     if (error) return toast.error(error.message);
     toast.success("Profile saved");
+  };
+
+  const unlinkMinecraft = async () => {
+    if (!user) return;
+    setUnlinking(true);
+    const { error } = await supabase.from("profiles").update({ mc_username: null }).eq("id", user.id);
+    setUnlinking(false);
+    if (error) return toast.error(error.message);
+    setMcUsername("");
+    toast.success("Minecraft account unlinked");
   };
 
   if (authLoading || loading) {
