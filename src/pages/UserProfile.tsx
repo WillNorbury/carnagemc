@@ -7,8 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { ALL_ROLES, roleLabel, type AppRole } from "@/lib/roles";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, UserPlus, UserCheck } from "lucide-react";
+import { toast } from "sonner";
 
 type Profile = {
   id: string;
@@ -25,16 +27,40 @@ const roleRank = (r: AppRole) => {
 
 const UserProfile = () => {
   const { shortId } = useParams<{ shortId: string }>();
+  const { user } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followBusy, setFollowBusy] = useState(false);
+
+  const loadCounts = async (targetId: string, viewerId: string | undefined) => {
+    const [{ count: followers }, { count: following }] = await Promise.all([
+      supabase.from("user_follows").select("*", { count: "exact", head: true }).eq("followee_id", targetId),
+      supabase.from("user_follows").select("*", { count: "exact", head: true }).eq("follower_id", targetId),
+    ]);
+    setFollowerCount(followers ?? 0);
+    setFollowingCount(following ?? 0);
+    if (viewerId && viewerId !== targetId) {
+      const { data } = await supabase
+        .from("user_follows")
+        .select("follower_id")
+        .eq("follower_id", viewerId)
+        .eq("followee_id", targetId)
+        .maybeSingle();
+      setIsFollowing(!!data);
+    } else {
+      setIsFollowing(false);
+    }
+  };
 
   useEffect(() => {
     if (!shortId) return;
     (async () => {
       setLoading(true);
-      // Look up profile by id prefix (first 8 chars)
       const { data: profiles } = await supabase
         .from("profiles")
         .select("id, display_name, avatar_url, mc_username, created_at");
@@ -51,9 +77,30 @@ const UserProfile = () => {
       setProfile(match as Profile);
       setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role).sort((a, b) => roleRank(a) - roleRank(b)));
       document.title = `${match.display_name ?? "Player"} — ZyphoraMC`;
+      await loadCounts(match.id, user?.id);
       setLoading(false);
     })();
-  }, [shortId]);
+  }, [shortId, user?.id]);
+
+  const toggleFollow = async () => {
+    if (!user) { toast.error("Sign in to follow players"); return; }
+    if (!profile) return;
+    setFollowBusy(true);
+    if (isFollowing) {
+      const { error } = await supabase
+        .from("user_follows").delete()
+        .eq("follower_id", user.id).eq("followee_id", profile.id);
+      if (error) toast.error(error.message);
+      else { setIsFollowing(false); setFollowerCount((c) => Math.max(0, c - 1)); }
+    } else {
+      const { error } = await supabase
+        .from("user_follows")
+        .insert({ follower_id: user.id, followee_id: profile.id });
+      if (error) toast.error(error.message);
+      else { setIsFollowing(true); setFollowerCount((c) => c + 1); }
+    }
+    setFollowBusy(false);
+  };
 
   if (loading) {
     return (
@@ -118,6 +165,29 @@ const UserProfile = () => {
                   <Badge key={r} variant="secondary" className="text-sm">{roleLabel(r)}</Badge>
                 ))}
               </div>
+
+              <div className="flex items-center gap-4 mt-4 text-sm">
+                <span><strong className="text-foreground">{followerCount}</strong> <span className="text-muted-foreground">followers</span></span>
+                <span><strong className="text-foreground">{followingCount}</strong> <span className="text-muted-foreground">following</span></span>
+              </div>
+
+              {user && user.id !== profile.id && (
+                <Button
+                  onClick={toggleFollow}
+                  disabled={followBusy}
+                  variant={isFollowing ? "outline" : "default"}
+                  className="mt-4"
+                  size="sm"
+                >
+                  {followBusy ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : isFollowing ? (
+                    <><UserCheck className="h-4 w-4" /> Following</>
+                  ) : (
+                    <><UserPlus className="h-4 w-4" /> Follow</>
+                  )}
+                </Button>
+              )}
             </div>
           </div>
         </Card>
