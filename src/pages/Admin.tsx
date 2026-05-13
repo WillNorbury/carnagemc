@@ -121,7 +121,7 @@ const Admin = () => {
   const meta = sectionMeta[section];
 
   return (
-    <AdminLayout current={section} onNavigate={onNavigate} title={meta.title} description={meta.description}>
+    <AdminLayout current={section} onNavigate={onNavigate} title={meta.title} description={meta.description} isOwner={isOwner}>
       {section === "dashboard" && <DashboardSection onNavigate={onNavigate} />}
       {section === "users" && <UsersTab />}
       {section === "roles" && <RolesSection />}
