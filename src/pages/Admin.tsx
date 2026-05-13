@@ -211,6 +211,7 @@ const UsersTab = () => {
   const [roles, setRoles] = useState<RoleRow[]>([]);
   const [creating, setCreating] = useState(false);
   const [newRoles, setNewRoles] = useState<Set<AppRole>>(new Set());
+  const [roleSearch, setRoleSearch] = useState("");
   const [newUser, setNewUser] = useState({
     email: "",
     password: "",
@@ -331,8 +332,19 @@ const UsersTab = () => {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-64 p-2" align="start">
+              <Input
+                autoFocus
+                value={roleSearch}
+                onChange={(e) => setRoleSearch(e.target.value)}
+                placeholder="Search roles..."
+                className="h-8 mb-2"
+              />
               <div className="max-h-72 overflow-y-auto space-y-1">
-                {ALL_ROLES.filter((r) => r.value !== "default").map((r) => {
+                {ALL_ROLES.filter(
+                  (r) =>
+                    r.value !== "default" &&
+                    r.label.toLowerCase().includes(roleSearch.toLowerCase()),
+                ).map((r) => {
                   const active = newRoles.has(r.value);
                   return (
                     <button
@@ -347,6 +359,13 @@ const UsersTab = () => {
                     </button>
                   );
                 })}
+                {ALL_ROLES.filter(
+                  (r) =>
+                    r.value !== "default" &&
+                    r.label.toLowerCase().includes(roleSearch.toLowerCase()),
+                ).length === 0 && (
+                  <div className="text-xs text-muted-foreground text-center py-3">No roles match</div>
+                )}
               </div>
             </PopoverContent>
           </Popover>
