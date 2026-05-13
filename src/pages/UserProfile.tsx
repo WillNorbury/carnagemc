@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { ALL_ROLES, roleLabel, type AppRole } from "@/lib/roles";
-import { Loader2, ArrowLeft, UserPlus, UserCheck } from "lucide-react";
+import { Loader2, ArrowLeft, UserPlus, UserCheck, Users, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 type Profile = {
