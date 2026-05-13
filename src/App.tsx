@@ -40,33 +40,38 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/roles" element={<AdminRoles />} />
-            <Route path="/admin/permissions" element={<AdminPermissions />} />
-            <Route path="/admin/changelog" element={<AdminChangelog />} />
-            <Route path="/admin/applications" element={<AdminApplications />} />
-            <Route path="/changelog" element={<Changelog />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/link-account" element={<Dashboard />} />
-            <Route path="/apply" element={<Apply />} />
-            <Route path="/news" element={<News />} />
-            <Route path="/news/:slug" element={<NewsArticle />} />
-            <Route path="/staff" element={<Staff />} />
-            <Route path="/vote" element={<Vote />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/rules" element={<Rules />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="/tickets" element={<Tickets />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/user/:shortId" element={<UserProfile />} />
-            <Route path="/plugins" element={<Plugins />} />
-            <Route path="/plugins/:shortId" element={<PluginDetail />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/admin/roles" element={<AdminRoles />} />
+                <Route path="/admin/permissions" element={<AdminPermissions />} />
+                <Route path="/admin/changelog" element={<AdminChangelog />} />
+                <Route path="/admin/applications" element={<AdminApplications />} />
+                <Route path="/changelog" element={<Changelog />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/link-account" element={<Dashboard />} />
+                <Route path="/apply" element={<Apply />} />
+                <Route path="/news" element={<News />} />
+                <Route path="/news/:slug" element={<NewsArticle />} />
+                <Route path="/staff" element={<Staff />} />
+                <Route path="/vote" element={<Vote />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/rules" element={<Rules />} />
+                <Route path="/support" element={<Support />} />
+                <Route path="/tickets" element={<Tickets />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/users" element={<Users />} />
+                <Route path="/user/:shortId" element={<UserProfile />} />
+                <Route path="/plugins" element={<Plugins />} />
+                <Route path="/plugins/:shortId" element={<PluginDetail />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </SidebarInset>
+          </SidebarProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
