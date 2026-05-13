@@ -1598,10 +1598,6 @@ const PluginsTab = () => {
               })()}
             </div>
           </div>
-          <div>
-            <Label>Download URL (auto-filled from upload, or paste an external link)</Label>
-            <Input value={form.download_url} onChange={(e) => setForm({ ...form, download_url: e.target.value })} />
-          </div>
           <div className="space-y-2 rounded-lg border border-border bg-secondary/30 p-3">
             <Label>Screenshots</Label>
             {form.screenshots.length > 0 && (
