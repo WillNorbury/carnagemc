@@ -233,6 +233,7 @@ const Index = () => {
       )}
 
       {/* Hero */}
+      {content.hero?.enabled !== false && (
       <section className="relative min-h-[92vh] flex items-center overflow-hidden pt-16">
         <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
         <div className="absolute inset-0 bg-grid opacity-[0.15]" />
