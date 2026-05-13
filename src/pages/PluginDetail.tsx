@@ -25,6 +25,7 @@ type Plugin = {
   created_at: string;
   jar_filename: string | null;
   jar_size: number | null;
+  screenshots: string[];
 };
 
 const formatBytes = (b: number | null) => {
