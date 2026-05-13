@@ -47,13 +47,20 @@ const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const initial: AdminSection = location.pathname.endsWith("/roles") ? "roles" : "dashboard";
+  const initial: AdminSection =
+    location.pathname.endsWith("/roles") ? "roles" :
+    location.pathname.endsWith("/permissions") ? "permissions" :
+    location.pathname.endsWith("/changelog") ? "changelog" :
+    location.pathname.endsWith("/applications") ? "applications" :
+    "dashboard";
   const [section, setSection] = useState<AdminSection>(initial);
 
   const onNavigate = (s: AdminSection) => {
     setSection(s);
     if (s === "roles") { if (location.pathname !== "/admin/roles") navigate("/admin/roles"); return; }
     if (s === "permissions") { navigate("/admin/permissions"); return; }
+    if (s === "changelog") { navigate("/admin/changelog"); return; }
+    if (s === "applications") { navigate("/admin/applications"); return; }
     if (location.pathname !== "/admin") navigate("/admin");
   };
 
