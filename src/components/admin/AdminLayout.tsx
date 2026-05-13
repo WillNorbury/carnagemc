@@ -55,7 +55,7 @@ export const AdminLayout = ({
 
   const visibleItems = items.filter((it) => {
     if (it.kind === "section" && it.title === "Discord Bot") return isOwner ?? false;
-    if (it.id === "bot-dashboard" || it.id === "bot-management") return isOwner ?? false;
+    if (it.kind === "link" && (it.id === "bot-dashboard" || it.id === "bot-management")) return isOwner ?? false;
     return true;
   });
 
