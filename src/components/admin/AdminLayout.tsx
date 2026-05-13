@@ -68,7 +68,7 @@ export const AdminLayout = ({
                 <span className="text-lg">ZyphoraMC</span>
               </Link>
             )}
-            {collapsed && <img src={logo} alt="ZyphoraMC" className="h-7 w-7" />}
+            
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setCollapsed(!collapsed)}>
               <PanelLeft className="h-5 w-5" />
             </Button>
