@@ -1527,9 +1527,33 @@ const PluginsTab = () => {
             <Label>Long description</Label>
             <Textarea rows={5} value={form.long_description} onChange={(e) => setForm({ ...form, long_description: e.target.value })} />
           </div>
-          <div>
-            <Label>Icon URL</Label>
-            <Input value={form.icon_url} onChange={(e) => setForm({ ...form, icon_url: e.target.value })} />
+          <div className="space-y-2 rounded-lg border border-border bg-secondary/30 p-3">
+            <Label>Icon</Label>
+            {form.icon_url ? (
+              <div className="flex items-center gap-3 rounded-md bg-background p-2 border border-border">
+                <img src={form.icon_url} alt="" className="h-12 w-12 rounded object-cover border border-border" />
+                <div className="flex-1 min-w-0 text-xs text-muted-foreground truncate font-mono">{form.icon_url}</div>
+                <Button asChild size="sm" variant="outline">
+                  <label className="cursor-pointer">
+                    Replace
+                    <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden"
+                      onChange={(e) => { onIconSelected(e.target.files?.[0]); e.target.value = ""; }} />
+                  </label>
+                </Button>
+                <Button size="sm" variant="ghost" onClick={removeIcon}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button asChild variant="outline" disabled={uploadingIcon} className="w-full">
+                <label className="cursor-pointer">
+                  {uploadingIcon ? "Uploading..." : "Upload icon (.png)"}
+                  <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden"
+                    onChange={(e) => { onIconSelected(e.target.files?.[0]); e.target.value = ""; }} />
+                </label>
+              </Button>
+            )}
+            <p className="text-xs text-muted-foreground">PNG, JPG, or WebP. Square images look best.</p>
           </div>
           <div className="space-y-2 rounded-lg border border-border bg-secondary/30 p-3">
             <Label>Plugin JAR file</Label>
