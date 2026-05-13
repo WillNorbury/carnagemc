@@ -272,21 +272,30 @@ const UserProfile = () => {
               </div>
 
               {user && user.id !== profile.id && (
-                <Button
-                  onClick={toggleFollow}
-                  disabled={followBusy}
-                  variant={isFollowing ? "outline" : "default"}
-                  className="mt-4"
-                  size="sm"
-                >
-                  {followBusy ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : isFollowing ? (
-                    <><UserCheck className="h-4 w-4" /> Following</>
-                  ) : (
-                    <><UserPlus className="h-4 w-4" /> Follow</>
+                <div className="flex items-center gap-2 mt-4 flex-wrap">
+                  <Button
+                    onClick={toggleFollow}
+                    disabled={followBusy}
+                    variant={isFollowing ? "outline" : "default"}
+                    size="sm"
+                  >
+                    {followBusy ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : isFollowing ? (
+                      <><UserCheck className="h-4 w-4" /> Following</>
+                    ) : (
+                      <><UserPlus className="h-4 w-4" /> Follow</>
+                    )}
+                  </Button>
+                  {isFollowing && followsMeBack && (
+                    <Badge variant="default" className="gap-1">
+                      <Users className="h-3 w-3" /> Mutuals
+                    </Badge>
                   )}
-                </Button>
+                  {!isFollowing && followsMeBack && (
+                    <Badge variant="secondary">Follows you</Badge>
+                  )}
+                </div>
               )}
             </div>
           </div>
