@@ -82,7 +82,7 @@ export const AdminLayout = ({
           </div>
 
           <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-1">
-            {items.map((it, idx) => {
+            {visibleItems.map((it, idx) => {
               if (it.kind === "section") {
                 const SIcon = it.icon;
                 if (collapsed) return <div key={`s-${idx}`} className="my-2 border-t border-border/60" />;
