@@ -1,8 +1,14 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/lib/auth";
 import logo from "@/assets/zyphora-logo.png";
-import { LogIn, Shield, LogOut, Menu, X, LifeBuoy, LayoutDashboard } from "lucide-react";
+import { LogIn, Shield, LogOut, Menu, X, LifeBuoy, LayoutDashboard, ChevronDown, User as UserIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const links = [
@@ -17,6 +23,8 @@ const links = [
   { to: "/apply", label: "Apply" },
   { to: "/support", label: "Support" },
 ];
+
+const PRIMARY_COUNT = 6;
 
 const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
