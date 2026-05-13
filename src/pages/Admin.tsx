@@ -1417,6 +1417,30 @@ const PluginsTab = () => {
     setForm((f) => ({ ...f, screenshots: f.screenshots.filter((u) => u !== url) }));
   };
 
+  const [uploadingIcon, setUploadingIcon] = useState(false);
+
+  const onIconSelected = async (file: File | undefined) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return toast.error("Please select an image");
+    setUploadingIcon(true);
+    try {
+      const path = `icons/${crypto.randomUUID()}/${file.name}`;
+      const { error } = await supabase.storage
+        .from("plugin-screenshots")
+        .upload(path, file, { contentType: file.type || "image/png", upsert: false });
+      if (error) throw error;
+      const { data: pub } = supabase.storage.from("plugin-screenshots").getPublicUrl(path);
+      setForm((f) => ({ ...f, icon_url: pub.publicUrl }));
+      toast.success("Icon uploaded");
+    } catch (e: any) {
+      toast.error(e.message ?? "Upload failed");
+    } finally {
+      setUploadingIcon(false);
+    }
+  };
+
+  const removeIcon = () => setForm((f) => ({ ...f, icon_url: "" }));
+
   const submit = async () => {
     if (!form.name.trim()) return toast.error("Name is required");
     setSaving(true);
