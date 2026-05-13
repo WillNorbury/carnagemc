@@ -29,6 +29,7 @@ import {
   Puzzle,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
 import { StatCard } from "@/components/admin/StatCard";
