@@ -20,5 +20,20 @@ export const ALL_ROLES = [
 
 export type AppRole = typeof ALL_ROLES[number]["value"];
 
+export const STAFF_ROLES: AppRole[] = [
+  "owner",
+  "manager",
+  "developer",
+  "sr_admin",
+  "admin",
+  "jr_admin",
+  "sr_mod",
+  "mod",
+  "sr_helper",
+  "helper",
+];
+
+export const isStaffRole = (v: string) => STAFF_ROLES.includes(v as AppRole);
+
 export const roleLabel = (v: string) =>
   ALL_ROLES.find((r) => r.value === v)?.label ?? v;
