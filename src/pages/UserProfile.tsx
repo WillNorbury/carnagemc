@@ -166,7 +166,14 @@ const UserProfile = () => {
       setProfile(match as Profile);
       setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role).sort((a, b) => roleRank(a) - roleRank(b)));
       document.title = `${match.display_name ?? "Player"} — ZyphoraMC`;
+      const sortedRoles = ((r ?? []) as { role: AppRole }[]).map((x) => x.role).sort((a, b) => roleRank(a) - roleRank(b));
       await loadCounts(match.id, user?.id);
+      if (user?.id && user.id === match.id) {
+        await loadRecommendations(user.id, sortedRoles);
+      } else {
+        setRecommendations([]);
+        setFollowedRecs(new Set());
+      }
       setLoading(false);
     })();
   }, [shortId, user?.id]);
