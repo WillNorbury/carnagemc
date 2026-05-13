@@ -22,6 +22,11 @@ import UserProfile from "./pages/UserProfile.tsx";
 import Users from "./pages/Users.tsx";
 import Plugins from "./pages/Plugins.tsx";
 import PluginDetail from "./pages/PluginDetail.tsx";
+import Changelog from "./pages/Changelog.tsx";
+import Dashboard from "./pages/Dashboard.tsx";
+import Apply from "./pages/Apply.tsx";
+import AdminChangelog from "./pages/AdminChangelog.tsx";
+import AdminApplications from "./pages/AdminApplications.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -39,6 +44,12 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/roles" element={<AdminRoles />} />
             <Route path="/admin/permissions" element={<AdminPermissions />} />
+            <Route path="/admin/changelog" element={<AdminChangelog />} />
+            <Route path="/admin/applications" element={<AdminApplications />} />
+            <Route path="/changelog" element={<Changelog />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/link-account" element={<Dashboard />} />
+            <Route path="/apply" element={<Apply />} />
             <Route path="/news" element={<News />} />
             <Route path="/news/:slug" element={<NewsArticle />} />
             <Route path="/staff" element={<Staff />} />

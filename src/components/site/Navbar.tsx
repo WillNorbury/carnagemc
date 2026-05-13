@@ -8,11 +8,13 @@ import { useEffect, useState } from "react";
 const links = [
   { to: "/", label: "Home" },
   { to: "/news", label: "News" },
+  { to: "/changelog", label: "Changelog" },
   { to: "/community", label: "Community" },
   { to: "/staff", label: "Staff" },
   { to: "/vote", label: "Vote" },
   { to: "/rules", label: "Rules" },
   { to: "/plugins", label: "Plugins" },
+  { to: "/apply", label: "Apply" },
   { to: "/support", label: "Support" },
 ];
 
