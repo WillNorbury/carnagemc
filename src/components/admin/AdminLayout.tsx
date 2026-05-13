@@ -31,6 +31,8 @@ const items: NavItem[] = [
   { kind: "link", id: "tickets", icon: Ticket, label: "Support Tickets" },
   { kind: "link", id: "logs", icon: ScrollText, label: "Admin Logs" },
   { kind: "link", id: "plugins", icon: Puzzle, label: "Plugins" },
+  { kind: "link", id: "changelog", icon: Zap, label: "Changelog" },
+  { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
   { kind: "section", title: "Discord Bot", icon: Bot },
   { kind: "link", id: "bot-dashboard", icon: LayoutDashboard, label: "Bot Dashboard" },
   { kind: "link", id: "bot-management", icon: Code, label: "Management" },
