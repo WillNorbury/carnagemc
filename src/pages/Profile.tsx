@@ -298,6 +298,44 @@ const Profile = () => {
             </Button>
           </div>
         </Card>
+        </Card>
+
+        <Card className="p-6 mt-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <Lock className="h-5 w-5 text-primary" />
+            <h2 className="font-display font-bold text-lg">Change password</h2>
+          </div>
+          <p className="text-sm text-muted-foreground">Set a new password for your account. No email confirmation required.</p>
+          <div className="grid gap-3 max-w-sm">
+            <div>
+              <Label htmlFor="new_password">New password</Label>
+              <Input
+                id="new_password"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="At least 6 characters"
+                autoComplete="new-password"
+              />
+            </div>
+            <div>
+              <Label htmlFor="confirm_password">Confirm new password</Label>
+              <Input
+                id="confirm_password"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={changePassword} disabled={changingPw || !newPassword || !confirmPassword}>
+              {changingPw ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Update password
+            </Button>
+          </div>
+        </Card>
       </main>
       <Footer />
     </div>
