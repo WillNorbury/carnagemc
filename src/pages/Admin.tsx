@@ -455,6 +455,7 @@ const UsersTab = () => {
         </div>
       </Card>
     </div>
+    </TooltipProvider>
   );
 };
 
