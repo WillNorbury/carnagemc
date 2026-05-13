@@ -17,10 +17,12 @@ import {
   DEFAULT_PERMISSIONS,
   type PermissionMatrix,
 } from "@/lib/permissions";
-import { usePermissionMatrix, savePermissionMatrix } from "@/lib/usePermissions";
+import { usePermissionMatrix, savePermissionMatrix, usePermissions } from "@/lib/usePermissions";
 
 const AdminPermissions = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
+  const { roles: userRoles } = usePermissions();
+  const isOwner = userRoles.includes("owner");
   const navigate = useNavigate();
   const { matrix: stored, loading: matrixLoading } = usePermissionMatrix();
   const [matrix, setMatrix] = useState<PermissionMatrix>({});
@@ -114,12 +116,20 @@ const AdminPermissions = () => {
       <p className="text-muted-foreground">You don't have admin permissions.</p>
     </div>
   );
+  if (!isOwner) return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+      <ShieldOff className="h-12 w-12 text-destructive" />
+      <h1 className="text-2xl font-bold">Access denied</h1>
+      <p className="text-muted-foreground">Only the owner can access this section.</p>
+    </div>
+  );
 
   return (
     <AdminLayout
       current={"dashboard" as any}
       onNavigate={(s) => { if (s === "dashboard") navigate("/admin"); else if (s === "roles") navigate("/admin/roles"); else navigate("/admin"); }}
       title="Permissions"
+      isOwner={isOwner}
       description="Define what each role is allowed to do across the admin panel and app."
       actions={
         <div className="flex items-center gap-2">
