@@ -210,12 +210,12 @@ const UsersTab = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [roles, setRoles] = useState<RoleRow[]>([]);
   const [creating, setCreating] = useState(false);
+  const [newRoles, setNewRoles] = useState<Set<AppRole>>(new Set());
   const [newUser, setNewUser] = useState({
     email: "",
     password: "",
     display_name: "",
     mc_username: "",
-    is_admin: false,
   });
 
   const load = async () => {
@@ -255,18 +255,28 @@ const UsersTab = () => {
     setCreating(true);
     try {
       const { data, error } = await supabase.functions.invoke("admin-create-user", {
-        body: newUser,
+        body: { ...newUser, roles: [...newRoles] },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
       toast.success("User created");
-      setNewUser({ email: "", password: "", display_name: "", mc_username: "", is_admin: false });
+      setNewUser({ email: "", password: "", display_name: "", mc_username: "" });
+      setNewRoles(new Set());
       load();
     } catch (e: any) {
       toast.error(e.message ?? "Failed to create user");
     } finally {
       setCreating(false);
     }
+  };
+
+  const toggleNewRole = (r: AppRole) => {
+    setNewRoles((s) => {
+      const n = new Set(s);
+      if (n.has(r)) n.delete(r);
+      else n.add(r);
+      return n;
+    });
   };
 
   return (
@@ -307,14 +317,33 @@ const UsersTab = () => {
             />
           </div>
         </div>
-        <div className="flex items-center justify-between mt-4">
-          <label className="flex items-center gap-2 text-sm">
-            <Switch
-              checked={newUser.is_admin}
-              onCheckedChange={(v) => setNewUser({ ...newUser, is_admin: v })}
-            />
-            Make admin
-          </label>
+        <div className="mt-4">
+          <Label className="mb-2 block">Roles</Label>
+          <div className="flex flex-wrap gap-2">
+            {ALL_ROLES.filter((r) => r.value !== "default").map((r) => {
+              const active = newRoles.has(r.value);
+              return (
+                <button
+                  type="button"
+                  key={r.value}
+                  onClick={() => toggleNewRole(r.value)}
+                  className={
+                    "px-2.5 py-1 rounded-full text-xs border transition-colors " +
+                    (active
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-secondary/40 text-muted-foreground border-border hover:bg-secondary")
+                  }
+                >
+                  {r.label}
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            "Default" is always granted automatically.
+          </p>
+        </div>
+        <div className="flex items-center justify-end mt-4">
           <Button onClick={createUser} disabled={creating}>
             <Plus className="h-4 w-4 mr-1" />
             {creating ? "Creating..." : "Create User"}
