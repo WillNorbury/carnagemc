@@ -17,7 +17,7 @@ import {
   DEFAULT_PERMISSIONS,
   type PermissionMatrix,
 } from "@/lib/permissions";
-import { usePermissionMatrix, savePermissionMatrix } from "@/lib/usePermissions";
+import { usePermissionMatrix, savePermissionMatrix, usePermissions } from "@/lib/usePermissions";
 
 const AdminPermissions = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
