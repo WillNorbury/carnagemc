@@ -134,8 +134,20 @@ const Admin = () => {
       {section === "plugins" && <PluginsTab />}
       {section === "changelog" && <ChangelogTab />}
       {section === "applications" && <ApplicationsTab />}
-      {section === "bot-dashboard" && (isOwner ? <BotDashboardSection /> : <AccessDenied />)}
-      {section === "bot-management" && (isOwner ? <BotManagementSection /> : <AccessDenied />)}
+      {section === "bot-dashboard" && (isOwner ? <BotDashboardSection /> : (
+        <div className="flex flex-col items-center justify-center gap-4 py-20">
+          <ShieldOff className="h-12 w-12 text-destructive" />
+          <h2 className="text-xl font-bold">Access denied</h2>
+          <p className="text-muted-foreground">Only the owner can access this section.</p>
+        </div>
+      ))}
+      {section === "bot-management" && (isOwner ? <BotManagementSection /> : (
+        <div className="flex flex-col items-center justify-center gap-4 py-20">
+          <ShieldOff className="h-12 w-12 text-destructive" />
+          <h2 className="text-xl font-bold">Access denied</h2>
+          <p className="text-muted-foreground">Only the owner can access this section.</p>
+        </div>
+      ))}
     </AdminLayout>
   );
 };
