@@ -627,7 +627,7 @@ const toLocalInput = (ms?: number) => {
 };
 
 const ContentTab = () => {
-  const [hero, setHero] = useState({ title: "", subtitle: "", badge: "" });
+  const [hero, setHero] = useState({ title: "", subtitle: "", badge: "", enabled: true });
   const [server, setServer] = useState({ ip: "", discord: "", version: "", tagline: "" });
   const [alerts, setAlerts] = useState({
     onlineEnabled: true,
@@ -652,7 +652,7 @@ const ContentTab = () => {
     supabase.from("site_content").select("*").then(({ data }) => {
       const map: any = {};
       (data ?? []).forEach((r: any) => (map[r.key] = r.value));
-      if (map.hero) setHero(map.hero);
+      if (map.hero) setHero((h) => ({ ...h, ...map.hero, enabled: map.hero.enabled !== false }));
       if (map.server) setServer(map.server);
       if (map.alerts) setAlerts((a) => ({ ...a, ...map.alerts }));
       if (map.event) setEvent({ label: map.event.label ?? "Next Event Reset", targetMs: map.event.targetMs ?? null });
@@ -684,7 +684,13 @@ const ContentTab = () => {
   return (
     <div className="grid md:grid-cols-2 gap-6">
       <Card className="p-6 space-y-4">
-        <h2 className="font-bold">Hero</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-bold">Hero</h2>
+          <label className="flex items-center gap-2 text-sm">
+            <Switch checked={hero.enabled} onCheckedChange={(v) => setHero({ ...hero, enabled: v })} />
+            {hero.enabled ? "Enabled" : "Disabled"}
+          </label>
+        </div>
         <div><Label>Title</Label><Input value={hero.title} onChange={(e) => setHero({ ...hero, title: e.target.value })} /></div>
         <div><Label>Subtitle</Label><Textarea value={hero.subtitle} onChange={(e) => setHero({ ...hero, subtitle: e.target.value })} /></div>
         <div><Label>Badge</Label><Input value={hero.badge} onChange={(e) => setHero({ ...hero, badge: e.target.value })} /></div>
