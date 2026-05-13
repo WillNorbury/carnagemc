@@ -1288,6 +1288,7 @@ type PluginRow = {
   jar_path: string | null;
   jar_filename: string | null;
   jar_size: number | null;
+  screenshots: string[];
 };
 
 const emptyPluginForm = {
@@ -1295,6 +1296,7 @@ const emptyPluginForm = {
   download_url: "", icon_url: "", category: "", platform: "", tags: "",
   featured: false, published: true,
   jar_path: "" as string, jar_filename: "" as string, jar_size: 0 as number,
+  screenshots: [] as string[],
 };
 
 const formatBytes = (b: number) => {
