@@ -53,6 +53,12 @@ export const AdminLayout = ({
   const [collapsed, setCollapsed] = useState(false);
   const { signOut, user } = useAuth();
 
+  const visibleItems = items.filter((it) => {
+    if (it.kind === "section" && it.title === "Discord Bot") return isOwner ?? false;
+    if (it.id === "bot-dashboard" || it.id === "bot-management") return isOwner ?? false;
+    return true;
+  });
+
   return (
     <TooltipProvider delayDuration={0}>
       <div className="flex min-h-screen bg-background text-foreground">
