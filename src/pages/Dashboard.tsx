@@ -54,6 +54,10 @@ const Dashboard = () => {
           .order("created_at", { ascending: false }),
         supabase.from("support_tickets").select("*", { count: "exact", head: true }).eq("user_id", user.id),
       ]);
+      if (!p?.mc_username) {
+        navigate("/link-account", { replace: true });
+        return;
+      }
       setDisplayName(p?.display_name ?? "");
       setMcUsername(p?.mc_username ?? "");
       setSavedMc(p?.mc_username ?? "");
