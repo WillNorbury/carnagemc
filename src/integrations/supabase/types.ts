@@ -199,6 +199,7 @@ export type Database = {
           name: string
           platform: string | null
           published: boolean
+          screenshots: string[]
           short_id: string
           tags: string[]
           updated_at: string
@@ -220,6 +221,7 @@ export type Database = {
           name: string
           platform?: string | null
           published?: boolean
+          screenshots?: string[]
           short_id?: string
           tags?: string[]
           updated_at?: string
@@ -241,6 +243,7 @@ export type Database = {
           name?: string
           platform?: string | null
           published?: boolean
+          screenshots?: string[]
           short_id?: string
           tags?: string[]
           updated_at?: string
