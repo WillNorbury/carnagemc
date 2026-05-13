@@ -40,7 +40,7 @@ const items: NavItem[] = [
 ];
 
 export const AdminLayout = ({
-  current, onNavigate, title, description, actions, children,
+  current, onNavigate, title, description, actions, children, isOwner,
 }: {
   current: AdminSection;
   onNavigate: (s: AdminSection) => void;
@@ -48,9 +48,16 @@ export const AdminLayout = ({
   description?: string;
   actions?: ReactNode;
   children: ReactNode;
+  isOwner?: boolean;
 }) => {
   const [collapsed, setCollapsed] = useState(false);
   const { signOut, user } = useAuth();
+
+  const visibleItems = items.filter((it) => {
+    if (it.kind === "section" && it.title === "Discord Bot") return isOwner ?? false;
+    if (it.kind === "link" && (it.id === "bot-dashboard" || it.id === "bot-management")) return isOwner ?? false;
+    return true;
+  });
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -75,7 +82,7 @@ export const AdminLayout = ({
           </div>
 
           <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-1">
-            {items.map((it, idx) => {
+            {visibleItems.map((it, idx) => {
               if (it.kind === "section") {
                 const SIcon = it.icon;
                 if (collapsed) return <div key={`s-${idx}`} className="my-2 border-t border-border/60" />;

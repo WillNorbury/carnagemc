@@ -34,6 +34,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
 import { StatCard } from "@/components/admin/StatCard";
 import { ALL_ROLES, roleLabel, isStaffRole, type AppRole } from "@/lib/roles";
+import { usePermissions } from "@/lib/usePermissions";
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
 type RoleRow = { id: string; user_id: string; role: AppRole };
@@ -69,6 +70,8 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
 
 const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
+  const { roles: userRoles } = usePermissions();
+  const isOwner = userRoles.includes("owner");
   const location = useLocation();
   const navigate = useNavigate();
   const initial: AdminSection = location.pathname.endsWith("/roles")
@@ -118,7 +121,7 @@ const Admin = () => {
   const meta = sectionMeta[section];
 
   return (
-    <AdminLayout current={section} onNavigate={onNavigate} title={meta.title} description={meta.description}>
+    <AdminLayout current={section} onNavigate={onNavigate} title={meta.title} description={meta.description} isOwner={isOwner}>
       {section === "dashboard" && <DashboardSection onNavigate={onNavigate} />}
       {section === "users" && <UsersTab />}
       {section === "roles" && <RolesSection />}
@@ -131,8 +134,20 @@ const Admin = () => {
       {section === "plugins" && <PluginsTab />}
       {section === "changelog" && <ChangelogTab />}
       {section === "applications" && <ApplicationsTab />}
-      {section === "bot-dashboard" && <BotDashboardSection />}
-      {section === "bot-management" && <BotManagementSection />}
+      {section === "bot-dashboard" && (isOwner ? <BotDashboardSection /> : (
+        <div className="flex flex-col items-center justify-center gap-4 py-20">
+          <ShieldOff className="h-12 w-12 text-destructive" />
+          <h2 className="text-xl font-bold">Access denied</h2>
+          <p className="text-muted-foreground">Only the owner can access this section.</p>
+        </div>
+      ))}
+      {section === "bot-management" && (isOwner ? <BotManagementSection /> : (
+        <div className="flex flex-col items-center justify-center gap-4 py-20">
+          <ShieldOff className="h-12 w-12 text-destructive" />
+          <h2 className="text-xl font-bold">Access denied</h2>
+          <p className="text-muted-foreground">Only the owner can access this section.</p>
+        </div>
+      ))}
     </AdminLayout>
   );
 };
