@@ -652,7 +652,7 @@ const ContentTab = () => {
     supabase.from("site_content").select("*").then(({ data }) => {
       const map: any = {};
       (data ?? []).forEach((r: any) => (map[r.key] = r.value));
-      if (map.hero) setHero(map.hero);
+      if (map.hero) setHero((h) => ({ ...h, ...map.hero, enabled: map.hero.enabled !== false }));
       if (map.server) setServer(map.server);
       if (map.alerts) setAlerts((a) => ({ ...a, ...map.alerts }));
       if (map.event) setEvent({ label: map.event.label ?? "Next Event Reset", targetMs: map.event.targetMs ?? null });
