@@ -165,6 +165,29 @@ const UserProfile = () => {
                   <Badge key={r} variant="secondary" className="text-sm">{roleLabel(r)}</Badge>
                 ))}
               </div>
+
+              <div className="flex items-center gap-4 mt-4 text-sm">
+                <span><strong className="text-foreground">{followerCount}</strong> <span className="text-muted-foreground">followers</span></span>
+                <span><strong className="text-foreground">{followingCount}</strong> <span className="text-muted-foreground">following</span></span>
+              </div>
+
+              {user && user.id !== profile.id && (
+                <Button
+                  onClick={toggleFollow}
+                  disabled={followBusy}
+                  variant={isFollowing ? "outline" : "default"}
+                  className="mt-4"
+                  size="sm"
+                >
+                  {followBusy ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : isFollowing ? (
+                    <><UserCheck className="h-4 w-4" /> Following</>
+                  ) : (
+                    <><UserPlus className="h-4 w-4" /> Follow</>
+                  )}
+                </Button>
+              )}
             </div>
           </div>
         </Card>
