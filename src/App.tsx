@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -34,17 +34,14 @@ import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-              <Routes>
+const Shell = () => {
+  const { pathname } = useLocation();
+  const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
+  return (
+    <SidebarProvider>
+      {!isAdmin && <AppSidebar />}
+      <SidebarInset>
+        <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/admin" element={<Admin />} />
@@ -70,9 +67,20 @@ const App = () => (
                 <Route path="/plugins" element={<Plugins />} />
                 <Route path="/plugins/:shortId" element={<PluginDetail />} />
                 <Route path="*" element={<NotFound />} />
-              </Routes>
-            </SidebarInset>
-          </SidebarProvider>
+        </Routes>
+      </SidebarInset>
+    </SidebarProvider>
+  );
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <AuthProvider>
+          <Shell />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
