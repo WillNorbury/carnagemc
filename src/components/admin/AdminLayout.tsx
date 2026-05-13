@@ -40,7 +40,7 @@ const items: NavItem[] = [
 ];
 
 export const AdminLayout = ({
-  current, onNavigate, title, description, actions, children,
+  current, onNavigate, title, description, actions, children, isOwner,
 }: {
   current: AdminSection;
   onNavigate: (s: AdminSection) => void;
@@ -48,6 +48,7 @@ export const AdminLayout = ({
   description?: string;
   actions?: ReactNode;
   children: ReactNode;
+  isOwner?: boolean;
 }) => {
   const [collapsed, setCollapsed] = useState(false);
   const { signOut, user } = useAuth();
