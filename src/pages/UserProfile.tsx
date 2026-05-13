@@ -220,6 +220,52 @@ const UserProfile = () => {
             </div>
           </div>
         </Card>
+
+        <Dialog open={!!listMode} onOpenChange={(o) => !o && setListMode(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="capitalize">
+                {listMode === "followers" ? `Followers (${followerCount})` : `Following (${followingCount})`}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="max-h-96 overflow-y-auto -mx-6 px-6">
+              {listLoading ? (
+                <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+              ) : listUsers.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  {listMode === "followers" ? "No followers yet." : "Not following anyone yet."}
+                </p>
+              ) : (
+                <ul className="space-y-1">
+                  {listUsers.map((u) => {
+                    const av = u.avatar_url || (u.mc_username ? `https://mc-heads.net/avatar/${u.mc_username}/64` : undefined);
+                    const init = (u.display_name ?? "?").slice(0, 2).toUpperCase();
+                    return (
+                      <li key={u.id}>
+                        <Link
+                          to={`/user/${u.id.slice(0, 8)}`}
+                          onClick={() => setListMode(null)}
+                          className="flex items-center gap-3 p-2 rounded-md hover:bg-accent transition-colors"
+                        >
+                          <Avatar className="h-9 w-9">
+                            <AvatarImage src={av} />
+                            <AvatarFallback>{init}</AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-medium truncate">{u.display_name ?? "Unnamed Player"}</div>
+                            {u.mc_username && (
+                              <div className="text-xs text-muted-foreground font-mono truncate">@{u.mc_username}</div>
+                            )}
+                          </div>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
       <Footer />
     </div>
