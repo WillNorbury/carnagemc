@@ -134,8 +134,8 @@ const Admin = () => {
       {section === "plugins" && <PluginsTab />}
       {section === "changelog" && <ChangelogTab />}
       {section === "applications" && <ApplicationsTab />}
-      {section === "bot-dashboard" && <BotDashboardSection />}
-      {section === "bot-management" && <BotManagementSection />}
+      {section === "bot-dashboard" && (isOwner ? <BotDashboardSection /> : <AccessDenied />)}
+      {section === "bot-management" && (isOwner ? <BotManagementSection /> : <AccessDenied />)}
     </AdminLayout>
   );
 };
