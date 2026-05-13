@@ -1288,6 +1288,7 @@ type PluginRow = {
   jar_path: string | null;
   jar_filename: string | null;
   jar_size: number | null;
+  screenshots: string[];
 };
 
 const emptyPluginForm = {
@@ -1295,6 +1296,7 @@ const emptyPluginForm = {
   download_url: "", icon_url: "", category: "", platform: "", tags: "",
   featured: false, published: true,
   jar_path: "" as string, jar_filename: "" as string, jar_size: 0 as number,
+  screenshots: [] as string[],
 };
 
 const formatBytes = (b: number) => {
@@ -1328,6 +1330,7 @@ const PluginsTab = () => {
       tags: (p.tags ?? []).join(", "),
       featured: p.featured, published: p.published,
       jar_path: p.jar_path ?? "", jar_filename: p.jar_filename ?? "", jar_size: p.jar_size ?? 0,
+      screenshots: p.screenshots ?? [],
     });
   };
 
@@ -1375,6 +1378,39 @@ const PluginsTab = () => {
     toast.success("JAR removed");
   };
 
+  const [uploadingShot, setUploadingShot] = useState(false);
+
+  const onScreenshotsSelected = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploadingShot(true);
+    try {
+      const urls: string[] = [];
+      for (const file of Array.from(files)) {
+        if (!file.type.startsWith("image/")) {
+          toast.error(`Skipped ${file.name}: not an image`);
+          continue;
+        }
+        const path = `${crypto.randomUUID()}/${file.name}`;
+        const { error } = await supabase.storage
+          .from("plugin-screenshots")
+          .upload(path, file, { contentType: file.type || "image/png", upsert: false });
+        if (error) { toast.error(error.message); continue; }
+        const { data: pub } = supabase.storage.from("plugin-screenshots").getPublicUrl(path);
+        urls.push(pub.publicUrl);
+      }
+      if (urls.length) {
+        setForm((f) => ({ ...f, screenshots: [...f.screenshots, ...urls] }));
+        toast.success(`Added ${urls.length} screenshot${urls.length > 1 ? "s" : ""}`);
+      }
+    } finally {
+      setUploadingShot(false);
+    }
+  };
+
+  const removeScreenshot = (url: string) => {
+    setForm((f) => ({ ...f, screenshots: f.screenshots.filter((u) => u !== url) }));
+  };
+
   const submit = async () => {
     if (!form.name.trim()) return toast.error("Name is required");
     setSaving(true);
@@ -1394,6 +1430,7 @@ const PluginsTab = () => {
       jar_path: form.jar_path || null,
       jar_filename: form.jar_filename || null,
       jar_size: form.jar_size || null,
+      screenshots: form.screenshots,
     };
     const { error } = editingId
       ? await supabase.from("plugins").update(payload).eq("id", editingId)
@@ -1510,6 +1547,39 @@ const PluginsTab = () => {
           <div>
             <Label>Download URL (auto-filled from upload, or paste an external link)</Label>
             <Input value={form.download_url} onChange={(e) => setForm({ ...form, download_url: e.target.value })} />
+          </div>
+          <div className="space-y-2 rounded-lg border border-border bg-secondary/30 p-3">
+            <Label>Screenshots</Label>
+            {form.screenshots.length > 0 && (
+              <div className="grid grid-cols-3 gap-2">
+                {form.screenshots.map((url) => (
+                  <div key={url} className="relative group">
+                    <img src={url} alt="" className="w-full h-20 object-cover rounded border border-border" />
+                    <button
+                      type="button"
+                      onClick={() => removeScreenshot(url)}
+                      className="absolute top-1 right-1 bg-background/90 border border-border rounded p-1 opacity-0 group-hover:opacity-100 transition"
+                      aria-label="Remove screenshot"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <Button asChild variant="outline" disabled={uploadingShot} className="w-full">
+              <label className="cursor-pointer">
+                {uploadingShot ? "Uploading..." : "Upload screenshots (.png)"}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => { onScreenshotsSelected(e.target.files); e.target.value = ""; }}
+                />
+              </label>
+            </Button>
+            <p className="text-xs text-muted-foreground">PNG, JPG, or WebP. You can upload multiple at once.</p>
           </div>
           <div>
             <Label>Tags (comma separated)</Label>

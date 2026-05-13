@@ -25,6 +25,7 @@ type Plugin = {
   created_at: string;
   jar_filename: string | null;
   jar_size: number | null;
+  screenshots: string[];
 };
 
 const formatBytes = (b: number | null) => {
@@ -169,6 +170,24 @@ const PluginDetail = () => {
                 </div>
               )}
             </Card>
+
+            {plugin.screenshots && plugin.screenshots.length > 0 && (
+              <Card className="p-6 md:p-8 mb-6">
+                <h2 className="font-display font-bold text-xl mb-4">Screenshots</h2>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {plugin.screenshots.map((url) => (
+                    <a key={url} href={url} target="_blank" rel="noopener noreferrer" className="block group">
+                      <img
+                        src={url}
+                        alt={`${plugin.name} screenshot`}
+                        loading="lazy"
+                        className="w-full rounded-lg border border-border object-cover aspect-video group-hover:border-primary/50 transition"
+                      />
+                    </a>
+                  ))}
+                </div>
+              </Card>
+            )}
 
             {plugin.long_description && (
               <Card className="p-6 md:p-8">
