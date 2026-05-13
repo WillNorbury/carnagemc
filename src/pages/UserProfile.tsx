@@ -37,6 +37,30 @@ const UserProfile = () => {
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followBusy, setFollowBusy] = useState(false);
+  const [listMode, setListMode] = useState<null | "followers" | "following">(null);
+  const [listLoading, setListLoading] = useState(false);
+  const [listUsers, setListUsers] = useState<Profile[]>([]);
+
+  const openList = async (mode: "followers" | "following") => {
+    if (!profile) return;
+    setListMode(mode);
+    setListLoading(true);
+    setListUsers([]);
+    const col = mode === "followers" ? "followee_id" : "follower_id";
+    const otherCol = mode === "followers" ? "follower_id" : "followee_id";
+    const { data: rels } = await supabase
+      .from("user_follows")
+      .select(otherCol)
+      .eq(col, profile.id);
+    const ids = (rels ?? []).map((r: Record<string, string>) => r[otherCol]).filter(Boolean);
+    if (ids.length === 0) { setListLoading(false); return; }
+    const { data: profs } = await supabase
+      .from("profiles")
+      .select("id, display_name, avatar_url, mc_username, created_at")
+      .in("id", ids);
+    setListUsers((profs ?? []) as Profile[]);
+    setListLoading(false);
+  };
 
   const loadCounts = async (targetId: string, viewerId: string | undefined) => {
     const [{ count: followers }, { count: following }] = await Promise.all([
