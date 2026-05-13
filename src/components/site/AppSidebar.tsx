@@ -36,6 +36,7 @@ import { Button } from "@/components/ui/button";
 
 const publicLinks = [
   { to: "/", label: "Home", icon: Home },
+  { to: "/users", label: "Users", icon: UsersIcon },
   { to: "/news", label: "News", icon: Newspaper },
   { to: "/changelog", label: "Changelog", icon: ClipboardList },
   { to: "/community", label: "Community", icon: UsersIcon },
@@ -125,9 +126,7 @@ export function AppSidebar() {
           <SidebarGroup>
             <SidebarGroupLabel>Admin</SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu>
-                {renderItem({ to: "/admin", label: "Admin", icon: Shield })}
-              </SidebarMenu>
+              <SidebarMenu>{renderItem({ to: "/admin", label: "Admin", icon: Shield })}</SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         )}
@@ -138,7 +137,10 @@ export function AppSidebar() {
           <Button
             variant="outline"
             size="sm"
-            onClick={async () => { await signOut(); nav("/"); }}
+            onClick={async () => {
+              await signOut();
+              nav("/");
+            }}
             className="w-full justify-start"
           >
             <LogOut className="h-4 w-4" />
