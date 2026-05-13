@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { email, password, display_name, mc_username, is_admin } = body ?? {};
+    const { email, password, display_name, mc_username, is_admin, roles } = body ?? {};
     if (!email || !password) {
       return new Response(JSON.stringify({ error: "email and password required" }), {
         status: 400,
@@ -80,8 +80,27 @@ Deno.serve(async (req) => {
         .eq("id", newId);
     }
 
-    if (is_admin) {
-      await admin.from("user_roles").insert({ user_id: newId, role: "admin" });
+    // Collect roles to assign (dedup, drop "default" since trigger already inserts it)
+    const roleSet = new Set<string>(Array.isArray(roles) ? roles : []);
+    if (is_admin) roleSet.add("admin");
+    roleSet.delete("default");
+
+    if (roleSet.size > 0) {
+      // Remove any existing rows for these roles to avoid unique conflicts, then insert
+      await admin
+        .from("user_roles")
+        .delete()
+        .eq("user_id", newId)
+        .in("role", [...roleSet]);
+      const { error: roleErr } = await admin
+        .from("user_roles")
+        .insert([...roleSet].map((role) => ({ user_id: newId, role })));
+      if (roleErr) {
+        return new Response(
+          JSON.stringify({ ok: true, user_id: newId, role_error: roleErr.message }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
     }
 
     return new Response(JSON.stringify({ ok: true, user_id: newId }), {
