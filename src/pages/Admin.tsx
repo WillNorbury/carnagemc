@@ -88,6 +88,8 @@ const Admin = () => {
       {section === "logs" && <LogsTab />}
       {section === "logs" && <LogsTab />}
       {section === "plugins" && <PluginsTab />}
+      {section === "changelog" && <ChangelogTab />}
+      {section === "applications" && <ApplicationsTab />}
       {section === "bot-dashboard" && <BotDashboardSection />}
       {section === "bot-management" && <BotManagementSection />}
     </AdminLayout>
