@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { ALL_ROLES, roleLabel, type AppRole } from "@/lib/roles";
-import { Loader2, ArrowLeft, UserPlus, UserCheck } from "lucide-react";
+import { Loader2, ArrowLeft, UserPlus, UserCheck, Users, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 type Profile = {
@@ -40,6 +40,11 @@ const UserProfile = () => {
   const [listMode, setListMode] = useState<null | "followers" | "following">(null);
   const [listLoading, setListLoading] = useState(false);
   const [listUsers, setListUsers] = useState<Profile[]>([]);
+  const [followsMeBack, setFollowsMeBack] = useState(false);
+  const [recommendations, setRecommendations] = useState<(Profile & { reason: string })[]>([]);
+  const [recsLoading, setRecsLoading] = useState(false);
+  const [recBusy, setRecBusy] = useState<string | null>(null);
+  const [followedRecs, setFollowedRecs] = useState<Set<string>>(new Set());
 
   const openList = async (mode: "followers" | "following") => {
     if (!profile) return;
@@ -70,15 +75,74 @@ const UserProfile = () => {
     setFollowerCount(followers ?? 0);
     setFollowingCount(following ?? 0);
     if (viewerId && viewerId !== targetId) {
-      const { data } = await supabase
-        .from("user_follows")
-        .select("follower_id")
-        .eq("follower_id", viewerId)
-        .eq("followee_id", targetId)
-        .maybeSingle();
-      setIsFollowing(!!data);
+      const [{ data: a }, { data: b }] = await Promise.all([
+        supabase.from("user_follows").select("follower_id")
+          .eq("follower_id", viewerId).eq("followee_id", targetId).maybeSingle(),
+        supabase.from("user_follows").select("follower_id")
+          .eq("follower_id", targetId).eq("followee_id", viewerId).maybeSingle(),
+      ]);
+      setIsFollowing(!!a);
+      setFollowsMeBack(!!b);
     } else {
       setIsFollowing(false);
+      setFollowsMeBack(false);
+    }
+  };
+
+  const loadRecommendations = async (viewerId: string, viewerRoles: AppRole[]) => {
+    setRecsLoading(true);
+    // Already-followed ids
+    const { data: followingRows } = await supabase
+      .from("user_follows").select("followee_id").eq("follower_id", viewerId);
+    const excluded = new Set<string>([viewerId, ...((followingRows ?? []).map((r) => r.followee_id))]);
+
+    // Candidates by shared role
+    let roleCandidates: { user_id: string; role: AppRole }[] = [];
+    if (viewerRoles.length > 0) {
+      const { data } = await supabase
+        .from("user_roles").select("user_id, role").in("role", viewerRoles).limit(100);
+      roleCandidates = (data ?? []) as { user_id: string; role: AppRole }[];
+    }
+
+    // Recent activity: latest profiles (joined recently)
+    const { data: recentProfiles } = await supabase
+      .from("profiles").select("id, display_name, avatar_url, mc_username, created_at")
+      .order("created_at", { ascending: false }).limit(30);
+
+    const reasons = new Map<string, string>();
+    for (const rc of roleCandidates) {
+      if (excluded.has(rc.user_id)) continue;
+      if (!reasons.has(rc.user_id)) reasons.set(rc.user_id, `Shared role: ${roleLabel(rc.role)}`);
+    }
+    for (const p of (recentProfiles ?? [])) {
+      if (excluded.has(p.id) || reasons.has(p.id)) continue;
+      reasons.set(p.id, "Recently joined");
+    }
+
+    const ids = Array.from(reasons.keys()).slice(0, 5);
+    if (ids.length === 0) { setRecommendations([]); setRecsLoading(false); return; }
+
+    const { data: profs } = await supabase
+      .from("profiles").select("id, display_name, avatar_url, mc_username, created_at").in("id", ids);
+    const ordered = ids
+      .map((id) => (profs ?? []).find((p) => p.id === id))
+      .filter(Boolean)
+      .map((p) => ({ ...(p as Profile), reason: reasons.get((p as Profile).id)! }));
+    setRecommendations(ordered);
+    setRecsLoading(false);
+  };
+
+  const followRecommendation = async (id: string) => {
+    if (!user) return;
+    setRecBusy(id);
+    const { error } = await supabase
+      .from("user_follows").insert({ follower_id: user.id, followee_id: id });
+    setRecBusy(null);
+    if (error) { toast.error(error.message); return; }
+    setFollowedRecs((s) => new Set(s).add(id));
+    if (profile && id === profile.id) {
+      setIsFollowing(true);
+      setFollowerCount((c) => c + 1);
     }
   };
 
@@ -102,7 +166,14 @@ const UserProfile = () => {
       setProfile(match as Profile);
       setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role).sort((a, b) => roleRank(a) - roleRank(b)));
       document.title = `${match.display_name ?? "Player"} — ZyphoraMC`;
+      const sortedRoles = ((r ?? []) as { role: AppRole }[]).map((x) => x.role).sort((a, b) => roleRank(a) - roleRank(b));
       await loadCounts(match.id, user?.id);
+      if (user?.id && user.id === match.id) {
+        await loadRecommendations(user.id, sortedRoles);
+      } else {
+        setRecommendations([]);
+        setFollowedRecs(new Set());
+      }
       setLoading(false);
     })();
   }, [shortId, user?.id]);
@@ -201,25 +272,87 @@ const UserProfile = () => {
               </div>
 
               {user && user.id !== profile.id && (
-                <Button
-                  onClick={toggleFollow}
-                  disabled={followBusy}
-                  variant={isFollowing ? "outline" : "default"}
-                  className="mt-4"
-                  size="sm"
-                >
-                  {followBusy ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : isFollowing ? (
-                    <><UserCheck className="h-4 w-4" /> Following</>
-                  ) : (
-                    <><UserPlus className="h-4 w-4" /> Follow</>
+                <div className="flex items-center gap-2 mt-4 flex-wrap">
+                  <Button
+                    onClick={toggleFollow}
+                    disabled={followBusy}
+                    variant={isFollowing ? "outline" : "default"}
+                    size="sm"
+                  >
+                    {followBusy ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : isFollowing ? (
+                      <><UserCheck className="h-4 w-4" /> Following</>
+                    ) : (
+                      <><UserPlus className="h-4 w-4" /> Follow</>
+                    )}
+                  </Button>
+                  {isFollowing && followsMeBack && (
+                    <Badge variant="default" className="gap-1">
+                      <Users className="h-3 w-3" /> Mutuals
+                    </Badge>
                   )}
-                </Button>
+                  {!isFollowing && followsMeBack && (
+                    <Badge variant="secondary">Follows you</Badge>
+                  )}
+                </div>
               )}
             </div>
           </div>
         </Card>
+
+        {user && user.id === profile.id && (
+          <Card className="p-6 mt-6">
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <h2 className="font-display font-bold text-lg">Who to follow</h2>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Suggested players based on your roles and recent activity.
+            </p>
+            {recsLoading ? (
+              <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+            ) : recommendations.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">No suggestions right now — check back later.</p>
+            ) : (
+              <ul className="space-y-2">
+                {recommendations.map((u) => {
+                  const av = u.avatar_url || (u.mc_username ? `https://mc-heads.net/avatar/${u.mc_username}/64` : undefined);
+                  const init = (u.display_name ?? "?").slice(0, 2).toUpperCase();
+                  const followed = followedRecs.has(u.id);
+                  return (
+                    <li key={u.id} className="flex items-center gap-3 p-2 rounded-md hover:bg-accent/50 transition-colors">
+                      <Link to={`/user/${u.id.slice(0, 8)}`} className="flex items-center gap-3 min-w-0 flex-1">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={av} />
+                          <AvatarFallback>{init}</AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <div className="font-medium truncate">{u.display_name ?? "Unnamed Player"}</div>
+                          <div className="text-xs text-muted-foreground truncate">{u.reason}</div>
+                        </div>
+                      </Link>
+                      <Button
+                        size="sm"
+                        variant={followed ? "outline" : "default"}
+                        disabled={followed || recBusy === u.id}
+                        onClick={() => followRecommendation(u.id)}
+                      >
+                        {recBusy === u.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : followed ? (
+                          <><UserCheck className="h-4 w-4" /> Following</>
+                        ) : (
+                          <><UserPlus className="h-4 w-4" /> Follow</>
+                        )}
+                      </Button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Card>
+        )}
 
         <Dialog open={!!listMode} onOpenChange={(o) => !o && setListMode(null)}>
           <DialogContent className="max-w-md">
