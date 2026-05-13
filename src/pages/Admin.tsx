@@ -627,7 +627,7 @@ const toLocalInput = (ms?: number) => {
 };
 
 const ContentTab = () => {
-  const [hero, setHero] = useState({ title: "", subtitle: "", badge: "" });
+  const [hero, setHero] = useState({ title: "", subtitle: "", badge: "", enabled: true });
   const [server, setServer] = useState({ ip: "", discord: "", version: "", tagline: "" });
   const [alerts, setAlerts] = useState({
     onlineEnabled: true,
