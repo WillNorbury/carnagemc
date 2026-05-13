@@ -70,6 +70,8 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
 
 const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
+  const { roles: userRoles } = usePermissions();
+  const isOwner = userRoles.includes("owner");
   const location = useLocation();
   const navigate = useNavigate();
   const initial: AdminSection = location.pathname.endsWith("/roles")
