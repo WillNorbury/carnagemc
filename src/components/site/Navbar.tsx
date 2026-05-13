@@ -1,8 +1,14 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/lib/auth";
 import logo from "@/assets/zyphora-logo.png";
-import { LogIn, Shield, LogOut, Menu, X, LifeBuoy, LayoutDashboard } from "lucide-react";
+import { LogIn, Shield, LogOut, Menu, X, LifeBuoy, LayoutDashboard, ChevronDown, User as UserIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const links = [
@@ -17,6 +23,8 @@ const links = [
   { to: "/apply", label: "Apply" },
   { to: "/support", label: "Support" },
 ];
+
+const PRIMARY_COUNT = 6;
 
 const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
@@ -45,7 +53,7 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden lg:flex items-center gap-7 text-sm font-medium uppercase tracking-wider">
-          {links.map((l) => {
+          {links.slice(0, PRIMARY_COUNT).map((l) => {
             const active = loc.pathname === l.to;
             return (
               <Link
@@ -58,12 +66,38 @@ const Navbar = () => {
               </Link>
             );
           })}
+          {links.length > PRIMARY_COUNT && (() => {
+            const overflow = links.slice(PRIMARY_COUNT);
+            const activeInOverflow = overflow.some((l) => loc.pathname === l.to);
+            return (
+              <DropdownMenu>
+                <DropdownMenuTrigger className={`relative flex items-center gap-1 transition uppercase tracking-wider ${activeInOverflow ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+                  More <ChevronDown className="h-3.5 w-3.5" />
+                  {activeInOverflow && <span className="absolute -bottom-1 left-0 right-4 h-0.5 bg-gradient-to-r from-primary to-accent rounded-full" />}
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-40">
+                  {overflow.map((l) => (
+                    <DropdownMenuItem key={l.to} asChild>
+                      <Link to={l.to} className={`uppercase tracking-wider text-xs ${loc.pathname === l.to ? "text-primary" : ""}`}>
+                        {l.label}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            );
+          })()}
         </div>
 
         <div className="flex items-center gap-2">
           {user && (
             <Button variant="ghost" size="sm" onClick={() => nav("/dashboard")} className="hidden md:inline-flex">
               <LayoutDashboard className="h-4 w-4 mr-1" /> Dashboard
+            </Button>
+          )}
+          {user && (
+            <Button variant="ghost" size="sm" onClick={() => nav("/profile")} className="hidden md:inline-flex">
+              <UserIcon className="h-4 w-4 mr-1" /> Profile
             </Button>
           )}
           {user && (
@@ -103,6 +137,13 @@ const Navbar = () => {
                 {l.label}
               </Link>
             ))}
+            {user && (
+              <>
+                <Link to="/dashboard" className="text-sm uppercase tracking-wider py-1 hover:text-primary transition">Dashboard</Link>
+                <Link to="/profile" className="text-sm uppercase tracking-wider py-1 hover:text-primary transition">Profile</Link>
+                <Link to="/tickets" className="text-sm uppercase tracking-wider py-1 hover:text-primary transition">Tickets</Link>
+              </>
+            )}
             {isAdmin && (
               <Button variant="ghost" size="sm" onClick={() => nav("/admin")} className="justify-start">
                 <Shield className="h-4 w-4 mr-1" /> Admin
