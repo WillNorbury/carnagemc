@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { ALL_ROLES, roleLabel, type AppRole } from "@/lib/roles";
@@ -36,6 +37,30 @@ const UserProfile = () => {
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followBusy, setFollowBusy] = useState(false);
+  const [listMode, setListMode] = useState<null | "followers" | "following">(null);
+  const [listLoading, setListLoading] = useState(false);
+  const [listUsers, setListUsers] = useState<Profile[]>([]);
+
+  const openList = async (mode: "followers" | "following") => {
+    if (!profile) return;
+    setListMode(mode);
+    setListLoading(true);
+    setListUsers([]);
+    const col = mode === "followers" ? "followee_id" : "follower_id";
+    const otherCol = mode === "followers" ? "follower_id" : "followee_id";
+    const { data: rels } = await supabase
+      .from("user_follows")
+      .select(otherCol)
+      .eq(col, profile.id);
+    const ids = (rels ?? []).map((r: Record<string, string>) => r[otherCol]).filter(Boolean);
+    if (ids.length === 0) { setListLoading(false); return; }
+    const { data: profs } = await supabase
+      .from("profiles")
+      .select("id, display_name, avatar_url, mc_username, created_at")
+      .in("id", ids);
+    setListUsers((profs ?? []) as Profile[]);
+    setListLoading(false);
+  };
 
   const loadCounts = async (targetId: string, viewerId: string | undefined) => {
     const [{ count: followers }, { count: following }] = await Promise.all([
@@ -167,8 +192,12 @@ const UserProfile = () => {
               </div>
 
               <div className="flex items-center gap-4 mt-4 text-sm">
-                <span><strong className="text-foreground">{followerCount}</strong> <span className="text-muted-foreground">followers</span></span>
-                <span><strong className="text-foreground">{followingCount}</strong> <span className="text-muted-foreground">following</span></span>
+                <button onClick={() => openList("followers")} className="hover:text-primary transition-colors">
+                  <strong className="text-foreground">{followerCount}</strong> <span className="text-muted-foreground">followers</span>
+                </button>
+                <button onClick={() => openList("following")} className="hover:text-primary transition-colors">
+                  <strong className="text-foreground">{followingCount}</strong> <span className="text-muted-foreground">following</span>
+                </button>
               </div>
 
               {user && user.id !== profile.id && (
@@ -191,6 +220,52 @@ const UserProfile = () => {
             </div>
           </div>
         </Card>
+
+        <Dialog open={!!listMode} onOpenChange={(o) => !o && setListMode(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="capitalize">
+                {listMode === "followers" ? `Followers (${followerCount})` : `Following (${followingCount})`}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="max-h-96 overflow-y-auto -mx-6 px-6">
+              {listLoading ? (
+                <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+              ) : listUsers.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  {listMode === "followers" ? "No followers yet." : "Not following anyone yet."}
+                </p>
+              ) : (
+                <ul className="space-y-1">
+                  {listUsers.map((u) => {
+                    const av = u.avatar_url || (u.mc_username ? `https://mc-heads.net/avatar/${u.mc_username}/64` : undefined);
+                    const init = (u.display_name ?? "?").slice(0, 2).toUpperCase();
+                    return (
+                      <li key={u.id}>
+                        <Link
+                          to={`/user/${u.id.slice(0, 8)}`}
+                          onClick={() => setListMode(null)}
+                          className="flex items-center gap-3 p-2 rounded-md hover:bg-accent transition-colors"
+                        >
+                          <Avatar className="h-9 w-9">
+                            <AvatarImage src={av} />
+                            <AvatarFallback>{init}</AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-medium truncate">{u.display_name ?? "Unnamed Player"}</div>
+                            {u.mc_username && (
+                              <div className="text-xs text-muted-foreground font-mono truncate">@{u.mc_username}</div>
+                            )}
+                          </div>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
       <Footer />
     </div>
