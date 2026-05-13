@@ -40,7 +40,7 @@ const publicLinks = [
   { to: "/changelog", label: "Changelog", icon: ClipboardList },
   { to: "/community", label: "Community", icon: UsersIcon },
   { to: "/staff", label: "Staff", icon: ShieldCheck },
-  { to: "/vote", label: "Vote", icon: VoteIcon },
+  { to: "/vote", label: "Vote", icon: VoteIcon, soon: true },
   { to: "/rules", label: "Rules", icon: ScrollText },
   { to: "/plugins", label: "Plugins", icon: Puzzle },
   { to: "/apply", label: "Apply", icon: FileText },
@@ -61,13 +61,32 @@ export function AppSidebar() {
   const nav = useNavigate();
 
   const isActive = (path: string) => pathname === path;
-  const renderItem = (l: { to: string; label: string; icon: typeof Home }) => (
+  const renderItem = (l: { to: string; label: string; icon: typeof Home; soon?: boolean }) => (
     <SidebarMenuItem key={l.to}>
-      <SidebarMenuButton asChild isActive={isActive(l.to)} tooltip={l.label}>
-        <Link to={l.to} className="flex items-center gap-2">
-          <l.icon className="h-4 w-4 shrink-0" />
-          {!collapsed && <span className="uppercase tracking-wider text-xs">{l.label}</span>}
-        </Link>
+      <SidebarMenuButton
+        asChild={!l.soon}
+        isActive={isActive(l.to)}
+        tooltip={l.soon ? `${l.label} (Soon)` : l.label}
+        disabled={l.soon}
+        aria-disabled={l.soon}
+        className={l.soon ? "opacity-60 cursor-not-allowed" : ""}
+      >
+        {l.soon ? (
+          <div className="flex items-center gap-2">
+            <l.icon className="h-4 w-4 shrink-0" />
+            {!collapsed && (
+              <span className="uppercase tracking-wider text-xs flex items-center gap-1">
+                {l.label}
+                <span className="text-[10px] text-muted-foreground normal-case tracking-normal">(Soon)</span>
+              </span>
+            )}
+          </div>
+        ) : (
+          <Link to={l.to} className="flex items-center gap-2">
+            <l.icon className="h-4 w-4 shrink-0" />
+            {!collapsed && <span className="uppercase tracking-wider text-xs">{l.label}</span>}
+          </Link>
+        )}
       </SidebarMenuButton>
     </SidebarMenuItem>
   );
