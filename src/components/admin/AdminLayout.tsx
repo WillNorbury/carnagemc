@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import logo from "@/assets/zyphora-logo.png";
 import {
   LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
   PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound, Puzzle, ClipboardList, Zap,
@@ -63,10 +64,11 @@ export const AdminLayout = ({
           <div className={cn("flex h-[60px] items-center border-b px-4", collapsed ? "justify-center" : "justify-between")}>
             {!collapsed && (
               <Link to="/" className="flex items-center gap-2 font-semibold">
-                <Shield className="h-5 w-5 text-primary" />
+                <img src={logo} alt="ZyphoraMC" className="h-7 w-7" />
                 <span className="text-lg">ZyphoraMC</span>
               </Link>
             )}
+            
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setCollapsed(!collapsed)}>
               <PanelLeft className="h-5 w-5" />
             </Button>
