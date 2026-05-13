@@ -1430,6 +1430,7 @@ const PluginsTab = () => {
       jar_path: form.jar_path || null,
       jar_filename: form.jar_filename || null,
       jar_size: form.jar_size || null,
+      screenshots: form.screenshots,
     };
     const { error } = editingId
       ? await supabase.from("plugins").update(payload).eq("id", editingId)
