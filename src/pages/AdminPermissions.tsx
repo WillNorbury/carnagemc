@@ -21,6 +21,8 @@ import { usePermissionMatrix, savePermissionMatrix, usePermissions } from "@/lib
 
 const AdminPermissions = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
+  const { roles: userRoles } = usePermissions();
+  const isOwner = userRoles.includes("owner");
   const navigate = useNavigate();
   const { matrix: stored, loading: matrixLoading } = usePermissionMatrix();
   const [matrix, setMatrix] = useState<PermissionMatrix>({});
