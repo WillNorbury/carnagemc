@@ -129,6 +129,7 @@ const AdminPermissions = () => {
       current={"dashboard" as any}
       onNavigate={(s) => { if (s === "dashboard") navigate("/admin"); else if (s === "roles") navigate("/admin/roles"); else navigate("/admin"); }}
       title="Permissions"
+      isOwner={isOwner}
       description="Define what each role is allowed to do across the admin panel and app."
       actions={
         <div className="flex items-center gap-2">
