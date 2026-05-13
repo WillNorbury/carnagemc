@@ -221,7 +221,7 @@ const Profile = () => {
             <Button variant="outline" onClick={async () => { await signOut(); navigate("/"); }}>
               Sign out
             </Button>
-            <Button onClick={save} disabled={saving}>
+            <Button onClick={save} disabled={saving || mcInvalid}>
               {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Save changes
             </Button>
