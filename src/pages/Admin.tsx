@@ -684,7 +684,13 @@ const ContentTab = () => {
   return (
     <div className="grid md:grid-cols-2 gap-6">
       <Card className="p-6 space-y-4">
-        <h2 className="font-bold">Hero</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-bold">Hero</h2>
+          <label className="flex items-center gap-2 text-sm">
+            <Switch checked={hero.enabled} onCheckedChange={(v) => setHero({ ...hero, enabled: v })} />
+            {hero.enabled ? "Enabled" : "Disabled"}
+          </label>
+        </div>
         <div><Label>Title</Label><Input value={hero.title} onChange={(e) => setHero({ ...hero, title: e.target.value })} /></div>
         <div><Label>Subtitle</Label><Textarea value={hero.subtitle} onChange={(e) => setHero({ ...hero, subtitle: e.target.value })} /></div>
         <div><Label>Badge</Label><Input value={hero.badge} onChange={(e) => setHero({ ...hero, badge: e.target.value })} /></div>
