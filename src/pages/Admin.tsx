@@ -12,8 +12,20 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import {
-  Trash2, Plus, ShieldCheck, ShieldOff, Users as UsersIcon, Newspaper,
-  Activity, Server as ServerIcon, X, Ticket as TicketIcon, MessageSquare, Send, Check, ChevronDown,
+  Trash2,
+  Plus,
+  ShieldCheck,
+  ShieldOff,
+  Users as UsersIcon,
+  Newspaper,
+  Activity,
+  Server as ServerIcon,
+  X,
+  Ticket as TicketIcon,
+  MessageSquare,
+  Send,
+  Check,
+  ChevronDown,
   Puzzle,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -24,7 +36,15 @@ import { ALL_ROLES, roleLabel, type AppRole } from "@/lib/roles";
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
 type RoleRow = { id: string; user_id: string; role: AppRole };
-type News = { id: string; title: string; slug: string; excerpt: string | null; content: string; published: boolean; created_at: string };
+type News = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string;
+  published: boolean;
+  created_at: string;
+};
 
 const sectionMeta: Record<AdminSection, { title: string; description: string }> = {
   dashboard: { title: "Dashboard", description: "Overview of ZyphoraMC activity." },
@@ -39,7 +59,10 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   plugins: { title: "Plugins", description: "Add, edit, and remove server plugins." },
   changelog: { title: "Changelog", description: "Publish server updates by date and category." },
   applications: { title: "Applications", description: "Review staff, builder, and content creator applications." },
-  "bot-dashboard": { title: "Discord Bot — Dashboard", description: "Status and overview of the ZyphoraMC Discord bot." },
+  "bot-dashboard": {
+    title: "Discord Bot — Dashboard",
+    description: "Status and overview of the ZyphoraMC Discord bot.",
+  },
   "bot-management": { title: "Discord Bot — Management", description: "Configure commands and bot integration." },
 };
 
@@ -47,32 +70,49 @@ const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const initial: AdminSection =
-    location.pathname.endsWith("/roles") ? "roles" :
-    location.pathname.endsWith("/permissions") ? "permissions" :
-    location.pathname.endsWith("/changelog") ? "changelog" :
-    location.pathname.endsWith("/applications") ? "applications" :
-    "dashboard";
+  const initial: AdminSection = location.pathname.endsWith("/roles")
+    ? "roles"
+    : location.pathname.endsWith("/permissions")
+      ? "permissions"
+      : location.pathname.endsWith("/changelog")
+        ? "changelog"
+        : location.pathname.endsWith("/applications")
+          ? "applications"
+          : "dashboard";
   const [section, setSection] = useState<AdminSection>(initial);
 
   const onNavigate = (s: AdminSection) => {
     setSection(s);
-    if (s === "roles") { if (location.pathname !== "/admin/roles") navigate("/admin/roles"); return; }
-    if (s === "permissions") { navigate("/admin/permissions"); return; }
-    if (s === "changelog") { navigate("/admin/changelog"); return; }
-    if (s === "applications") { navigate("/admin/applications"); return; }
+    if (s === "roles") {
+      if (location.pathname !== "/admin/roles") navigate("/admin/roles");
+      return;
+    }
+    if (s === "permissions") {
+      navigate("/admin/permissions");
+      return;
+    }
+    if (s === "changelog") {
+      navigate("/admin/changelog");
+      return;
+    }
+    if (s === "applications") {
+      navigate("/admin/applications");
+      return;
+    }
     if (location.pathname !== "/admin") navigate("/admin");
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
+  if (loading)
+    return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
   if (!user) return <Navigate to="/auth" replace />;
-  if (!isAdmin) return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-      <ShieldOff className="h-12 w-12 text-destructive" />
-      <h1 className="text-2xl font-bold">Access denied</h1>
-      <p className="text-muted-foreground">You don't have admin permissions.</p>
-    </div>
-  );
+  if (!isAdmin)
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <ShieldOff className="h-12 w-12 text-destructive" />
+        <h1 className="text-2xl font-bold">Access denied</h1>
+        <p className="text-muted-foreground">You don't have admin permissions.</p>
+      </div>
+    );
 
   const meta = sectionMeta[section];
 
@@ -139,10 +179,14 @@ const DashboardSection = ({ onNavigate }: { onNavigate: (s: AdminSection) => voi
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="font-bold flex items-center gap-2"><Activity className="h-4 w-4" /> Recent admin checks</h2>
+            <h2 className="font-bold flex items-center gap-2">
+              <Activity className="h-4 w-4" /> Recent admin checks
+            </h2>
             <p className="text-xs text-muted-foreground">Latest 5 entries</p>
           </div>
-          <Button size="sm" variant="outline" onClick={() => onNavigate("logs")}>View all</Button>
+          <Button size="sm" variant="outline" onClick={() => onNavigate("logs")}>
+            View all
+          </Button>
         </div>
         <div className="space-y-2">
           {recent.length === 0 && <p className="text-sm text-muted-foreground">No activity yet.</p>}
@@ -174,7 +218,9 @@ const UsersTab = () => {
     setProfiles((p ?? []) as Profile[]);
     setRoles((r ?? []) as RoleRow[]);
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const isAdminFor = (uid: string) => roles.some((r) => r.user_id === uid && r.role === "admin");
 
@@ -228,14 +274,19 @@ const RolesSection = () => {
 
   const load = async () => {
     const [{ data: p }, { data: r }] = await Promise.all([
-      supabase.from("profiles").select("id, display_name, mc_username, created_at").order("created_at", { ascending: false }),
+      supabase
+        .from("profiles")
+        .select("id, display_name, mc_username, created_at")
+        .order("created_at", { ascending: false }),
       supabase.from("user_roles").select("id, user_id, role"),
     ]);
     setProfiles((p ?? []) as Profile[]);
     setRoles((r ?? []) as RoleRow[]);
     setDrafts({});
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const rolesFor = (uid: string) => roles.filter((r) => r.user_id === uid);
   const currentSetFor = (uid: string) => new Set(rolesFor(uid).map((r) => r.role));
@@ -244,7 +295,8 @@ const RolesSection = () => {
   const toggleDraftRole = (uid: string, role: AppRole) => {
     setDrafts((d) => {
       const base = new Set(d[uid] ?? currentSetFor(uid));
-      if (base.has(role)) base.delete(role); else base.add(role);
+      if (base.has(role)) base.delete(role);
+      else base.add(role);
       return { ...d, [uid]: base };
     });
   };
@@ -277,17 +329,11 @@ const RolesSection = () => {
     setSavingUid(uid);
     try {
       if (toAdd.length) {
-        const { error } = await supabase
-          .from("user_roles")
-          .insert(toAdd.map((role) => ({ user_id: uid, role })));
+        const { error } = await supabase.from("user_roles").insert(toAdd.map((role) => ({ user_id: uid, role })));
         if (error) throw error;
       }
       if (toRemove.length) {
-        const { error } = await supabase
-          .from("user_roles")
-          .delete()
-          .eq("user_id", uid)
-          .in("role", toRemove);
+        const { error } = await supabase.from("user_roles").delete().eq("user_id", uid).in("role", toRemove);
         if (error) throw error;
       }
       toast.success(`Updated ${toAdd.length + toRemove.length} role${toAdd.length + toRemove.length === 1 ? "" : "s"}`);
@@ -299,14 +345,19 @@ const RolesSection = () => {
     }
   };
 
-  const filtered = useMemo(() => profiles.filter((p) =>
-    !search || (p.display_name ?? "").toLowerCase().includes(search.toLowerCase()) || p.id.includes(search)
-  ), [profiles, search]);
+  const filtered = useMemo(
+    () =>
+      profiles.filter(
+        (p) => !search || (p.display_name ?? "").toLowerCase().includes(search.toLowerCase()) || p.id.includes(search),
+      ),
+    [profiles, search],
+  );
 
   const toggleSelectUser = (uid: string) => {
     setSelectedUsers((s) => {
       const next = new Set(s);
-      if (next.has(uid)) next.delete(uid); else next.add(uid);
+      if (next.has(uid)) next.delete(uid);
+      else next.add(uid);
       return next;
     });
   };
@@ -315,7 +366,8 @@ const RolesSection = () => {
 
   const toggleBulk = (set: Set<AppRole>, setFn: (s: Set<AppRole>) => void, role: AppRole) => {
     const next = new Set(set);
-    if (next.has(role)) next.delete(role); else next.add(role);
+    if (next.has(role)) next.delete(role);
+    else next.add(role);
     setFn(next);
   };
 
@@ -324,29 +376,26 @@ const RolesSection = () => {
     if (bulkAdd.size === 0 && bulkRemove.size === 0) return toast.error("Pick roles to add or remove");
     setBulkSaving(true);
     try {
-      let added = 0, removed = 0;
+      let added = 0,
+        removed = 0;
       for (const uid of selectedUsers) {
         const cur = currentSetFor(uid);
         const toAdd = [...bulkAdd].filter((r) => !cur.has(r));
         const toRemove = [...bulkRemove].filter((r) => cur.has(r));
         if (toAdd.length) {
-          const { error } = await supabase
-            .from("user_roles")
-            .insert(toAdd.map((role) => ({ user_id: uid, role })));
+          const { error } = await supabase.from("user_roles").insert(toAdd.map((role) => ({ user_id: uid, role })));
           if (error) throw error;
           added += toAdd.length;
         }
         if (toRemove.length) {
-          const { error } = await supabase
-            .from("user_roles")
-            .delete()
-            .eq("user_id", uid)
-            .in("role", toRemove);
+          const { error } = await supabase.from("user_roles").delete().eq("user_id", uid).in("role", toRemove);
           if (error) throw error;
           removed += toRemove.length;
         }
       }
-      toast.success(`Bulk update: +${added} / −${removed} across ${selectedUsers.size} user${selectedUsers.size === 1 ? "" : "s"}`);
+      toast.success(
+        `Bulk update: +${added} / −${removed} across ${selectedUsers.size} user${selectedUsers.size === 1 ? "" : "s"}`,
+      );
       setBulkAdd(new Set());
       setBulkRemove(new Set());
       setSelectedUsers(new Set());
@@ -359,7 +408,10 @@ const RolesSection = () => {
   };
 
   const RolePicker = ({
-    label, selected, onToggle, exclude,
+    label,
+    selected,
+    onToggle,
+    exclude,
   }: {
     label: string;
     selected: Set<AppRole>;
@@ -370,7 +422,11 @@ const RolesSection = () => {
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           {label}
-          {selected.size > 0 && <Badge variant="secondary" className="h-5 px-1.5">{selected.size}</Badge>}
+          {selected.size > 0 && (
+            <Badge variant="secondary" className="h-5 px-1.5">
+              {selected.size}
+            </Badge>
+          )}
           <ChevronDown className="h-3 w-3 opacity-60" />
         </Button>
       </PopoverTrigger>
@@ -403,7 +459,11 @@ const RolesSection = () => {
       <Card className="p-4">
         <div className="text-sm text-muted-foreground mb-2">Available roles</div>
         <div className="flex flex-wrap gap-2">
-          {ALL_ROLES.map((r) => <Badge key={r.value} variant="secondary">{r.label}</Badge>)}
+          {ALL_ROLES.map((r) => (
+            <Badge key={r.value} variant="secondary">
+              {r.label}
+            </Badge>
+          ))}
         </div>
       </Card>
 
@@ -417,8 +477,12 @@ const RolesSection = () => {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Button variant="ghost" size="sm" onClick={selectAllVisible}>Select visible</Button>
-            <Button variant="ghost" size="sm" onClick={clearSelection} disabled={selectedUsers.size === 0}>Clear</Button>
+            <Button variant="ghost" size="sm" onClick={selectAllVisible}>
+              Select visible
+            </Button>
+            <Button variant="ghost" size="sm" onClick={clearSelection} disabled={selectedUsers.size === 0}>
+              Clear
+            </Button>
             <RolePicker
               label="Add roles"
               selected={bulkAdd}
@@ -445,13 +509,16 @@ const RolesSection = () => {
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4 gap-4">
           <h2 className="font-bold">Members ({profiles.length})</h2>
-          <Input placeholder="Search by name or ID" value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-xs" />
+          <Input
+            placeholder="Search by name or ID"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="max-w-xs"
+          />
         </div>
         <div className="space-y-3">
           {filtered.length === 0 && (
-            <div className="text-sm text-muted-foreground p-6 text-center">
-              No members match your search.
-            </div>
+            <div className="text-sm text-muted-foreground p-6 text-center">No members match your search.</div>
           )}
           {filtered.map((p) => {
             const draft = draftFor(p.id);
@@ -459,7 +526,10 @@ const RolesSection = () => {
             const cur = currentSetFor(p.id);
             const selected = selectedUsers.has(p.id);
             return (
-              <div key={p.id} className={`p-4 rounded-lg bg-secondary/40 space-y-3 border ${selected ? "border-primary/60" : "border-transparent"}`}>
+              <div
+                key={p.id}
+                className={`p-4 rounded-lg bg-secondary/40 space-y-3 border ${selected ? "border-primary/60" : "border-transparent"}`}
+              >
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <div className="flex items-center gap-3 min-w-0">
                     <Checkbox checked={selected} onCheckedChange={() => toggleSelectUser(p.id)} />
@@ -473,7 +543,9 @@ const RolesSection = () => {
                       <PopoverTrigger asChild>
                         <Button variant="outline" size="sm" className="gap-2">
                           Edit roles
-                          <Badge variant="secondary" className="h-5 px-1.5">{draft.size}</Badge>
+                          <Badge variant="secondary" className="h-5 px-1.5">
+                            {draft.size}
+                          </Badge>
                           <ChevronDown className="h-3 w-3 opacity-60" />
                         </Button>
                       </PopoverTrigger>
@@ -499,7 +571,9 @@ const RolesSection = () => {
                     </Popover>
                     {dirty && (
                       <>
-                        <Button size="sm" variant="ghost" onClick={() => resetDraft(p.id)}>Reset</Button>
+                        <Button size="sm" variant="ghost" onClick={() => resetDraft(p.id)}>
+                          Reset
+                        </Button>
                         <Button size="sm" onClick={() => saveUser(p.id)} disabled={savingUid === p.id}>
                           {savingUid === p.id ? "Saving..." : "Save"}
                         </Button>
@@ -529,18 +603,24 @@ const RolesSection = () => {
                       </Badge>
                     );
                   })}
-                  {[...cur].filter((r) => !draft.has(r)).map((role) => (
-                    <Badge key={`removed-${role}`} variant="outline" className="gap-1 border-destructive/40 text-destructive line-through opacity-70">
-                      {roleLabel(role)}
-                      <button
-                        onClick={() => toggleDraftRole(p.id, role)}
-                        className="ml-1 no-underline"
-                        aria-label={`Restore ${roleLabel(role)}`}
+                  {[...cur]
+                    .filter((r) => !draft.has(r))
+                    .map((role) => (
+                      <Badge
+                        key={`removed-${role}`}
+                        variant="outline"
+                        className="gap-1 border-destructive/40 text-destructive line-through opacity-70"
                       >
-                        <Plus className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
+                        {roleLabel(role)}
+                        <button
+                          onClick={() => toggleDraftRole(p.id, role)}
+                          className="ml-1 no-underline"
+                          aria-label={`Restore ${roleLabel(role)}`}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
                 </div>
               </div>
             );
@@ -559,12 +639,23 @@ const NewsTab = () => {
     const { data } = await supabase.from("news").select("*").order("created_at", { ascending: false });
     setItems((data ?? []) as News[]);
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const save = async () => {
     if (!editing?.title || !editing?.content) return toast.error("Title and content required");
-    const slug = (editing.slug || editing.title).toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 60);
-    const payload = { title: editing.title, slug, excerpt: editing.excerpt ?? null, content: editing.content, published: editing.published ?? false };
+    const slug = (editing.slug || editing.title)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .slice(0, 60);
+    const payload = {
+      title: editing.title,
+      slug,
+      excerpt: editing.excerpt ?? null,
+      content: editing.content,
+      published: editing.published ?? false,
+    };
     const { error } = editing.id
       ? await supabase.from("news").update(payload).eq("id", editing.id)
       : await supabase.from("news").insert(payload);
@@ -594,11 +685,17 @@ const NewsTab = () => {
             <div key={n.id} className="p-3 rounded-lg bg-secondary/40 flex justify-between items-center">
               <div>
                 <div className="font-medium">{n.title}</div>
-                <div className="text-xs text-muted-foreground">{n.published ? "Published" : "Draft"} · {new Date(n.created_at).toLocaleDateString()}</div>
+                <div className="text-xs text-muted-foreground">
+                  {n.published ? "Published" : "Draft"} · {new Date(n.created_at).toLocaleDateString()}
+                </div>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => setEditing(n)}>Edit</Button>
-                <Button size="sm" variant="ghost" onClick={() => remove(n.id)}><Trash2 className="h-4 w-4" /></Button>
+                <Button size="sm" variant="outline" onClick={() => setEditing(n)}>
+                  Edit
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => remove(n.id)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
             </div>
           ))}
@@ -608,11 +705,35 @@ const NewsTab = () => {
       {editing && (
         <Card className="p-6 space-y-4">
           <h2 className="font-bold">{editing.id ? "Edit" : "New"} post</h2>
-          <div><Label>Title</Label><Input value={editing.title ?? ""} onChange={(e) => setEditing({ ...editing, title: e.target.value })} /></div>
-          <div><Label>Excerpt</Label><Input value={editing.excerpt ?? ""} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })} /></div>
-          <div><Label>Content</Label><Textarea rows={8} value={editing.content ?? ""} onChange={(e) => setEditing({ ...editing, content: e.target.value })} /></div>
-          <div className="flex items-center gap-2"><Switch checked={!!editing.published} onCheckedChange={(c) => setEditing({ ...editing, published: c })} /><Label>Published</Label></div>
-          <div className="flex gap-2"><Button onClick={save}>Save</Button><Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button></div>
+          <div>
+            <Label>Title</Label>
+            <Input value={editing.title ?? ""} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
+          </div>
+          <div>
+            <Label>Excerpt</Label>
+            <Input
+              value={editing.excerpt ?? ""}
+              onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label>Content</Label>
+            <Textarea
+              rows={8}
+              value={editing.content ?? ""}
+              onChange={(e) => setEditing({ ...editing, content: e.target.value })}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch checked={!!editing.published} onCheckedChange={(c) => setEditing({ ...editing, published: c })} />
+            <Label>Published</Label>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={save}>Save</Button>
+            <Button variant="outline" onClick={() => setEditing(null)}>
+              Cancel
+            </Button>
+          </div>
         </Card>
       )}
     </div>
@@ -642,22 +763,26 @@ const ContentTab = () => {
   const [popup, setPopup] = useState({
     enabled: true,
     title: "Season 3 Launch — LIVE",
-    description: "New map, fresh economy, and exclusive launch crates for early players. Join now and claim your founder's reward.",
+    description:
+      "New map, fresh economy, and exclusive launch crates for early players. Join now and claim your founder's reward.",
     primaryLabel: "Copy IP",
     primaryUrl: "",
     secondaryLabel: "Later",
   });
 
   useEffect(() => {
-    supabase.from("site_content").select("*").then(({ data }) => {
-      const map: any = {};
-      (data ?? []).forEach((r: any) => (map[r.key] = r.value));
-      if (map.hero) setHero((h) => ({ ...h, ...map.hero, enabled: map.hero.enabled !== false }));
-      if (map.server) setServer(map.server);
-      if (map.alerts) setAlerts((a) => ({ ...a, ...map.alerts }));
-      if (map.event) setEvent({ label: map.event.label ?? "Next Event Reset", targetMs: map.event.targetMs ?? null });
-      if (map.popup) setPopup((p) => ({ ...p, ...map.popup }));
-    });
+    supabase
+      .from("site_content")
+      .select("*")
+      .then(({ data }) => {
+        const map: any = {};
+        (data ?? []).forEach((r: any) => (map[r.key] = r.value));
+        if (map.hero) setHero((h) => ({ ...h, ...map.hero, enabled: map.hero.enabled !== false }));
+        if (map.server) setServer(map.server);
+        if (map.alerts) setAlerts((a) => ({ ...a, ...map.alerts }));
+        if (map.event) setEvent({ label: map.event.label ?? "Next Event Reset", targetMs: map.event.targetMs ?? null });
+        if (map.popup) setPopup((p) => ({ ...p, ...map.popup }));
+      });
   }, []);
 
   const save = async () => {
@@ -680,7 +805,6 @@ const ContentTab = () => {
     toast.success("Site content saved");
   };
 
-
   return (
     <div className="grid md:grid-cols-2 gap-6">
       <Card className="p-6 space-y-4">
@@ -691,40 +815,79 @@ const ContentTab = () => {
             {hero.enabled ? "Enabled" : "Disabled"}
           </label>
         </div>
-        <div><Label>Title</Label><Input value={hero.title} onChange={(e) => setHero({ ...hero, title: e.target.value })} /></div>
-        <div><Label>Subtitle</Label><Textarea value={hero.subtitle} onChange={(e) => setHero({ ...hero, subtitle: e.target.value })} /></div>
-        <div><Label>Badge</Label><Input value={hero.badge} onChange={(e) => setHero({ ...hero, badge: e.target.value })} /></div>
+        <div>
+          <Label>Title</Label>
+          <Input value={hero.title} onChange={(e) => setHero({ ...hero, title: e.target.value })} />
+        </div>
+        <div>
+          <Label>Subtitle</Label>
+          <Textarea value={hero.subtitle} onChange={(e) => setHero({ ...hero, subtitle: e.target.value })} />
+        </div>
+        <div>
+          <Label>Badge</Label>
+          <Input value={hero.badge} onChange={(e) => setHero({ ...hero, badge: e.target.value })} />
+        </div>
       </Card>
       <Card className="p-6 space-y-4">
         <h2 className="font-bold">Server</h2>
-        <div><Label>IP</Label><Input value={server.ip} onChange={(e) => setServer({ ...server, ip: e.target.value })} /></div>
-        <div><Label>Discord URL</Label><Input value={server.discord} onChange={(e) => setServer({ ...server, discord: e.target.value })} /></div>
-        <div><Label>Version</Label><Input value={server.version} onChange={(e) => setServer({ ...server, version: e.target.value })} /></div>
-        <div><Label>Tagline</Label><Input value={server.tagline} onChange={(e) => setServer({ ...server, tagline: e.target.value })} /></div>
+        <div>
+          <Label>IP</Label>
+          <Input value={server.ip} onChange={(e) => setServer({ ...server, ip: e.target.value })} />
+        </div>
+        <div>
+          <Label>Discord URL</Label>
+          <Input value={server.discord} onChange={(e) => setServer({ ...server, discord: e.target.value })} />
+        </div>
+        <div>
+          <Label>Version</Label>
+          <Input value={server.version} onChange={(e) => setServer({ ...server, version: e.target.value })} />
+        </div>
+        <div>
+          <Label>Tagline</Label>
+          <Input value={server.tagline} onChange={(e) => setServer({ ...server, tagline: e.target.value })} />
+        </div>
       </Card>
       <Card className="p-6 space-y-4 md:col-span-2">
         <h2 className="font-bold">Status alerts</h2>
-        <p className="text-sm text-muted-foreground">Banners shown on the homepage when the live Minecraft server status changes.</p>
+        <p className="text-sm text-muted-foreground">
+          Banners shown on the homepage when the live Minecraft server status changes.
+        </p>
         <div className="grid md:grid-cols-2 gap-4">
           <div className="space-y-3 p-4 rounded-lg border border-border">
             <div className="flex items-center gap-2">
-              <Switch checked={alerts.onlineEnabled} onCheckedChange={(c) => setAlerts({ ...alerts, onlineEnabled: c })} />
+              <Switch
+                checked={alerts.onlineEnabled}
+                onCheckedChange={(c) => setAlerts({ ...alerts, onlineEnabled: c })}
+              />
               <Label>Notify when server goes ONLINE</Label>
             </div>
-            <Textarea rows={2} value={alerts.onlineMessage} onChange={(e) => setAlerts({ ...alerts, onlineMessage: e.target.value })} />
+            <Textarea
+              rows={2}
+              value={alerts.onlineMessage}
+              onChange={(e) => setAlerts({ ...alerts, onlineMessage: e.target.value })}
+            />
           </div>
           <div className="space-y-3 p-4 rounded-lg border border-border">
             <div className="flex items-center gap-2">
-              <Switch checked={alerts.offlineEnabled} onCheckedChange={(c) => setAlerts({ ...alerts, offlineEnabled: c })} />
+              <Switch
+                checked={alerts.offlineEnabled}
+                onCheckedChange={(c) => setAlerts({ ...alerts, offlineEnabled: c })}
+              />
               <Label>Notify when server goes OFFLINE</Label>
             </div>
-            <Textarea rows={2} value={alerts.offlineMessage} onChange={(e) => setAlerts({ ...alerts, offlineMessage: e.target.value })} />
+            <Textarea
+              rows={2}
+              value={alerts.offlineMessage}
+              onChange={(e) => setAlerts({ ...alerts, offlineMessage: e.target.value })}
+            />
           </div>
         </div>
       </Card>
       <Card className="p-6 space-y-4 md:col-span-2">
         <h2 className="font-bold">Next event countdown</h2>
-        <p className="text-sm text-muted-foreground">Powers the homepage countdown timer. Leave blank to use the default (next Saturday 8pm).</p>
+        <p className="text-sm text-muted-foreground">
+          Powers the homepage countdown timer. Leave blank to use the default (next Saturday 8pm).
+        </p>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <Label>Event label</Label>
@@ -747,11 +910,15 @@ const ContentTab = () => {
                 }}
               />
               {event.targetMs && (
-                <Button variant="outline" type="button" onClick={() => setEvent({ ...event, targetMs: null })}>Clear</Button>
+                <Button variant="outline" type="button" onClick={() => setEvent({ ...event, targetMs: null })}>
+                  Clear
+                </Button>
               )}
             </div>
             {event.targetMs && (
-              <p className="text-xs text-muted-foreground mt-1">Counts down to: {new Date(event.targetMs).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Counts down to: {new Date(event.targetMs).toLocaleString()}
+              </p>
             )}
           </div>
         </div>
@@ -768,14 +935,21 @@ const ContentTab = () => {
           </div>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          <div><Label>Title</Label><Input value={popup.title} onChange={(e) => setPopup({ ...popup, title: e.target.value })} /></div>
+          <div>
+            <Label>Title</Label>
+            <Input value={popup.title} onChange={(e) => setPopup({ ...popup, title: e.target.value })} />
+          </div>
           <div>
             <Label>Primary button label</Label>
             <Input value={popup.primaryLabel} onChange={(e) => setPopup({ ...popup, primaryLabel: e.target.value })} />
           </div>
           <div className="md:col-span-2">
             <Label>Description</Label>
-            <Textarea rows={3} value={popup.description} onChange={(e) => setPopup({ ...popup, description: e.target.value })} />
+            <Textarea
+              rows={3}
+              value={popup.description}
+              onChange={(e) => setPopup({ ...popup, description: e.target.value })}
+            />
           </div>
           <div>
             <Label>Primary button URL (optional)</Label>
@@ -787,11 +961,16 @@ const ContentTab = () => {
           </div>
           <div>
             <Label>Secondary (dismiss) button label</Label>
-            <Input value={popup.secondaryLabel} onChange={(e) => setPopup({ ...popup, secondaryLabel: e.target.value })} />
+            <Input
+              value={popup.secondaryLabel}
+              onChange={(e) => setPopup({ ...popup, secondaryLabel: e.target.value })}
+            />
           </div>
         </div>
       </Card>
-      <div className="md:col-span-2"><Button onClick={save}>Save all</Button></div>
+      <div className="md:col-span-2">
+        <Button onClick={save}>Save all</Button>
+      </div>
     </div>
   );
 };
@@ -799,7 +978,21 @@ const ContentTab = () => {
 const StatusTab = () => {
   const [s, setS] = useState({ online: true, players_online: 0, players_max: 500, motd: "" });
   useEffect(() => {
-    supabase.from("server_status").select("*").eq("id", 1).maybeSingle().then(({ data }) => data && setS({ online: data.online, players_online: data.players_online, players_max: data.players_max, motd: data.motd ?? "" }));
+    supabase
+      .from("server_status")
+      .select("*")
+      .eq("id", 1)
+      .maybeSingle()
+      .then(
+        ({ data }) =>
+          data &&
+          setS({
+            online: data.online,
+            players_online: data.players_online,
+            players_max: data.players_max,
+            motd: data.motd ?? "",
+          }),
+      );
   }, []);
   const save = async () => {
     const { error } = await supabase.from("server_status").update(s).eq("id", 1);
@@ -808,10 +1001,26 @@ const StatusTab = () => {
   };
   return (
     <Card className="p-6 space-y-4 max-w-xl">
-      <div className="flex items-center gap-2"><Switch checked={s.online} onCheckedChange={(c) => setS({ ...s, online: c })} /><Label>Server online</Label></div>
-      <div><Label>Players online</Label><Input type="number" value={s.players_online} onChange={(e) => setS({ ...s, players_online: +e.target.value })} /></div>
-      <div><Label>Max players</Label><Input type="number" value={s.players_max} onChange={(e) => setS({ ...s, players_max: +e.target.value })} /></div>
-      <div><Label>MOTD</Label><Input value={s.motd} onChange={(e) => setS({ ...s, motd: e.target.value })} /></div>
+      <div className="flex items-center gap-2">
+        <Switch checked={s.online} onCheckedChange={(c) => setS({ ...s, online: c })} />
+        <Label>Server online</Label>
+      </div>
+      <div>
+        <Label>Players online</Label>
+        <Input
+          type="number"
+          value={s.players_online}
+          onChange={(e) => setS({ ...s, players_online: +e.target.value })}
+        />
+      </div>
+      <div>
+        <Label>Max players</Label>
+        <Input type="number" value={s.players_max} onChange={(e) => setS({ ...s, players_max: +e.target.value })} />
+      </div>
+      <div>
+        <Label>MOTD</Label>
+        <Input value={s.motd} onChange={(e) => setS({ ...s, motd: e.target.value })} />
+      </div>
       <Button onClick={save}>Save</Button>
     </Card>
   );
@@ -829,20 +1038,32 @@ const LogsTab = () => {
     if (error) toast.error(error.message);
     setLogs(data ?? []);
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, [scope]);
+  useEffect(() => {
+    load(); /* eslint-disable-next-line */
+  }, [scope]);
 
   return (
     <Card className="p-6 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="font-bold">Admin role check logs</h2>
         <div className="flex gap-2">
-          <Button size="sm" variant={scope === "mine" ? "default" : "outline"} onClick={() => setScope("mine")}>My checks</Button>
-          <Button size="sm" variant={scope === "all" ? "default" : "outline"} onClick={() => setScope("all")}>All (admin)</Button>
-          <Button size="sm" variant="ghost" onClick={load}>Refresh</Button>
+          <Button size="sm" variant={scope === "mine" ? "default" : "outline"} onClick={() => setScope("mine")}>
+            My checks
+          </Button>
+          <Button size="sm" variant={scope === "all" ? "default" : "outline"} onClick={() => setScope("all")}>
+            All (admin)
+          </Button>
+          <Button size="sm" variant="ghost" onClick={load}>
+            Refresh
+          </Button>
         </div>
       </div>
       <div className="space-y-2 max-h-[600px] overflow-auto">
-        {logs.length === 0 && <p className="text-sm text-muted-foreground">No logs yet. Reload pages that check admin access to generate entries.</p>}
+        {logs.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            No logs yet. Reload pages that check admin access to generate entries.
+          </p>
+        )}
         {logs.map((l) => (
           <div key={l.id} className="p-3 rounded-lg bg-secondary/40 text-sm">
             <div className="flex items-center justify-between">
@@ -866,14 +1087,26 @@ const LogsTab = () => {
 const BOT_KEY = "discord_bot";
 
 const BotDashboardSection = () => {
-  const [cfg, setCfg] = useState<any>({ enabled: false, status: "offline", guildId: "", inviteUrl: "", announceChannelId: "", statusChannelId: "", welcomeMessage: "" });
+  const [cfg, setCfg] = useState<any>({
+    enabled: false,
+    status: "offline",
+    guildId: "",
+    inviteUrl: "",
+    announceChannelId: "",
+    statusChannelId: "",
+    welcomeMessage: "",
+  });
   const [testing, setTesting] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [actionResults, setActionResults] = useState<Record<string, { ok: boolean; message: string }>>({});
 
   useEffect(() => {
-    supabase.from("site_content").select("value").eq("key", BOT_KEY).maybeSingle()
+    supabase
+      .from("site_content")
+      .select("value")
+      .eq("key", BOT_KEY)
+      .maybeSingle()
       .then(({ data }) => data?.value && setCfg((c: any) => ({ ...c, ...(data.value as any) })));
   }, []);
 
@@ -900,26 +1133,53 @@ const BotDashboardSection = () => {
       body: { action },
     });
     setBusy(null);
-    const payload = error ? { ok: false, message: error.message } : { ok: !!data?.ok, message: data?.ok ? data.message : (data?.error ?? "Failed") };
+    const payload = error
+      ? { ok: false, message: error.message }
+      : { ok: !!data?.ok, message: data?.ok ? data.message : (data?.error ?? "Failed") };
     setActionResults((r) => ({ ...r, [action]: payload }));
     if (payload.ok) toast.success(payload.message);
     else toast.error(payload.message);
   };
 
   const online = cfg.enabled && cfg.status === "online";
-  const tests: { key: "announce" | "status" | "welcome"; label: string; desc: string; channel: string | undefined }[] = [
-    { key: "announce", label: "Send test announcement", desc: "Posts an embed to the announcements channel.", channel: cfg.announceChannelId },
-    { key: "status",   label: "Post server status",     desc: "Sends a live status embed to the status channel.", channel: cfg.statusChannelId },
-    { key: "welcome",  label: "Preview welcome message", desc: "Renders the welcome template and posts it for preview.", channel: cfg.announceChannelId || cfg.statusChannelId },
-  ];
+  const tests: { key: "announce" | "status" | "welcome"; label: string; desc: string; channel: string | undefined }[] =
+    [
+      {
+        key: "announce",
+        label: "Send test announcement",
+        desc: "Posts an embed to the announcements channel.",
+        channel: cfg.announceChannelId,
+      },
+      {
+        key: "status",
+        label: "Post server status",
+        desc: "Sends a live status embed to the status channel.",
+        channel: cfg.statusChannelId,
+      },
+      {
+        key: "welcome",
+        label: "Preview welcome message",
+        desc: "Renders the welcome template and posts it for preview.",
+        channel: cfg.announceChannelId || cfg.statusChannelId,
+      },
+    ];
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <StatCard title="Bot Status" value={online ? "Online" : cfg.enabled ? "Connecting" : "Disabled"} icon={Activity}
-          color={online ? "bg-emerald-500" : cfg.enabled ? "bg-orange-500" : "bg-muted"} />
+        <StatCard
+          title="Bot Status"
+          value={online ? "Online" : cfg.enabled ? "Connecting" : "Disabled"}
+          icon={Activity}
+          color={online ? "bg-emerald-500" : cfg.enabled ? "bg-orange-500" : "bg-muted"}
+        />
         <StatCard title="Guild ID" value={cfg.guildId || "—"} icon={ShieldCheck} color="bg-primary" />
-        <StatCard title="Enabled" value={cfg.enabled ? "Yes" : "No"} icon={ShieldCheck} color={cfg.enabled ? "bg-sky-500" : "bg-muted"} />
+        <StatCard
+          title="Enabled"
+          value={cfg.enabled ? "Yes" : "No"}
+          icon={ShieldCheck}
+          color={cfg.enabled ? "bg-sky-500" : "bg-muted"}
+        />
       </div>
 
       <Card className="p-6 space-y-4">
@@ -928,15 +1188,23 @@ const BotDashboardSection = () => {
             <h2 className="font-bold">Connection test</h2>
             <p className="text-sm text-muted-foreground">Verify the bot token and (optionally) guild access.</p>
           </div>
-          <Button onClick={runTest} disabled={testing}>{testing ? "Testing..." : "Test Connection"}</Button>
+          <Button onClick={runTest} disabled={testing}>
+            {testing ? "Testing..." : "Test Connection"}
+          </Button>
         </div>
         {result && (
-          <div className={`p-4 rounded-lg border ${result.ok ? "border-emerald-500/40 bg-emerald-500/10" : "border-destructive/40 bg-destructive/10"} space-y-2 text-sm`}>
+          <div
+            className={`p-4 rounded-lg border ${result.ok ? "border-emerald-500/40 bg-emerald-500/10" : "border-destructive/40 bg-destructive/10"} space-y-2 text-sm`}
+          >
             <div className="flex items-center gap-2">
               <Badge variant={result.ok ? "default" : "destructive"}>{result.ok ? "SUCCESS" : "FAILED"}</Badge>
-              {result.ok
-                ? <span>Authenticated as <span className="font-mono">{result.bot?.username}</span> (id {result.bot?.id})</span>
-                : <span>{result.error}</span>}
+              {result.ok ? (
+                <span>
+                  Authenticated as <span className="font-mono">{result.bot?.username}</span> (id {result.bot?.id})
+                </span>
+              ) : (
+                <span>{result.error}</span>
+              )}
             </div>
             {result.ok && result.guild && (
               <div className="text-muted-foreground">
@@ -961,19 +1229,25 @@ const BotDashboardSection = () => {
             const r = actionResults[t.key];
             const disabled = !!busy || !t.channel;
             return (
-              <div key={t.key} className="flex items-start justify-between gap-4 p-4 rounded-lg border border-border/50 bg-card/40">
+              <div
+                key={t.key}
+                className="flex items-start justify-between gap-4 p-4 rounded-lg border border-border/50 bg-card/40"
+              >
                 <div className="min-w-0">
                   <p className="font-medium">{t.label}</p>
                   <p className="text-xs text-muted-foreground">{t.desc}</p>
                   <p className="text-xs mt-1">
                     Target channel:{" "}
-                    {t.channel
-                      ? <span className="font-mono text-foreground">{t.channel}</span>
-                      : <span className="text-destructive">not configured</span>}
+                    {t.channel ? (
+                      <span className="font-mono text-foreground">{t.channel}</span>
+                    ) : (
+                      <span className="text-destructive">not configured</span>
+                    )}
                   </p>
                   {r && (
                     <div className={`mt-2 text-xs ${r.ok ? "text-emerald-400" : "text-destructive"}`}>
-                      {r.ok ? "✓ " : "✗ "}{r.message}
+                      {r.ok ? "✓ " : "✗ "}
+                      {r.message}
                     </div>
                   )}
                 </div>
@@ -989,8 +1263,8 @@ const BotDashboardSection = () => {
       <Card className="p-6 space-y-3">
         <h2 className="font-bold">About the Discord Bot</h2>
         <p className="text-sm text-muted-foreground">
-          Configure your bot in the Management section. When enabled, it can sync with your ZyphoraMC server
-          to deliver announcements, role assignments, and live server status to your Discord guild.
+          Configure your bot in the Management section. When enabled, it can sync with your ZyphoraMC server to deliver
+          announcements, role assignments, and live server status to your Discord guild.
         </p>
         {cfg.inviteUrl && (
           <a href={cfg.inviteUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary underline">
@@ -1016,10 +1290,15 @@ const BotManagementSection = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from("site_content").select("value").eq("key", BOT_KEY).maybeSingle().then(({ data }) => {
-      if (data?.value) setCfg((c) => ({ ...c, ...(data.value as any) }));
-      setLoading(false);
-    });
+    supabase
+      .from("site_content")
+      .select("value")
+      .eq("key", BOT_KEY)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value) setCfg((c) => ({ ...c, ...(data.value as any) }));
+        setLoading(false);
+      });
   }, []);
 
   const save = async () => {
@@ -1039,29 +1318,59 @@ const BotManagementSection = () => {
           <Label>Enable Discord bot</Label>
         </div>
         <div className="flex items-center gap-2">
-          <Switch checked={cfg.status === "online"} onCheckedChange={(c) => setCfg({ ...cfg, status: c ? "online" : "offline" })} />
+          <Switch
+            checked={cfg.status === "online"}
+            onCheckedChange={(c) => setCfg({ ...cfg, status: c ? "online" : "offline" })}
+          />
           <Label>Mark as online</Label>
         </div>
-        <div><Label>Guild ID</Label><Input value={cfg.guildId} onChange={(e) => setCfg({ ...cfg, guildId: e.target.value })} /></div>
-        <div><Label>Bot invite URL</Label><Input value={cfg.inviteUrl} onChange={(e) => setCfg({ ...cfg, inviteUrl: e.target.value })} /></div>
+        <div>
+          <Label>Guild ID</Label>
+          <Input value={cfg.guildId} onChange={(e) => setCfg({ ...cfg, guildId: e.target.value })} />
+        </div>
+        <div>
+          <Label>Bot invite URL</Label>
+          <Input value={cfg.inviteUrl} onChange={(e) => setCfg({ ...cfg, inviteUrl: e.target.value })} />
+        </div>
       </Card>
 
       <Card className="p-6 space-y-4">
         <h2 className="font-bold">Channels & Messages</h2>
-        <div><Label>Announcements channel ID</Label><Input value={cfg.announceChannelId} onChange={(e) => setCfg({ ...cfg, announceChannelId: e.target.value })} /></div>
-        <div><Label>Server status channel ID</Label><Input value={cfg.statusChannelId} onChange={(e) => setCfg({ ...cfg, statusChannelId: e.target.value })} /></div>
+        <div>
+          <Label>Announcements channel ID</Label>
+          <Input
+            value={cfg.announceChannelId}
+            onChange={(e) => setCfg({ ...cfg, announceChannelId: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label>Server status channel ID</Label>
+          <Input value={cfg.statusChannelId} onChange={(e) => setCfg({ ...cfg, statusChannelId: e.target.value })} />
+        </div>
         <div>
           <Label>Welcome channel ID</Label>
-          <Input value={cfg.welcomeChannelId} onChange={(e) => setCfg({ ...cfg, welcomeChannelId: e.target.value })} placeholder="Channel where new members are greeted" />
+          <Input
+            value={cfg.welcomeChannelId}
+            onChange={(e) => setCfg({ ...cfg, welcomeChannelId: e.target.value })}
+            placeholder="Channel where new members are greeted"
+          />
         </div>
         <div>
           <Label>Welcome message</Label>
-          <Textarea rows={3} value={cfg.welcomeMessage} onChange={(e) => setCfg({ ...cfg, welcomeMessage: e.target.value })} />
-          <p className="text-xs text-muted-foreground mt-1">Use <code>{"{user}"}</code> as a placeholder for the new member.</p>
+          <Textarea
+            rows={3}
+            value={cfg.welcomeMessage}
+            onChange={(e) => setCfg({ ...cfg, welcomeMessage: e.target.value })}
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Use <code>{"{user}"}</code> as a placeholder for the new member.
+          </p>
         </div>
       </Card>
 
-      <div className="md:col-span-2"><Button onClick={save}>Save bot settings</Button></div>
+      <div className="md:col-span-2">
+        <Button onClick={save}>Save bot settings</Button>
+      </div>
     </div>
   );
 };
@@ -1078,7 +1387,14 @@ type AdminTicket = {
   created_at: string;
   updated_at: string;
 };
-type AdminMsg = { id: string; ticket_id: string; author_id: string; is_staff: boolean; body: string; created_at: string };
+type AdminMsg = {
+  id: string;
+  ticket_id: string;
+  author_id: string;
+  is_staff: boolean;
+  body: string;
+  created_at: string;
+};
 
 const TICKET_STATUSES: AdminTicket["status"][] = ["open", "in_progress", "waiting_user", "closed"];
 
@@ -1102,17 +1418,28 @@ const TicketsAdminSection = () => {
     if (ids.length) {
       const { data: profs } = await supabase.from("profiles").select("id, display_name").in("id", ids);
       const map: Record<string, { display_name: string | null }> = {};
-      (profs ?? []).forEach((p: any) => { map[p.id] = { display_name: p.display_name }; });
+      (profs ?? []).forEach((p: any) => {
+        map[p.id] = { display_name: p.display_name };
+      });
       setProfilesById(map);
     }
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   useEffect(() => {
-    if (!selectedId) { setMessages([]); return; }
-    supabase.from("support_ticket_messages").select("*").eq("ticket_id", selectedId).order("created_at")
+    if (!selectedId) {
+      setMessages([]);
+      return;
+    }
+    supabase
+      .from("support_ticket_messages")
+      .select("*")
+      .eq("ticket_id", selectedId)
+      .order("created_at")
       .then(({ data }) => setMessages((data ?? []) as AdminMsg[]));
   }, [selectedId]);
 
@@ -1145,7 +1472,11 @@ const TicketsAdminSection = () => {
     setReply("");
     // Auto-set status to waiting_user
     if (selected.status === "open") await updateStatus(selected.id, "waiting_user");
-    const { data } = await supabase.from("support_ticket_messages").select("*").eq("ticket_id", selected.id).order("created_at");
+    const { data } = await supabase
+      .from("support_ticket_messages")
+      .select("*")
+      .eq("ticket_id", selected.id)
+      .order("created_at");
     setMessages((data ?? []) as AdminMsg[]);
   };
 
@@ -1159,7 +1490,9 @@ const TicketsAdminSection = () => {
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: tickets.length, open: 0, in_progress: 0, waiting_user: 0, closed: 0 };
-    tickets.forEach((t) => { c[t.status]++; });
+    tickets.forEach((t) => {
+      c[t.status]++;
+    });
     return c;
   }, [tickets]);
 
@@ -1193,7 +1526,9 @@ const TicketsAdminSection = () => {
                 >
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <div className="font-semibold text-sm truncate">{t.subject}</div>
-                    <Badge variant="outline" className="text-[10px] shrink-0">{t.status.replace("_", " ")}</Badge>
+                    <Badge variant="outline" className="text-[10px] shrink-0">
+                      {t.status.replace("_", " ")}
+                    </Badge>
                   </div>
                   <div className="text-xs text-muted-foreground line-clamp-2">{t.body}</div>
                   <div className="text-[10px] text-muted-foreground mt-1.5 uppercase tracking-wider flex justify-between">
@@ -1218,25 +1553,45 @@ const TicketsAdminSection = () => {
             <div className="flex flex-wrap items-start justify-between gap-3 mb-4 pb-4 border-b">
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-                  #{selected.id.slice(0, 8)} · {selected.category ?? "General"} · From {profilesById[selected.user_id]?.display_name ?? selected.user_id.slice(0, 8)}
+                  #{selected.id.slice(0, 8)} · {selected.category ?? "General"} · From{" "}
+                  {profilesById[selected.user_id]?.display_name ?? selected.user_id.slice(0, 8)}
                 </div>
                 <h2 className="text-xl font-bold">{selected.subject}</h2>
-                <div className="text-xs text-muted-foreground mt-1">Opened {new Date(selected.created_at).toLocaleString()}</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  Opened {new Date(selected.created_at).toLocaleString()}
+                </div>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
                 <Select value={selected.status} onValueChange={(v: any) => updateStatus(selected.id, v)}>
-                  <SelectTrigger className="w-[150px] h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="w-[150px] h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    {TICKET_STATUSES.map((s) => <SelectItem key={s} value={s}>{s.replace("_", " ")}</SelectItem>)}
+                    {TICKET_STATUSES.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {s.replace("_", " ")}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <Select value={selected.priority} onValueChange={(v: any) => updatePriority(selected.id, v)}>
-                  <SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="w-[120px] h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    {(["low", "normal", "high", "urgent"] as const).map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                    {(["low", "normal", "high", "urgent"] as const).map((p) => (
+                      <SelectItem key={p} value={p}>
+                        {p}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => deleteTicket(selected.id)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-destructive"
+                  onClick={() => deleteTicket(selected.id)}
+                >
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -1244,11 +1599,16 @@ const TicketsAdminSection = () => {
 
             <div className="space-y-3 max-h-[45vh] overflow-y-auto pr-1">
               <div className="rounded-lg p-4 border bg-secondary/40">
-                <div className="text-xs font-bold uppercase tracking-wider mb-1">User · {new Date(selected.created_at).toLocaleString()}</div>
+                <div className="text-xs font-bold uppercase tracking-wider mb-1">
+                  User · {new Date(selected.created_at).toLocaleString()}
+                </div>
                 <div className="text-sm whitespace-pre-wrap break-words">{selected.body}</div>
               </div>
               {messages.map((m) => (
-                <div key={m.id} className={`rounded-lg p-4 border ${m.is_staff ? "bg-primary/10 border-primary/40" : "bg-secondary/40"}`}>
+                <div
+                  key={m.id}
+                  className={`rounded-lg p-4 border ${m.is_staff ? "bg-primary/10 border-primary/40" : "bg-secondary/40"}`}
+                >
                   <div className="text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-2">
                     {m.is_staff ? <span className="text-primary">Staff</span> : "User"}
                     <span className="text-muted-foreground font-normal">{new Date(m.created_at).toLocaleString()}</span>
@@ -1260,9 +1620,17 @@ const TicketsAdminSection = () => {
 
             <div className="mt-4 pt-4 border-t space-y-2">
               <Label>Staff reply</Label>
-              <Textarea rows={4} maxLength={4000} value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Reply to the user…" />
+              <Textarea
+                rows={4}
+                maxLength={4000}
+                value={reply}
+                onChange={(e) => setReply(e.target.value)}
+                placeholder="Reply to the user…"
+              />
               <div className="flex justify-end gap-2">
-                <Button variant="outline" size="sm" onClick={() => updateStatus(selected.id, "closed")}>Close ticket</Button>
+                <Button variant="outline" size="sm" onClick={() => updateStatus(selected.id, "closed")}>
+                  Close ticket
+                </Button>
                 <Button size="sm" onClick={sendReply} disabled={sending || !reply.trim()}>
                   <Send className="h-4 w-4 mr-2" /> Send reply
                 </Button>
@@ -1298,10 +1666,21 @@ type PluginRow = {
 };
 
 const emptyPluginForm = {
-  name: "", description: "", long_description: "", version: "", author: "",
-  download_url: "", icon_url: "", category: "", platform: "", tags: "",
-  featured: false, published: true,
-  jar_path: "" as string, jar_filename: "" as string, jar_size: 0 as number,
+  name: "",
+  description: "",
+  long_description: "",
+  version: "",
+  author: "",
+  download_url: "",
+  icon_url: "",
+  category: "",
+  platform: "",
+  tags: "",
+  featured: false,
+  published: true,
+  jar_path: "" as string,
+  jar_filename: "" as string,
+  jar_size: 0 as number,
   screenshots: [] as string[],
 };
 
@@ -1319,28 +1698,39 @@ const PluginsTab = () => {
   const [saving, setSaving] = useState(false);
 
   const load = async () => {
-    const { data } = await supabase
-      .from("plugins")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const { data } = await supabase.from("plugins").select("*").order("created_at", { ascending: false });
     setPlugins((data ?? []) as PluginRow[]);
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const startEdit = (p: PluginRow) => {
     setEditingId(p.id);
     setForm({
-      name: p.name, description: p.description ?? "", long_description: p.long_description ?? "",
-      version: p.version ?? "", author: p.author ?? "", download_url: p.download_url ?? "",
-      icon_url: p.icon_url ?? "", category: p.category ?? "", platform: p.platform ?? "",
+      name: p.name,
+      description: p.description ?? "",
+      long_description: p.long_description ?? "",
+      version: p.version ?? "",
+      author: p.author ?? "",
+      download_url: p.download_url ?? "",
+      icon_url: p.icon_url ?? "",
+      category: p.category ?? "",
+      platform: p.platform ?? "",
       tags: (p.tags ?? []).join(", "),
-      featured: p.featured, published: p.published,
-      jar_path: p.jar_path ?? "", jar_filename: p.jar_filename ?? "", jar_size: p.jar_size ?? 0,
+      featured: p.featured,
+      published: p.published,
+      jar_path: p.jar_path ?? "",
+      jar_filename: p.jar_filename ?? "",
+      jar_size: p.jar_size ?? 0,
       screenshots: p.screenshots ?? [],
     });
   };
 
-  const reset = () => { setEditingId(null); setForm(emptyPluginForm); };
+  const reset = () => {
+    setEditingId(null);
+    setForm(emptyPluginForm);
+  };
 
   const [uploading, setUploading] = useState(false);
 
@@ -1400,7 +1790,10 @@ const PluginsTab = () => {
         const { error } = await supabase.storage
           .from("plugin-screenshots")
           .upload(path, file, { contentType: file.type || "image/png", upsert: false });
-        if (error) { toast.error(error.message); continue; }
+        if (error) {
+          toast.error(error.message);
+          continue;
+        }
         const { data: pub } = supabase.storage.from("plugin-screenshots").getPublicUrl(path);
         urls.push(pub.publicUrl);
       }
@@ -1454,7 +1847,10 @@ const PluginsTab = () => {
       icon_url: form.icon_url.trim() || null,
       category: form.category.trim() || null,
       platform: form.platform.trim() || null,
-      tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
+      tags: form.tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
       featured: form.featured,
       published: form.published,
       jar_path: form.jar_path || null,
@@ -1492,7 +1888,11 @@ const PluginsTab = () => {
           <h2 className="font-bold flex items-center gap-2">
             <Puzzle className="h-4 w-4" /> {editingId ? "Edit plugin" : "Add plugin"}
           </h2>
-          {editingId && <Button size="sm" variant="ghost" onClick={reset}>Cancel</Button>}
+          {editingId && (
+            <Button size="sm" variant="ghost" onClick={reset}>
+              Cancel
+            </Button>
+          )}
         </div>
         <div className="space-y-3">
           <div>
@@ -1502,7 +1902,11 @@ const PluginsTab = () => {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>Version</Label>
-              <Input value={form.version} onChange={(e) => setForm({ ...form, version: e.target.value })} placeholder="1.0.0" />
+              <Input
+                value={form.version}
+                onChange={(e) => setForm({ ...form, version: e.target.value })}
+                placeholder="1.0.0"
+              />
             </div>
             <div>
               <Label>Author</Label>
@@ -1512,11 +1916,19 @@ const PluginsTab = () => {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>Category</Label>
-              <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Economy, PvP, ..." />
+              <Input
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                placeholder="Economy, PvP, ..."
+              />
             </div>
             <div>
               <Label>Platform</Label>
-              <Input value={form.platform} onChange={(e) => setForm({ ...form, platform: e.target.value })} placeholder="Bukkit, Spigot, Paper" />
+              <Input
+                value={form.platform}
+                onChange={(e) => setForm({ ...form, platform: e.target.value })}
+                placeholder="Bukkit, Spigot, Paper"
+              />
             </div>
           </div>
           <div>
@@ -1525,7 +1937,11 @@ const PluginsTab = () => {
           </div>
           <div>
             <Label>Long description</Label>
-            <Textarea rows={5} value={form.long_description} onChange={(e) => setForm({ ...form, long_description: e.target.value })} />
+            <Textarea
+              rows={5}
+              value={form.long_description}
+              onChange={(e) => setForm({ ...form, long_description: e.target.value })}
+            />
           </div>
           <div className="space-y-2 rounded-lg border border-border bg-secondary/30 p-3">
             <Label>Icon</Label>
@@ -1536,8 +1952,15 @@ const PluginsTab = () => {
                 <Button asChild size="sm" variant="outline">
                   <label className="cursor-pointer">
                     Replace
-                    <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden"
-                      onChange={(e) => { onIconSelected(e.target.files?.[0]); e.target.value = ""; }} />
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      className="hidden"
+                      onChange={(e) => {
+                        onIconSelected(e.target.files?.[0]);
+                        e.target.value = "";
+                      }}
+                    />
                   </label>
                 </Button>
                 <Button size="sm" variant="ghost" onClick={removeIcon}>
@@ -1548,8 +1971,15 @@ const PluginsTab = () => {
               <Button asChild variant="outline" disabled={uploadingIcon} className="w-full">
                 <label className="cursor-pointer">
                   {uploadingIcon ? "Uploading..." : "Upload icon (.png)"}
-                  <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden"
-                    onChange={(e) => { onIconSelected(e.target.files?.[0]); e.target.value = ""; }} />
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      onIconSelected(e.target.files?.[0]);
+                      e.target.value = "";
+                    }}
+                  />
                 </label>
               </Button>
             )}
@@ -1567,8 +1997,12 @@ const PluginsTab = () => {
                   <Button asChild size="sm" variant="outline">
                     <label className="cursor-pointer">
                       Replace
-                      <input type="file" accept=".jar,application/java-archive" className="hidden"
-                        onChange={(e) => e.target.files?.[0] && onJarSelected(e.target.files[0])} />
+                      <input
+                        type="file"
+                        accept=".jar,application/java-archive"
+                        className="hidden"
+                        onChange={(e) => e.target.files?.[0] && onJarSelected(e.target.files[0])}
+                      />
                     </label>
                   </Button>
                   <Button size="sm" variant="ghost" onClick={removeJar}>
@@ -1580,14 +2014,21 @@ const PluginsTab = () => {
               <Button asChild variant="outline" disabled={uploading} className="w-full">
                 <label className="cursor-pointer">
                   {uploading ? "Uploading..." : "Upload .jar file"}
-                  <input type="file" accept=".jar,application/java-archive" className="hidden"
-                    onChange={(e) => e.target.files?.[0] && onJarSelected(e.target.files[0])} />
+                  <input
+                    type="file"
+                    accept=".jar,application/java-archive"
+                    className="hidden"
+                    onChange={(e) => e.target.files?.[0] && onJarSelected(e.target.files[0])}
+                  />
                 </label>
               </Button>
             )}
-            <p className="text-xs text-muted-foreground">Max 100 MB. The download URL is filled automatically when you upload.</p>
+            <p className="text-xs text-muted-foreground">
+              Max 100 MB. The download URL is filled automatically when you upload.
+            </p>
             <div className="text-xs font-mono text-primary/80 pt-1">
-              Download filename: {(() => {
+              Download filename:{" "}
+              {(() => {
                 const sanitize = (s: string) => s.trim().replace(/\s+/g, "-");
                 const parts = [
                   sanitize(form.name) || "Plugin",
@@ -1625,7 +2066,10 @@ const PluginsTab = () => {
                   accept="image/png,image/jpeg,image/webp"
                   multiple
                   className="hidden"
-                  onChange={(e) => { onScreenshotsSelected(e.target.files); e.target.value = ""; }}
+                  onChange={(e) => {
+                    onScreenshotsSelected(e.target.files);
+                    e.target.value = "";
+                  }}
                 />
               </label>
             </Button>
@@ -1633,7 +2077,11 @@ const PluginsTab = () => {
           </div>
           <div>
             <Label>Tags (comma separated)</Label>
-            <Input value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} placeholder="pvp, economy" />
+            <Input
+              value={form.tags}
+              onChange={(e) => setForm({ ...form, tags: e.target.value })}
+              placeholder="pvp, economy"
+            />
           </div>
           <div className="flex items-center gap-6 pt-2">
             <label className="flex items-center gap-2 text-sm">
@@ -1668,14 +2116,23 @@ const PluginsTab = () => {
                 <div className="min-w-0">
                   <div className="font-medium truncate flex items-center gap-2">
                     {p.name}
-                    {!p.published && <Badge variant="outline" className="text-xs">draft</Badge>}
+                    {!p.published && (
+                      <Badge variant="outline" className="text-xs">
+                        draft
+                      </Badge>
+                    )}
                     {p.featured && <Badge className="text-xs">featured</Badge>}
                   </div>
-                  <div className="text-xs text-muted-foreground font-mono">#{p.short_id}{p.version ? ` · v${p.version}` : ""}</div>
+                  <div className="text-xs text-muted-foreground font-mono">
+                    #{p.short_id}
+                    {p.version ? ` · v${p.version}` : ""}
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <Button size="sm" variant="outline" onClick={() => startEdit(p)}>Edit</Button>
+                <Button size="sm" variant="outline" onClick={() => startEdit(p)}>
+                  Edit
+                </Button>
                 <Button size="sm" variant="ghost" onClick={() => remove(p.id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -1702,12 +2159,12 @@ type ChangelogRow = {
   created_at: string;
 };
 
-const CHANGELOG_CATS = ["feature", "update", "fix", "balance", "security", "addition"];
+const CHANGELOG_CATS = ["server", "feature", "update", "fix", "balance", "security", "addition"];
 const emptyChangelog = {
   id: "",
   title: "",
   content: "",
-  category: "update",
+  category: "",
   version: "",
   entry_date: new Date().toISOString().slice(0, 10),
   published: true,
@@ -1731,7 +2188,9 @@ const ChangelogTab = () => {
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const save = async () => {
     if (!editing) return;
@@ -1788,10 +2247,14 @@ const ChangelogTab = () => {
             <div>
               <Label>Category</Label>
               <Select value={editing.category} onValueChange={(v) => setEditing({ ...editing, category: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   {CHANGELOG_CATS.map((c) => (
-                    <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>
+                    <SelectItem key={c} value={c} className="capitalize">
+                      {c}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -1823,14 +2286,13 @@ const ChangelogTab = () => {
             />
           </div>
           <div className="flex items-center gap-2">
-            <Switch
-              checked={editing.published}
-              onCheckedChange={(v) => setEditing({ ...editing, published: v })}
-            />
+            <Switch checked={editing.published} onCheckedChange={(v) => setEditing({ ...editing, published: v })} />
             <Label className="m-0">Published</Label>
           </div>
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setEditing(null)}>
+              Cancel
+            </Button>
             <Button onClick={save} disabled={saving}>
               {saving ? "Saving…" : "Save"}
             </Button>
@@ -1848,12 +2310,20 @@ const ChangelogTab = () => {
             <Card key={e.id} className="p-4 flex items-start justify-between gap-3 flex-wrap">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <Badge variant="outline" className="capitalize">{e.category}</Badge>
-                  {e.version && <Badge variant="secondary" className="font-mono">v{e.version}</Badge>}
-                  {!e.published && <Badge variant="outline" className="text-muted-foreground">Draft</Badge>}
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(e.entry_date).toLocaleDateString()}
-                  </span>
+                  <Badge variant="outline" className="capitalize">
+                    {e.category}
+                  </Badge>
+                  {e.version && (
+                    <Badge variant="secondary" className="font-mono">
+                      v{e.version}
+                    </Badge>
+                  )}
+                  {!e.published && (
+                    <Badge variant="outline" className="text-muted-foreground">
+                      Draft
+                    </Badge>
+                  )}
+                  <span className="text-xs text-muted-foreground">{new Date(e.entry_date).toLocaleDateString()}</span>
                 </div>
                 <div className="font-display font-bold">{e.title}</div>
                 <p className="text-sm text-muted-foreground line-clamp-2 whitespace-pre-wrap">{e.content}</p>
@@ -1914,21 +2384,22 @@ const ApplicationsTab = () => {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("applications")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const { data, error } = await supabase.from("applications").select("*").order("created_at", { ascending: false });
     if (error) toast.error(error.message);
     setItems((data as ApplicationRow[]) ?? []);
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const filtered = filter === "all" ? items : items.filter((i) => i.status === filter);
 
   const decide = async (id: string, status: "approved" | "rejected") => {
-    const { data: { user: u } } = await supabase.auth.getUser();
+    const {
+      data: { user: u },
+    } = await supabase.auth.getUser();
     const { error } = await supabase
       .from("applications")
       .update({
@@ -1957,8 +2428,8 @@ const ApplicationsTab = () => {
     s === "approved"
       ? "text-emerald-400 border-emerald-400/40"
       : s === "rejected"
-      ? "text-destructive border-destructive/40"
-      : "text-amber-400 border-amber-400/40";
+        ? "text-destructive border-destructive/40"
+        : "text-amber-400 border-amber-400/40";
 
   return (
     <div className="space-y-6">
@@ -1989,11 +2460,13 @@ const ApplicationsTab = () => {
                 <div className="flex items-start justify-between gap-3 flex-wrap">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <Badge variant="outline" className="capitalize">{a.type}</Badge>
-                      <Badge variant="outline" className={statusCls(a.status)}>{a.status}</Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(a.created_at).toLocaleString()}
-                      </span>
+                      <Badge variant="outline" className="capitalize">
+                        {a.type}
+                      </Badge>
+                      <Badge variant="outline" className={statusCls(a.status)}>
+                        {a.status}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">{new Date(a.created_at).toLocaleString()}</span>
                     </div>
                     <div className="font-display font-bold">{a.mc_username}</div>
                     <div className="text-xs text-muted-foreground">
@@ -2003,7 +2476,14 @@ const ApplicationsTab = () => {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => { setOpen(isOpen ? null : a.id); setNotes(a.reviewer_notes ?? ""); }}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setOpen(isOpen ? null : a.id);
+                        setNotes(a.reviewer_notes ?? "");
+                      }}
+                    >
                       {isOpen ? "Close" : "Review"}
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => remove(a.id)}>
@@ -2050,9 +2530,7 @@ const ApplicationsTab = () => {
                       <Button variant="outline" onClick={() => decide(a.id, "rejected")}>
                         Reject
                       </Button>
-                      <Button onClick={() => decide(a.id, "approved")}>
-                        Approve
-                      </Button>
+                      <Button onClick={() => decide(a.id, "approved")}>Approve</Button>
                     </div>
                   </div>
                 )}
