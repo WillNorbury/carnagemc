@@ -1330,6 +1330,7 @@ const PluginsTab = () => {
       tags: (p.tags ?? []).join(", "),
       featured: p.featured, published: p.published,
       jar_path: p.jar_path ?? "", jar_filename: p.jar_filename ?? "", jar_size: p.jar_size ?? 0,
+      screenshots: p.screenshots ?? [],
     });
   };
 
