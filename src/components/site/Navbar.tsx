@@ -53,7 +53,7 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden lg:flex items-center gap-7 text-sm font-medium uppercase tracking-wider">
-          {links.map((l) => {
+          {links.slice(0, PRIMARY_COUNT).map((l) => {
             const active = loc.pathname === l.to;
             return (
               <Link
@@ -66,12 +66,38 @@ const Navbar = () => {
               </Link>
             );
           })}
+          {links.length > PRIMARY_COUNT && (() => {
+            const overflow = links.slice(PRIMARY_COUNT);
+            const activeInOverflow = overflow.some((l) => loc.pathname === l.to);
+            return (
+              <DropdownMenu>
+                <DropdownMenuTrigger className={`relative flex items-center gap-1 transition uppercase tracking-wider ${activeInOverflow ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+                  More <ChevronDown className="h-3.5 w-3.5" />
+                  {activeInOverflow && <span className="absolute -bottom-1 left-0 right-4 h-0.5 bg-gradient-to-r from-primary to-accent rounded-full" />}
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-40">
+                  {overflow.map((l) => (
+                    <DropdownMenuItem key={l.to} asChild>
+                      <Link to={l.to} className={`uppercase tracking-wider text-xs ${loc.pathname === l.to ? "text-primary" : ""}`}>
+                        {l.label}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            );
+          })()}
         </div>
 
         <div className="flex items-center gap-2">
           {user && (
             <Button variant="ghost" size="sm" onClick={() => nav("/dashboard")} className="hidden md:inline-flex">
               <LayoutDashboard className="h-4 w-4 mr-1" /> Dashboard
+            </Button>
+          )}
+          {user && (
+            <Button variant="ghost" size="sm" onClick={() => nav("/profile")} className="hidden md:inline-flex">
+              <UserIcon className="h-4 w-4 mr-1" /> Profile
             </Button>
           )}
           {user && (
