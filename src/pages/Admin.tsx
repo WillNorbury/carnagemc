@@ -284,6 +284,7 @@ const UsersTab = () => {
   };
 
   return (
+    <TooltipProvider delayDuration={150}>
     <div className="space-y-6">
       <Card className="p-6">
         <h2 className="font-bold mb-4">Create User</h2>
