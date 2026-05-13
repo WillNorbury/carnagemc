@@ -40,6 +40,11 @@ const UserProfile = () => {
   const [listMode, setListMode] = useState<null | "followers" | "following">(null);
   const [listLoading, setListLoading] = useState(false);
   const [listUsers, setListUsers] = useState<Profile[]>([]);
+  const [followsMeBack, setFollowsMeBack] = useState(false);
+  const [recommendations, setRecommendations] = useState<(Profile & { reason: string })[]>([]);
+  const [recsLoading, setRecsLoading] = useState(false);
+  const [recBusy, setRecBusy] = useState<string | null>(null);
+  const [followedRecs, setFollowedRecs] = useState<Set<string>>(new Set());
 
   const openList = async (mode: "followers" | "following") => {
     if (!profile) return;
