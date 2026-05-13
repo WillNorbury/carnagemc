@@ -26,6 +26,7 @@ import Plugins from "./pages/Plugins.tsx";
 import PluginDetail from "./pages/PluginDetail.tsx";
 import Changelog from "./pages/Changelog.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import LinkAccount from "./pages/LinkAccount.tsx";
 import Apply from "./pages/Apply.tsx";
 import AdminChangelog from "./pages/AdminChangelog.tsx";
 import AdminApplications from "./pages/AdminApplications.tsx";
