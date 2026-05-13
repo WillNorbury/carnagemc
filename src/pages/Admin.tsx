@@ -680,38 +680,6 @@ const ContentTab = () => {
     toast.success("Site content saved");
   };
 
-  const [uploadingShot, setUploadingShot] = useState(false);
-
-  const onScreenshotsSelected = async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
-    setUploadingShot(true);
-    try {
-      const urls: string[] = [];
-      for (const file of Array.from(files)) {
-        if (!file.type.startsWith("image/") && !file.name.toLowerCase().endsWith(".png")) {
-          toast.error(`Skipped ${file.name}: not an image`);
-          continue;
-        }
-        const path = `${crypto.randomUUID()}/${file.name}`;
-        const { error } = await supabase.storage
-          .from("plugin-screenshots")
-          .upload(path, file, { contentType: file.type || "image/png", upsert: false });
-        if (error) { toast.error(error.message); continue; }
-        const { data: pub } = supabase.storage.from("plugin-screenshots").getPublicUrl(path);
-        urls.push(pub.publicUrl);
-      }
-      if (urls.length) {
-        setForm((f) => ({ ...f, screenshots: [...f.screenshots, ...urls] }));
-        toast.success(`Added ${urls.length} screenshot${urls.length > 1 ? "s" : ""}`);
-      }
-    } finally {
-      setUploadingShot(false);
-    }
-  };
-
-  const removeScreenshot = (url: string) => {
-    setForm((f) => ({ ...f, screenshots: f.screenshots.filter((u) => u !== url) }));
-  };
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
