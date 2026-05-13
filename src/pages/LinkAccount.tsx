@@ -114,22 +114,39 @@ const LinkAccount = () => {
               onChange={(e) => setMcUsername(e.target.value)}
               placeholder="Notch"
               maxLength={16}
-              autoFocus
-              onKeyDown={(e) => { if (e.key === "Enter" && validPreview) linkAccount(); }}
+              autoFocus={!isLinked}
+              readOnly={isLinked}
+              disabled={isLinked}
+              onKeyDown={(e) => { if (e.key === "Enter" && validPreview && !isLinked) linkAccount(); }}
             />
             <p className="text-xs text-muted-foreground">
-              3–16 characters, letters, numbers and underscores only.
+              {isLinked
+                ? "Your account is already linked. Manage or unlink it from your profile."
+                : "3–16 characters, letters, numbers and underscores only."}
             </p>
           </div>
 
           <div className="flex justify-end gap-2 mt-6">
-            <Button variant="outline" asChild>
-              <Link to="/dashboard">Cancel</Link>
-            </Button>
-            <Button onClick={linkAccount} disabled={saving || !validPreview}>
-              {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-              Link account
-            </Button>
+            {isLinked ? (
+              <>
+                <Button variant="outline" asChild>
+                  <Link to="/profile">Manage in profile</Link>
+                </Button>
+                <Button asChild>
+                  <Link to="/dashboard">Continue to dashboard</Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" asChild>
+                  <Link to="/dashboard">Cancel</Link>
+                </Button>
+                <Button onClick={linkAccount} disabled={saving || !validPreview}>
+                  {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                  Link account
+                </Button>
+              </>
+            )}
           </div>
         </Card>
       </main>
