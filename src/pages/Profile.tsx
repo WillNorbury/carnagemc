@@ -200,6 +200,62 @@ const Profile = () => {
             </Button>
           </div>
         </Card>
+
+        <Card className="p-6 mt-6 space-y-6">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Palette className="h-5 w-5 text-primary" />
+              <h2 className="font-display font-bold text-lg">Appearance</h2>
+            </div>
+            <p className="text-sm text-muted-foreground mb-3">Choose how ZyphoraMC looks on this device.</p>
+            <div className="max-w-xs">
+              <Label htmlFor="theme">Theme</Label>
+              <Select value={prefs.theme} onValueChange={(v) => updatePref("theme", v as typeof prefs.theme)}>
+                <SelectTrigger id="theme">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="dark">Dark</SelectItem>
+                  <SelectItem value="light">Light</SelectItem>
+                  <SelectItem value="system">System</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <Separator />
+
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Bell className="h-5 w-5 text-primary" />
+              <h2 className="font-display font-bold text-lg">Notifications</h2>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">Pick which email updates you'd like to receive.</p>
+            <div className="space-y-4">
+              {[
+                { key: "notify_news" as const, title: "News & announcements", desc: "Server news posts and major announcements." },
+                { key: "notify_updates" as const, title: "Server updates", desc: "Changelog entries and patch notes." },
+                { key: "notify_tickets" as const, title: "Support ticket replies", desc: "Email me when staff replies to my tickets." },
+                { key: "notify_applications" as const, title: "Application status", desc: "Updates on staff/builder/youtuber applications." },
+              ].map((row) => (
+                <div key={row.key} className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="font-medium text-sm">{row.title}</div>
+                    <div className="text-xs text-muted-foreground">{row.desc}</div>
+                  </div>
+                  <Switch checked={prefs[row.key]} onCheckedChange={(v) => updatePref(row.key, v)} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Button onClick={save} disabled={saving}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Save preferences
+            </Button>
+          </div>
+        </Card>
       </main>
       <Footer />
     </div>
