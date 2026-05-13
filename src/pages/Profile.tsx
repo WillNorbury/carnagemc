@@ -27,7 +27,7 @@ import { useAuth } from "@/lib/auth";
 import { roleLabel, type AppRole } from "@/lib/roles";
 import { applyTheme, DEFAULT_PREFS, type UserPreferences } from "@/lib/preferences";
 import { toast } from "sonner";
-import { Bell, ExternalLink, Loader2, Palette, Unlink } from "lucide-react";
+import { Bell, ExternalLink, Loader2, Lock, Palette, Unlink } from "lucide-react";
 
 const Profile = () => {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -41,6 +41,21 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [unlinking, setUnlinking] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPw, setChangingPw] = useState(false);
+
+  const changePassword = async () => {
+    if (newPassword.length < 6) return toast.error("Password must be at least 6 characters");
+    if (newPassword !== confirmPassword) return toast.error("Passwords do not match");
+    setChangingPw(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setChangingPw(false);
+    if (error) return toast.error(error.message);
+    setNewPassword("");
+    setConfirmPassword("");
+    toast.success("Password updated");
+  };
 
   const MC_RE = /^[A-Za-z0-9_]{3,16}$/;
   const mcInvalid = !MC_RE.test(mcUsername.trim());
@@ -280,6 +295,43 @@ const Profile = () => {
             <Button onClick={save} disabled={saving}>
               {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Save preferences
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="p-6 mt-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <Lock className="h-5 w-5 text-primary" />
+            <h2 className="font-display font-bold text-lg">Change password</h2>
+          </div>
+          <p className="text-sm text-muted-foreground">Set a new password for your account. No email confirmation required.</p>
+          <div className="grid gap-3 max-w-sm">
+            <div>
+              <Label htmlFor="new_password">New password</Label>
+              <Input
+                id="new_password"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="At least 6 characters"
+                autoComplete="new-password"
+              />
+            </div>
+            <div>
+              <Label htmlFor="confirm_password">Confirm new password</Label>
+              <Input
+                id="confirm_password"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={changePassword} disabled={changingPw || !newPassword || !confirmPassword}>
+              {changingPw ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Update password
             </Button>
           </div>
         </Card>
