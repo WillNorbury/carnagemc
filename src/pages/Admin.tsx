@@ -37,6 +37,8 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   tickets: { title: "Support Tickets", description: "Triage and reply to user tickets." },
   logs: { title: "Admin Logs", description: "Audit trail of admin role checks." },
   plugins: { title: "Plugins", description: "Add, edit, and remove server plugins." },
+  changelog: { title: "Changelog", description: "Publish server updates by date and category." },
+  applications: { title: "Applications", description: "Review staff, builder, and content creator applications." },
   "bot-dashboard": { title: "Discord Bot — Dashboard", description: "Status and overview of the ZyphoraMC Discord bot." },
   "bot-management": { title: "Discord Bot — Management", description: "Configure commands and bot integration." },
 };
@@ -45,13 +47,20 @@ const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const initial: AdminSection = location.pathname.endsWith("/roles") ? "roles" : "dashboard";
+  const initial: AdminSection =
+    location.pathname.endsWith("/roles") ? "roles" :
+    location.pathname.endsWith("/permissions") ? "permissions" :
+    location.pathname.endsWith("/changelog") ? "changelog" :
+    location.pathname.endsWith("/applications") ? "applications" :
+    "dashboard";
   const [section, setSection] = useState<AdminSection>(initial);
 
   const onNavigate = (s: AdminSection) => {
     setSection(s);
     if (s === "roles") { if (location.pathname !== "/admin/roles") navigate("/admin/roles"); return; }
     if (s === "permissions") { navigate("/admin/permissions"); return; }
+    if (s === "changelog") { navigate("/admin/changelog"); return; }
+    if (s === "applications") { navigate("/admin/applications"); return; }
     if (location.pathname !== "/admin") navigate("/admin");
   };
 
@@ -79,6 +88,8 @@ const Admin = () => {
       {section === "logs" && <LogsTab />}
       {section === "logs" && <LogsTab />}
       {section === "plugins" && <PluginsTab />}
+      {section === "changelog" && <ChangelogTab />}
+      {section === "applications" && <ApplicationsTab />}
       {section === "bot-dashboard" && <BotDashboardSection />}
       {section === "bot-management" && <BotManagementSection />}
     </AdminLayout>
@@ -1558,3 +1569,378 @@ const PluginsTab = () => {
 };
 
 export default Admin;
+
+// ============= Changelog Tab =============
+type ChangelogRow = {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  version: string | null;
+  entry_date: string;
+  published: boolean;
+  created_at: string;
+};
+
+const CHANGELOG_CATS = ["feature", "update", "fix", "balance", "security", "addition"];
+const emptyChangelog = {
+  id: "",
+  title: "",
+  content: "",
+  category: "update",
+  version: "",
+  entry_date: new Date().toISOString().slice(0, 10),
+  published: true,
+};
+
+const ChangelogTab = () => {
+  const [items, setItems] = useState<ChangelogRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<typeof emptyChangelog | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("changelog_entries")
+      .select("*")
+      .order("entry_date", { ascending: false })
+      .order("created_at", { ascending: false });
+    if (error) toast.error(error.message);
+    setItems((data as ChangelogRow[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const save = async () => {
+    if (!editing) return;
+    if (!editing.title.trim() || !editing.content.trim()) {
+      toast.error("Title and content are required");
+      return;
+    }
+    setSaving(true);
+    const payload = {
+      title: editing.title.trim(),
+      content: editing.content.trim(),
+      category: editing.category,
+      version: editing.version.trim() || null,
+      entry_date: editing.entry_date,
+      published: editing.published,
+    };
+    const { error } = editing.id
+      ? await supabase.from("changelog_entries").update(payload).eq("id", editing.id)
+      : await supabase.from("changelog_entries").insert(payload);
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success(editing.id ? "Entry updated" : "Entry created");
+    setEditing(null);
+    load();
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Delete this changelog entry?")) return;
+    const { error } = await supabase.from("changelog_entries").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Deleted");
+    load();
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-end">
+        <Button onClick={() => setEditing({ ...emptyChangelog })}>
+          <Plus className="h-4 w-4 mr-1" /> New entry
+        </Button>
+      </div>
+
+      {editing && (
+        <Card className="p-6 space-y-4 border-primary/40">
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <Label>Title</Label>
+              <Input
+                value={editing.title}
+                onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                placeholder="Added new boss arena"
+              />
+            </div>
+            <div>
+              <Label>Category</Label>
+              <Select value={editing.category} onValueChange={(v) => setEditing({ ...editing, category: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {CHANGELOG_CATS.map((c) => (
+                    <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Version (optional)</Label>
+              <Input
+                value={editing.version}
+                onChange={(e) => setEditing({ ...editing, version: e.target.value })}
+                placeholder="1.2.0"
+              />
+            </div>
+            <div>
+              <Label>Date</Label>
+              <Input
+                type="date"
+                value={editing.entry_date}
+                onChange={(e) => setEditing({ ...editing, entry_date: e.target.value })}
+              />
+            </div>
+          </div>
+          <div>
+            <Label>Content</Label>
+            <Textarea
+              value={editing.content}
+              onChange={(e) => setEditing({ ...editing, content: e.target.value })}
+              rows={6}
+              placeholder="Describe what changed..."
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={editing.published}
+              onCheckedChange={(v) => setEditing({ ...editing, published: v })}
+            />
+            <Label className="m-0">Published</Label>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
+            <Button onClick={save} disabled={saving}>
+              {saving ? "Saving…" : "Save"}
+            </Button>
+          </div>
+        </Card>
+      )}
+
+      {loading ? (
+        <p className="text-muted-foreground">Loading…</p>
+      ) : items.length === 0 ? (
+        <Card className="p-10 text-center text-muted-foreground">No changelog entries yet.</Card>
+      ) : (
+        <div className="space-y-2">
+          {items.map((e) => (
+            <Card key={e.id} className="p-4 flex items-start justify-between gap-3 flex-wrap">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 flex-wrap mb-1">
+                  <Badge variant="outline" className="capitalize">{e.category}</Badge>
+                  {e.version && <Badge variant="secondary" className="font-mono">v{e.version}</Badge>}
+                  {!e.published && <Badge variant="outline" className="text-muted-foreground">Draft</Badge>}
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(e.entry_date).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="font-display font-bold">{e.title}</div>
+                <p className="text-sm text-muted-foreground line-clamp-2 whitespace-pre-wrap">{e.content}</p>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setEditing({
+                      id: e.id,
+                      title: e.title,
+                      content: e.content,
+                      category: e.category,
+                      version: e.version ?? "",
+                      entry_date: e.entry_date,
+                      published: e.published,
+                    })
+                  }
+                >
+                  Edit
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => remove(e.id)}>
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============= Applications Tab =============
+type ApplicationRow = {
+  id: string;
+  user_id: string;
+  type: "staff" | "builder" | "youtuber";
+  status: "pending" | "approved" | "rejected";
+  mc_username: string;
+  discord: string | null;
+  age: number | null;
+  timezone: string | null;
+  experience: string | null;
+  why: string;
+  portfolio_url: string | null;
+  reviewer_notes: string | null;
+  created_at: string;
+};
+
+const ApplicationsTab = () => {
+  const [items, setItems] = useState<ApplicationRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
+  const [open, setOpen] = useState<string | null>(null);
+  const [notes, setNotes] = useState("");
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("applications")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) toast.error(error.message);
+    setItems((data as ApplicationRow[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const filtered = filter === "all" ? items : items.filter((i) => i.status === filter);
+
+  const decide = async (id: string, status: "approved" | "rejected") => {
+    const { data: { user: u } } = await supabase.auth.getUser();
+    const { error } = await supabase
+      .from("applications")
+      .update({
+        status,
+        reviewer_notes: notes || null,
+        reviewed_by: u?.id ?? null,
+        reviewed_at: new Date().toISOString(),
+      })
+      .eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success(`Application ${status}`);
+    setOpen(null);
+    setNotes("");
+    load();
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Delete this application?")) return;
+    const { error } = await supabase.from("applications").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Deleted");
+    load();
+  };
+
+  const statusCls = (s: ApplicationRow["status"]) =>
+    s === "approved"
+      ? "text-emerald-400 border-emerald-400/40"
+      : s === "rejected"
+      ? "text-destructive border-destructive/40"
+      : "text-amber-400 border-amber-400/40";
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap gap-2">
+        {(["all", "pending", "approved", "rejected"] as const).map((f) => (
+          <Button
+            key={f}
+            size="sm"
+            variant={filter === f ? "default" : "outline"}
+            onClick={() => setFilter(f)}
+            className="capitalize"
+          >
+            {f} {f !== "all" && `(${items.filter((i) => i.status === f).length})`}
+          </Button>
+        ))}
+      </div>
+
+      {loading ? (
+        <p className="text-muted-foreground">Loading…</p>
+      ) : filtered.length === 0 ? (
+        <Card className="p-10 text-center text-muted-foreground">No applications.</Card>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map((a) => {
+            const isOpen = open === a.id;
+            return (
+              <Card key={a.id} className="p-4">
+                <div className="flex items-start justify-between gap-3 flex-wrap">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <Badge variant="outline" className="capitalize">{a.type}</Badge>
+                      <Badge variant="outline" className={statusCls(a.status)}>{a.status}</Badge>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(a.created_at).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="font-display font-bold">{a.mc_username}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {a.discord && <>Discord: {a.discord} · </>}
+                      {a.age && <>Age: {a.age} · </>}
+                      {a.timezone && <>TZ: {a.timezone}</>}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => { setOpen(isOpen ? null : a.id); setNotes(a.reviewer_notes ?? ""); }}>
+                      {isOpen ? "Close" : "Review"}
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => remove(a.id)}>
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                </div>
+
+                {isOpen && (
+                  <div className="mt-4 space-y-4 border-t pt-4">
+                    {a.experience && (
+                      <div>
+                        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Experience</div>
+                        <p className="text-sm whitespace-pre-wrap">{a.experience}</p>
+                      </div>
+                    )}
+                    <div>
+                      <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Why</div>
+                      <p className="text-sm whitespace-pre-wrap">{a.why}</p>
+                    </div>
+                    {a.portfolio_url && (
+                      <div>
+                        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Portfolio</div>
+                        <a
+                          href={a.portfolio_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary underline break-all"
+                        >
+                          {a.portfolio_url}
+                        </a>
+                      </div>
+                    )}
+                    <div>
+                      <Label>Reviewer notes</Label>
+                      <Textarea
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        rows={3}
+                        placeholder="Internal notes..."
+                      />
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" onClick={() => decide(a.id, "rejected")}>
+                        Reject
+                      </Button>
+                      <Button onClick={() => decide(a.id, "approved")}>
+                        Approve
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </Card>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};

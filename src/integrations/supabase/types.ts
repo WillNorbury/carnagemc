@@ -47,6 +47,102 @@ export type Database = {
         }
         Relationships: []
       }
+      applications: {
+        Row: {
+          age: number | null
+          created_at: string
+          discord: string | null
+          experience: string | null
+          extra: Json
+          id: string
+          mc_username: string
+          portfolio_url: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reviewer_notes: string | null
+          status: Database["public"]["Enums"]["application_status"]
+          timezone: string | null
+          type: Database["public"]["Enums"]["application_type"]
+          updated_at: string
+          user_id: string
+          why: string
+        }
+        Insert: {
+          age?: number | null
+          created_at?: string
+          discord?: string | null
+          experience?: string | null
+          extra?: Json
+          id?: string
+          mc_username: string
+          portfolio_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_notes?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          timezone?: string | null
+          type: Database["public"]["Enums"]["application_type"]
+          updated_at?: string
+          user_id: string
+          why: string
+        }
+        Update: {
+          age?: number | null
+          created_at?: string
+          discord?: string | null
+          experience?: string | null
+          extra?: Json
+          id?: string
+          mc_username?: string
+          portfolio_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_notes?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          timezone?: string | null
+          type?: Database["public"]["Enums"]["application_type"]
+          updated_at?: string
+          user_id?: string
+          why?: string
+        }
+        Relationships: []
+      }
+      changelog_entries: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          entry_date: string
+          id: string
+          published: boolean
+          title: string
+          updated_at: string
+          version: string | null
+        }
+        Insert: {
+          category?: string
+          content: string
+          created_at?: string
+          entry_date?: string
+          id?: string
+          published?: boolean
+          title: string
+          updated_at?: string
+          version?: string | null
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          entry_date?: string
+          id?: string
+          published?: boolean
+          title?: string
+          updated_at?: string
+          version?: string | null
+        }
+        Relationships: []
+      }
       news: {
         Row: {
           author_id: string | null
@@ -375,6 +471,8 @@ export type Database = {
         | "vip"
         | "booster"
         | "default"
+      application_status: "pending" | "approved" | "rejected"
+      application_type: "staff" | "builder" | "youtuber"
       ticket_priority: "low" | "normal" | "high" | "urgent"
       ticket_status: "open" | "in_progress" | "waiting_user" | "closed"
     }
@@ -524,6 +622,8 @@ export const Constants = {
         "booster",
         "default",
       ],
+      application_status: ["pending", "approved", "rejected"],
+      application_type: ["staff", "builder", "youtuber"],
       ticket_priority: ["low", "normal", "high", "urgent"],
       ticket_status: ["open", "in_progress", "waiting_user", "closed"],
     },
