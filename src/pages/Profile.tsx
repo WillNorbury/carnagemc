@@ -154,7 +154,33 @@ const Profile = () => {
               <Input id="display_name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your name" />
             </div>
             <div>
-              <Label htmlFor="mc_username">Minecraft username</Label>
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <Label htmlFor="mc_username">Minecraft username</Label>
+                {mcUsername && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button type="button" variant="ghost" size="sm" className="h-7 text-destructive hover:text-destructive">
+                        <Unlink className="h-3.5 w-3.5 mr-1" /> Unlink
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Unlink Minecraft account?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Your linked username <strong>{mcUsername}</strong> will be removed from your profile. You can re-link it any time.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={unlinkMinecraft} disabled={unlinking}>
+                          {unlinking && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                          Unlink
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+              </div>
               <Input id="mc_username" value={mcUsername} onChange={(e) => setMcUsername(e.target.value)} placeholder="Notch" />
               <p className="text-xs text-muted-foreground mt-1">Used to display your in-game skin avatar.</p>
             </div>
