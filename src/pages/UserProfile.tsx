@@ -75,15 +75,74 @@ const UserProfile = () => {
     setFollowerCount(followers ?? 0);
     setFollowingCount(following ?? 0);
     if (viewerId && viewerId !== targetId) {
-      const { data } = await supabase
-        .from("user_follows")
-        .select("follower_id")
-        .eq("follower_id", viewerId)
-        .eq("followee_id", targetId)
-        .maybeSingle();
-      setIsFollowing(!!data);
+      const [{ data: a }, { data: b }] = await Promise.all([
+        supabase.from("user_follows").select("follower_id")
+          .eq("follower_id", viewerId).eq("followee_id", targetId).maybeSingle(),
+        supabase.from("user_follows").select("follower_id")
+          .eq("follower_id", targetId).eq("followee_id", viewerId).maybeSingle(),
+      ]);
+      setIsFollowing(!!a);
+      setFollowsMeBack(!!b);
     } else {
       setIsFollowing(false);
+      setFollowsMeBack(false);
+    }
+  };
+
+  const loadRecommendations = async (viewerId: string, viewerRoles: AppRole[]) => {
+    setRecsLoading(true);
+    // Already-followed ids
+    const { data: followingRows } = await supabase
+      .from("user_follows").select("followee_id").eq("follower_id", viewerId);
+    const excluded = new Set<string>([viewerId, ...((followingRows ?? []).map((r) => r.followee_id))]);
+
+    // Candidates by shared role
+    let roleCandidates: { user_id: string; role: AppRole }[] = [];
+    if (viewerRoles.length > 0) {
+      const { data } = await supabase
+        .from("user_roles").select("user_id, role").in("role", viewerRoles).limit(100);
+      roleCandidates = (data ?? []) as { user_id: string; role: AppRole }[];
+    }
+
+    // Recent activity: latest profiles (joined recently)
+    const { data: recentProfiles } = await supabase
+      .from("profiles").select("id, display_name, avatar_url, mc_username, created_at")
+      .order("created_at", { ascending: false }).limit(30);
+
+    const reasons = new Map<string, string>();
+    for (const rc of roleCandidates) {
+      if (excluded.has(rc.user_id)) continue;
+      if (!reasons.has(rc.user_id)) reasons.set(rc.user_id, `Shared role: ${roleLabel(rc.role)}`);
+    }
+    for (const p of (recentProfiles ?? [])) {
+      if (excluded.has(p.id) || reasons.has(p.id)) continue;
+      reasons.set(p.id, "Recently joined");
+    }
+
+    const ids = Array.from(reasons.keys()).slice(0, 5);
+    if (ids.length === 0) { setRecommendations([]); setRecsLoading(false); return; }
+
+    const { data: profs } = await supabase
+      .from("profiles").select("id, display_name, avatar_url, mc_username, created_at").in("id", ids);
+    const ordered = ids
+      .map((id) => (profs ?? []).find((p) => p.id === id))
+      .filter(Boolean)
+      .map((p) => ({ ...(p as Profile), reason: reasons.get((p as Profile).id)! }));
+    setRecommendations(ordered);
+    setRecsLoading(false);
+  };
+
+  const followRecommendation = async (id: string) => {
+    if (!user) return;
+    setRecBusy(id);
+    const { error } = await supabase
+      .from("user_follows").insert({ follower_id: user.id, followee_id: id });
+    setRecBusy(null);
+    if (error) { toast.error(error.message); return; }
+    setFollowedRecs((s) => new Set(s).add(id));
+    if (profile && id === profile.id) {
+      setIsFollowing(true);
+      setFollowerCount((c) => c + 1);
     }
   };
 
