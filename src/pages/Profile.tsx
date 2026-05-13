@@ -8,11 +8,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { roleLabel, type AppRole } from "@/lib/roles";
+import { applyTheme, DEFAULT_PREFS, type UserPreferences } from "@/lib/preferences";
 import { toast } from "sonner";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { Bell, ExternalLink, Loader2, Palette, Unlink } from "lucide-react";
 
 const Profile = () => {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -21,8 +36,10 @@ const Profile = () => {
   const [mcUsername, setMcUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [roles, setRoles] = useState<AppRole[]>([]);
+  const [prefs, setPrefs] = useState<Required<UserPreferences>>(DEFAULT_PREFS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [unlinking, setUnlinking] = useState(false);
 
   useEffect(() => {
     document.title = "My Profile — ZyphoraMC";
@@ -33,16 +50,27 @@ const Profile = () => {
     if (!user) { navigate("/auth"); return; }
     (async () => {
       const [{ data: p }, { data: r }] = await Promise.all([
-        supabase.from("profiles").select("display_name, mc_username, avatar_url").eq("id", user.id).maybeSingle(),
+        supabase.from("profiles").select("display_name, mc_username, avatar_url, preferences").eq("id", user.id).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", user.id),
       ]);
       setDisplayName(p?.display_name ?? "");
       setMcUsername(p?.mc_username ?? "");
       setAvatarUrl(p?.avatar_url ?? "");
       setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
+      const loaded = { ...DEFAULT_PREFS, ...((p?.preferences as UserPreferences) ?? {}) };
+      setPrefs(loaded);
+      applyTheme(loaded.theme);
       setLoading(false);
     })();
   }, [user, authLoading, navigate]);
+
+  const updatePref = <K extends keyof Required<UserPreferences>>(key: K, value: Required<UserPreferences>[K]) => {
+    setPrefs((p) => {
+      const next = { ...p, [key]: value };
+      if (key === "theme") applyTheme(value as Required<UserPreferences>["theme"]);
+      return next;
+    });
+  };
 
   const save = async () => {
     if (!user) return;
@@ -53,11 +81,22 @@ const Profile = () => {
         display_name: displayName || null,
         mc_username: mcUsername || null,
         avatar_url: avatarUrl || null,
+        preferences: prefs,
       })
       .eq("id", user.id);
     setSaving(false);
     if (error) return toast.error(error.message);
     toast.success("Profile saved");
+  };
+
+  const unlinkMinecraft = async () => {
+    if (!user) return;
+    setUnlinking(true);
+    const { error } = await supabase.from("profiles").update({ mc_username: null }).eq("id", user.id);
+    setUnlinking(false);
+    if (error) return toast.error(error.message);
+    setMcUsername("");
+    toast.success("Minecraft account unlinked");
   };
 
   if (authLoading || loading) {
@@ -115,7 +154,33 @@ const Profile = () => {
               <Input id="display_name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your name" />
             </div>
             <div>
-              <Label htmlFor="mc_username">Minecraft username</Label>
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <Label htmlFor="mc_username">Minecraft username</Label>
+                {mcUsername && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button type="button" variant="ghost" size="sm" className="h-7 text-destructive hover:text-destructive">
+                        <Unlink className="h-3.5 w-3.5 mr-1" /> Unlink
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Unlink Minecraft account?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Your linked username <strong>{mcUsername}</strong> will be removed from your profile. You can re-link it any time.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={unlinkMinecraft} disabled={unlinking}>
+                          {unlinking && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                          Unlink
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+              </div>
               <Input id="mc_username" value={mcUsername} onChange={(e) => setMcUsername(e.target.value)} placeholder="Notch" />
               <p className="text-xs text-muted-foreground mt-1">Used to display your in-game skin avatar.</p>
             </div>
@@ -132,6 +197,62 @@ const Profile = () => {
             <Button onClick={save} disabled={saving}>
               {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Save changes
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="p-6 mt-6 space-y-6">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Palette className="h-5 w-5 text-primary" />
+              <h2 className="font-display font-bold text-lg">Appearance</h2>
+            </div>
+            <p className="text-sm text-muted-foreground mb-3">Choose how ZyphoraMC looks on this device.</p>
+            <div className="max-w-xs">
+              <Label htmlFor="theme">Theme</Label>
+              <Select value={prefs.theme} onValueChange={(v) => updatePref("theme", v as typeof prefs.theme)}>
+                <SelectTrigger id="theme">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="dark">Dark</SelectItem>
+                  <SelectItem value="light">Light</SelectItem>
+                  <SelectItem value="system">System</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <Separator />
+
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Bell className="h-5 w-5 text-primary" />
+              <h2 className="font-display font-bold text-lg">Notifications</h2>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">Pick which email updates you'd like to receive.</p>
+            <div className="space-y-4">
+              {[
+                { key: "notify_news" as const, title: "News & announcements", desc: "Server news posts and major announcements." },
+                { key: "notify_updates" as const, title: "Server updates", desc: "Changelog entries and patch notes." },
+                { key: "notify_tickets" as const, title: "Support ticket replies", desc: "Email me when staff replies to my tickets." },
+                { key: "notify_applications" as const, title: "Application status", desc: "Updates on staff/builder/youtuber applications." },
+              ].map((row) => (
+                <div key={row.key} className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="font-medium text-sm">{row.title}</div>
+                    <div className="text-xs text-muted-foreground">{row.desc}</div>
+                  </div>
+                  <Switch checked={prefs[row.key]} onCheckedChange={(v) => updatePref(row.key, v)} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Button onClick={save} disabled={saving}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Save preferences
             </Button>
           </div>
         </Card>

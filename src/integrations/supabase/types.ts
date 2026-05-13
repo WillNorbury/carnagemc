@@ -255,6 +255,7 @@ export type Database = {
           display_name: string | null
           id: string
           mc_username: string | null
+          preferences: Json
           updated_at: string
         }
         Insert: {
@@ -263,6 +264,7 @@ export type Database = {
           display_name?: string | null
           id: string
           mc_username?: string | null
+          preferences?: Json
           updated_at?: string
         }
         Update: {
@@ -271,6 +273,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           mc_username?: string | null
+          preferences?: Json
           updated_at?: string
         }
         Relationships: []
