@@ -301,6 +301,59 @@ const UserProfile = () => {
           </div>
         </Card>
 
+        {user && user.id === profile.id && (
+          <Card className="p-6 mt-6">
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <h2 className="font-display font-bold text-lg">Who to follow</h2>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Suggested players based on your roles and recent activity.
+            </p>
+            {recsLoading ? (
+              <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+            ) : recommendations.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">No suggestions right now — check back later.</p>
+            ) : (
+              <ul className="space-y-2">
+                {recommendations.map((u) => {
+                  const av = u.avatar_url || (u.mc_username ? `https://mc-heads.net/avatar/${u.mc_username}/64` : undefined);
+                  const init = (u.display_name ?? "?").slice(0, 2).toUpperCase();
+                  const followed = followedRecs.has(u.id);
+                  return (
+                    <li key={u.id} className="flex items-center gap-3 p-2 rounded-md hover:bg-accent/50 transition-colors">
+                      <Link to={`/user/${u.id.slice(0, 8)}`} className="flex items-center gap-3 min-w-0 flex-1">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={av} />
+                          <AvatarFallback>{init}</AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <div className="font-medium truncate">{u.display_name ?? "Unnamed Player"}</div>
+                          <div className="text-xs text-muted-foreground truncate">{u.reason}</div>
+                        </div>
+                      </Link>
+                      <Button
+                        size="sm"
+                        variant={followed ? "outline" : "default"}
+                        disabled={followed || recBusy === u.id}
+                        onClick={() => followRecommendation(u.id)}
+                      >
+                        {recBusy === u.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : followed ? (
+                          <><UserCheck className="h-4 w-4" /> Following</>
+                        ) : (
+                          <><UserPlus className="h-4 w-4" /> Follow</>
+                        )}
+                      </Button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Card>
+        )}
+
         <Dialog open={!!listMode} onOpenChange={(o) => !o && setListMode(null)}>
           <DialogContent className="max-w-md">
             <DialogHeader>
