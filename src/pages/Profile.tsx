@@ -195,8 +195,21 @@ const Profile = () => {
                   </AlertDialog>
                 )}
               </div>
-              <Input id="mc_username" value={mcUsername} onChange={(e) => setMcUsername(e.target.value)} placeholder="Notch" />
-              <p className="text-xs text-muted-foreground mt-1">Used to display your in-game skin avatar.</p>
+              <Input
+                id="mc_username"
+                value={mcUsername}
+                onChange={(e) => setMcUsername(e.target.value)}
+                placeholder="Notch"
+                aria-invalid={mcInvalid}
+                className={mcInvalid ? "border-destructive focus-visible:ring-destructive" : undefined}
+              />
+              {mcInvalid ? (
+                <p className="text-xs text-destructive mt-1">
+                  Must be 3–16 characters, letters/numbers/underscore only.
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-1">Used to display your in-game skin avatar.</p>
+              )}
             </div>
             <div>
               <Label htmlFor="avatar_url">Custom avatar URL (optional)</Label>
