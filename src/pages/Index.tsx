@@ -111,6 +111,8 @@ const Index = () => {
   }, [content.server?.discord]);
 
   const ip = content.server?.ip ?? "play.zyphoramc.net";
+  const bedrockIp = content.server?.bedrockIp ?? "Soon";
+  const bedrockPort = content.server?.bedrockPort ?? "Soon";
 
   const [alert, setAlert] = useState<{ type: "online" | "offline"; message: string } | null>(null);
   const prevOnlineRef = useRef<boolean | undefined>(undefined);
@@ -274,7 +276,7 @@ const Index = () => {
               <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-primary to-accent opacity-60 group-hover:opacity-100 blur transition" />
               <div className="relative flex items-center justify-between gap-3 px-6 py-4 rounded-xl bg-card border border-primary/30">
                 <div className="text-left">
-                  <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Server IP</div>
+                  <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Java IP</div>
                   <div className="font-mono text-lg md:text-2xl font-bold">{ip}</div>
                 </div>
                 <div className="flex items-center gap-2 text-primary group-hover:scale-110 transition">
@@ -283,6 +285,16 @@ const Index = () => {
                 </div>
               </div>
             </button>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <div className="px-4 py-3 rounded-xl bg-card border border-primary/20">
+                <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Bedrock IP</div>
+                <div className="font-mono text-sm md:text-base font-semibold">{bedrockIp}</div>
+              </div>
+              <div className="px-4 py-3 rounded-xl bg-card border border-primary/20">
+                <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Bedrock Port</div>
+                <div className="font-mono text-sm md:text-base font-semibold">{bedrockPort}</div>
+              </div>
+            </div>
             <div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
               <span className={`h-2 w-2 rounded-full ${status?.online ? "bg-primary animate-pulse" : "bg-destructive"}`} />
               {status?.online ? `${status.players_online} players online` : "Server offline"}
