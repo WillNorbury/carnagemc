@@ -527,25 +527,7 @@ const Index = () => {
         </section>
       </main>
 
-      <Dialog open={!!activeFeature} onOpenChange={(o) => !o && setActiveFeature(null)}>
-        <DialogContent>
-          {activeFeature && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 text-primary flex items-center justify-center">
-                    <activeFeature.icon className="h-5 w-5" />
-                  </div>
-                  <DialogTitle className="font-display text-2xl">{activeFeature.title}</DialogTitle>
-                </div>
-                <DialogDescription className="text-base text-foreground/90 leading-relaxed">
-                  {activeFeature.long}
-                </DialogDescription>
-              </DialogHeader>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+
 
       <Footer />
     </div>
