@@ -7,30 +7,23 @@ import MouseTrail from "@/components/site/MouseTrail";
 import AnimatedCounter from "@/components/site/AnimatedCounter";
 import Countdown from "@/components/site/Countdown";
 import Reviews from "@/components/site/Reviews";
+import { SEO } from "@/components/site/SEO";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { FEATURES } from "@/lib/features";
 import {
   Copy,
   Users,
   Server,
   MessageCircle,
-  Shield,
-  Coins,
-  Heart,
   X,
   CheckCircle2,
   AlertCircle,
-  Swords,
-  Sparkles,
-  Gift,
   PartyPopper,
   Zap,
-  Crown,
   Vote as VoteIcon,
-  ExternalLink,
   Star,
   ArrowRight,
 } from "lucide-react";
