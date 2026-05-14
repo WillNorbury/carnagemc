@@ -151,7 +151,7 @@ Deno.serve(async (req) => {
           user_id: actorUserId,
         });
       } catch (_) { /* never block on logging */ }
-      return await respond(payload, status);
+      return json(payload, status);
     };
 
     if (action === "announce") {
