@@ -65,10 +65,9 @@ const Footer = () => (
         <h4 className="font-display font-semibold mb-3 uppercase tracking-wider text-sm">Server</h4>
         <ul className="space-y-2 text-sm text-muted-foreground">
           <li>
-            IP: <span className="text-foreground font-mono">play.xylomc.net.net</span>
+            IP: <span className="text-foreground font-mono">play.xylomc.net</span>
           </li>
-          <li>Version: 1.21.x Paper</li>
-          <li>Premium & Cracked</li>
+          <li>Version: 1.21.x Velocity</li>
           <li>
             <a href="https://discord.zyphoramc.net" className="hover:text-primary transition">
               Join Discord
