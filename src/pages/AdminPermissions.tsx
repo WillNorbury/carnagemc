@@ -71,7 +71,7 @@ const AdminPermissions = () => {
     setDirty(true);
   };
 
-  const resetDefaults = () => {
+  const resetDefaults = async () => {
     if (!(await confirm({ title: "Reset permissions?", description: "All permissions will be reset to defaults. Unsaved changes will be lost.", confirmText: "Reset", destructive: true }))) return;
     const next: PermissionMatrix = {};
     for (const r of ALL_ROLES) next[r.value as AppRole] = [...(DEFAULT_PERMISSIONS[r.value as AppRole] ?? [])];
