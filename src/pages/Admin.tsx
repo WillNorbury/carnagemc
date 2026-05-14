@@ -1343,7 +1343,7 @@ const BotDashboardSection = () => {
     }
   };
 
-  const runAction = async (action: "announce" | "status" | "welcome") => {
+  const runAction = async (action: "announce" | "status" | "welcome" | "roles") => {
     setBusy(action);
     const { data, error } = await supabase.functions.invoke("discord-bot-action", {
       body: { action },
