@@ -126,6 +126,34 @@ Deno.serve(async (req) => {
     const { data: cfgRow } = await supabase.from("site_content").select("value").eq("key", "discord_bot").maybeSingle();
     const cfg: any = cfgRow?.value ?? {};
 
+    const startedAt = Date.now();
+    let actorUserId: string | null = null;
+    if (!isCron) {
+      const { data: u } = await userClient.auth.getUser();
+      actorUserId = u?.user?.id ?? null;
+    }
+    const respond = async (
+      payload: any,
+      status = 200,
+      extra: { channelId?: string; messageId?: string; httpStatus?: number } = {},
+    ) => {
+      try {
+        await adminClient.from("discord_bot_action_logs").insert({
+          action,
+          status: payload?.ok ? "ok" : "error",
+          request: body ?? {},
+          response: payload,
+          error: payload?.ok ? null : (payload?.error ?? null),
+          channel_id: extra.channelId ?? null,
+          message_id: extra.messageId ?? null,
+          http_status: extra.httpStatus ?? status,
+          duration_ms: Date.now() - startedAt,
+          user_id: actorUserId,
+        });
+      } catch (_) { /* never block on logging */ }
+      return json(payload, status);
+    };
+
     if (action === "announce") {
       const channelId = body.channelId || cfg.announceChannelId;
       const message = body.message || "📢 **Test announcement** from the ZyphoraMC admin panel.";
