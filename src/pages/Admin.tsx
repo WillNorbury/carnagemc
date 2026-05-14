@@ -1625,6 +1625,128 @@ const BotDashboardSection = () => {
   );
 };
 
+const BotActionLogsPanel = () => {
+  const [logs, setLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [filter, setFilter] = useState<string>("all");
+
+  const load = async () => {
+    setLoading(true);
+    let q = supabase.from("discord_bot_action_logs").select("*").order("created_at", { ascending: false }).limit(50);
+    if (filter !== "all") q = q.eq("action", filter);
+    const { data, error } = await q;
+    setLoading(false);
+    if (error) toast.error(error.message);
+    else setLogs(data ?? []);
+  };
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter]);
+
+  const clearLogs = async () => {
+    if (!confirm("Delete all Discord bot action logs?")) return;
+    const { error } = await supabase
+      .from("discord_bot_action_logs")
+      .delete()
+      .gte("created_at", "1970-01-01");
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Logs cleared");
+      load();
+    }
+  };
+
+  const actions = ["all", "announce", "status", "welcome", "roles", "info", "rules"];
+
+  return (
+    <Card className="p-6 space-y-4">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <h2 className="font-bold">Bot action logs</h2>
+          <p className="text-sm text-muted-foreground">
+            Last 50 requests sent to the Discord bot, including responses and errors.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="text-sm bg-background border border-border rounded-md px-2 py-1.5"
+          >
+            {actions.map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+          <Button size="sm" variant="outline" onClick={load} disabled={loading}>
+            {loading ? "Loading..." : "Refresh"}
+          </Button>
+          <Button size="sm" variant="destructive" onClick={clearLogs} disabled={loading || logs.length === 0}>
+            <Trash2 className="h-4 w-4 mr-1" /> Clear
+          </Button>
+        </div>
+      </div>
+
+      {logs.length === 0 ? (
+        <p className="text-sm text-muted-foreground italic">No logs yet — run an action above to populate this list.</p>
+      ) : (
+        <div className="space-y-2">
+          {logs.map((l) => {
+            const isOpen = expanded === l.id;
+            return (
+              <div
+                key={l.id}
+                className={`rounded-lg border ${l.status === "ok" ? "border-emerald-500/30" : "border-destructive/40"} bg-card/40`}
+              >
+                <button
+                  type="button"
+                  onClick={() => setExpanded(isOpen ? null : l.id)}
+                  className="w-full flex items-center justify-between gap-3 p-3 text-left hover:bg-muted/30 transition-colors"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Badge variant={l.status === "ok" ? "default" : "destructive"}>{l.status.toUpperCase()}</Badge>
+                    <span className="font-mono text-sm">{l.action}</span>
+                    {l.http_status != null && (
+                      <span className="text-xs text-muted-foreground">HTTP {l.http_status}</span>
+                    )}
+                    {l.duration_ms != null && (
+                      <span className="text-xs text-muted-foreground">· {l.duration_ms}ms</span>
+                    )}
+                    {l.error && (
+                      <span className="text-xs text-destructive truncate">— {l.error}</span>
+                    )}
+                  </div>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    {new Date(l.created_at).toLocaleString()}
+                  </span>
+                </button>
+                {isOpen && (
+                  <div className="px-3 pb-3 space-y-2 text-xs">
+                    <div>
+                      <p className="font-semibold mb-1">Request</p>
+                      <pre className="bg-background border border-border rounded p-2 overflow-x-auto">
+{JSON.stringify(l.request, null, 2)}
+                      </pre>
+                    </div>
+                    <div>
+                      <p className="font-semibold mb-1">Response</p>
+                      <pre className="bg-background border border-border rounded p-2 overflow-x-auto">
+{JSON.stringify(l.response, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </Card>
+  );
+};
+
 const BotManagementSection = () => {
   const [cfg, setCfg] = useState({
     enabled: false,
