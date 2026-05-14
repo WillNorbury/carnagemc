@@ -151,13 +151,13 @@ Deno.serve(async (req) => {
           user_id: actorUserId,
         });
       } catch (_) { /* never block on logging */ }
-      return json(payload, status);
+      return await respond(payload, status);
     };
 
     if (action === "announce") {
       const channelId = body.channelId || cfg.announceChannelId;
       const message = body.message || "📢 **Test announcement** from the ZyphoraMC admin panel.";
-      if (!channelId) return json({ ok: false, error: "No announcements channel configured" });
+      if (!channelId) return await respond({ ok: false, error: "No announcements channel configured" });
       const r = await discordPost(channelId, token, {
         embeds: [
           {
@@ -169,7 +169,7 @@ Deno.serve(async (req) => {
           },
         ],
       });
-      return json(
+      return await respond(
         r.ok
           ? { ok: true, message: `Announcement sent to channel ${channelId}` }
           : { ok: false, error: `Discord error ${r.status}`, details: r.data },
@@ -178,7 +178,7 @@ Deno.serve(async (req) => {
 
     if (action === "status") {
       const channelId = body.channelId || cfg.statusChannelId;
-      if (!channelId) return json({ ok: false, error: "No status channel configured" });
+      if (!channelId) return await respond({ ok: false, error: "No status channel configured" });
 
       const { data: ipRow } = await supabase.from("site_content").select("value").eq("key", "server").maybeSingle();
       const serverIp = (ipRow?.value as any)?.ip ?? "play.zyphoramc.net";
@@ -218,7 +218,7 @@ Deno.serve(async (req) => {
         }
       }
 
-      return json(
+      return await respond(
         result.ok
           ? { ok: true, message: `Status ${existingId && sameChannel ? "updated" : "posted"} in channel ${channelId}` }
           : { ok: false, error: `Discord error ${result.status}`, details: result.data },
@@ -227,14 +227,14 @@ Deno.serve(async (req) => {
 
     if (action === "welcome") {
       const channelId = body.channelId || cfg.welcomeChannelId || cfg.announceChannelId;
-      if (!channelId) return json({ ok: false, error: "No welcome channel configured" });
+      if (!channelId) return await respond({ ok: false, error: "No welcome channel configured" });
       const template = body.message || cfg.welcomeMessage || "Welcome to ZyphoraMC, {user}!";
       const target = body.username || callerName;
       const rendered = template.replace(/\{user\}/g, `**${target}**`);
       const r = await discordPost(channelId, token, {
         content: `👋 *Welcome message preview:*\n${rendered}`,
       });
-      return json(
+      return await respond(
         r.ok
           ? { ok: true, message: `Welcome preview sent to channel ${channelId}` }
           : { ok: false, error: `Discord error ${r.status}`, details: r.data },
@@ -243,7 +243,7 @@ Deno.serve(async (req) => {
 
     if (action === "roles") {
       const channelId = body.channelId || cfg.rolesChannelId || "1498961753457954847";
-      if (!channelId) return json({ ok: false, error: "No roles channel configured" });
+      if (!channelId) return await respond({ ok: false, error: "No roles channel configured" });
 
       const lines = SITE_ROLES.map((r) => `**${r.label}** — ${r.description}`).join("\n");
       const embed = {
@@ -255,7 +255,7 @@ Deno.serve(async (req) => {
       };
 
       if (body.preview) {
-        return json({ ok: true, preview: embed, channelId });
+        return await respond({ ok: true, preview: embed, channelId });
       }
 
       const existingId: string | undefined = cfg.rolesMessageId;
@@ -293,7 +293,7 @@ Deno.serve(async (req) => {
         }
       }
 
-      return json(
+      return await respond(
         result.ok
           ? { ok: true, message: `Roles ${existingId && sameChannel ? "updated" : "posted"} in channel ${channelId}` }
           : { ok: false, error: `Discord error ${result.status}`, details: result.data },
@@ -318,7 +318,7 @@ Deno.serve(async (req) => {
       } as const;
       const m = map[action];
       const channelId = body.channelId || cfg[m.channelKey] || m.fallbackChannel;
-      if (!channelId) return json({ ok: false, error: `No ${action} channel configured` });
+      if (!channelId) return await respond({ ok: false, error: `No ${action} channel configured` });
 
       // Server IP for info embed
       let serverIp = "zyphoramc.net";
@@ -380,7 +380,7 @@ Deno.serve(async (req) => {
       }
 
       if (body.preview) {
-        return json({ ok: true, preview: embed, content, channelId });
+        return await respond({ ok: true, preview: embed, content, channelId });
       }
 
       const existingId: string | undefined = cfg[m.msgIdKey];
@@ -411,7 +411,7 @@ Deno.serve(async (req) => {
         }
       }
 
-      return json(
+      return await respond(
         result.ok
           ? {
               ok: true,
