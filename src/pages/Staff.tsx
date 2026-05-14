@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { ALL_ROLES, roleLabel, type AppRole } from "@/lib/roles";
+import { Link } from "react-router-dom";
 
 type StaffMember = {
   user_id: string;
@@ -109,17 +110,19 @@ const Staff = () => {
                       ? `https://mc-heads.net/avatar/${m.mc_username}/96`
                       : null;
                     return (
-                      <Card key={m.user_id} className="p-5 flex items-center gap-4">
-                        <Avatar className="h-14 w-14">
-                          <AvatarImage src={skin ?? m.avatar_url ?? undefined} alt={name} />
-                          <AvatarFallback>{initials}</AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0">
-                          <p className="font-semibold truncate">{name}</p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {roleLabel(m.role)}
-                          </p>
-                        </div>
+                      <Card key={m.user_id} className="p-0 hover:border-primary/50 hover:shadow-md transition">
+                        <Link to={`/user/${m.user_id.slice(0, 8)}`} className="flex items-center gap-4 p-5">
+                          <Avatar className="h-14 w-14">
+                            <AvatarImage src={skin ?? m.avatar_url ?? undefined} alt={name} />
+                            <AvatarFallback>{initials}</AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0">
+                            <p className="font-semibold truncate">{name}</p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {roleLabel(m.role)}
+                            </p>
+                          </div>
+                        </Link>
                       </Card>
                     );
                   })}
