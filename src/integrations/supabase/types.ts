@@ -143,6 +143,51 @@ export type Database = {
         }
         Relationships: []
       }
+      discord_bot_action_logs: {
+        Row: {
+          action: string
+          channel_id: string | null
+          created_at: string
+          duration_ms: number | null
+          error: string | null
+          http_status: number | null
+          id: string
+          message_id: string | null
+          request: Json
+          response: Json | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          channel_id?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          error?: string | null
+          http_status?: number | null
+          id?: string
+          message_id?: string | null
+          request?: Json
+          response?: Json | null
+          status: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          channel_id?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          error?: string | null
+          http_status?: number | null
+          id?: string
+          message_id?: string | null
+          request?: Json
+          response?: Json | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       news: {
         Row: {
           author_id: string | null
