@@ -1715,6 +1715,28 @@ const BotManagementSection = () => {
           </p>
         </div>
         <div>
+          <Label>Server info channel ID</Label>
+          <Input
+            value={cfg.infoChannelId}
+            onChange={(e) => setCfg({ ...cfg, infoChannelId: e.target.value })}
+            placeholder="Channel where the info embed (IP, ports, links) is posted"
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Used by the “Send server info” action. Posts (or updates) a polished embed with the IP, Bedrock port, and quick links, plus an <code>@everyone</code> ping.
+          </p>
+        </div>
+        <div>
+          <Label>Server rules channel ID</Label>
+          <Input
+            value={cfg.rulesChannelId}
+            onChange={(e) => setCfg({ ...cfg, rulesChannelId: e.target.value })}
+            placeholder="Channel where the rules embed is posted"
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Used by the “Send server rules” action.
+          </p>
+        </div>
+        <div>
           <Label>Welcome message</Label>
           <Textarea
             rows={3}
