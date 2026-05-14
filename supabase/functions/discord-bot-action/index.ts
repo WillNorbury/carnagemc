@@ -317,6 +317,7 @@ Deno.serve(async (req) => {
           thumbnail: { url: "https://api.mcsrvstat.us/icon/" + encodeURIComponent(serverIp) },
           fields: [
             { name: "🌐 Java / Bedrock IP", value: `\`${serverIp}\``, inline: true },
+            { name: "🎮 Bedrock Port", value: `\`${bedrockPort}\``, inline: true },
             { name: "💎 Versions", value: "Java 1.21+", inline: false },
             {
               name: "🔗 Quick Links",
