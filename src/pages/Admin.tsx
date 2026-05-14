@@ -1538,6 +1538,8 @@ const BotDashboardSection = () => {
         </div>
       </Card>
 
+      <BotActionLogsPanel />
+
       <Card className="p-6 space-y-3">
         <h2 className="font-bold">About the Discord Bot</h2>
         <p className="text-sm text-muted-foreground">
