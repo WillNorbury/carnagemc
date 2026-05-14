@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const action: Action = body?.action;
-    if (!["announce", "status", "welcome", "roles"].includes(action)) {
+    if (!["announce", "status", "welcome", "roles", "info", "rules"].includes(action)) {
       return json({ ok: false, error: "Invalid action" }, 400);
     }
 
