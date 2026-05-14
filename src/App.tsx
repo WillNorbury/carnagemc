@@ -30,6 +30,8 @@ import LinkAccount from "./pages/LinkAccount.tsx";
 import Apply from "./pages/Apply.tsx";
 import AdminChangelog from "./pages/AdminChangelog.tsx";
 import AdminApplications from "./pages/AdminApplications.tsx";
+import Features from "./pages/Features.tsx";
+import FeatureDetail from "./pages/FeatureDetail.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -66,6 +68,8 @@ const Shell = () => {
                 <Route path="/user/:shortId" element={<UserProfile />} />
                 <Route path="/plugins" element={<Plugins />} />
                 <Route path="/plugins/:shortId" element={<PluginDetail />} />
+                <Route path="/features" element={<Features />} />
+                <Route path="/features/:slug" element={<FeatureDetail />} />
                 <Route path="*" element={<NotFound />} />
         </Routes>
       </SidebarInset>
