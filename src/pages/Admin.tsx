@@ -1383,6 +1383,7 @@ const BotDashboardSection = () => {
     }
     setPreviewData({ ...data.preview, _content: data.content });
     setPreviewChannelId(data.channelId ?? "");
+    setPreviewAction_(action);
     setPreviewOpen(true);
   };
 
