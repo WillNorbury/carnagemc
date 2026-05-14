@@ -1327,6 +1327,7 @@ const BotDashboardSection = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewData, setPreviewData] = useState<any | null>(null);
   const [previewChannelId, setPreviewChannelId] = useState<string>("");
+  const [previewAction_, setPreviewAction_] = useState<"roles" | "info" | "rules" | null>(null);
 
   useEffect(() => {
     supabase
