@@ -1368,6 +1368,21 @@ const BotDashboardSection = () => {
     else toast.error(payload.message);
   };
 
+  const previewRoles = async () => {
+    setBusy("roles-preview");
+    const { data, error } = await supabase.functions.invoke("discord-bot-action", {
+      body: { action: "roles", preview: true },
+    });
+    setBusy(null);
+    if (error || !data?.ok) {
+      toast.error(error?.message ?? data?.error ?? "Preview failed");
+      return;
+    }
+    setPreviewData(data.preview);
+    setPreviewChannelId(data.channelId ?? "");
+    setPreviewOpen(true);
+  };
+
   const online = cfg.enabled && cfg.status === "online";
   const tests: { key: "announce" | "status" | "welcome" | "roles"; label: string; desc: string; channel: string | undefined }[] =
     [
