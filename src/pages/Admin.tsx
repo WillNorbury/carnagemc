@@ -1054,8 +1054,18 @@ const ContentTab = () => {
       <Card className="p-6 space-y-4">
         <h2 className="font-bold">Server</h2>
         <div>
-          <Label>IP</Label>
+          <Label>Java IP</Label>
           <Input value={server.ip} onChange={(e) => setServer({ ...server, ip: e.target.value })} />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label>Bedrock IP</Label>
+            <Input value={server.bedrockIp} onChange={(e) => setServer({ ...server, bedrockIp: e.target.value })} placeholder="Soon" />
+          </div>
+          <div>
+            <Label>Bedrock Port</Label>
+            <Input value={server.bedrockPort} onChange={(e) => setServer({ ...server, bedrockPort: e.target.value })} placeholder="Soon" />
+          </div>
         </div>
         <div>
           <Label>Discord URL</Label>
