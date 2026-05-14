@@ -1358,7 +1358,7 @@ const BotDashboardSection = () => {
   };
 
   const online = cfg.enabled && cfg.status === "online";
-  const tests: { key: "announce" | "status" | "welcome"; label: string; desc: string; channel: string | undefined }[] =
+  const tests: { key: "announce" | "status" | "welcome" | "roles"; label: string; desc: string; channel: string | undefined }[] =
     [
       {
         key: "announce",
@@ -1377,6 +1377,12 @@ const BotDashboardSection = () => {
         label: "Preview welcome message",
         desc: "Renders the welcome template and posts it for preview.",
         channel: cfg.announceChannelId || cfg.statusChannelId,
+      },
+      {
+        key: "roles",
+        label: "Send Discord roles",
+        desc: "Posts (or updates) the full ZyphoraMC roles overview embed in the server-roles channel.",
+        channel: cfg.rolesChannelId || "1498961753457954847",
       },
     ];
 
