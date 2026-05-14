@@ -1309,6 +1309,7 @@ const BotDashboardSection = () => {
     inviteUrl: "",
     announceChannelId: "",
     statusChannelId: "",
+    rolesChannelId: "1498961753457954847",
     welcomeMessage: "",
   });
   const [testing, setTesting] = useState(false);
