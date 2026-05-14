@@ -31,6 +31,14 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
 import { StatCard } from "@/components/admin/StatCard";
 import { ALL_ROLES, roleLabel, isStaffRole, type AppRole } from "@/lib/roles";
@@ -1316,6 +1324,9 @@ const BotDashboardSection = () => {
   const [result, setResult] = useState<any>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [actionResults, setActionResults] = useState<Record<string, { ok: boolean; message: string }>>({});
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewData, setPreviewData] = useState<{ title: string; description: string; color: number; footer: { text: string }; timestamp: string } | null>(null);
+  const [previewChannelId, setPreviewChannelId] = useState<string>("");
 
   useEffect(() => {
     supabase
@@ -1355,6 +1366,21 @@ const BotDashboardSection = () => {
     setActionResults((r) => ({ ...r, [action]: payload }));
     if (payload.ok) toast.success(payload.message);
     else toast.error(payload.message);
+  };
+
+  const previewRoles = async () => {
+    setBusy("roles-preview");
+    const { data, error } = await supabase.functions.invoke("discord-bot-action", {
+      body: { action: "roles", preview: true },
+    });
+    setBusy(null);
+    if (error || !data?.ok) {
+      toast.error(error?.message ?? data?.error ?? "Preview failed");
+      return;
+    }
+    setPreviewData(data.preview);
+    setPreviewChannelId(data.channelId ?? "");
+    setPreviewOpen(true);
   };
 
   const online = cfg.enabled && cfg.status === "online";
@@ -1450,6 +1476,7 @@ const BotDashboardSection = () => {
           {tests.map((t) => {
             const r = actionResults[t.key];
             const disabled = !!busy || !t.channel;
+            const isRoles = t.key === "roles";
             return (
               <div
                 key={t.key}
@@ -1473,9 +1500,16 @@ const BotDashboardSection = () => {
                     </div>
                   )}
                 </div>
-                <Button size="sm" onClick={() => runAction(t.key)} disabled={disabled}>
-                  {busy === t.key ? "Sending..." : "Run test"}
-                </Button>
+                <div className="flex items-center gap-2 shrink-0">
+                  {isRoles && (
+                    <Button size="sm" variant="outline" onClick={previewRoles} disabled={!!busy || !t.channel}>
+                      {busy === "roles-preview" ? "Loading..." : "Preview"}
+                    </Button>
+                  )}
+                  <Button size="sm" onClick={() => runAction(t.key)} disabled={disabled}>
+                    {busy === t.key ? "Sending..." : "Run test"}
+                  </Button>
+                </div>
               </div>
             );
           })}
@@ -1494,6 +1528,48 @@ const BotDashboardSection = () => {
           </a>
         )}
       </Card>
+
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Roles Embed Preview</DialogTitle>
+            <DialogDescription>
+              This is how the embed will look in channel {previewChannelId ? <span className="font-mono">{previewChannelId}</span> : "—"}.
+            </DialogDescription>
+          </DialogHeader>
+          {previewData && (
+            <div className="space-y-3">
+              <div
+                className="rounded-lg border-l-4 p-4 bg-card/60"
+                style={{ borderLeftColor: `#${previewData.color.toString(16).padStart(6, "0")}` }}
+              >
+                <div className="font-semibold text-sm">{previewData.title}</div>
+                <div className="text-sm text-muted-foreground mt-2 whitespace-pre-wrap">
+                  {previewData.description}
+                </div>
+                <div className="text-xs text-muted-foreground mt-3 flex items-center gap-2">
+                  <span>{previewData.footer.text}</span>
+                  <span>·</span>
+                  <span>{new Date(previewData.timestamp).toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="flex gap-2">
+            <Button variant="outline" onClick={() => setPreviewOpen(false)}>
+              Close
+            </Button>
+            <Button
+              onClick={() => {
+                setPreviewOpen(false);
+                runAction("roles");
+              }}
+            >
+              Send to channel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

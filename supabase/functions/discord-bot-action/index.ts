@@ -212,6 +212,10 @@ Deno.serve(async (req) => {
         timestamp: new Date().toISOString(),
       };
 
+      if (body.preview) {
+        return json({ ok: true, preview: embed, channelId });
+      }
+
       const existingId: string | undefined = cfg.rolesMessageId;
       const sameChannel = cfg.rolesMessageChannelId === channelId;
 
