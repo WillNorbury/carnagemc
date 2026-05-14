@@ -5,7 +5,27 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
 };
 
-type Action = "announce" | "status" | "welcome";
+type Action = "announce" | "status" | "welcome" | "roles";
+
+const SITE_ROLES: { value: string; label: string; description: string }[] = [
+  { value: "owner", label: "Owner", description: "Server founder with full administrative authority." },
+  { value: "manager", label: "Manager", description: "Oversees staff teams and day-to-day operations." },
+  { value: "developer", label: "Developer", description: "Builds and maintains plugins, systems, and integrations." },
+  { value: "sr_admin", label: "Sr Admin", description: "Senior administrator handling escalations and policy." },
+  { value: "admin", label: "Admin", description: "Administrator with elevated moderation powers." },
+  { value: "jr_admin", label: "Jr Admin", description: "Junior administrator in training." },
+  { value: "sr_mod", label: "Sr Mod", description: "Senior moderator leading the moderation team." },
+  { value: "mod", label: "Mod", description: "Moderator enforcing the server rules." },
+  { value: "sr_helper", label: "Sr Helper", description: "Senior helper guiding the helper team." },
+  { value: "helper", label: "Helper", description: "Helps players in chat and support channels." },
+  { value: "champion", label: "Champion", description: "Top-tier supporter with exclusive perks." },
+  { value: "media", label: "Media", description: "Content creators and partnered streamers." },
+  { value: "elite", label: "Elite", description: "Elite donor rank with premium benefits." },
+  { value: "mvp", label: "MVP", description: "MVP donor rank for dedicated supporters." },
+  { value: "vip", label: "VIP", description: "VIP donor rank with extra perks." },
+  { value: "booster", label: "Booster", description: "Discord server booster — thank you!" },
+  { value: "default", label: "Default", description: "Default member role." },
+];
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -96,7 +116,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const action: Action = body?.action;
-    if (!["announce", "status", "welcome"].includes(action)) {
+    if (!["announce", "status", "welcome", "roles"].includes(action)) {
       return json({ ok: false, error: "Invalid action" }, 400);
     }
 
@@ -177,6 +197,49 @@ Deno.serve(async (req) => {
       return json(r.ok
         ? { ok: true, message: `Welcome preview sent to channel ${channelId}` }
         : { ok: false, error: `Discord error ${r.status}`, details: r.data });
+    }
+
+    if (action === "roles") {
+      const channelId = body.channelId || cfg.rolesChannelId || "1498961753457954847";
+      if (!channelId) return json({ ok: false, error: "No roles channel configured" });
+
+      const lines = SITE_ROLES.map((r) => `**${r.label}** — ${r.description}`).join("\n");
+      const embed = {
+        title: "ZyphoraMC — Server Roles",
+        description: lines,
+        color: 0x5865f2,
+        footer: { text: "ZyphoraMC · Roles overview" },
+        timestamp: new Date().toISOString(),
+      };
+
+      const existingId: string | undefined = cfg.rolesMessageId;
+      const sameChannel = cfg.rolesMessageChannelId === channelId;
+
+      let result;
+      if (existingId && sameChannel) {
+        result = await discordPatch(channelId, existingId, token, { embeds: [embed] });
+        if (!result.ok && result.status === 404) {
+          result = await discordPost(channelId, token, { embeds: [embed] });
+          if (result.ok) {
+            await adminClient.from("site_content").upsert({
+              key: "discord_bot",
+              value: { ...cfg, rolesChannelId: channelId, rolesMessageId: result.data?.id, rolesMessageChannelId: channelId },
+            });
+          }
+        }
+      } else {
+        result = await discordPost(channelId, token, { embeds: [embed] });
+        if (result.ok) {
+          await adminClient.from("site_content").upsert({
+            key: "discord_bot",
+            value: { ...cfg, rolesChannelId: channelId, rolesMessageId: result.data?.id, rolesMessageChannelId: channelId },
+          });
+        }
+      }
+
+      return json(result.ok
+        ? { ok: true, message: `Roles ${existingId && sameChannel ? "updated" : "posted"} in channel ${channelId}` }
+        : { ok: false, error: `Discord error ${result.status}`, details: result.data });
     }
 
     return json({ ok: false, error: "Unhandled action" }, 400);

@@ -1309,6 +1309,7 @@ const BotDashboardSection = () => {
     inviteUrl: "",
     announceChannelId: "",
     statusChannelId: "",
+    rolesChannelId: "1498961753457954847",
     welcomeMessage: "",
   });
   const [testing, setTesting] = useState(false);
@@ -1342,7 +1343,7 @@ const BotDashboardSection = () => {
     }
   };
 
-  const runAction = async (action: "announce" | "status" | "welcome") => {
+  const runAction = async (action: "announce" | "status" | "welcome" | "roles") => {
     setBusy(action);
     const { data, error } = await supabase.functions.invoke("discord-bot-action", {
       body: { action },
@@ -1357,7 +1358,7 @@ const BotDashboardSection = () => {
   };
 
   const online = cfg.enabled && cfg.status === "online";
-  const tests: { key: "announce" | "status" | "welcome"; label: string; desc: string; channel: string | undefined }[] =
+  const tests: { key: "announce" | "status" | "welcome" | "roles"; label: string; desc: string; channel: string | undefined }[] =
     [
       {
         key: "announce",
@@ -1376,6 +1377,12 @@ const BotDashboardSection = () => {
         label: "Preview welcome message",
         desc: "Renders the welcome template and posts it for preview.",
         channel: cfg.announceChannelId || cfg.statusChannelId,
+      },
+      {
+        key: "roles",
+        label: "Send Discord roles",
+        desc: "Posts (or updates) the full ZyphoraMC roles overview embed in the server-roles channel.",
+        channel: cfg.rolesChannelId || "1498961753457954847",
       },
     ];
 
@@ -1500,6 +1507,7 @@ const BotManagementSection = () => {
     announceChannelId: "",
     statusChannelId: "",
     welcomeChannelId: "",
+    rolesChannelId: "1498961753457954847",
     welcomeMessage: "Welcome to ZyphoraMC, {user}!",
   });
   const [loading, setLoading] = useState(true);
@@ -1569,6 +1577,17 @@ const BotManagementSection = () => {
             onChange={(e) => setCfg({ ...cfg, welcomeChannelId: e.target.value })}
             placeholder="Channel where new members are greeted"
           />
+        </div>
+        <div>
+          <Label>Server roles channel ID</Label>
+          <Input
+            value={cfg.rolesChannelId}
+            onChange={(e) => setCfg({ ...cfg, rolesChannelId: e.target.value })}
+            placeholder="Channel where the roles overview embed is posted"
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Defaults to <code>#✭「🍸」・server-roles</code> (1498961753457954847). Used by the “Send Discord roles” action.
+          </p>
         </div>
         <div>
           <Label>Welcome message</Label>
