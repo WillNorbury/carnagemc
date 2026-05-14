@@ -1528,6 +1528,48 @@ const BotDashboardSection = () => {
           </a>
         )}
       </Card>
+
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Roles Embed Preview</DialogTitle>
+            <DialogDescription>
+              This is how the embed will look in channel {previewChannelId ? <span className="font-mono">{previewChannelId}</span> : "—"}.
+            </DialogDescription>
+          </DialogHeader>
+          {previewData && (
+            <div className="space-y-3">
+              <div
+                className="rounded-lg border-l-4 p-4 bg-card/60"
+                style={{ borderLeftColor: `#${previewData.color.toString(16).padStart(6, "0")}` }}
+              >
+                <div className="font-semibold text-sm">{previewData.title}</div>
+                <div className="text-sm text-muted-foreground mt-2 whitespace-pre-wrap">
+                  {previewData.description}
+                </div>
+                <div className="text-xs text-muted-foreground mt-3 flex items-center gap-2">
+                  <span>{previewData.footer.text}</span>
+                  <span>·</span>
+                  <span>{new Date(previewData.timestamp).toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="flex gap-2">
+            <Button variant="outline" onClick={() => setPreviewOpen(false)}>
+              Close
+            </Button>
+            <Button
+              onClick={() => {
+                setPreviewOpen(false);
+                runAction("roles");
+              }}
+            >
+              Send to channel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
