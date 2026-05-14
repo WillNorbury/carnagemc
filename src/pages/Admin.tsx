@@ -972,7 +972,7 @@ const toLocalInput = (ms?: number) => {
 
 const ContentTab = () => {
   const [hero, setHero] = useState({ title: "", subtitle: "", badge: "", enabled: true });
-  const [server, setServer] = useState({ ip: "", discord: "", version: "", tagline: "" });
+  const [server, setServer] = useState({ ip: "", bedrockIp: "", bedrockPort: "", discord: "", version: "", tagline: "" });
   const [alerts, setAlerts] = useState({
     onlineEnabled: true,
     onlineMessage: "🟢 Server is back online — jump in!",
