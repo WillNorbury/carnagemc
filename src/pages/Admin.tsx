@@ -1325,7 +1325,7 @@ const BotDashboardSection = () => {
   const [busy, setBusy] = useState<string | null>(null);
   const [actionResults, setActionResults] = useState<Record<string, { ok: boolean; message: string }>>({});
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewData, setPreviewData] = useState<{ title: string; description: string; color: number; footer: { text: string }; timestamp: string } | null>(null);
+  const [previewData, setPreviewData] = useState<any | null>(null);
   const [previewChannelId, setPreviewChannelId] = useState<string>("");
 
   useEffect(() => {
