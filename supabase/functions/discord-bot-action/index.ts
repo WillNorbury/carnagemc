@@ -5,7 +5,27 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
 };
 
-type Action = "announce" | "status" | "welcome";
+type Action = "announce" | "status" | "welcome" | "roles";
+
+const SITE_ROLES: { value: string; label: string; description: string }[] = [
+  { value: "owner", label: "Owner", description: "Server founder with full administrative authority." },
+  { value: "manager", label: "Manager", description: "Oversees staff teams and day-to-day operations." },
+  { value: "developer", label: "Developer", description: "Builds and maintains plugins, systems, and integrations." },
+  { value: "sr_admin", label: "Sr Admin", description: "Senior administrator handling escalations and policy." },
+  { value: "admin", label: "Admin", description: "Administrator with elevated moderation powers." },
+  { value: "jr_admin", label: "Jr Admin", description: "Junior administrator in training." },
+  { value: "sr_mod", label: "Sr Mod", description: "Senior moderator leading the moderation team." },
+  { value: "mod", label: "Mod", description: "Moderator enforcing the server rules." },
+  { value: "sr_helper", label: "Sr Helper", description: "Senior helper guiding the helper team." },
+  { value: "helper", label: "Helper", description: "Helps players in chat and support channels." },
+  { value: "champion", label: "Champion", description: "Top-tier supporter with exclusive perks." },
+  { value: "media", label: "Media", description: "Content creators and partnered streamers." },
+  { value: "elite", label: "Elite", description: "Elite donor rank with premium benefits." },
+  { value: "mvp", label: "MVP", description: "MVP donor rank for dedicated supporters." },
+  { value: "vip", label: "VIP", description: "VIP donor rank with extra perks." },
+  { value: "booster", label: "Booster", description: "Discord server booster — thank you!" },
+  { value: "default", label: "Default", description: "Default member role." },
+];
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
