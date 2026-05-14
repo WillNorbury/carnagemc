@@ -217,6 +217,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEO
+        title="ZyphoraMC — Lifesteal & Economy Minecraft Server"
+        description="Join ZyphoraMC for premium Lifesteal PvP, custom enchants, a player-driven economy, ranked seasons, and weekly events. Java & Bedrock supported."
+        path="/"
+      />
       <MouseTrail />
       <Navbar />
 
