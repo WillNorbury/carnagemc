@@ -414,14 +414,14 @@ const Index = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {FEATURES.map((f) => (
               <Card
-                key={f.title}
-                onClick={() => setActiveFeature(f)}
+                key={f.slug}
+                onClick={() => nav(`/features/${f.slug}`)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    setActiveFeature(f);
+                    nav(`/features/${f.slug}`);
                   }
                 }}
                 className="group relative p-6 hover-lift hover-glow border-border/60 overflow-hidden cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -442,6 +442,11 @@ const Index = () => {
                 </div>
               </Card>
             ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Button variant="outline" onClick={() => nav("/features")} className="font-display uppercase tracking-wider border-primary/40 hover:border-primary hover:text-primary">
+              View all features <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
           </div>
         </section>
 
