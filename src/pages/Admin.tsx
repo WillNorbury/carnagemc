@@ -1579,6 +1579,17 @@ const BotManagementSection = () => {
           />
         </div>
         <div>
+          <Label>Server roles channel ID</Label>
+          <Input
+            value={cfg.rolesChannelId}
+            onChange={(e) => setCfg({ ...cfg, rolesChannelId: e.target.value })}
+            placeholder="Channel where the roles overview embed is posted"
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Defaults to <code>#✭「🍸」・server-roles</code> (1498961753457954847). Used by the “Send Discord roles” action.
+          </p>
+        </div>
+        <div>
           <Label>Welcome message</Label>
           <Textarea
             rows={3}
