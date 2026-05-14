@@ -1507,6 +1507,7 @@ const BotManagementSection = () => {
     announceChannelId: "",
     statusChannelId: "",
     welcomeChannelId: "",
+    rolesChannelId: "1498961753457954847",
     welcomeMessage: "Welcome to ZyphoraMC, {user}!",
   });
   const [loading, setLoading] = useState(true);
