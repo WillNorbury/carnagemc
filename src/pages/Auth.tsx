@@ -12,6 +12,7 @@ import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import logo from "@/assets/zyphora-logo.png";
 import { Link } from "react-router-dom";
+import { SEO } from "@/components/site/SEO";
 
 const schema = z.object({
   email: z.string().email("Invalid email").max(255),
@@ -78,6 +79,11 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-grid">
+      <SEO
+        title="Sign in — ZyphoraMC"
+        description="Sign in or create your ZyphoraMC account to apply for staff, vote, manage your profile, and access the dashboard."
+        path="/auth"
+      />
       <div className="absolute inset-0 -z-10" style={{ background: "var(--gradient-hero)" }} />
       <Card className="w-full max-w-md p-8 backdrop-blur-xl bg-card/90 border-primary/20 shadow-elegant">
         <Link to="/" className="flex items-center justify-center gap-2 mb-6">

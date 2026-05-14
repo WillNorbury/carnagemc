@@ -13,6 +13,7 @@ import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import { z } from "zod";
 import { ShieldCheck, Hammer, Youtube, Loader2, ClipboardList } from "lucide-react";
+import { SEO } from "@/components/site/SEO";
 
 type AppType = "staff" | "builder" | "youtuber";
 
@@ -110,6 +111,11 @@ const Apply = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO
+        title="Apply — Join the ZyphoraMC Team"
+        description="Apply to join the ZyphoraMC team as Staff, Builder, or Content Creator. Help shape the server and earn exclusive perks."
+        path="/apply"
+      />
       <Navbar />
       <main className="flex-1 container pt-28 pb-16 max-w-3xl">
         <header className="mb-8 text-center">

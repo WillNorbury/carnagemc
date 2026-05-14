@@ -7,30 +7,23 @@ import MouseTrail from "@/components/site/MouseTrail";
 import AnimatedCounter from "@/components/site/AnimatedCounter";
 import Countdown from "@/components/site/Countdown";
 import Reviews from "@/components/site/Reviews";
+import { SEO } from "@/components/site/SEO";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { FEATURES } from "@/lib/features";
 import {
   Copy,
   Users,
   Server,
   MessageCircle,
-  Shield,
-  Coins,
-  Heart,
   X,
   CheckCircle2,
   AlertCircle,
-  Swords,
-  Sparkles,
-  Gift,
   PartyPopper,
   Zap,
-  Crown,
   Vote as VoteIcon,
-  ExternalLink,
   Star,
   ArrowRight,
 } from "lucide-react";
@@ -57,56 +50,6 @@ const formatUptime = (ms: number) => {
   return `${m}m`;
 };
 
-const FEATURES = [
-  {
-    icon: Swords,
-    title: "Lifesteal PvP",
-    desc: "Kill or be killed. Steal hearts from your enemies, lose yours when you die. Permadeath at zero.",
-    long: "Every player starts with 10 hearts. Slay another player and steal one of theirs — lose all your hearts and you're banned from the server until the next season reset. Hearts can be crafted, traded, and even gambled. The risk is real, and so is the reward. Learn the meta, build your base, and rise to the top of the leaderboard.",
-  },
-  {
-    icon: Coins,
-    title: "Economy System",
-    desc: "A player-driven market. Trade, auction, and build empires with our balanced economy.",
-    long: "An entirely player-driven economy with shops, auctions, and a global marketplace. Set up your own shop, list rare drops in the auction house, and build wealth through trade. Currency is earned in-game — no pay-to-win shortcuts. Smart traders can corner markets and become server-renowned tycoons.",
-  },
-  {
-    icon: Sparkles,
-    title: "Custom Enchants",
-    desc: "Over 80 unique enchantments crafted to give you the edge in combat and survival.",
-    long: "More than 80 custom enchantments designed exclusively for ZyphoraMC. From Lifesteal V and Soulbound to Implants and Rocket Escape, every enchant is balanced for both PvP and PvE. Discover them through enchantment books found in crates, mob drops, and special events.",
-  },
-  {
-    icon: Gift,
-    title: "Daily Rewards",
-    desc: "Login streaks, vote crates, and seasonal bundles you can claim every single day.",
-    long: "Log in daily to claim escalating rewards — currency, keys, custom items, and exclusive cosmetics. Maintain your streak for bonus seasonal bundles. Vote on listing sites for additional crate keys, and claim seasonal pass rewards as you level up your account.",
-  },
-  {
-    icon: PartyPopper,
-    title: "Events & Giveaways",
-    desc: "Weekly tournaments, boss raids, and giveaways with real and in-game prizes.",
-    long: "Weekly PvP tournaments, world-boss raids, capture-the-flag, parkour challenges, and treasure hunts. Win in-game items, currency, and even real-world prizes including gift cards and merch. Special seasonal events run during holidays with exclusive cosmetics you can't get any other way.",
-  },
-  {
-    icon: Zap,
-    title: "Lag-Free Gameplay",
-    desc: "Dedicated hardware, optimized Paper builds, and 99.9% uptime. Smooth at every TPS.",
-    long: "Hosted on dedicated enterprise-grade hardware with NVMe storage, DDoS protection, and 99.9% uptime. Running optimized Paper and Purpur builds with custom plugins tuned for performance. Server-wide TPS rarely dips below 19.8 — even during massive raids and events.",
-  },
-  {
-    icon: Heart,
-    title: "Friendly Community",
-    desc: "An active Discord, dedicated staff, and zero tolerance for toxicity. You belong here.",
-    long: "Thousands of active members across our Discord and in-game. A dedicated, trained staff team is online 24/7 to help with questions, disputes, and reports. Strict zero-tolerance policy on harassment, slurs, and cheating. We pride ourselves on being one of the friendliest servers in the scene.",
-  },
-  {
-    icon: Crown,
-    title: "Ranked Seasons",
-    desc: "Climb the leaderboard, earn exclusive cosmetics, and lock your name in our hall of fame.",
-    long: "Compete across 3-month seasons for placement on the global leaderboard. Top players earn exclusive titles, cosmetic items, custom particles, and a permanent place in the ZyphoraMC Hall of Fame. Each new season brings a fresh map, balance updates, and new content to master.",
-  },
-];
 
 const Index = () => {
   const nav = useNavigate();
@@ -116,7 +59,7 @@ const Index = () => {
   const [uptimeStart, setUptimeStart] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
   const [popupOpen, setPopupOpen] = useState(false);
-  const [activeFeature, setActiveFeature] = useState<(typeof FEATURES)[number] | null>(null);
+  
   const [discordMembers, setDiscordMembers] = useState<number | null>(null);
   const [voteCount, setVoteCount] = useState<number>(0);
 
@@ -274,6 +217,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEO
+        title="ZyphoraMC — Lifesteal & Economy Minecraft Server"
+        description="Join ZyphoraMC for premium Lifesteal PvP, custom enchants, a player-driven economy, ranked seasons, and weekly events. Java & Bedrock supported."
+        path="/"
+      />
       <MouseTrail />
       <Navbar />
 
@@ -471,14 +419,14 @@ const Index = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {FEATURES.map((f) => (
               <Card
-                key={f.title}
-                onClick={() => setActiveFeature(f)}
+                key={f.slug}
+                onClick={() => nav(`/features/${f.slug}`)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    setActiveFeature(f);
+                    nav(`/features/${f.slug}`);
                   }
                 }}
                 className="group relative p-6 hover-lift hover-glow border-border/60 overflow-hidden cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -499,6 +447,11 @@ const Index = () => {
                 </div>
               </Card>
             ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Button variant="outline" onClick={() => nav("/features")} className="font-display uppercase tracking-wider border-primary/40 hover:border-primary hover:text-primary">
+              View all features <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
           </div>
         </section>
 
@@ -584,25 +537,7 @@ const Index = () => {
         </section>
       </main>
 
-      <Dialog open={!!activeFeature} onOpenChange={(o) => !o && setActiveFeature(null)}>
-        <DialogContent>
-          {activeFeature && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 text-primary flex items-center justify-center">
-                    <activeFeature.icon className="h-5 w-5" />
-                  </div>
-                  <DialogTitle className="font-display text-2xl">{activeFeature.title}</DialogTitle>
-                </div>
-                <DialogDescription className="text-base text-foreground/90 leading-relaxed">
-                  {activeFeature.long}
-                </DialogDescription>
-              </DialogHeader>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+
 
       <Footer />
     </div>
