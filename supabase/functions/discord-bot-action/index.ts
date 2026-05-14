@@ -199,6 +199,49 @@ Deno.serve(async (req) => {
         : { ok: false, error: `Discord error ${r.status}`, details: r.data });
     }
 
+    if (action === "roles") {
+      const channelId = body.channelId || cfg.rolesChannelId || "1498961753457954847";
+      if (!channelId) return json({ ok: false, error: "No roles channel configured" });
+
+      const lines = SITE_ROLES.map((r) => `**${r.label}** — ${r.description}`).join("\n");
+      const embed = {
+        title: "ZyphoraMC — Server Roles",
+        description: lines,
+        color: 0x5865f2,
+        footer: { text: "ZyphoraMC · Roles overview" },
+        timestamp: new Date().toISOString(),
+      };
+
+      const existingId: string | undefined = cfg.rolesMessageId;
+      const sameChannel = cfg.rolesMessageChannelId === channelId;
+
+      let result;
+      if (existingId && sameChannel) {
+        result = await discordPatch(channelId, existingId, token, { embeds: [embed] });
+        if (!result.ok && result.status === 404) {
+          result = await discordPost(channelId, token, { embeds: [embed] });
+          if (result.ok) {
+            await adminClient.from("site_content").upsert({
+              key: "discord_bot",
+              value: { ...cfg, rolesChannelId: channelId, rolesMessageId: result.data?.id, rolesMessageChannelId: channelId },
+            });
+          }
+        }
+      } else {
+        result = await discordPost(channelId, token, { embeds: [embed] });
+        if (result.ok) {
+          await adminClient.from("site_content").upsert({
+            key: "discord_bot",
+            value: { ...cfg, rolesChannelId: channelId, rolesMessageId: result.data?.id, rolesMessageChannelId: channelId },
+          });
+        }
+      }
+
+      return json(result.ok
+        ? { ok: true, message: `Roles ${existingId && sameChannel ? "updated" : "posted"} in channel ${channelId}` }
+        : { ok: false, error: `Discord error ${result.status}`, details: result.data });
+    }
+
     return json({ ok: false, error: "Unhandled action" }, 400);
   } catch (e) {
     return json({ ok: false, error: (e as Error).message }, 500);
