@@ -1495,7 +1495,8 @@ const BotDashboardSection = () => {
           {tests.map((t) => {
             const r = actionResults[t.key];
             const disabled = !!busy || !t.channel;
-            const isRoles = t.key === "roles";
+            const isPreviewable = !!t.canPreview;
+            const previewKey = isPreviewable ? (t.key as "roles" | "info" | "rules") : null;
             return (
               <div
                 key={t.key}
@@ -1520,9 +1521,9 @@ const BotDashboardSection = () => {
                   )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  {isRoles && (
-                    <Button size="sm" variant="outline" onClick={previewRoles} disabled={!!busy || !t.channel}>
-                      {busy === "roles-preview" ? "Loading..." : "Preview"}
+                  {previewKey && (
+                    <Button size="sm" variant="outline" onClick={() => previewAction(previewKey)} disabled={!!busy || !t.channel}>
+                      {busy === `${previewKey}-preview` ? "Loading..." : "Preview"}
                     </Button>
                   )}
                   <Button size="sm" onClick={() => runAction(t.key)} disabled={disabled}>
