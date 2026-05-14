@@ -5,7 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
 };
 
-type Action = "announce" | "status" | "welcome" | "roles";
+type Action = "announce" | "status" | "welcome" | "roles" | "info" | "rules";
 
 const SITE_ROLES: { value: string; label: string; description: string }[] = [
   { value: "owner", label: "Owner", description: "Server founder with full administrative authority." },
