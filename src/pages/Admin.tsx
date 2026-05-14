@@ -1354,7 +1354,9 @@ const BotDashboardSection = () => {
     }
   };
 
-  const runAction = async (action: "announce" | "status" | "welcome" | "roles") => {
+  type EmbedAction = "announce" | "status" | "welcome" | "roles" | "info" | "rules";
+
+  const runAction = async (action: EmbedAction) => {
     setBusy(action);
     const { data, error } = await supabase.functions.invoke("discord-bot-action", {
       body: { action },
@@ -1368,23 +1370,23 @@ const BotDashboardSection = () => {
     else toast.error(payload.message);
   };
 
-  const previewRoles = async () => {
-    setBusy("roles-preview");
+  const previewAction = async (action: "roles" | "info" | "rules") => {
+    setBusy(`${action}-preview`);
     const { data, error } = await supabase.functions.invoke("discord-bot-action", {
-      body: { action: "roles", preview: true },
+      body: { action, preview: true },
     });
     setBusy(null);
     if (error || !data?.ok) {
       toast.error(error?.message ?? data?.error ?? "Preview failed");
       return;
     }
-    setPreviewData(data.preview);
+    setPreviewData({ ...data.preview, _content: data.content });
     setPreviewChannelId(data.channelId ?? "");
     setPreviewOpen(true);
   };
 
   const online = cfg.enabled && cfg.status === "online";
-  const tests: { key: "announce" | "status" | "welcome" | "roles"; label: string; desc: string; channel: string | undefined }[] =
+  const tests: { key: EmbedAction; label: string; desc: string; channel: string | undefined; canPreview?: boolean }[] =
     [
       {
         key: "announce",
@@ -1405,10 +1407,25 @@ const BotDashboardSection = () => {
         channel: cfg.announceChannelId || cfg.statusChannelId,
       },
       {
+        key: "info",
+        label: "Send server info",
+        desc: "Posts (or updates) a polished server info embed with IP, ports, and quick links in the info channel.",
+        channel: cfg.infoChannelId,
+        canPreview: true,
+      },
+      {
+        key: "rules",
+        label: "Send server rules",
+        desc: "Posts (or updates) the full ZyphoraMC rules embed in the rules channel.",
+        channel: cfg.rulesChannelId,
+        canPreview: true,
+      },
+      {
         key: "roles",
         label: "Send Discord roles",
         desc: "Posts (or updates) the full ZyphoraMC roles overview embed in the server-roles channel.",
         channel: cfg.rolesChannelId || "1498961753457954847",
+        canPreview: true,
       },
     ];
 
