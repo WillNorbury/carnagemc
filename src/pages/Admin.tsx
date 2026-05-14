@@ -1476,6 +1476,7 @@ const BotDashboardSection = () => {
           {tests.map((t) => {
             const r = actionResults[t.key];
             const disabled = !!busy || !t.channel;
+            const isRoles = t.key === "roles";
             return (
               <div
                 key={t.key}
@@ -1499,9 +1500,16 @@ const BotDashboardSection = () => {
                     </div>
                   )}
                 </div>
-                <Button size="sm" onClick={() => runAction(t.key)} disabled={disabled}>
-                  {busy === t.key ? "Sending..." : "Run test"}
-                </Button>
+                <div className="flex items-center gap-2 shrink-0">
+                  {isRoles && (
+                    <Button size="sm" variant="outline" onClick={previewRoles} disabled={!!busy || !t.channel}>
+                      {busy === "roles-preview" ? "Loading..." : "Preview"}
+                    </Button>
+                  )}
+                  <Button size="sm" onClick={() => runAction(t.key)} disabled={disabled}>
+                    {busy === t.key ? "Sending..." : "Run test"}
+                  </Button>
+                </div>
               </div>
             );
           })}
