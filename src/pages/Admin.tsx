@@ -1318,6 +1318,8 @@ const BotDashboardSection = () => {
     announceChannelId: "",
     statusChannelId: "",
     rolesChannelId: "1498961753457954847",
+    infoChannelId: "",
+    rulesChannelId: "",
     welcomeMessage: "",
   });
   const [testing, setTesting] = useState(false);
@@ -1325,8 +1327,9 @@ const BotDashboardSection = () => {
   const [busy, setBusy] = useState<string | null>(null);
   const [actionResults, setActionResults] = useState<Record<string, { ok: boolean; message: string }>>({});
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewData, setPreviewData] = useState<{ title: string; description: string; color: number; footer: { text: string }; timestamp: string } | null>(null);
+  const [previewData, setPreviewData] = useState<any | null>(null);
   const [previewChannelId, setPreviewChannelId] = useState<string>("");
+  const [previewAction_, setPreviewAction_] = useState<"roles" | "info" | "rules" | null>(null);
 
   useEffect(() => {
     supabase
@@ -1354,7 +1357,9 @@ const BotDashboardSection = () => {
     }
   };
 
-  const runAction = async (action: "announce" | "status" | "welcome" | "roles") => {
+  type EmbedAction = "announce" | "status" | "welcome" | "roles" | "info" | "rules";
+
+  const runAction = async (action: EmbedAction) => {
     setBusy(action);
     const { data, error } = await supabase.functions.invoke("discord-bot-action", {
       body: { action },
@@ -1368,23 +1373,24 @@ const BotDashboardSection = () => {
     else toast.error(payload.message);
   };
 
-  const previewRoles = async () => {
-    setBusy("roles-preview");
+  const previewAction = async (action: "roles" | "info" | "rules") => {
+    setBusy(`${action}-preview`);
     const { data, error } = await supabase.functions.invoke("discord-bot-action", {
-      body: { action: "roles", preview: true },
+      body: { action, preview: true },
     });
     setBusy(null);
     if (error || !data?.ok) {
       toast.error(error?.message ?? data?.error ?? "Preview failed");
       return;
     }
-    setPreviewData(data.preview);
+    setPreviewData({ ...data.preview, _content: data.content });
     setPreviewChannelId(data.channelId ?? "");
+    setPreviewAction_(action);
     setPreviewOpen(true);
   };
 
   const online = cfg.enabled && cfg.status === "online";
-  const tests: { key: "announce" | "status" | "welcome" | "roles"; label: string; desc: string; channel: string | undefined }[] =
+  const tests: { key: EmbedAction; label: string; desc: string; channel: string | undefined; canPreview?: boolean }[] =
     [
       {
         key: "announce",
@@ -1405,10 +1411,25 @@ const BotDashboardSection = () => {
         channel: cfg.announceChannelId || cfg.statusChannelId,
       },
       {
+        key: "info",
+        label: "Send server info",
+        desc: "Posts (or updates) a polished server info embed with IP, ports, and quick links in the info channel.",
+        channel: cfg.infoChannelId,
+        canPreview: true,
+      },
+      {
+        key: "rules",
+        label: "Send server rules",
+        desc: "Posts (or updates) the full ZyphoraMC rules embed in the rules channel.",
+        channel: cfg.rulesChannelId,
+        canPreview: true,
+      },
+      {
         key: "roles",
         label: "Send Discord roles",
         desc: "Posts (or updates) the full ZyphoraMC roles overview embed in the server-roles channel.",
         channel: cfg.rolesChannelId || "1498961753457954847",
+        canPreview: true,
       },
     ];
 
@@ -1476,7 +1497,8 @@ const BotDashboardSection = () => {
           {tests.map((t) => {
             const r = actionResults[t.key];
             const disabled = !!busy || !t.channel;
-            const isRoles = t.key === "roles";
+            const isPreviewable = !!t.canPreview;
+            const previewKey = isPreviewable ? (t.key as "roles" | "info" | "rules") : null;
             return (
               <div
                 key={t.key}
@@ -1501,9 +1523,9 @@ const BotDashboardSection = () => {
                   )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  {isRoles && (
-                    <Button size="sm" variant="outline" onClick={previewRoles} disabled={!!busy || !t.channel}>
-                      {busy === "roles-preview" ? "Loading..." : "Preview"}
+                  {previewKey && (
+                    <Button size="sm" variant="outline" onClick={() => previewAction(previewKey)} disabled={!!busy || !t.channel}>
+                      {busy === `${previewKey}-preview` ? "Loading..." : "Preview"}
                     </Button>
                   )}
                   <Button size="sm" onClick={() => runAction(t.key)} disabled={disabled}>
@@ -1530,28 +1552,54 @@ const BotDashboardSection = () => {
       </Card>
 
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogContent className="max-w-xl">
+        <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Roles Embed Preview</DialogTitle>
+            <DialogTitle>
+              {previewAction_ === "info" ? "Server Info" : previewAction_ === "rules" ? "Server Rules" : "Roles"} Embed Preview
+            </DialogTitle>
             <DialogDescription>
-              This is how the embed will look in channel {previewChannelId ? <span className="font-mono">{previewChannelId}</span> : "—"}.
+              This is how the message will look in channel{" "}
+              {previewChannelId ? <span className="font-mono">{previewChannelId}</span> : "—"}.
             </DialogDescription>
           </DialogHeader>
           {previewData && (
             <div className="space-y-3">
+              {previewData._content && (
+                <div className="text-sm font-medium text-primary">{previewData._content}</div>
+              )}
               <div
-                className="rounded-lg border-l-4 p-4 bg-card/60"
-                style={{ borderLeftColor: `#${previewData.color.toString(16).padStart(6, "0")}` }}
+                className="rounded-lg border-l-4 p-4 bg-card/60 space-y-2"
+                style={{ borderLeftColor: `#${(previewData.color ?? 0x5865f2).toString(16).padStart(6, "0")}` }}
               >
-                <div className="font-semibold text-sm">{previewData.title}</div>
-                <div className="text-sm text-muted-foreground mt-2 whitespace-pre-wrap">
-                  {previewData.description}
-                </div>
-                <div className="text-xs text-muted-foreground mt-3 flex items-center gap-2">
-                  <span>{previewData.footer.text}</span>
-                  <span>·</span>
-                  <span>{new Date(previewData.timestamp).toLocaleString()}</span>
-                </div>
+                {previewData.title && (
+                  <div className="font-semibold text-base">{previewData.title}</div>
+                )}
+                {previewData.description && (
+                  <div className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {previewData.description}
+                  </div>
+                )}
+                {Array.isArray(previewData.fields) && previewData.fields.length > 0 && (
+                  <div className="grid gap-2 pt-1">
+                    {previewData.fields.map((f: any, i: number) => (
+                      <div key={i} className="text-sm">
+                        <div className="font-semibold">{f.name}</div>
+                        <div className="text-muted-foreground whitespace-pre-wrap">{f.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {previewData.footer?.text && (
+                  <div className="text-xs text-muted-foreground pt-2 flex items-center gap-2 border-t border-border/40 mt-2">
+                    <span>{previewData.footer.text}</span>
+                    {previewData.timestamp && (
+                      <>
+                        <span>·</span>
+                        <span>{new Date(previewData.timestamp).toLocaleString()}</span>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -1562,8 +1610,9 @@ const BotDashboardSection = () => {
             <Button
               onClick={() => {
                 setPreviewOpen(false);
-                runAction("roles");
+                if (previewAction_) runAction(previewAction_);
               }}
+              disabled={!previewAction_}
             >
               Send to channel
             </Button>
@@ -1584,6 +1633,8 @@ const BotManagementSection = () => {
     statusChannelId: "",
     welcomeChannelId: "",
     rolesChannelId: "1498961753457954847",
+    infoChannelId: "",
+    rulesChannelId: "",
     welcomeMessage: "Welcome to ZyphoraMC, {user}!",
   });
   const [loading, setLoading] = useState(true);
@@ -1663,6 +1714,28 @@ const BotManagementSection = () => {
           />
           <p className="text-xs text-muted-foreground mt-1">
             Defaults to <code>#✭「🍸」・server-roles</code> (1498961753457954847). Used by the “Send Discord roles” action.
+          </p>
+        </div>
+        <div>
+          <Label>Server info channel ID</Label>
+          <Input
+            value={cfg.infoChannelId}
+            onChange={(e) => setCfg({ ...cfg, infoChannelId: e.target.value })}
+            placeholder="Channel where the info embed (IP, ports, links) is posted"
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Used by the “Send server info” action. Posts (or updates) a polished embed with the IP, Bedrock port, and quick links, plus an <code>@everyone</code> ping.
+          </p>
+        </div>
+        <div>
+          <Label>Server rules channel ID</Label>
+          <Input
+            value={cfg.rulesChannelId}
+            onChange={(e) => setCfg({ ...cfg, rulesChannelId: e.target.value })}
+            placeholder="Channel where the rules embed is posted"
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Used by the “Send server rules” action.
           </p>
         </div>
         <div>
