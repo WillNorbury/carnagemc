@@ -111,6 +111,8 @@ const Index = () => {
   }, [content.server?.discord]);
 
   const ip = content.server?.ip ?? "play.zyphoramc.net";
+  const bedrockIp = content.server?.bedrockIp ?? "Soon";
+  const bedrockPort = content.server?.bedrockPort ?? "Soon";
 
   const [alert, setAlert] = useState<{ type: "online" | "offline"; message: string } | null>(null);
   const prevOnlineRef = useRef<boolean | undefined>(undefined);
