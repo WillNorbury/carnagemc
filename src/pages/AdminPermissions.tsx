@@ -1,3 +1,4 @@
+import { confirm } from "@/lib/confirm";
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
@@ -70,8 +71,8 @@ const AdminPermissions = () => {
     setDirty(true);
   };
 
-  const resetDefaults = () => {
-    if (!confirm("Reset all permissions to defaults? Unsaved changes will be lost.")) return;
+  const resetDefaults = async () => {
+    if (!(await confirm({ title: "Reset permissions?", description: "All permissions will be reset to defaults. Unsaved changes will be lost.", confirmText: "Reset", destructive: true }))) return;
     const next: PermissionMatrix = {};
     for (const r of ALL_ROLES) next[r.value as AppRole] = [...(DEFAULT_PERMISSIONS[r.value as AppRole] ?? [])];
     setMatrix(next);

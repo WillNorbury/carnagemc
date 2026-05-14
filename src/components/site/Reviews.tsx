@@ -1,3 +1,4 @@
+import { confirm } from "@/lib/confirm";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { z } from "zod";
@@ -139,7 +140,7 @@ const Reviews = () => {
 
   const remove = async () => {
     if (!myReview) return;
-    if (!confirm("Delete your review?")) return;
+    if (!(await confirm({ title: "Delete review?", description: "Your review will be permanently removed.", confirmText: "Delete", destructive: true }))) return;
     const { error } = await supabase.from("reviews").delete().eq("id", myReview.id);
     if (error) return toast.error(error.message);
     toast.success("Review deleted");

@@ -1,3 +1,4 @@
+import { confirm } from "@/lib/confirm";
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
@@ -1657,7 +1658,7 @@ const BotActionLogsPanel = () => {
   }, [filter]);
 
   const clearLogs = async () => {
-    if (!confirm("Delete all Discord bot action logs?")) return;
+    if (!(await confirm({ title: "Clear logs?", description: "Delete all Discord bot action logs? This cannot be undone.", confirmText: "Clear", destructive: true }))) return;
     const { error } = await supabase
       .from("discord_bot_action_logs")
       .delete()
@@ -1998,7 +1999,7 @@ const TicketsAdminSection = () => {
   };
 
   const deleteTicket = async (id: string) => {
-    if (!confirm("Delete this ticket and all its messages?")) return;
+    if (!(await confirm({ title: "Delete ticket?", description: "This ticket and all its messages will be permanently deleted.", confirmText: "Delete", destructive: true }))) return;
     const { error } = await supabase.from("support_tickets").delete().eq("id", id);
     if (error) return toast.error(error.message);
     if (selectedId === id) setSelectedId(null);
@@ -2285,7 +2286,7 @@ const PluginsTab = () => {
 
   const removeJar = async () => {
     if (!form.jar_path) return;
-    if (!confirm("Remove the uploaded JAR?")) return;
+    if (!(await confirm({ title: "Remove JAR?", description: "The uploaded JAR file will be removed.", confirmText: "Remove", destructive: true }))) return;
     await supabase.storage.from("plugin-jars").remove([form.jar_path]);
     setForm((f) => ({ ...f, jar_path: "", jar_filename: "", jar_size: 0, download_url: "" }));
     toast.success("JAR removed");
@@ -2386,7 +2387,7 @@ const PluginsTab = () => {
   };
 
   const remove = async (id: string) => {
-    if (!confirm("Delete this plugin?")) return;
+    if (!(await confirm({ title: "Delete plugin?", description: "This plugin will be permanently deleted.", confirmText: "Delete", destructive: true }))) return;
     const target = plugins.find((p) => p.id === id);
     if (target?.jar_path) {
       await supabase.storage.from("plugin-jars").remove([target.jar_path]);
@@ -2735,7 +2736,7 @@ const ChangelogTab = () => {
   };
 
   const remove = async (id: string) => {
-    if (!confirm("Delete this changelog entry?")) return;
+    if (!(await confirm({ title: "Delete entry?", description: "This changelog entry will be permanently deleted.", confirmText: "Delete", destructive: true }))) return;
     const { error } = await supabase.from("changelog_entries").delete().eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Deleted");
@@ -2934,7 +2935,7 @@ const ApplicationsTab = () => {
   };
 
   const remove = async (id: string) => {
-    if (!confirm("Delete this application?")) return;
+    if (!(await confirm({ title: "Delete application?", description: "This application will be permanently deleted.", confirmText: "Delete", destructive: true }))) return;
     const { error } = await supabase.from("applications").delete().eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Deleted");
