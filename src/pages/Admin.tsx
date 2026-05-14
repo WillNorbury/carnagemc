@@ -1550,28 +1550,54 @@ const BotDashboardSection = () => {
       </Card>
 
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogContent className="max-w-xl">
+        <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Roles Embed Preview</DialogTitle>
+            <DialogTitle>
+              {previewAction_ === "info" ? "Server Info" : previewAction_ === "rules" ? "Server Rules" : "Roles"} Embed Preview
+            </DialogTitle>
             <DialogDescription>
-              This is how the embed will look in channel {previewChannelId ? <span className="font-mono">{previewChannelId}</span> : "—"}.
+              This is how the message will look in channel{" "}
+              {previewChannelId ? <span className="font-mono">{previewChannelId}</span> : "—"}.
             </DialogDescription>
           </DialogHeader>
           {previewData && (
             <div className="space-y-3">
+              {previewData._content && (
+                <div className="text-sm font-medium text-primary">{previewData._content}</div>
+              )}
               <div
-                className="rounded-lg border-l-4 p-4 bg-card/60"
-                style={{ borderLeftColor: `#${previewData.color.toString(16).padStart(6, "0")}` }}
+                className="rounded-lg border-l-4 p-4 bg-card/60 space-y-2"
+                style={{ borderLeftColor: `#${(previewData.color ?? 0x5865f2).toString(16).padStart(6, "0")}` }}
               >
-                <div className="font-semibold text-sm">{previewData.title}</div>
-                <div className="text-sm text-muted-foreground mt-2 whitespace-pre-wrap">
-                  {previewData.description}
-                </div>
-                <div className="text-xs text-muted-foreground mt-3 flex items-center gap-2">
-                  <span>{previewData.footer.text}</span>
-                  <span>·</span>
-                  <span>{new Date(previewData.timestamp).toLocaleString()}</span>
-                </div>
+                {previewData.title && (
+                  <div className="font-semibold text-base">{previewData.title}</div>
+                )}
+                {previewData.description && (
+                  <div className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {previewData.description}
+                  </div>
+                )}
+                {Array.isArray(previewData.fields) && previewData.fields.length > 0 && (
+                  <div className="grid gap-2 pt-1">
+                    {previewData.fields.map((f: any, i: number) => (
+                      <div key={i} className="text-sm">
+                        <div className="font-semibold">{f.name}</div>
+                        <div className="text-muted-foreground whitespace-pre-wrap">{f.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {previewData.footer?.text && (
+                  <div className="text-xs text-muted-foreground pt-2 flex items-center gap-2 border-t border-border/40 mt-2">
+                    <span>{previewData.footer.text}</span>
+                    {previewData.timestamp && (
+                      <>
+                        <span>·</span>
+                        <span>{new Date(previewData.timestamp).toLocaleString()}</span>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -1582,8 +1608,9 @@ const BotDashboardSection = () => {
             <Button
               onClick={() => {
                 setPreviewOpen(false);
-                runAction("roles");
+                if (previewAction_) runAction(previewAction_);
               }}
+              disabled={!previewAction_}
             >
               Send to channel
             </Button>
