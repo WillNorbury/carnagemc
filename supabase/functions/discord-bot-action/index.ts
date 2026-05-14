@@ -246,6 +246,116 @@ Deno.serve(async (req) => {
         : { ok: false, error: `Discord error ${result.status}`, details: result.data });
     }
 
+    if (action === "info" || action === "rules") {
+      // Resolve config keys per action
+      const map = {
+        info: {
+          channelKey: "infoChannelId",
+          msgIdKey: "infoMessageId",
+          msgChKey: "infoMessageChannelId",
+          fallbackChannel: "",
+        },
+        rules: {
+          channelKey: "rulesChannelId",
+          msgIdKey: "rulesMessageId",
+          msgChKey: "rulesMessageChannelId",
+          fallbackChannel: "",
+        },
+      } as const;
+      const m = map[action];
+      const channelId = body.channelId || cfg[m.channelKey] || m.fallbackChannel;
+      if (!channelId) return json({ ok: false, error: `No ${action} channel configured` });
+
+      // Server IP for info embed
+      let serverIp = "zyphoramc.net";
+      let bedrockPort = "25577";
+      try {
+        const { data: ipRow } = await supabase.from("site_content")
+          .select("value").eq("key", "server").maybeSingle();
+        if (ipRow?.value) {
+          serverIp = (ipRow.value as any)?.ip ?? serverIp;
+          bedrockPort = (ipRow.value as any)?.bedrockPort ?? bedrockPort;
+        }
+      } catch (_) { /* ignore */ }
+
+      let embed: any;
+      let content: string | undefined;
+
+      if (action === "info") {
+        embed = {
+          title: "🍸 ZyphoraMC — Server Info",
+          description:
+            "Welcome to **ZyphoraMC** — your home for premium survival, minigames, and community events.\n\nConnect using the details below and join the adventure!",
+          color: 0xff7a1a,
+          thumbnail: { url: "https://api.mcsrvstat.us/icon/" + encodeURIComponent(serverIp) },
+          fields: [
+            { name: "🌐 Java / Bedrock IP", value: `\`${serverIp}\``, inline: true },
+            { name: "🎮 Bedrock Port", value: `\`${bedrockPort}\``, inline: true },
+            { name: "💎 Versions", value: "Java 1.20+ · Bedrock 1.21+", inline: false },
+            { name: "🔗 Quick Links", value: "[Website](https://zyphoramc.net) · [Store](https://zyphoramc.net) · [Vote](https://zyphoramc.net/vote) · [Apply](https://zyphoramc.net/apply)", inline: false },
+          ],
+          footer: { text: "ZyphoraMC · See you in-game!" },
+          timestamp: new Date().toISOString(),
+        };
+        content = body.mention === false ? undefined : "@everyone";
+      } else {
+        // rules
+        embed = {
+          title: "📜 ZyphoraMC — Server Rules",
+          description: "Please read and follow these rules. Violations may result in mutes, kicks, or bans at staff discretion.",
+          color: 0xef4444,
+          fields: [
+            { name: "1. Be respectful", value: "No harassment, hate speech, slurs, or personal attacks." },
+            { name: "2. No cheating", value: "No hacked clients, X-ray, macros, exploits, or duping." },
+            { name: "3. No griefing or stealing", value: "Respect other players' builds, claims, and items." },
+            { name: "4. English in public chat", value: "Use other languages in DMs or dedicated channels." },
+            { name: "5. No advertising", value: "Don't promote other servers, Discords, or services." },
+            { name: "6. No spam", value: "Don't flood chat, ping spam, or repost the same message." },
+            { name: "7. Keep it SFW", value: "No NSFW content, profile pictures, names, or skins." },
+            { name: "8. Listen to staff", value: "Staff decisions are final. Open a ticket to appeal." },
+          ],
+          footer: { text: "ZyphoraMC · Updated regularly" },
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      if (body.preview) {
+        return json({ ok: true, preview: embed, content, channelId });
+      }
+
+      const existingId: string | undefined = cfg[m.msgIdKey];
+      const sameChannel = cfg[m.msgChKey] === channelId;
+      const payload: any = { embeds: [embed] };
+      if (content) payload.content = content;
+
+      let result;
+      if (existingId && sameChannel) {
+        // PATCH cannot change content+mentions reliably; just patch embeds
+        result = await discordPatch(channelId, existingId, token, { embeds: [embed] });
+        if (!result.ok && result.status === 404) {
+          result = await discordPost(channelId, token, payload);
+          if (result.ok) {
+            await adminClient.from("site_content").upsert({
+              key: "discord_bot",
+              value: { ...cfg, [m.channelKey]: channelId, [m.msgIdKey]: result.data?.id, [m.msgChKey]: channelId },
+            });
+          }
+        }
+      } else {
+        result = await discordPost(channelId, token, payload);
+        if (result.ok) {
+          await adminClient.from("site_content").upsert({
+            key: "discord_bot",
+            value: { ...cfg, [m.channelKey]: channelId, [m.msgIdKey]: result.data?.id, [m.msgChKey]: channelId },
+          });
+        }
+      }
+
+      return json(result.ok
+        ? { ok: true, message: `${action === "info" ? "Info" : "Rules"} ${existingId && sameChannel ? "updated" : "posted"} in channel ${channelId}` }
+        : { ok: false, error: `Discord error ${result.status}`, details: result.data });
+    }
+
     return json({ ok: false, error: "Unhandled action" }, 400);
   } catch (e) {
     return json({ ok: false, error: (e as Error).message }, 500);
