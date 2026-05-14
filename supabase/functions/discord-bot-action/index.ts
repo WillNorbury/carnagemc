@@ -80,24 +80,23 @@ Deno.serve(async (req) => {
     const authHeader = req.headers.get("Authorization") ?? "";
     const cronSecret = req.headers.get("x-cron-secret") ?? "";
 
-    const adminClient = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    );
+    const adminClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
     let isCron = false;
     if (cronSecret) {
-      const { data: secretRow } = await adminClient.from("site_content")
-        .select("value").eq("key", "cron_secret").maybeSingle();
+      const { data: secretRow } = await adminClient
+        .from("site_content")
+        .select("value")
+        .eq("key", "cron_secret")
+        .maybeSingle();
       const expected = (secretRow?.value as any)?.value;
       isCron = !!expected && cronSecret === expected;
     }
 
-
     const userClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } }
+      { global: { headers: { Authorization: authHeader } } },
     );
     const supabase = isCron ? adminClient : userClient;
 
@@ -105,8 +104,12 @@ Deno.serve(async (req) => {
     if (!isCron) {
       const { data: userData } = await userClient.auth.getUser();
       if (!userData?.user) return json({ ok: false, error: "Unauthorized" }, 401);
-      const { data: roleRow } = await userClient.from("user_roles").select("role")
-        .eq("user_id", userData.user.id).eq("role", "admin").maybeSingle();
+      const { data: roleRow } = await userClient
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userData.user.id)
+        .eq("role", "admin")
+        .maybeSingle();
       if (!roleRow) return json({ ok: false, error: "Forbidden — admin only" }, 403);
       callerName = userData.user.user_metadata?.display_name || userData.user.email || "tester";
     }
@@ -120,8 +123,7 @@ Deno.serve(async (req) => {
       return json({ ok: false, error: "Invalid action" }, 400);
     }
 
-    const { data: cfgRow } = await supabase.from("site_content")
-      .select("value").eq("key", "discord_bot").maybeSingle();
+    const { data: cfgRow } = await supabase.from("site_content").select("value").eq("key", "discord_bot").maybeSingle();
     const cfg: any = cfgRow?.value ?? {};
 
     if (action === "announce") {
@@ -129,29 +131,37 @@ Deno.serve(async (req) => {
       const message = body.message || "📢 **Test announcement** from the ZyphoraMC admin panel.";
       if (!channelId) return json({ ok: false, error: "No announcements channel configured" });
       const r = await discordPost(channelId, token, {
-        embeds: [{
-          title: "Announcement", description: message, color: 0x5865f2,
-          footer: { text: "ZyphoraMC · Test" }, timestamp: new Date().toISOString(),
-        }],
+        embeds: [
+          {
+            title: "Announcement",
+            description: message,
+            color: 0x5865f2,
+            footer: { text: "ZyphoraMC · Test" },
+            timestamp: new Date().toISOString(),
+          },
+        ],
       });
-      return json(r.ok
-        ? { ok: true, message: `Announcement sent to channel ${channelId}` }
-        : { ok: false, error: `Discord error ${r.status}`, details: r.data });
+      return json(
+        r.ok
+          ? { ok: true, message: `Announcement sent to channel ${channelId}` }
+          : { ok: false, error: `Discord error ${r.status}`, details: r.data },
+      );
     }
 
     if (action === "status") {
       const channelId = body.channelId || cfg.statusChannelId;
       if (!channelId) return json({ ok: false, error: "No status channel configured" });
 
-      const { data: ipRow } = await supabase.from("site_content")
-        .select("value").eq("key", "server").maybeSingle();
+      const { data: ipRow } = await supabase.from("site_content").select("value").eq("key", "server").maybeSingle();
       const serverIp = (ipRow?.value as any)?.ip ?? "play.zyphoramc.net";
 
       let mc: any = null;
       try {
         const r = await fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(serverIp)}`);
         mc = await r.json();
-      } catch (_) { mc = null; }
+      } catch (_) {
+        mc = null;
+      }
 
       const embed = buildStatusEmbed(mc, serverIp);
       const existingId: string | undefined = cfg.statusMessageId;
@@ -180,9 +190,11 @@ Deno.serve(async (req) => {
         }
       }
 
-      return json(result.ok
-        ? { ok: true, message: `Status ${existingId && sameChannel ? "updated" : "posted"} in channel ${channelId}` }
-        : { ok: false, error: `Discord error ${result.status}`, details: result.data });
+      return json(
+        result.ok
+          ? { ok: true, message: `Status ${existingId && sameChannel ? "updated" : "posted"} in channel ${channelId}` }
+          : { ok: false, error: `Discord error ${result.status}`, details: result.data },
+      );
     }
 
     if (action === "welcome") {
@@ -194,9 +206,11 @@ Deno.serve(async (req) => {
       const r = await discordPost(channelId, token, {
         content: `👋 *Welcome message preview:*\n${rendered}`,
       });
-      return json(r.ok
-        ? { ok: true, message: `Welcome preview sent to channel ${channelId}` }
-        : { ok: false, error: `Discord error ${r.status}`, details: r.data });
+      return json(
+        r.ok
+          ? { ok: true, message: `Welcome preview sent to channel ${channelId}` }
+          : { ok: false, error: `Discord error ${r.status}`, details: r.data },
+      );
     }
 
     if (action === "roles") {
@@ -227,7 +241,12 @@ Deno.serve(async (req) => {
           if (result.ok) {
             await adminClient.from("site_content").upsert({
               key: "discord_bot",
-              value: { ...cfg, rolesChannelId: channelId, rolesMessageId: result.data?.id, rolesMessageChannelId: channelId },
+              value: {
+                ...cfg,
+                rolesChannelId: channelId,
+                rolesMessageId: result.data?.id,
+                rolesMessageChannelId: channelId,
+              },
             });
           }
         }
@@ -236,14 +255,21 @@ Deno.serve(async (req) => {
         if (result.ok) {
           await adminClient.from("site_content").upsert({
             key: "discord_bot",
-            value: { ...cfg, rolesChannelId: channelId, rolesMessageId: result.data?.id, rolesMessageChannelId: channelId },
+            value: {
+              ...cfg,
+              rolesChannelId: channelId,
+              rolesMessageId: result.data?.id,
+              rolesMessageChannelId: channelId,
+            },
           });
         }
       }
 
-      return json(result.ok
-        ? { ok: true, message: `Roles ${existingId && sameChannel ? "updated" : "posted"} in channel ${channelId}` }
-        : { ok: false, error: `Discord error ${result.status}`, details: result.data });
+      return json(
+        result.ok
+          ? { ok: true, message: `Roles ${existingId && sameChannel ? "updated" : "posted"} in channel ${channelId}` }
+          : { ok: false, error: `Discord error ${result.status}`, details: result.data },
+      );
     }
 
     if (action === "info" || action === "rules") {
@@ -270,13 +296,14 @@ Deno.serve(async (req) => {
       let serverIp = "zyphoramc.net";
       let bedrockPort = "25577";
       try {
-        const { data: ipRow } = await supabase.from("site_content")
-          .select("value").eq("key", "server").maybeSingle();
+        const { data: ipRow } = await supabase.from("site_content").select("value").eq("key", "server").maybeSingle();
         if (ipRow?.value) {
           serverIp = (ipRow.value as any)?.ip ?? serverIp;
           bedrockPort = (ipRow.value as any)?.bedrockPort ?? bedrockPort;
         }
-      } catch (_) { /* ignore */ }
+      } catch (_) {
+        /* ignore */
+      }
 
       let embed: any;
       let content: string | undefined;
@@ -290,9 +317,12 @@ Deno.serve(async (req) => {
           thumbnail: { url: "https://api.mcsrvstat.us/icon/" + encodeURIComponent(serverIp) },
           fields: [
             { name: "🌐 Java / Bedrock IP", value: `\`${serverIp}\``, inline: true },
-            { name: "🎮 Bedrock Port", value: `\`${bedrockPort}\``, inline: true },
-            { name: "💎 Versions", value: "Java 1.20+ · Bedrock 1.21+", inline: false },
-            { name: "🔗 Quick Links", value: "[Website](https://zyphoramc.net) · [Store](https://zyphoramc.net) · [Vote](https://zyphoramc.net/vote) · [Apply](https://zyphoramc.net/apply)", inline: false },
+            { name: "💎 Versions", value: "Java 1.21+", inline: false },
+            {
+              name: "🔗 Quick Links",
+              value: "[Website](https://www.zyphoramc.net) · [Apply](https://www.zyphoramc.net/apply)",
+              inline: false,
+            },
           ],
           footer: { text: "ZyphoraMC · See you in-game!" },
           timestamp: new Date().toISOString(),
@@ -302,7 +332,8 @@ Deno.serve(async (req) => {
         // rules
         embed = {
           title: "📜 ZyphoraMC — Server Rules",
-          description: "Please read and follow these rules. Violations may result in mutes, kicks, or bans at staff discretion.",
+          description:
+            "Please read and follow these rules. Violations may result in mutes, kicks, or bans at staff discretion.",
           color: 0xef4444,
           fields: [
             { name: "1. Be respectful", value: "No harassment, hate speech, slurs, or personal attacks." },
@@ -351,9 +382,14 @@ Deno.serve(async (req) => {
         }
       }
 
-      return json(result.ok
-        ? { ok: true, message: `${action === "info" ? "Info" : "Rules"} ${existingId && sameChannel ? "updated" : "posted"} in channel ${channelId}` }
-        : { ok: false, error: `Discord error ${result.status}`, details: result.data });
+      return json(
+        result.ok
+          ? {
+              ok: true,
+              message: `${action === "info" ? "Info" : "Rules"} ${existingId && sameChannel ? "updated" : "posted"} in channel ${channelId}`,
+            }
+          : { ok: false, error: `Discord error ${result.status}`, details: result.data },
+      );
     }
 
     return json({ ok: false, error: "Unhandled action" }, 400);
