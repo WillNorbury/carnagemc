@@ -332,22 +332,24 @@ Deno.serve(async (req) => {
         };
         content = body.mention === false ? undefined : "@everyone";
       } else {
-        // rules
+        // rules — load sections from DB
+        const { data: ruleRows } = await supabase
+          .from("rule_sections")
+          .select("title, items, sort_order, published")
+          .eq("published", true)
+          .order("sort_order", { ascending: true });
+
+        const fields = (ruleRows ?? []).map((s: any, idx: number) => ({
+          name: `${idx + 1}. ${s.title}`,
+          value: (s.items ?? []).map((it: string) => `• ${it}`).join("\n") || "—",
+        }));
+
         embed = {
           title: "📜 ZyphoraMC — Server Rules",
           description:
             "Please read and follow these rules. Violations may result in mutes, kicks, or bans at staff discretion.",
           color: 0xef4444,
-          fields: [
-            { name: "1. Be respectful", value: "No harassment, hate speech, slurs, or personal attacks." },
-            { name: "2. No cheating", value: "No hacked clients, X-ray, macros, exploits, or duping." },
-            { name: "3. No griefing or stealing", value: "Respect other players' builds, claims, and items." },
-            { name: "4. English in public chat", value: "Use other languages in DMs or dedicated channels." },
-            { name: "5. No advertising", value: "Don't promote other servers, Discords, or services." },
-            { name: "6. No spam", value: "Don't flood chat, ping spam, or repost the same message." },
-            { name: "7. Keep it SFW", value: "No NSFW content, profile pictures, names, or skins." },
-            { name: "8. Listen to staff", value: "Staff decisions are final. Open a ticket to appeal." },
-          ],
+          fields: fields.length > 0 ? fields : [{ name: "No rules", value: "No rules configured." }],
           footer: { text: "ZyphoraMC · Updated regularly" },
           timestamp: new Date().toISOString(),
         };
