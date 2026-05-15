@@ -2,3 +2,6 @@ project_id = "xedqdxjorneezfnpyogg"
 
 [functions.discord-invite]
 verify_jwt = false
+
+[functions.discord-interactions]
+verify_jwt = false
