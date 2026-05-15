@@ -129,7 +129,7 @@ const Admin = () => {
       </div>
     );
 
-  const meta = sectionMeta[section];
+  const meta = sectionMeta[section] ?? sectionMeta.dashboard;
 
   return (
     <AdminLayout current={section} onNavigate={onNavigate} title={meta.title} description={meta.description} isOwner={isOwner}>
