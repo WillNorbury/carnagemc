@@ -1,71 +1,33 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import Particles from "@/components/site/Particles";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Swords, Gavel, Users as UsersIcon, ShieldCheck, Ban } from "lucide-react";
+import { ShieldCheck, Ban } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { getIcon } from "@/lib/features";
 
-const SECTIONS = [
-  {
-    icon: ShieldCheck,
-    title: "General Rules",
-    items: [
-      "Be respectful to all players and staff members.",
-      "No harassment, bullying, or toxic behavior.",
-      "English only in main chat channels.",
-      "No advertising other servers or services.",
-      "Follow staff instructions at all times.",
-    ],
-  },
-  {
-    icon: MessageSquare,
-    title: "Chat Rules",
-    items: [
-      "No spamming or excessive caps.",
-      "No inappropriate or offensive language.",
-      "No sharing personal information.",
-      "No begging for items, ranks, or staff positions.",
-      "Keep discussions family-friendly.",
-    ],
-  },
-  {
-    icon: Swords,
-    title: "Gameplay Rules",
-    items: [
-      "No hacking, cheating, or exploiting bugs.",
-      "No using unauthorized mods or clients.",
-      "No griefing or destroying others' builds.",
-      "No scamming or stealing from other players.",
-      "No spawn killing or excessive camping.",
-    ],
-  },
-  {
-    icon: UsersIcon,
-    title: "Community Rules",
-    items: [
-      "Report rule breakers to staff, don't retaliate.",
-      "No impersonating staff or other players.",
-      "Respect player privacy and boundaries.",
-      "Help create a welcoming environment.",
-      "Have fun and enjoy the server!",
-    ],
-  },
-  {
-    icon: Gavel,
-    title: "Punishment System",
-    items: [
-      "1st Offense → Warning",
-      "2nd Offense → 1 Hour Mute",
-      "3rd Offense → 1 Day Ban",
-      "4th Offense → 7 Day Ban",
-      "Severe Offense → Permanent Ban",
-    ],
-  },
-];
+type Section = { id: string; icon: string; title: string; items: string[] };
 
 const Rules = () => {
-  useEffect(() => { document.title = "Rules — ZyphoraMC"; }, []);
+  const [sections, setSections] = useState<Section[]>([]);
+
+  useEffect(() => {
+    document.title = "Rules — ZyphoraMC";
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("rule_sections")
+        .select("id, icon, title, items")
+        .eq("published", true)
+        .order("sort_order", { ascending: true });
+      setSections((data ?? []) as Section[]);
+    })();
+  }, []);
+
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
