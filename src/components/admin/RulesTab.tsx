@@ -83,6 +83,11 @@ export const RulesTab = () => {
         if (error) throw error;
         toast.success("Section created");
       }
+      // Best-effort resync to Discord
+      supabase.functions.invoke("discord-bot-action", { body: { action: "rules" } }).then(({ data, error }) => {
+        if (error || (data as any)?.ok === false) return;
+        toast.success("Discord rules message updated");
+      });
       cancel();
       load();
     } catch (e: any) {
