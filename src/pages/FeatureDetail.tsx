@@ -31,8 +31,8 @@ const FeatureDetail = () => {
   }
 
   const idx = FEATURES.findIndex((f) => f.slug === feature.slug);
-  const prev = FEATURES[(idx - 1 + FEATURES.length) % FEATURES.length];
-  const next = FEATURES[(idx + 1) % FEATURES.length];
+  const prev = idx > 0 ? FEATURES[idx - 1] : null;
+  const next = idx < FEATURES.length - 1 ? FEATURES[idx + 1] : null;
   const Icon = feature.icon;
 
   return (
@@ -89,28 +89,36 @@ const FeatureDetail = () => {
         )}
 
         <div className="grid sm:grid-cols-2 gap-3">
-          <Card
-            role="button"
-            tabIndex={0}
-            onClick={() => nav(`/features/${prev.slug}`)}
-            className="p-5 hover-lift cursor-pointer border-border/60"
-          >
-            <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1 flex items-center">
-              <ArrowLeft className="h-3 w-3 mr-1" /> Previous
-            </div>
-            <div className="font-display font-bold">{prev.title}</div>
-          </Card>
-          <Card
-            role="button"
-            tabIndex={0}
-            onClick={() => nav(`/features/${next.slug}`)}
-            className="p-5 hover-lift cursor-pointer border-border/60 sm:text-right"
-          >
-            <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1 sm:justify-end flex items-center">
-              Next <ArrowRight className="h-3 w-3 ml-1" />
-            </div>
-            <div className="font-display font-bold">{next.title}</div>
-          </Card>
+          {prev ? (
+            <Card
+              role="button"
+              tabIndex={0}
+              onClick={() => nav(`/features/${prev.slug}`)}
+              className="p-5 hover-lift cursor-pointer border-border/60"
+            >
+              <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1 flex items-center">
+                <ArrowLeft className="h-3 w-3 mr-1" /> Previous
+              </div>
+              <div className="font-display font-bold">{prev.title}</div>
+            </Card>
+          ) : (
+            <div />
+          )}
+          {next ? (
+            <Card
+              role="button"
+              tabIndex={0}
+              onClick={() => nav(`/features/${next.slug}`)}
+              className="p-5 hover-lift cursor-pointer border-border/60 sm:text-right"
+            >
+              <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1 sm:justify-end flex items-center">
+                Next <ArrowRight className="h-3 w-3 ml-1" />
+              </div>
+              <div className="font-display font-bold">{next.title}</div>
+            </Card>
+          ) : (
+            <div />
+          )}
         </div>
       </main>
       <Footer />
