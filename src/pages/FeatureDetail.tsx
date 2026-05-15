@@ -31,8 +31,8 @@ const FeatureDetail = () => {
   }
 
   const idx = FEATURES.findIndex((f) => f.slug === feature.slug);
-  const prev = FEATURES[(idx - 1 + FEATURES.length) % FEATURES.length];
-  const next = FEATURES[(idx + 1) % FEATURES.length];
+  const prev = idx > 0 ? FEATURES[idx - 1] : null;
+  const next = idx < FEATURES.length - 1 ? FEATURES[idx + 1] : null;
   const Icon = feature.icon;
 
   return (
