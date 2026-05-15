@@ -131,9 +131,37 @@ export const RulesTab = () => {
             <h2 className="font-bold">Rule sections</h2>
             <p className="text-xs text-muted-foreground">Edits show instantly on /rules.</p>
           </div>
-          <Button onClick={startNew} size="sm">
-            <Plus className="h-4 w-4 mr-1" /> New section
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                const t = toast.loading("Syncing to Discord…");
+                const { data, error } = await supabase.functions.invoke("discord-bot-action", { body: { action: "rules" } });
+                toast.dismiss(t);
+                if (error || (data as any)?.ok === false) toast.error((data as any)?.error || error?.message || "Sync failed");
+                else toast.success("Discord rules synced");
+              }}
+            >
+              Sync to Discord
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                const t = toast.loading("Registering /rules…");
+                const { data, error } = await supabase.functions.invoke("discord-register-commands", { body: {} });
+                toast.dismiss(t);
+                if (error || (data as any)?.ok === false) toast.error((data as any)?.error || error?.message || "Registration failed");
+                else toast.success("/rules slash command registered (may take up to 1h to appear)");
+              }}
+            >
+              Register /rules
+            </Button>
+            <Button onClick={startNew} size="sm">
+              <Plus className="h-4 w-4 mr-1" /> New section
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-2">
