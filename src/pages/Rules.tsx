@@ -84,29 +84,32 @@ const Rules = () => {
         </section>
 
         <div className="container pb-16 space-y-6 max-w-4xl">
-          {SECTIONS.map((s, idx) => (
-            <Card key={s.title} className="p-7 hover-glow border-border/60 group">
-              <div className="flex items-start gap-5">
-                <div className="h-12 w-12 shrink-0 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 text-primary flex items-center justify-center group-hover:shadow-[0_0_20px_hsl(var(--primary)/0.5)] transition">
-                  <s.icon className="h-5 w-5" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="font-display text-xs uppercase tracking-widest text-primary">Section {String(idx + 1).padStart(2, "0")}</span>
+          {sections.map((s, idx) => {
+            const Icon = getIcon(s.icon);
+            return (
+              <Card key={s.id} className="p-7 hover-glow border-border/60 group">
+                <div className="flex items-start gap-5">
+                  <div className="h-12 w-12 shrink-0 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 text-primary flex items-center justify-center group-hover:shadow-[0_0_20px_hsl(var(--primary)/0.5)] transition">
+                    <Icon className="h-5 w-5" />
                   </div>
-                  <h2 className="font-display text-2xl font-bold mb-4">{s.title}</h2>
-                  <ul className="space-y-2.5">
-                    {s.items.map((item, i) => (
-                      <li key={i} className="flex gap-3 text-sm text-muted-foreground">
-                        <span className="text-primary font-mono mt-0.5">{i + 1}.</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="font-display text-xs uppercase tracking-widest text-primary">Section {String(idx + 1).padStart(2, "0")}</span>
+                    </div>
+                    <h2 className="font-display text-2xl font-bold mb-4">{s.title}</h2>
+                    <ul className="space-y-2.5">
+                      {s.items.map((item, i) => (
+                        <li key={i} className="flex gap-3 text-sm text-muted-foreground">
+                          <span className="text-primary font-mono mt-0.5">{i + 1}.</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
 
           <Card className="p-7 border-destructive/40 bg-destructive/5">
             <div className="flex items-start gap-4">
