@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
@@ -6,12 +7,32 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
-import { FEATURES, featureBySlug } from "@/lib/features";
+import { fetchFeatures, type Feature } from "@/lib/features";
 
 const FeatureDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const nav = useNavigate();
-  const feature = featureBySlug(slug);
+  const [features, setFeatures] = useState<Feature[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchFeatures().then((f) => {
+      setFeatures(f);
+      setLoading(false);
+    });
+  }, []);
+
+  const feature = features.find((f) => f.slug === slug);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Navbar />
+        <main className="flex-1 container pt-28 pb-20 text-center text-muted-foreground">Loading…</main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!feature) {
     return (
@@ -30,9 +51,9 @@ const FeatureDetail = () => {
     );
   }
 
-  const idx = FEATURES.findIndex((f) => f.slug === feature.slug);
-  const prev = idx > 0 ? FEATURES[idx - 1] : null;
-  const next = idx < FEATURES.length - 1 ? FEATURES[idx + 1] : null;
+  const idx = features.findIndex((f) => f.slug === feature.slug);
+  const prev = idx > 0 ? features[idx - 1] : null;
+  const next = idx < features.length - 1 ? features[idx + 1] : null;
   const Icon = feature.icon;
 
   return (
@@ -67,10 +88,12 @@ const FeatureDetail = () => {
           <p className="text-lg text-muted-foreground">{feature.desc}</p>
         </header>
 
-        <Card className="p-6 md:p-8 mb-8 border-border/60">
-          <h2 className="font-display font-bold text-xl mb-3">About this feature</h2>
-          <p className="text-foreground/90 leading-relaxed whitespace-pre-line">{feature.long}</p>
-        </Card>
+        {feature.long && (
+          <Card className="p-6 md:p-8 mb-8 border-border/60">
+            <h2 className="font-display font-bold text-xl mb-3">About this feature</h2>
+            <p className="text-foreground/90 leading-relaxed whitespace-pre-line">{feature.long}</p>
+          </Card>
+        )}
 
         {feature.highlights.length > 0 && (
           <Card className="p-6 md:p-8 mb-10 border-border/60">
