@@ -44,6 +44,7 @@ import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
 import { StatCard } from "@/components/admin/StatCard";
 import { ALL_ROLES, roleLabel, isStaffRole, type AppRole } from "@/lib/roles";
 import { usePermissions } from "@/lib/usePermissions";
+import { FeaturesTab } from "@/components/admin/FeaturesTab";
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
 type RoleRow = { id: string; user_id: string; role: AppRole };
@@ -70,6 +71,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   plugins: { title: "Plugins", description: "Add, edit, and remove server plugins." },
   changelog: { title: "Changelog", description: "Publish server updates by date and category." },
   applications: { title: "Applications", description: "Review staff, builder, and content creator applications." },
+  features: { title: "Features", description: "Add, edit, reorder, and remove features shown on the website." },
   "bot-dashboard": {
     title: "Discord Bot — Dashboard",
     description: "Status and overview of the ZyphoraMC Discord bot.",
@@ -143,6 +145,7 @@ const Admin = () => {
       {section === "plugins" && <PluginsTab />}
       {section === "changelog" && <ChangelogTab />}
       {section === "applications" && <ApplicationsTab />}
+      {section === "features" && <FeaturesTab />}
       {section === "bot-dashboard" && (isOwner ? <BotDashboardSection /> : (
         <div className="flex flex-col items-center justify-center gap-4 py-20">
           <ShieldOff className="h-12 w-12 text-destructive" />
