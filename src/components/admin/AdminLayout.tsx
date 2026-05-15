@@ -8,13 +8,13 @@ import { cn } from "@/lib/utils";
 import logo from "@/assets/zyphora-logo.png";
 import {
   LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
-  PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound, Puzzle, ClipboardList, Zap, Sparkles,
+  PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound, Puzzle, ClipboardList, Zap, Sparkles, Gavel,
 } from "lucide-react";
 
 
 export type AdminSection =
   | "dashboard" | "users" | "roles" | "permissions" | "news" | "content" | "status" | "logs" | "tickets" | "plugins"
-  | "changelog" | "applications" | "features"
+  | "changelog" | "applications" | "features" | "rules"
   | "bot-dashboard" | "bot-management";
 
 type NavItem =
@@ -35,6 +35,7 @@ const items: NavItem[] = [
   { kind: "link", id: "changelog", icon: Zap, label: "Changelog" },
   { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
   { kind: "link", id: "features", icon: Sparkles, label: "Features" },
+  { kind: "link", id: "rules", icon: Gavel, label: "Rules" },
   { kind: "section", title: "Discord Bot", icon: Bot },
   { kind: "link", id: "bot-dashboard", icon: LayoutDashboard, label: "Bot Dashboard" },
   { kind: "link", id: "bot-management", icon: Code, label: "Management" },

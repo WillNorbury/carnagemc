@@ -17,6 +17,13 @@ import {
   Map,
   Hammer,
   Bot,
+  ShieldCheck,
+  MessageSquare,
+  Users,
+  Gavel,
+  Ban,
+  Scale,
+  Gamepad2,
   type LucideIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,6 +38,7 @@ export const ICON_REGISTRY: Record<string, LucideIcon> = {
   Heart,
   Crown,
   Shield,
+  ShieldCheck,
   Star,
   Trophy,
   Rocket,
@@ -40,6 +48,12 @@ export const ICON_REGISTRY: Record<string, LucideIcon> = {
   Map,
   Hammer,
   Bot,
+  MessageSquare,
+  Users,
+  Gavel,
+  Ban,
+  Scale,
+  Gamepad2,
 };
 
 export const ICON_NAMES = Object.keys(ICON_REGISTRY);
