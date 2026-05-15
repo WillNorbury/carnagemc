@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { FEATURES } from "@/lib/features";
+import { fetchFeatures, type Feature } from "@/lib/features";
 import {
   Copy,
   Users,
@@ -62,6 +62,11 @@ const Index = () => {
   
   const [discordMembers, setDiscordMembers] = useState<number | null>(null);
   const [voteCount, setVoteCount] = useState<number>(0);
+  const [features, setFeatures] = useState<Feature[]>([]);
+
+  useEffect(() => {
+    fetchFeatures().then(setFeatures);
+  }, []);
 
   useEffect(() => {
     supabase
@@ -417,7 +422,7 @@ const Index = () => {
             sub="Every system, every detail — engineered to make your gameplay matter."
           />
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {FEATURES.map((f) => (
+            {features.slice(0, 8).map((f) => (
               <Card
                 key={f.slug}
                 onClick={() => nav(`/features/${f.slug}`)}
