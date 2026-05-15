@@ -116,7 +116,7 @@ export const FeaturesTab = () => {
     const ok = await confirm({
       title: "Delete feature?",
       description: `This will remove "${r.title}" from the website.`,
-      confirmLabel: "Delete",
+      confirmText: "Delete",
       destructive: true,
     });
     if (!ok) return;
