@@ -8,13 +8,13 @@ import { cn } from "@/lib/utils";
 import logo from "@/assets/zyphora-logo.png";
 import {
   LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
-  PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound, Puzzle, ClipboardList, Zap, Sparkles,
+  PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound, Puzzle, ClipboardList, Zap, Sparkles, Gavel,
 } from "lucide-react";
 
 
 export type AdminSection =
   | "dashboard" | "users" | "roles" | "permissions" | "news" | "content" | "status" | "logs" | "tickets" | "plugins"
-  | "changelog" | "applications" | "features"
+  | "changelog" | "applications" | "features" | "rules"
   | "bot-dashboard" | "bot-management";
 
 type NavItem =
