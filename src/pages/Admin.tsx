@@ -45,6 +45,7 @@ import { StatCard } from "@/components/admin/StatCard";
 import { ALL_ROLES, roleLabel, isStaffRole, type AppRole } from "@/lib/roles";
 import { usePermissions } from "@/lib/usePermissions";
 import { FeaturesTab } from "@/components/admin/FeaturesTab";
+import { RulesTab } from "@/components/admin/RulesTab";
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
 type RoleRow = { id: string; user_id: string; role: AppRole };
@@ -72,6 +73,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   changelog: { title: "Changelog", description: "Publish server updates by date and category." },
   applications: { title: "Applications", description: "Review staff, builder, and content creator applications." },
   features: { title: "Features", description: "Add, edit, reorder, and remove features shown on the website." },
+  rules: { title: "Rules", description: "Edit the sections shown on the public Rules page." },
   "bot-dashboard": {
     title: "Discord Bot — Dashboard",
     description: "Status and overview of the ZyphoraMC Discord bot.",
@@ -146,6 +148,7 @@ const Admin = () => {
       {section === "changelog" && <ChangelogTab />}
       {section === "applications" && <ApplicationsTab />}
       {section === "features" && <FeaturesTab />}
+      {section === "rules" && <RulesTab />}
       {section === "bot-dashboard" && (isOwner ? <BotDashboardSection /> : (
         <div className="flex flex-col items-center justify-center gap-4 py-20">
           <ShieldOff className="h-12 w-12 text-destructive" />
