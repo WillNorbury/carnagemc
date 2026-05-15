@@ -4,51 +4,62 @@ import Footer from "@/components/site/Footer";
 import Particles from "@/components/site/Particles";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Swords, Gavel, Scale, ShieldCheck, Ban } from "lucide-react";
+import { MessageSquare, Swords, Gavel, Users as UsersIcon, ShieldCheck, Ban } from "lucide-react";
 
 const SECTIONS = [
+  {
+    icon: ShieldCheck,
+    title: "General Rules",
+    items: [
+      "Be respectful to all players and staff members.",
+      "No harassment, bullying, or toxic behavior.",
+      "English only in main chat channels.",
+      "No advertising other servers or services.",
+      "Follow staff instructions at all times.",
+    ],
+  },
   {
     icon: MessageSquare,
     title: "Chat Rules",
     items: [
-      "No hate speech, slurs, or discrimination of any kind.",
-      "No spamming, flooding, or excessive caps.",
-      "English in global chat. Use language-specific channels otherwise.",
-      "No advertising other servers, services, or unrelated links.",
-      "Keep arguments out of chat — take it to DMs or open a ticket.",
+      "No spamming or excessive caps.",
+      "No inappropriate or offensive language.",
+      "No sharing personal information.",
+      "No begging for items, ranks, or staff positions.",
+      "Keep discussions family-friendly.",
     ],
   },
   {
     icon: Swords,
-    title: "PvP Rules",
+    title: "Gameplay Rules",
     items: [
-      "No client-side modifications that grant an unfair advantage.",
-      "Combat logging counts as a death and may result in further punishment.",
-      "Spawn-camping outside designated PvP zones is forbidden.",
-      "Teaming in solo events disqualifies all involved players.",
-      "Exploiting unintended mechanics (rubberband, lag-switching) = ban.",
+      "No hacking, cheating, or exploiting bugs.",
+      "No using unauthorized mods or clients.",
+      "No griefing or destroying others' builds.",
+      "No scamming or stealing from other players.",
+      "No spawn killing or excessive camping.",
+    ],
+  },
+  {
+    icon: UsersIcon,
+    title: "Community Rules",
+    items: [
+      "Report rule breakers to staff, don't retaliate.",
+      "No impersonating staff or other players.",
+      "Respect player privacy and boundaries.",
+      "Help create a welcoming environment.",
+      "Have fun and enjoy the server!",
     ],
   },
   {
     icon: Gavel,
     title: "Punishment System",
     items: [
-      "1st offense: warning or temporary mute / kick.",
-      "2nd offense: 24h–7d suspension depending on severity.",
-      "3rd offense: 30 day ban + economy reset.",
-      "Major violations (cheating, doxxing): permanent ban, no appeal.",
-      "Appeals open through the Discord ticket system.",
-    ],
-  },
-  {
-    icon: Scale,
-    title: "Fair Play",
-    items: [
-      "No duplication, item glitches, or economy exploitation.",
-      "Report bugs through staff — silently abusing them is bannable.",
-      "Alt accounts may not bypass punishments under any circumstances.",
-      "Account sharing is at your own risk; we do not protect compromised accounts.",
-      "Be excellent to each other. The community thrives when you do.",
+      "1st Offense → Warning",
+      "2nd Offense → 1 Hour Mute",
+      "3rd Offense → 1 Day Ban",
+      "4th Offense → 7 Day Ban",
+      "Severe Offense → Permanent Ban",
     ],
   },
 ];
