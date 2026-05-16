@@ -23,7 +23,7 @@ function extractCodeFromUrl(input: string): string | null {
   return null;
 }
 
-async function extractCode(input: string): string | null | Promise<string | null> {
+async function extractCode(input: string): Promise<string | null> {
   if (!input) return null;
   const trimmed = input.trim();
   const direct = extractCodeFromUrl(trimmed);
