@@ -1,0 +1,1 @@
+UPDATE public.site_content SET value = jsonb_set(value, '{subtitle}', '"Explore, build, and forge legends in XyloMC''s unique survival world."'::jsonb) WHERE key = 'hero';
