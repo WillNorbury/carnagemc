@@ -239,6 +239,29 @@ const Index = () => {
       <MouseTrail />
       <Navbar />
 
+      {isAdmin && discordInviteError && (
+        <div className="container pt-4">
+          <div className="rounded-lg border border-destructive/40 bg-destructive/10 text-destructive p-4 flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+            <div className="flex-1 text-sm">
+              <p className="font-semibold">Discord invite is expired or invalid</p>
+              <p className="text-destructive/80 mt-1">
+                {discordInviteError}. Generate a new <strong>permanent</strong> invite in your Discord
+                server (Server Settings → Invites → set to Never expire), then paste it in{" "}
+                <strong>Admin → Site Content → Server → Discord URL</strong>.
+              </p>
+            </div>
+            <button
+              onClick={() => setDiscordInviteError(null)}
+              className="text-destructive/60 hover:text-destructive"
+              aria-label="Dismiss"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Popup announcement */}
       {popupOpen && popupCfg.enabled && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/70 backdrop-blur-sm animate-in fade-in duration-300">
