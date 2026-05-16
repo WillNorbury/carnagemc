@@ -99,7 +99,7 @@ export function AppSidebar() {
           <img src={logo} alt="XyloMC" className="h-8 w-8 transition-transform group-hover:scale-110" />
           {!collapsed && (
             <span className="font-display font-bold text-base tracking-wider">
-              ZYPHORA<span className="text-gradient">MC</span>
+              XYLO<span className="text-gradient">MC</span>
             </span>
           )}
         </Link>

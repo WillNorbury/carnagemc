@@ -74,7 +74,7 @@ export const AdminLayout = ({
             {!collapsed && (
               <Link to="/" className="flex items-center gap-2 font-semibold">
                 <img src={logo} alt="XyloMC" className="h-7 w-7" />
-                <span className="text-lg">ZYPHORA<span className="text-gradient">MC</span></span>
+                <span className="text-lg">XYLO<span className="text-gradient">MC</span></span>
               </Link>
             )}
             

@@ -10,7 +10,7 @@ const Footer = () => (
         <div className="flex items-center gap-2 mb-4">
           <img src={logo} alt="XyloMC" className="h-9 w-9" />
           <span className="font-display font-bold text-lg tracking-wider">
-            ZYPHORA<span className="text-gradient">MC</span>
+            XYLO<span className="text-gradient">MC</span>
           </span>
         </div>
         <p className="text-sm text-muted-foreground max-w-md">
