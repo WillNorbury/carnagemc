@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { fetchFeatures, type Feature } from "@/lib/features";
 import {
   Copy,
@@ -61,8 +62,10 @@ const Index = () => {
   const [popupOpen, setPopupOpen] = useState(false);
   
   const [discordMembers, setDiscordMembers] = useState<number | null>(null);
+  const [discordInviteError, setDiscordInviteError] = useState<string | null>(null);
   const [voteCount, setVoteCount] = useState<number>(0);
   const [features, setFeatures] = useState<Feature[]>([]);
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     fetchFeatures().then(setFeatures);
@@ -118,14 +121,20 @@ const Index = () => {
         if (cancelled) return;
         if (!error && data?.ok && typeof data.approximate_member_count === "number") {
           setDiscordMembers(data.approximate_member_count);
+          setDiscordInviteError(null);
           return;
         }
         // Fallback: direct call to the function URL with query string
         const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/discord-invite?invite=${encodeURIComponent(inviteRaw)}`;
         const r = await fetch(url, { headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } });
         const j = await r.json();
-        if (!cancelled && j?.ok && typeof j.approximate_member_count === "number") {
+        if (cancelled) return;
+        if (j?.ok && typeof j.approximate_member_count === "number") {
           setDiscordMembers(j.approximate_member_count);
+          setDiscordInviteError(null);
+        } else {
+          const msg = (data as any)?.error || j?.error || error?.message || "Unknown error";
+          setDiscordInviteError(msg);
         }
       } catch {
         /* silent */
@@ -229,6 +238,29 @@ const Index = () => {
       />
       <MouseTrail />
       <Navbar />
+
+      {isAdmin && discordInviteError && (
+        <div className="container pt-4">
+          <div className="rounded-lg border border-destructive/40 bg-destructive/10 text-destructive p-4 flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+            <div className="flex-1 text-sm">
+              <p className="font-semibold">Discord invite is expired or invalid</p>
+              <p className="text-destructive/80 mt-1">
+                {discordInviteError}. Generate a new <strong>permanent</strong> invite in your Discord
+                server (Server Settings → Invites → set to Never expire), then paste it in{" "}
+                <strong>Admin → Site Content → Server → Discord URL</strong>.
+              </p>
+            </div>
+            <button
+              onClick={() => setDiscordInviteError(null)}
+              className="text-destructive/60 hover:text-destructive"
+              aria-label="Dismiss"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Popup announcement */}
       {popupOpen && popupCfg.enabled && (
