@@ -37,7 +37,7 @@ const FeatureDetail = () => {
   if (!feature) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        <SEO title="Feature not found — ZyphoraMC" description="The feature you're looking for doesn't exist." path="/features" />
+        <SEO title="Feature not found — XyloMC" description="The feature you're looking for doesn't exist." path="/features" />
         <Navbar />
         <main className="flex-1 container pt-28 pb-20 text-center">
           <h1 className="font-display text-3xl font-bold mb-3">Feature not found</h1>
@@ -59,7 +59,7 @@ const FeatureDetail = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <SEO
-        title={`${feature.title} — ZyphoraMC Features`}
+        title={`${feature.title} — XyloMC Features`}
         description={feature.desc}
         path={`/features/${feature.slug}`}
         type="article"

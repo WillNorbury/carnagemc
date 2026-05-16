@@ -47,11 +47,11 @@ async function buildRulesEmbed() {
   }));
 
   return {
-    title: "📜 ZyphoraMC — Server Rules",
+    title: "📜 XyloMC — Server Rules",
     description: "Please read and follow these rules.",
     color: 0xef4444,
     fields: fields.length > 0 ? fields : [{ name: "No rules", value: "No rules configured." }],
-    footer: { text: "ZyphoraMC · Updated regularly" },
+    footer: { text: "XyloMC · Updated regularly" },
     timestamp: new Date().toISOString(),
   };
 }

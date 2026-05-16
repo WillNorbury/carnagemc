@@ -88,7 +88,7 @@ const Index = () => {
         setContent(map);
       });
     const t = setTimeout(() => {
-      const dismissed = sessionStorage.getItem("zyphora_popup_dismissed");
+      const dismissed = sessionStorage.getItem("xylo_popup_dismissed");
       if (!dismissed) setPopupOpen(true);
     }, 1800);
     return () => clearTimeout(t);
@@ -217,7 +217,7 @@ const Index = () => {
 
   const eventLabel = content.event?.label ?? "Next Event Reset";
 
-  const heroTitle = "Welcome to ZyphoraMC";
+  const heroTitle = "Welcome to XyloMC";
   const heroSub = "The ultimate Minecraft Lifesteal & Economy experience.";
 
   const copyIp = () => {
@@ -226,14 +226,14 @@ const Index = () => {
   };
   const dismissPopup = () => {
     setPopupOpen(false);
-    sessionStorage.setItem("zyphora_popup_dismissed", "1");
+    sessionStorage.setItem("xylo_popup_dismissed", "1");
   };
 
   return (
     <div className="min-h-screen flex flex-col">
       <SEO
-        title="ZyphoraMC — Lifesteal & Economy Minecraft Server"
-        description="Join ZyphoraMC for premium Lifesteal PvP, custom enchants, a player-driven economy, ranked seasons, and weekly events. Java & Bedrock supported."
+        title="XyloMC — Lifesteal & Economy Minecraft Server"
+        description="Join XyloMC for premium Lifesteal PvP, custom enchants, a player-driven economy, ranked seasons, and weekly events. Java & Bedrock supported."
         path="/"
       />
       <MouseTrail />
@@ -349,7 +349,7 @@ const Index = () => {
               Season 3 — Now Live
             </Badge>
             <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-[1.05]">
-              Welcome to <span className="text-gradient text-glow">ZyphoraMC</span>
+              Welcome to <span className="text-gradient text-glow">XyloMC</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
               {heroSub} Forge alliances. Steal hearts. Build legacies.
@@ -368,7 +368,7 @@ const Index = () => {
                 asChild
                 className="font-display uppercase tracking-wider px-7 border-primary/40 hover:border-primary hover:text-primary"
               >
-                <a href={content.server?.discord ?? "https://discord.zyphoramc.net"} target="_blank" rel="noreferrer">
+                <a href={content.server?.discord ?? "https://discord.xylomc.net"} target="_blank" rel="noreferrer">
                   <MessageCircle className="h-4 w-4 mr-2" /> Discord
                 </a>
               </Button>
@@ -539,7 +539,7 @@ const Index = () => {
 
         {/* Reviews */}
         <section>
-          <SectionHead eyebrow="Reviews" title="What Players Say" sub="Real voices from the ZyphoraMC community." />
+          <SectionHead eyebrow="Reviews" title="What Players Say" sub="Real voices from the XyloMC community." />
           <Reviews />
         </section>
 

@@ -59,7 +59,7 @@ function buildStatusEmbed(mc: any, serverIp: string) {
   const version = mc?.version ?? "—";
   const players = `${mc?.players?.online ?? 0} / ${mc?.players?.max ?? 0}`;
   return {
-    title: online ? "🟢 ZyphoraMC — Online" : "🔴 ZyphoraMC — Offline",
+    title: online ? "🟢 XyloMC — Online" : "🔴 XyloMC — Offline",
     description: motd ? `*${motd}*` : undefined,
     color: online ? 0x22c55e : 0xef4444,
     fields: [
@@ -68,7 +68,7 @@ function buildStatusEmbed(mc: any, serverIp: string) {
       { name: "Version", value: String(version), inline: true },
       { name: "IP", value: `\`${serverIp}\``, inline: false },
     ],
-    footer: { text: "ZyphoraMC · Live status (auto-updated)" },
+    footer: { text: "XyloMC · Live status (auto-updated)" },
     timestamp: new Date().toISOString(),
   };
 }
@@ -128,7 +128,7 @@ Deno.serve(async (req) => {
 
     if (action === "announce") {
       const channelId = body.channelId || cfg.announceChannelId;
-      const message = body.message || "📢 **Test announcement** from the ZyphoraMC admin panel.";
+      const message = body.message || "📢 **Test announcement** from the XyloMC admin panel.";
       if (!channelId) return json({ ok: false, error: "No announcements channel configured" });
       const r = await discordPost(channelId, token, {
         embeds: [
@@ -136,7 +136,7 @@ Deno.serve(async (req) => {
             title: "Announcement",
             description: message,
             color: 0x5865f2,
-            footer: { text: "ZyphoraMC · Test" },
+            footer: { text: "XyloMC · Test" },
             timestamp: new Date().toISOString(),
           },
         ],
@@ -153,7 +153,7 @@ Deno.serve(async (req) => {
       if (!channelId) return json({ ok: false, error: "No status channel configured" });
 
       const { data: ipRow } = await supabase.from("site_content").select("value").eq("key", "server").maybeSingle();
-      const serverIp = (ipRow?.value as any)?.ip ?? "play.zyphoramc.net";
+      const serverIp = (ipRow?.value as any)?.ip ?? "play.xylomc.net";
 
       let mc: any = null;
       try {
@@ -200,7 +200,7 @@ Deno.serve(async (req) => {
     if (action === "welcome") {
       const channelId = body.channelId || cfg.welcomeChannelId || cfg.announceChannelId;
       if (!channelId) return json({ ok: false, error: "No welcome channel configured" });
-      const template = body.message || cfg.welcomeMessage || "Welcome to ZyphoraMC, {user}!";
+      const template = body.message || cfg.welcomeMessage || "Welcome to XyloMC, {user}!";
       const target = body.username || callerName;
       const rendered = template.replace(/\{user\}/g, `**${target}**`);
       const r = await discordPost(channelId, token, {
@@ -219,10 +219,10 @@ Deno.serve(async (req) => {
 
       const lines = SITE_ROLES.map((r) => `**${r.label}** — ${r.description}`).join("\n");
       const embed = {
-        title: "ZyphoraMC — Server Roles",
+        title: "XyloMC — Server Roles",
         description: lines,
         color: 0x5865f2,
-        footer: { text: "ZyphoraMC · Roles overview" },
+        footer: { text: "XyloMC · Roles overview" },
         timestamp: new Date().toISOString(),
       };
 
@@ -293,7 +293,7 @@ Deno.serve(async (req) => {
       if (!channelId) return json({ ok: false, error: `No ${action} channel configured` });
 
       // Server IP for info embed
-      let serverIp = "zyphoramc.net";
+      let serverIp = "xylomc.net";
       let bedrockIp = "Soon";
       let bedrockPort = "Soon";
       try {
@@ -311,9 +311,9 @@ Deno.serve(async (req) => {
 
       if (action === "info") {
         embed = {
-          title: "🍸 ZyphoraMC — Server Info",
+          title: "🍸 XyloMC — Server Info",
           description:
-            "Welcome to **ZyphoraMC** — your home for premium survival, minigames, and community events.\n\nConnect using the details below and join the adventure!",
+            "Welcome to **XyloMC** — your home for premium survival, minigames, and community events.\n\nConnect using the details below and join the adventure!",
           color: 0xff7a1a,
           thumbnail: { url: "https://api.mcsrvstat.us/icon/" + encodeURIComponent(serverIp) },
           fields: [
@@ -323,11 +323,11 @@ Deno.serve(async (req) => {
             { name: "💎 Versions", value: "Java 1.21+", inline: false },
             {
               name: "🔗 Quick Links",
-              value: "[Website](https://www.zyphoramc.net) · [Apply](https://www.zyphoramc.net/apply)",
+              value: "[Website](https://www.xylomc.net) · [Apply](https://www.xylomc.net/apply)",
               inline: false,
             },
           ],
-          footer: { text: "ZyphoraMC · See you in-game!" },
+          footer: { text: "XyloMC · See you in-game!" },
           timestamp: new Date().toISOString(),
         };
         content = body.mention === false ? undefined : "@everyone";
@@ -345,12 +345,12 @@ Deno.serve(async (req) => {
         }));
 
         embed = {
-          title: "📜 ZyphoraMC — Server Rules",
+          title: "📜 XyloMC — Server Rules",
           description:
             "Please read and follow these rules. Violations may result in mutes, kicks, or bans at staff discretion.",
           color: 0xef4444,
           fields: fields.length > 0 ? fields : [{ name: "No rules", value: "No rules configured." }],
-          footer: { text: "ZyphoraMC · Updated regularly" },
+          footer: { text: "XyloMC · Updated regularly" },
           timestamp: new Date().toISOString(),
         };
       }

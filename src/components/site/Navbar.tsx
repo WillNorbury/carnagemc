@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/auth";
-import logo from "@/assets/zyphora-logo.png";
+import logo from "@/assets/xylo-logo.png";
 import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield } from "lucide-react";
 
 const Navbar = () => {
@@ -30,9 +30,9 @@ const Navbar = () => {
         <div className="flex items-center gap-2 min-w-0">
           <SidebarTrigger />
           <Link to="/" className="flex items-center gap-2 group min-w-0">
-            <img src={logo} alt="ZyphoraMC" className="h-7 w-7 shrink-0 transition-transform group-hover:scale-110" />
+            <img src={logo} alt="XyloMC" className="h-7 w-7 shrink-0 transition-transform group-hover:scale-110" />
             <span className="font-display font-bold text-sm md:text-base tracking-wider truncate">
-              ZYPHORA<span className="text-gradient">MC</span>
+              XYLO<span className="text-gradient">MC</span>
             </span>
           </Link>
         </div>

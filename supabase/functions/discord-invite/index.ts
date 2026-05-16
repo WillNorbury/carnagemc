@@ -31,7 +31,7 @@ async function extractCode(input: string): Promise<string | null> {
   // Vanity/redirect URL — follow redirects to resolve the real invite
   if (/^https?:\/\//i.test(trimmed)) {
     try {
-      const r = await fetch(trimmed, { redirect: "follow", headers: { "User-Agent": "ZyphoraMC-Site/1.0" } });
+      const r = await fetch(trimmed, { redirect: "follow", headers: { "User-Agent": "XyloMC-Site/1.0" } });
       const finalUrl = r.url;
       await r.body?.cancel();
       const code = extractCodeFromUrl(finalUrl);
@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
   try {
     const url = new URL(req.url);
     const raw = url.searchParams.get("invite") ?? url.searchParams.get("code") ?? "";
-    const fallbacks = ["qAEs87VeXM", "zyphoramc", "zyphora"];
+    const fallbacks = ["qAEs87VeXM", "xylomc", "xylo"];
     const resolved = await extractCode(raw);
     const candidates = [resolved, ...fallbacks].filter(Boolean) as string[];
 
@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
       try {
         const r = await fetch(
           `https://discord.com/api/v10/invites/${encodeURIComponent(code)}?with_counts=true&with_expiration=true`,
-          { headers: { "User-Agent": "ZyphoraMC-Site/1.0" } },
+          { headers: { "User-Agent": "XyloMC-Site/1.0" } },
         );
         const j = await r.json().catch(() => null);
         if (!r.ok) {

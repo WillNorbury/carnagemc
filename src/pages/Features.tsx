@@ -23,8 +23,8 @@ const Features = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <SEO
-        title="Features — ZyphoraMC"
-        description="Explore every system that powers ZyphoraMC: lifesteal PvP, custom enchants, player economy, ranked seasons, weekly events, and more."
+        title="Features — XyloMC"
+        description="Explore every system that powers XyloMC: lifesteal PvP, custom enchants, player economy, ranked seasons, weekly events, and more."
         path="/features"
       />
       <Navbar />

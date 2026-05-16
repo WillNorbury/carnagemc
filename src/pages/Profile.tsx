@@ -61,7 +61,7 @@ const Profile = () => {
   const mcInvalid = !MC_RE.test(mcUsername.trim());
 
   useEffect(() => {
-    document.title = "My Profile — ZyphoraMC";
+    document.title = "My Profile — XyloMC";
   }, []);
 
   useEffect(() => {
@@ -150,7 +150,7 @@ const Profile = () => {
         <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
           <div>
             <h1 className="text-4xl font-display font-bold text-glow">My Profile</h1>
-            <p className="text-muted-foreground mt-1">Manage your ZyphoraMC account</p>
+            <p className="text-muted-foreground mt-1">Manage your XyloMC account</p>
           </div>
           <Button asChild variant="outline">
             <Link to={`/user/${shortId}`}>
@@ -249,7 +249,7 @@ const Profile = () => {
               <Palette className="h-5 w-5 text-primary" />
               <h2 className="font-display font-bold text-lg">Appearance</h2>
             </div>
-            <p className="text-sm text-muted-foreground mb-3">Choose how ZyphoraMC looks on this device.</p>
+            <p className="text-sm text-muted-foreground mb-3">Choose how XyloMC looks on this device.</p>
             <div className="max-w-xs">
               <Label htmlFor="theme">Theme</Label>
               <Select value={prefs.theme} onValueChange={(v) => updatePref("theme", v as typeof prefs.theme)}>

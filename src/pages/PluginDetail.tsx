@@ -60,7 +60,7 @@ const PluginDetail = () => {
         setNotFound(true);
       } else {
         setPlugin(data as Plugin);
-        document.title = `${data.name} — Plugin — ZyphoraMC`;
+        document.title = `${data.name} — Plugin — XyloMC`;
       }
       setLoading(false);
     })();

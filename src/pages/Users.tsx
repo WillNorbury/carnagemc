@@ -30,7 +30,7 @@ const Users = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = "Members — ZyphoraMC";
+    document.title = "Members — XyloMC";
     (async () => {
       const [{ data: p }, { data: r }] = await Promise.all([
         supabase.from("profiles").select("id, display_name, avatar_url, mc_username, created_at").order("created_at", { ascending: false }),
@@ -65,7 +65,7 @@ const Users = () => {
           <UsersIcon className="h-8 w-8 text-primary" />
           <h1 className="text-4xl font-display font-bold text-glow">Members</h1>
         </div>
-        <p className="text-muted-foreground mb-8">Browse the ZyphoraMC community.</p>
+        <p className="text-muted-foreground mb-8">Browse the XyloMC community.</p>
 
         <div className="relative max-w-md mb-6">
           <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />

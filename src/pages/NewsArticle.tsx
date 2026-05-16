@@ -30,7 +30,7 @@ const NewsArticle = () => {
       .then(({ data }) => {
         setArticle(data);
         setLoading(false);
-        if (data) document.title = `${data.title} — ZyphoraMC`;
+        if (data) document.title = `${data.title} — XyloMC`;
       });
   }, [slug]);
 
