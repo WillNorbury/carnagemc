@@ -1,0 +1,3 @@
+UPDATE public.features SET long_description = regexp_replace(long_description, 'ZyphoraMC|Zyphora', 'XyloMC', 'gi') WHERE long_description ~* 'zyphora';
+UPDATE public.features SET description = regexp_replace(description, 'ZyphoraMC|Zyphora', 'XyloMC', 'gi') WHERE description ~* 'zyphora';
+UPDATE public.server_status SET motd = regexp_replace(motd, 'ZyphoraMC|Zyphora', 'XyloMC', 'gi') WHERE motd ~* 'zyphora';
