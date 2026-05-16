@@ -9,17 +9,35 @@ const json = (body: unknown, status = 200) =>
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 
-function extractCode(input: string): string | null {
+function extractCodeFromUrl(input: string): string | null {
   if (!input) return null;
-  const trimmed = input.trim();
   const patterns = [
     /discord\.gg\/([a-zA-Z0-9-]+)/i,
     /discord\.com\/invite\/([a-zA-Z0-9-]+)/i,
     /discordapp\.com\/invite\/([a-zA-Z0-9-]+)/i,
   ];
   for (const p of patterns) {
-    const m = trimmed.match(p);
+    const m = input.match(p);
     if (m) return m[1];
+  }
+  return null;
+}
+
+async function extractCode(input: string): Promise<string | null> {
+  if (!input) return null;
+  const trimmed = input.trim();
+  const direct = extractCodeFromUrl(trimmed);
+  if (direct) return direct;
+  // Vanity/redirect URL — follow redirects to resolve the real invite
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      const r = await fetch(trimmed, { redirect: "follow", headers: { "User-Agent": "ZyphoraMC-Site/1.0" } });
+      const finalUrl = r.url;
+      await r.body?.cancel();
+      const code = extractCodeFromUrl(finalUrl);
+      if (code) return code;
+    } catch (_) { /* ignore */ }
+    return null;
   }
   // Already a bare code
   if (/^[a-zA-Z0-9-]+$/.test(trimmed)) return trimmed;
@@ -33,17 +51,22 @@ Deno.serve(async (req) => {
     const url = new URL(req.url);
     const raw = url.searchParams.get("invite") ?? url.searchParams.get("code") ?? "";
     const fallbacks = ["qAEs87VeXM", "zyphoramc", "zyphora"];
-    const candidates = [extractCode(raw), ...fallbacks].filter(Boolean) as string[];
+    const resolved = await extractCode(raw);
+    const candidates = [resolved, ...fallbacks].filter(Boolean) as string[];
 
+    let lastError = "No valid invite resolved";
     for (const code of candidates) {
       try {
         const r = await fetch(
           `https://discord.com/api/v10/invites/${encodeURIComponent(code)}?with_counts=true&with_expiration=true`,
           { headers: { "User-Agent": "ZyphoraMC-Site/1.0" } },
         );
-        if (!r.ok) continue;
-        const j = await r.json();
-        if (typeof j.approximate_member_count === "number") {
+        const j = await r.json().catch(() => null);
+        if (!r.ok) {
+          lastError = j?.message ? `${j.message} (${code})` : `Discord ${r.status} for ${code}`;
+          continue;
+        }
+        if (j && typeof j.approximate_member_count === "number") {
           return json({
             ok: true,
             code,
@@ -52,11 +75,12 @@ Deno.serve(async (req) => {
             guild: j.guild ? { id: j.guild.id, name: j.guild.name, icon: j.guild.icon } : null,
           });
         }
-      } catch (_) { /* try next */ }
+      } catch (e) { lastError = (e as Error).message; }
     }
 
-    return json({ ok: false, error: "No valid invite resolved" }, 404);
+    // Always return 200 so the SDK doesn't throw; clients check `ok`.
+    return json({ ok: false, error: lastError });
   } catch (e) {
-    return json({ ok: false, error: (e as Error).message }, 500);
+    return json({ ok: false, error: (e as Error).message });
   }
 });
