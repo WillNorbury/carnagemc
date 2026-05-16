@@ -34,7 +34,7 @@ const Changelog = () => {
   const [filter, setFilter] = useState<string>("all");
 
   useEffect(() => {
-    document.title = "Changelog — ZyphoraMC";
+    document.title = "Changelog — XyloMC";
     supabase
       .from("changelog_entries")
       .select("id,title,content,category,version,entry_date")
@@ -76,7 +76,7 @@ const Changelog = () => {
               Change<span className="text-gradient">log</span>
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Every patch, fix, and feature shipped to ZyphoraMC.
+              Every patch, fix, and feature shipped to XyloMC.
             </p>
           </div>
         </section>

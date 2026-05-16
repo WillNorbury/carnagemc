@@ -165,7 +165,7 @@ const UserProfile = () => {
         .eq("user_id", match.id);
       setProfile(match as Profile);
       setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role).sort((a, b) => roleRank(a) - roleRank(b)));
-      document.title = `${match.display_name ?? "Player"} — ZyphoraMC`;
+      document.title = `${match.display_name ?? "Player"} — XyloMC`;
       const sortedRoles = ((r ?? []) as { role: AppRole }[]).map((x) => x.role).sort((a, b) => roleRank(a) - roleRank(b));
       await loadCounts(match.id, user?.id);
       if (user?.id && user.id === match.id) {

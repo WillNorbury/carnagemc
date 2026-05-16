@@ -27,7 +27,7 @@ const Plugins = () => {
   const [q, setQ] = useState("");
 
   useEffect(() => {
-    document.title = "Plugins — ZyphoraMC";
+    document.title = "Plugins — XyloMC";
     (async () => {
       const { data } = await supabase
         .from("plugins")
@@ -61,7 +61,7 @@ const Plugins = () => {
             <Puzzle className="h-3.5 w-3.5" /> Plugin Library
           </div>
           <h1 className="text-4xl md:text-5xl font-display font-bold">
-            ZyphoraMC <span className="text-gradient">Plugins</span>
+            XyloMC <span className="text-gradient">Plugins</span>
           </h1>
           <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
             Explore the plugins powering our server. Click any plugin to see details.

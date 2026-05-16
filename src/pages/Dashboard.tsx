@@ -34,7 +34,7 @@ const Dashboard = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    document.title = "Dashboard — ZyphoraMC";
+    document.title = "Dashboard — XyloMC";
   }, []);
 
   useEffect(() => {
@@ -111,7 +111,7 @@ const Dashboard = () => {
           <h1 className="font-display text-4xl md:text-5xl font-black">
             Welcome back<span className="text-gradient">.</span>
           </h1>
-          <p className="text-muted-foreground mt-1">Your ZyphoraMC hub</p>
+          <p className="text-muted-foreground mt-1">Your XyloMC hub</p>
         </header>
 
         {/* Top: profile summary */}

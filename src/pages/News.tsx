@@ -19,7 +19,7 @@ const NewsPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = "News — ZyphoraMC";
+    document.title = "News — XyloMC";
     supabase
       .from("news")
       .select("id,title,excerpt,slug,cover_url,created_at")
@@ -38,7 +38,7 @@ const NewsPage = () => {
         <header className="mb-10">
           <h1 className="text-4xl font-bold tracking-tight">News & Updates</h1>
           <p className="text-muted-foreground mt-2">
-            Patch notes, events, and announcements from the ZyphoraMC team.
+            Patch notes, events, and announcements from the XyloMC team.
           </p>
         </header>
 

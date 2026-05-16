@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logo from "@/assets/zyphora-logo.png";
+import logo from "@/assets/xylo-logo.png";
 import { Twitter, Youtube, MessageCircle, Twitch } from "lucide-react";
 
 const Footer = () => (
@@ -8,7 +8,7 @@ const Footer = () => (
     <div className="container py-14 grid md:grid-cols-4 gap-10">
       <div className="md:col-span-2">
         <div className="flex items-center gap-2 mb-4">
-          <img src={logo} alt="ZyphoraMC" className="h-9 w-9" />
+          <img src={logo} alt="XyloMC" className="h-9 w-9" />
           <span className="font-display font-bold text-lg tracking-wider">
             ZYPHORA<span className="text-gradient">MC</span>
           </span>
@@ -18,9 +18,9 @@ const Footer = () => (
         </p>
         <div className="flex items-center gap-3 mt-5">
           {[
-            { icon: MessageCircle, href: "https://discord.zyphoramc.net", label: "Discord" },
-            { icon: Twitter, href: "https://x.com/ZyphoraMC", label: "Twitter" },
-            { icon: Youtube, href: "https://youtube.com/@Zyphora_Network", label: "YouTube" },
+            { icon: MessageCircle, href: "https://discord.xylomc.net", label: "Discord" },
+            { icon: Twitter, href: "https://x.com/XyloMC", label: "Twitter" },
+            { icon: Youtube, href: "https://youtube.com/@Xylo_Network", label: "YouTube" },
             { icon: Twitch, href: "https://twitch.tv/Will_Norbury", label: "Twitch" },
           ].map((s) => (
             <a
@@ -69,7 +69,7 @@ const Footer = () => (
           </li>
           <li>Version: 1.21.x Velocity</li>
           <li>
-            <a href="https://discord.zyphoramc.net" className="hover:text-primary transition">
+            <a href="https://discord.xylomc.net" className="hover:text-primary transition">
               Join Discord
             </a>
           </li>
@@ -77,7 +77,7 @@ const Footer = () => (
       </div>
     </div>
     <div className="border-t border-border/50 py-5 text-center text-xs text-muted-foreground tracking-wider">
-      © {new Date().getFullYear()} ZyphoraMC — All rights reserved. Not affiliated with Mojang or Microsoft.
+      © {new Date().getFullYear()} XyloMC — All rights reserved. Not affiliated with Mojang or Microsoft.
     </div>
   </footer>
 );

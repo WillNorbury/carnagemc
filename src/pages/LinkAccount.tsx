@@ -24,7 +24,7 @@ const LinkAccount = () => {
   const isLinked = !!linkedMc;
 
   useEffect(() => {
-    document.title = "Link Minecraft Account — ZyphoraMC";
+    document.title = "Link Minecraft Account — XyloMC";
   }, []);
 
   useEffect(() => {
