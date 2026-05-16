@@ -62,8 +62,10 @@ const Index = () => {
   const [popupOpen, setPopupOpen] = useState(false);
   
   const [discordMembers, setDiscordMembers] = useState<number | null>(null);
+  const [discordInviteError, setDiscordInviteError] = useState<string | null>(null);
   const [voteCount, setVoteCount] = useState<number>(0);
   const [features, setFeatures] = useState<Feature[]>([]);
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     fetchFeatures().then(setFeatures);
