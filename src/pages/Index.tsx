@@ -121,14 +121,20 @@ const Index = () => {
         if (cancelled) return;
         if (!error && data?.ok && typeof data.approximate_member_count === "number") {
           setDiscordMembers(data.approximate_member_count);
+          setDiscordInviteError(null);
           return;
         }
         // Fallback: direct call to the function URL with query string
         const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/discord-invite?invite=${encodeURIComponent(inviteRaw)}`;
         const r = await fetch(url, { headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } });
         const j = await r.json();
-        if (!cancelled && j?.ok && typeof j.approximate_member_count === "number") {
+        if (cancelled) return;
+        if (j?.ok && typeof j.approximate_member_count === "number") {
           setDiscordMembers(j.approximate_member_count);
+          setDiscordInviteError(null);
+        } else {
+          const msg = (data as any)?.error || j?.error || error?.message || "Unknown error";
+          setDiscordInviteError(msg);
         }
       } catch {
         /* silent */
