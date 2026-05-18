@@ -55,11 +55,15 @@ const accountLinks = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
   const { user, isAdmin, signOut } = useAuth();
   const nav = useNavigate();
+
+  const closeMobile = () => {
+    if (isMobile) setOpenMobile(false);
+  };
 
   const isActive = (path: string) => pathname === path;
   const renderItem = (l: { to: string; label: string; icon: typeof Home; soon?: boolean }) => (
@@ -83,7 +87,7 @@ export function AppSidebar() {
             )}
           </div>
         ) : (
-          <Link to={l.to} className="flex items-center gap-2">
+          <Link to={l.to} onClick={closeMobile} className="flex items-center gap-2">
             <l.icon className="h-4 w-4 shrink-0" />
             {!collapsed && <span className="uppercase tracking-wider text-xs">{l.label}</span>}
           </Link>
