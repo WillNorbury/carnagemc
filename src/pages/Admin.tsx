@@ -87,6 +87,8 @@ const Admin = () => {
   const isOwner = userRoles.includes("owner");
   const location = useLocation();
   const navigate = useNavigate();
+  const search = new URLSearchParams(location.search);
+  const tabParam = search.get("tab") as AdminSection | null;
   const initial: AdminSection = location.pathname.endsWith("/roles")
     ? "roles"
     : location.pathname.endsWith("/permissions")
@@ -95,8 +97,15 @@ const Admin = () => {
         ? "changelog"
         : location.pathname.endsWith("/applications")
           ? "applications"
-          : "dashboard";
+          : tabParam ?? "dashboard";
   const [section, setSection] = useState<AdminSection>(initial);
+
+  // Keep tab in sync with URL query (back/forward navigation)
+  useEffect(() => {
+    if (location.pathname !== "/admin") return;
+    const t = (new URLSearchParams(location.search).get("tab") as AdminSection | null) ?? "dashboard";
+    setSection(t);
+  }, [location.pathname, location.search]);
 
   const onNavigate = (s: AdminSection) => {
     setSection(s);
@@ -120,8 +129,14 @@ const Admin = () => {
       navigate("/admin/news");
       return;
     }
-    if (location.pathname !== "/admin") navigate("/admin");
+    if (s === "dashboard") {
+      navigate("/admin");
+      return;
+    }
+    navigate(`/admin?tab=${s}`);
   };
+
+
 
   if (loading)
     return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
