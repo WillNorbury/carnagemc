@@ -90,15 +90,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const search = new URLSearchParams(location.search);
   const tabParam = search.get("tab") as AdminSection | null;
-  const initial: AdminSection = location.pathname.endsWith("/roles")
-    ? "roles"
-    : location.pathname.endsWith("/permissions")
-      ? "permissions"
-      : location.pathname.endsWith("/changelog")
-        ? "changelog"
-        : location.pathname.endsWith("/applications")
-          ? "applications"
-          : tabParam ?? "dashboard";
+  const initial: AdminSection = tabParam ?? "dashboard";
   const [section, setSection] = useState<AdminSection>(initial);
 
   // Keep tab in sync with URL query (back/forward navigation)
@@ -110,32 +102,13 @@ const Admin = () => {
 
   const onNavigate = (s: AdminSection) => {
     setSection(s);
-    if (s === "roles") {
-      if (location.pathname !== "/admin/roles") navigate("/admin/roles");
-      return;
-    }
-    if (s === "permissions") {
-      navigate("/admin/permissions");
-      return;
-    }
-    if (s === "changelog") {
-      navigate("/admin/changelog");
-      return;
-    }
-    if (s === "applications") {
-      navigate("/admin/applications");
-      return;
-    }
-    if (s === "news") {
-      navigate("/admin/news");
-      return;
-    }
     if (s === "dashboard") {
-      navigate("/admin");
+      if (location.pathname !== "/admin" || location.search) navigate("/admin");
       return;
     }
     navigate(`/admin?tab=${s}`);
   };
+
 
 
 
