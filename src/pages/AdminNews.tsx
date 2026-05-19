@@ -39,11 +39,8 @@ const slugify = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 60) ||
   `post-${Date.now()}`;
 
-const AdminNews = () => {
-  const { user, loading } = useAuth();
-  const { roles, loading: permsLoading } = usePermissions();
-  const isAdmin = roles.includes("admin") || roles.includes("owner");
-  const isOwner = roles.includes("owner");
+export const NewsAnnouncementsTab = () => {
+  const { user } = useAuth();
 
   const [items, setItems] = useState<News[]>([]);
   const [title, setTitle] = useState("");
