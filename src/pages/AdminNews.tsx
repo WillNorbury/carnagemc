@@ -179,13 +179,7 @@ export const NewsAnnouncementsTab = () => {
   };
 
   return (
-    <AdminLayout
-      current="news"
-      onNavigate={() => {}}
-      title="Announcements"
-      description="Publish news and announcements to your players."
-      isOwner={isOwner}
-    >
+    <div className="space-y-6">
       <Card className="p-6 bg-card/60 border-border/60">
         <div className="flex items-center gap-2 mb-5">
           <Plus className="h-5 w-5 text-primary" />
