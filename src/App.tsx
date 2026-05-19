@@ -29,6 +29,7 @@ import Dashboard from "./pages/Dashboard.tsx";
 import LinkAccount from "./pages/LinkAccount.tsx";
 import Apply from "./pages/Apply.tsx";
 import AdminChangelog from "./pages/AdminChangelog.tsx";
+import AdminNews from "./pages/AdminNews.tsx";
 import AdminApplications from "./pages/AdminApplications.tsx";
 import Features from "./pages/Features.tsx";
 import FeatureDetail from "./pages/FeatureDetail.tsx";
@@ -51,12 +52,16 @@ const Shell = () => {
                 <Route path="/admin/permissions" element={<AdminPermissions />} />
                 <Route path="/admin/changelog" element={<AdminChangelog />} />
                 <Route path="/admin/applications" element={<AdminApplications />} />
+                <Route path="/admin/news" element={<AdminNews />} />
+                <Route path="/admin/announcements" element={<AdminNews />} />
                 <Route path="/changelog" element={<Changelog />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/link-account" element={<LinkAccount />} />
                 <Route path="/apply" element={<Apply />} />
                 <Route path="/news" element={<News />} />
+                <Route path="/announcements" element={<News />} />
                 <Route path="/news/:slug" element={<NewsArticle />} />
+                <Route path="/announcements/:slug" element={<NewsArticle />} />
                 <Route path="/staff" element={<Staff />} />
                 <Route path="/vote" element={<Vote />} />
                 <Route path="/community" element={<Community />} />
