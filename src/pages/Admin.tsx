@@ -46,6 +46,7 @@ import { ALL_ROLES, roleLabel, isStaffRole, type AppRole } from "@/lib/roles";
 import { usePermissions } from "@/lib/usePermissions";
 import { FeaturesTab } from "@/components/admin/FeaturesTab";
 import { RulesTab } from "@/components/admin/RulesTab";
+import { NewsAnnouncementsTab } from "@/pages/AdminNews";
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
 type RoleRow = { id: string; user_id: string; role: AppRole };
