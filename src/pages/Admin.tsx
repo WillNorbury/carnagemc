@@ -496,6 +496,10 @@ const UsersTab = () => {
                       </Tooltip>
                     )}
                     {isAdminFor(p.id) && <Badge>Admin</Badge>}
+                    <Button size="sm" variant="outline" onClick={() => openEdit(p)}>
+                      <Pencil className="h-4 w-4 mr-1" />
+                      Edit
+                    </Button>
                     <Button size="sm" variant="outline" onClick={() => toggleAdmin(p.id)}>
                       <ShieldCheck className="h-4 w-4 mr-1" />
                       {isAdminFor(p.id) ? "Demote" : "Promote"}
