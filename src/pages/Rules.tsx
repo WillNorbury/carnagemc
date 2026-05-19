@@ -38,7 +38,7 @@ const Rules = () => {
           <div className="absolute inset-0 bg-grid opacity-[0.08]" />
           <div className="container relative text-center">
             <Badge variant="secondary" className="mb-4 text-primary border-primary/40"><ShieldCheck className="h-3 w-3 mr-1" /> Code of Conduct</Badge>
-            <h1 className="font-display text-4xl md:text-6xl font-black mb-3">Server <span className="text-gradient">Rules</span></h1>
+            <h1 className="font-display text-4xl md:text-6xl font-black mb-3"><span className="text-gradient">XyloMC</span> Rules</h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               These rules keep the XyloMC community competitive, fair, and welcoming. By playing, you agree to follow them.
             </p>
