@@ -29,6 +29,7 @@ import Dashboard from "./pages/Dashboard.tsx";
 import LinkAccount from "./pages/LinkAccount.tsx";
 import Apply from "./pages/Apply.tsx";
 import AdminChangelog from "./pages/AdminChangelog.tsx";
+import AdminNews from "./pages/AdminNews.tsx";
 import AdminApplications from "./pages/AdminApplications.tsx";
 import Features from "./pages/Features.tsx";
 import FeatureDetail from "./pages/FeatureDetail.tsx";
