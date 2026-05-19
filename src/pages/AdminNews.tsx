@@ -323,7 +323,29 @@ export const NewsAnnouncementsTab = () => {
             </Card>
           ))}
         </div>
-      </div>
+    </div>
+  );
+};
+
+const AdminNews = () => {
+  const { user, loading } = useAuth();
+  const { roles, loading: permsLoading } = usePermissions();
+  const isAdmin = roles.includes("admin") || roles.includes("owner");
+  const isOwner = roles.includes("owner");
+
+  if (loading || permsLoading) return null;
+  if (!user) return <Navigate to="/auth" replace />;
+  if (!isAdmin) return <Navigate to="/" replace />;
+
+  return (
+    <AdminLayout
+      current="news"
+      onNavigate={() => {}}
+      title="Announcements"
+      description="Publish news and announcements to your players."
+      isOwner={isOwner}
+    >
+      <NewsAnnouncementsTab />
     </AdminLayout>
   );
 };
