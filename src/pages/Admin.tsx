@@ -158,7 +158,7 @@ const Admin = () => {
       {section === "dashboard" && <DashboardSection onNavigate={onNavigate} />}
       {section === "users" && <UsersTab />}
       {section === "roles" && <RolesSection />}
-      {section === "news" && <NewsTab />}
+      {section === "news" && <NewsAnnouncementsTab />}
       {section === "content" && <ContentTab />}
       {section === "status" && <StatusTab />}
       {section === "tickets" && <TicketsAdminSection />}
