@@ -47,7 +47,7 @@ async function buildRulesEmbed() {
   }));
 
   return {
-    title: "📜 XyloMC — Server Rules",
+    title: "📜 XyloMC Rules",
     description: "Please read and follow these rules.",
     color: 0xef4444,
     fields: fields.length > 0 ? fields : [{ name: "No rules", value: "No rules configured." }],
