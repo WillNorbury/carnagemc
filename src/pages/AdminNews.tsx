@@ -41,7 +41,9 @@ const slugify = (s: string) =>
 
 const AdminNews = () => {
   const { user, loading } = useAuth();
-  const { isAdmin, isOwner, loading: permsLoading } = usePermissions();
+  const { roles, loading: permsLoading } = usePermissions();
+  const isAdmin = roles.includes("admin") || roles.includes("owner");
+  const isOwner = roles.includes("owner");
 
   const [items, setItems] = useState<News[]>([]);
   const [title, setTitle] = useState("");
