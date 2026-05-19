@@ -245,6 +245,34 @@ const UsersTab = () => {
   });
   const [search, setSearch] = useState("");
   const [staffOnly, setStaffOnly] = useState(false);
+  const [editing, setEditing] = useState<Profile | null>(null);
+  const [editForm, setEditForm] = useState({ display_name: "", mc_username: "" });
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  const openEdit = (p: Profile) => {
+    setEditing(p);
+    setEditForm({ display_name: p.display_name ?? "", mc_username: p.mc_username ?? "" });
+  };
+
+  const saveEdit = async () => {
+    if (!editing) return;
+    setSavingEdit(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        display_name: editForm.display_name.trim() || null,
+        mc_username: editForm.mc_username.trim() || null,
+      })
+      .eq("id", editing.id);
+    setSavingEdit(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Profile updated");
+    setEditing(null);
+    load();
+  };
 
   const load = async () => {
     const [{ data: p }, { data: r }] = await Promise.all([
