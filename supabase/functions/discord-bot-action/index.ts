@@ -345,7 +345,7 @@ Deno.serve(async (req) => {
         }));
 
         embed = {
-          title: "📜 XyloMC — Server Rules",
+          title: "📜 XyloMC Rules",
           description:
             "Please read and follow these rules. Violations may result in mutes, kicks, or bans at staff discretion.",
           color: 0xef4444,
