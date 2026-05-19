@@ -511,6 +511,36 @@ const UsersTab = () => {
         </div>
       </Card>
     </div>
+    <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit member</DialogTitle>
+          <DialogDescription>Update the display name or Minecraft username.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div>
+            <Label>Display Name</Label>
+            <Input
+              value={editForm.display_name}
+              onChange={(e) => setEditForm({ ...editForm, display_name: e.target.value })}
+              maxLength={100}
+            />
+          </div>
+          <div>
+            <Label>Minecraft Username</Label>
+            <Input
+              value={editForm.mc_username}
+              onChange={(e) => setEditForm({ ...editForm, mc_username: e.target.value })}
+              maxLength={32}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
+          <Button onClick={saveEdit} disabled={savingEdit}>{savingEdit ? "Saving..." : "Save"}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
     </TooltipProvider>
   );
 };
