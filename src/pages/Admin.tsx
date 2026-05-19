@@ -116,6 +116,10 @@ const Admin = () => {
       navigate("/admin/applications");
       return;
     }
+    if (s === "news") {
+      navigate("/admin/news");
+      return;
+    }
     if (location.pathname !== "/admin") navigate("/admin");
   };
 
