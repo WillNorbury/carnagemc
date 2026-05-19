@@ -3,15 +3,28 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { Megaphone } from "lucide-react";
+
+type Priority = "low" | "normal" | "high" | "urgent";
 
 type News = {
   id: string;
   title: string;
   excerpt: string | null;
+  content: string;
   slug: string;
   cover_url: string | null;
+  priority: Priority;
   created_at: string;
+};
+
+const priorityStyles: Record<Priority, string> = {
+  low: "bg-muted text-muted-foreground border-border",
+  normal: "bg-primary/15 text-primary border-primary/30",
+  high: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+  urgent: "bg-destructive/15 text-destructive border-destructive/30",
 };
 
 const NewsPage = () => {
@@ -19,14 +32,14 @@ const NewsPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = "News — XyloMC";
+    document.title = "Announcements — XyloMC";
     supabase
       .from("news")
-      .select("id,title,excerpt,slug,cover_url,created_at")
+      .select("id,title,excerpt,content,slug,cover_url,priority,created_at")
       .eq("published", true)
       .order("created_at", { ascending: false })
       .then(({ data }) => {
-        setItems(data ?? []);
+        setItems((data ?? []) as News[]);
         setLoading(false);
       });
   }, []);
@@ -34,35 +47,50 @@ const NewsPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container pt-28 pb-16">
-        <header className="mb-10">
-          <h1 className="text-4xl font-bold tracking-tight">News & Updates</h1>
-          <p className="text-muted-foreground mt-2">
-            Patch notes, events, and announcements from the XyloMC team.
-          </p>
+      <main className="container pt-28 pb-16 max-w-4xl">
+        <header className="mb-8 flex items-center gap-3">
+          <div className="h-10 w-10 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
+            <Megaphone className="h-5 w-5" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Announcements</h1>
+            <p className="text-sm text-muted-foreground">
+              Latest news and updates from the XyloMC team.
+            </p>
+          </div>
         </header>
 
         {loading ? (
           <p className="text-muted-foreground">Loading…</p>
         ) : items.length === 0 ? (
-          <p className="text-muted-foreground">No posts yet — check back soon.</p>
+          <Card className="p-8 text-center text-muted-foreground bg-card/60 border-border/60">
+            No announcements yet — check back soon.
+          </Card>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="space-y-4">
             {items.map((n) => (
-              <Link key={n.id} to={`/news/${n.slug}`}>
-                <Card className="overflow-hidden h-full hover:border-primary/50 transition">
-                  {n.cover_url && (
-                    <img src={n.cover_url} alt={n.title} className="w-full h-44 object-cover" />
-                  )}
-                  <div className="p-5">
-                    <p className="text-xs text-muted-foreground mb-2">
-                      {new Date(n.created_at).toLocaleDateString()}
-                    </p>
-                    <h2 className="font-semibold text-lg leading-snug mb-2">{n.title}</h2>
-                    {n.excerpt && (
-                      <p className="text-sm text-muted-foreground line-clamp-3">{n.excerpt}</p>
-                    )}
+              <Link key={n.id} to={`/news/${n.slug}`} className="block group">
+                <Card className="p-5 bg-card/60 border-border/60 hover:border-primary/50 transition">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <h2 className="font-semibold group-hover:text-primary transition">
+                      {n.title}
+                    </h2>
+                    <Badge variant="outline" className={priorityStyles[n.priority]}>
+                      {n.priority}
+                    </Badge>
                   </div>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-3">
+                    {n.excerpt || n.content}
+                  </p>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {new Date(n.created_at).toLocaleString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}
+                  </p>
                 </Card>
               </Link>
             ))}
