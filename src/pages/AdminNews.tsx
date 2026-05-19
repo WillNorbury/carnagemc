@@ -68,9 +68,7 @@ export const NewsAnnouncementsTab = () => {
     load();
   }, []);
 
-  if (loading || permsLoading) return null;
-  if (!user) return <Navigate to="/auth" replace />;
-  if (!isAdmin) return <Navigate to="/" replace />;
+  if (!user) return null;
 
   const resetForm = () => {
     setTitle("");
