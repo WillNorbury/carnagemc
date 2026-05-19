@@ -46,6 +46,7 @@ import { ALL_ROLES, roleLabel, isStaffRole, type AppRole } from "@/lib/roles";
 import { usePermissions } from "@/lib/usePermissions";
 import { FeaturesTab } from "@/components/admin/FeaturesTab";
 import { RulesTab } from "@/components/admin/RulesTab";
+import { NewsAnnouncementsTab } from "@/pages/AdminNews";
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
 type RoleRow = { id: string; user_id: string; role: AppRole };
@@ -89,15 +90,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const search = new URLSearchParams(location.search);
   const tabParam = search.get("tab") as AdminSection | null;
-  const initial: AdminSection = location.pathname.endsWith("/roles")
-    ? "roles"
-    : location.pathname.endsWith("/permissions")
-      ? "permissions"
-      : location.pathname.endsWith("/changelog")
-        ? "changelog"
-        : location.pathname.endsWith("/applications")
-          ? "applications"
-          : tabParam ?? "dashboard";
+  const initial: AdminSection = tabParam ?? "dashboard";
   const [section, setSection] = useState<AdminSection>(initial);
 
   // Keep tab in sync with URL query (back/forward navigation)
@@ -109,32 +102,13 @@ const Admin = () => {
 
   const onNavigate = (s: AdminSection) => {
     setSection(s);
-    if (s === "roles") {
-      if (location.pathname !== "/admin/roles") navigate("/admin/roles");
-      return;
-    }
-    if (s === "permissions") {
-      navigate("/admin/permissions");
-      return;
-    }
-    if (s === "changelog") {
-      navigate("/admin/changelog");
-      return;
-    }
-    if (s === "applications") {
-      navigate("/admin/applications");
-      return;
-    }
-    if (s === "news") {
-      navigate("/admin/news");
-      return;
-    }
     if (s === "dashboard") {
-      navigate("/admin");
+      if (location.pathname !== "/admin" || location.search) navigate("/admin");
       return;
     }
     navigate(`/admin?tab=${s}`);
   };
+
 
 
 
@@ -157,7 +131,7 @@ const Admin = () => {
       {section === "dashboard" && <DashboardSection onNavigate={onNavigate} />}
       {section === "users" && <UsersTab />}
       {section === "roles" && <RolesSection />}
-      {section === "news" && <NewsTab />}
+      {section === "news" && <NewsAnnouncementsTab />}
       {section === "content" && <ContentTab />}
       {section === "status" && <StatusTab />}
       {section === "tickets" && <TicketsAdminSection />}

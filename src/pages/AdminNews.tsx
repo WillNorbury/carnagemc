@@ -39,11 +39,8 @@ const slugify = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 60) ||
   `post-${Date.now()}`;
 
-const AdminNews = () => {
-  const { user, loading } = useAuth();
-  const { roles, loading: permsLoading } = usePermissions();
-  const isAdmin = roles.includes("admin") || roles.includes("owner");
-  const isOwner = roles.includes("owner");
+export const NewsAnnouncementsTab = () => {
+  const { user } = useAuth();
 
   const [items, setItems] = useState<News[]>([]);
   const [title, setTitle] = useState("");
@@ -71,9 +68,7 @@ const AdminNews = () => {
     load();
   }, []);
 
-  if (loading || permsLoading) return null;
-  if (!user) return <Navigate to="/auth" replace />;
-  if (!isAdmin) return <Navigate to="/" replace />;
+  if (!user) return null;
 
   const resetForm = () => {
     setTitle("");
@@ -184,13 +179,7 @@ const AdminNews = () => {
   };
 
   return (
-    <AdminLayout
-      current="news"
-      onNavigate={() => {}}
-      title="Announcements"
-      description="Publish news and announcements to your players."
-      isOwner={isOwner}
-    >
+    <div className="space-y-6">
       <Card className="p-6 bg-card/60 border-border/60">
         <div className="flex items-center gap-2 mb-5">
           <Plus className="h-5 w-5 text-primary" />
@@ -335,6 +324,29 @@ const AdminNews = () => {
           ))}
         </div>
       </div>
+    </div>
+  );
+};
+
+const AdminNews = () => {
+  const { user, loading } = useAuth();
+  const { roles, loading: permsLoading } = usePermissions();
+  const isAdmin = roles.includes("admin") || roles.includes("owner");
+  const isOwner = roles.includes("owner");
+
+  if (loading || permsLoading) return null;
+  if (!user) return <Navigate to="/auth" replace />;
+  if (!isAdmin) return <Navigate to="/" replace />;
+
+  return (
+    <AdminLayout
+      current="news"
+      onNavigate={() => {}}
+      title="Announcements"
+      description="Publish news and announcements to your players."
+      isOwner={isOwner}
+    >
+      <NewsAnnouncementsTab />
     </AdminLayout>
   );
 };
