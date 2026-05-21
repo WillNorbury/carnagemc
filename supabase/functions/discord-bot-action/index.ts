@@ -328,7 +328,7 @@ Deno.serve(async (req) => {
       let content: string | undefined;
 
       if (action === "info") {
-        embed = {
+        embed = applyOverride({
           title: "🍸 XyloMC — Server Info",
           description:
             "Welcome to **XyloMC** — your home for premium survival, minigames, and community events.\n\nConnect using the details below and join the adventure!",
@@ -347,7 +347,7 @@ Deno.serve(async (req) => {
           ],
           footer: { text: "XyloMC · See you in-game!" },
           timestamp: new Date().toISOString(),
-        };
+        }, "info");
         content = body.mention === false ? undefined : "@everyone";
       } else {
         // rules — load sections from DB
@@ -362,7 +362,7 @@ Deno.serve(async (req) => {
           value: (s.items ?? []).map((it: string) => `• ${it}`).join("\n") || "—",
         }));
 
-        embed = {
+        embed = applyOverride({
           title: "📜 XyloMC Rules",
           description:
             "Please read and follow these rules. Violations may result in mutes, kicks, or bans at staff discretion.",
@@ -370,7 +370,7 @@ Deno.serve(async (req) => {
           fields: fields.length > 0 ? fields : [{ name: "No rules", value: "No rules configured." }],
           footer: { text: "XyloMC · Updated regularly" },
           timestamp: new Date().toISOString(),
-        };
+        }, "rules");
       }
 
       if (body.preview) {
