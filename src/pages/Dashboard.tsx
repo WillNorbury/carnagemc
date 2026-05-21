@@ -12,7 +12,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { roleLabel, type AppRole } from "@/lib/roles";
 import { toast } from "sonner";
-import { Loader2, User as UserIcon, FileText, LifeBuoy, ClipboardList, Link2, ExternalLink, CheckCircle2 } from "lucide-react";
+import { Loader2, User as UserIcon, FileText, LifeBuoy, ClipboardList, Link2, ExternalLink, CheckCircle2, Flame, Vote as VoteIcon, Trophy } from "lucide-react";
+
+type Streaks = {
+  login_streak: number;
+  login_best: number;
+  total_logins: number;
+  vote_streak: number;
+  vote_best: number;
+  total_votes: number;
+  last_vote_date: string | null;
+};
 
 type Application = {
   id: string;
@@ -32,6 +42,7 @@ const Dashboard = () => {
   const [tickets, setTickets] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [streaks, setStreaks] = useState<Streaks | null>(null);
 
   useEffect(() => {
     document.title = "Dashboard — XyloMC";
@@ -44,7 +55,7 @@ const Dashboard = () => {
       return;
     }
     (async () => {
-      const [{ data: p }, { data: r }, { data: a }, { count: tc }] = await Promise.all([
+      const [{ data: p }, { data: r }, { data: a }, { count: tc }, { data: streakRow }] = await Promise.all([
         supabase.from("profiles").select("display_name, mc_username").eq("id", user.id).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", user.id),
         supabase
@@ -53,6 +64,7 @@ const Dashboard = () => {
           .eq("user_id", user.id)
           .order("created_at", { ascending: false }),
         supabase.from("support_tickets").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.rpc("record_login_streak"),
       ]);
       if (!p?.mc_username) {
         navigate("/link-account", { replace: true });
@@ -64,6 +76,7 @@ const Dashboard = () => {
       setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
       setApps((a as Application[]) ?? []);
       setTickets(tc ?? 0);
+      if (streakRow) setStreaks(streakRow as unknown as Streaks);
       setLoading(false);
     })();
   }, [user, authLoading, navigate]);
@@ -138,6 +151,47 @@ const Dashboard = () => {
             </Link>
           </Button>
         </Card>
+
+        {/* Streaks */}
+        {streaks && (
+          <Card className="p-6 mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Flame className="h-5 w-5 text-orange-400" />
+              <h2 className="font-display font-bold text-lg">Streaks</h2>
+              <p className="text-xs text-muted-foreground ml-2">Visit daily and vote daily to keep your streaks alive.</p>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="p-4 rounded-lg border border-border/60 bg-gradient-to-br from-orange-500/10 to-transparent">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                  <Flame className="h-3.5 w-3.5 text-orange-400" /> Login streak
+                </div>
+                <div className="flex items-baseline gap-3">
+                  <span className="font-display text-4xl font-black text-orange-300">{streaks.login_streak}</span>
+                  <span className="text-sm text-muted-foreground">day{streaks.login_streak === 1 ? "" : "s"}</span>
+                </div>
+                <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1"><Trophy className="h-3 w-3" /> Best {streaks.login_best}</span>
+                  <span>•</span>
+                  <span>{streaks.total_logins} total</span>
+                </div>
+              </div>
+              <div className="p-4 rounded-lg border border-border/60 bg-gradient-to-br from-primary/10 to-transparent">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                  <VoteIcon className="h-3.5 w-3.5 text-primary" /> Vote streak
+                </div>
+                <div className="flex items-baseline gap-3">
+                  <span className="font-display text-4xl font-black text-primary">{streaks.vote_streak}</span>
+                  <span className="text-sm text-muted-foreground">day{streaks.vote_streak === 1 ? "" : "s"}</span>
+                </div>
+                <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1"><Trophy className="h-3 w-3" /> Best {streaks.vote_best}</span>
+                  <span>•</span>
+                  <span>{streaks.total_votes} total</span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Link account */}
         <Card className="p-6 mb-6" id="link-account">

@@ -586,6 +586,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_streaks: {
+        Row: {
+          created_at: string
+          last_login_date: string | null
+          last_vote_date: string | null
+          login_best: number
+          login_streak: number
+          total_logins: number
+          total_votes: number
+          updated_at: string
+          user_id: string
+          vote_best: number
+          vote_streak: number
+        }
+        Insert: {
+          created_at?: string
+          last_login_date?: string | null
+          last_vote_date?: string | null
+          login_best?: number
+          login_streak?: number
+          total_logins?: number
+          total_votes?: number
+          updated_at?: string
+          user_id: string
+          vote_best?: number
+          vote_streak?: number
+        }
+        Update: {
+          created_at?: string
+          last_login_date?: string | null
+          last_vote_date?: string | null
+          login_best?: number
+          login_streak?: number
+          total_logins?: number
+          total_votes?: number
+          updated_at?: string
+          user_id?: string
+          vote_best?: number
+          vote_streak?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -597,6 +639,50 @@ export type Database = {
         Returns: boolean
       }
       gen_plugin_short_id: { Args: never; Returns: string }
+      record_login_streak: {
+        Args: never
+        Returns: {
+          created_at: string
+          last_login_date: string | null
+          last_vote_date: string | null
+          login_best: number
+          login_streak: number
+          total_logins: number
+          total_votes: number
+          updated_at: string
+          user_id: string
+          vote_best: number
+          vote_streak: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "user_streaks"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      record_vote_streak: {
+        Args: never
+        Returns: {
+          created_at: string
+          last_login_date: string | null
+          last_vote_date: string | null
+          login_best: number
+          login_streak: number
+          total_logins: number
+          total_votes: number
+          updated_at: string
+          user_id: string
+          vote_best: number
+          vote_streak: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "user_streaks"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       app_role:

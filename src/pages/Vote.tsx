@@ -6,8 +6,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ExternalLink, Gift, CheckCircle2, Crown, Sparkles, Coins } from "lucide-react";
+import { ExternalLink, Gift, CheckCircle2, Crown, Sparkles, Coins, Flame, Trophy } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 
 const SITES = [
   { id: "mcservers", name: "MinecraftServers.org", url: "https://minecraftservers.org/", reward: "1 Vote Crate Key" },
@@ -26,7 +28,9 @@ const REWARDS = [
 const STORAGE_KEY = "xylo_votes";
 
 const Vote = () => {
+  const { user } = useAuth();
   const [voted, setVoted] = useState<Record<string, number>>({});
+  const [streak, setStreak] = useState<{ vote_streak: number; vote_best: number; total_votes: number } | null>(null);
 
   useEffect(() => {
     document.title = "Vote — XyloMC";
@@ -36,16 +40,39 @@ const Vote = () => {
     } catch {}
   }, []);
 
+  useEffect(() => {
+    if (!user) {
+      setStreak(null);
+      return;
+    }
+    supabase
+      .from("user_streaks")
+      .select("vote_streak, vote_best, total_votes")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => setStreak(data ?? { vote_streak: 0, vote_best: 0, total_votes: 0 }));
+  }, [user]);
+
   const isFresh = (ts?: number) => ts && Date.now() - ts < 24 * 60 * 60 * 1000;
   const completed = SITES.filter((s) => isFresh(voted[s.id])).length;
   const progress = (completed / SITES.length) * 100;
 
-  const handleVote = (id: string, url: string) => {
+  const handleVote = async (id: string, url: string) => {
+    const alreadyToday = SITES.some((s) => isFresh(voted[s.id]));
     const next = { ...voted, [id]: Date.now() };
     setVoted(next);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     window.open(url, "_blank", "noopener,noreferrer");
     toast.success("Vote registered! Run /vote in-game to claim your reward.");
+
+    if (user && !alreadyToday) {
+      const { data, error } = await supabase.rpc("record_vote_streak");
+      if (!error && data) {
+        const row = data as unknown as { vote_streak: number; vote_best: number; total_votes: number };
+        setStreak(row);
+        if (row.vote_streak > 1) toast(`🔥 ${row.vote_streak}-day vote streak!`);
+      }
+    }
   };
 
   return (
@@ -83,6 +110,39 @@ const Vote = () => {
               </div>
             )}
           </Card>
+
+          {streak && (
+            <Card className="p-6 max-w-3xl mx-auto border-orange-500/30 bg-gradient-to-br from-orange-500/5 via-transparent to-primary/5">
+              <div className="flex items-center justify-between gap-6 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-full bg-orange-500/15 flex items-center justify-center">
+                    <Flame className="h-6 w-6 text-orange-400" />
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.25em] text-orange-400/90">Your Vote Streak</div>
+                    <div className="font-display text-2xl font-bold">
+                      {streak.vote_streak} <span className="text-muted-foreground text-base font-normal">day{streak.vote_streak === 1 ? "" : "s"}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-5 text-sm">
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <Trophy className="h-4 w-4 text-amber-400" /> Best <span className="text-foreground font-semibold">{streak.vote_best}</span>
+                  </div>
+                  <div className="text-muted-foreground">
+                    Total <span className="text-foreground font-semibold">{streak.total_votes}</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {!user && (
+            <p className="text-center text-xs text-muted-foreground">
+              <a href="/auth" className="text-primary hover:underline">Sign in</a> to start tracking your vote streak.
+            </p>
+          )}
+
 
           {/* Vote sites */}
           <section>
