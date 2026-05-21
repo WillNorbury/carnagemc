@@ -31,13 +31,18 @@ import {
   LogIn,
   LogOut,
   Ticket,
+  Trophy,
+  HelpCircle,
+  Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const publicLinks = [
   { to: "/", label: "Home", icon: Home },
   { to: "/users", label: "Users", icon: UsersIcon },
+  { to: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { to: "/news", label: "News", icon: Newspaper },
+  { to: "/events", label: "Events", icon: Calendar },
   { to: "/changelog", label: "Changelog", icon: ClipboardList },
   { to: "/community", label: "Community", icon: UsersIcon },
   { to: "/staff", label: "Staff", icon: ShieldCheck },
@@ -45,6 +50,7 @@ const publicLinks = [
   { to: "/rules", label: "Rules", icon: ScrollText },
   { to: "/plugins", label: "Plugins", icon: Puzzle },
   { to: "/apply", label: "Apply", icon: FileText },
+  { to: "/faq", label: "FAQ", icon: HelpCircle },
   { to: "/support", label: "Support", icon: LifeBuoy },
 ];
 

@@ -9,6 +9,7 @@ import logo from "@/assets/xylo-logo.png";
 import {
   LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
   PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound, Puzzle, ClipboardList, Zap, Sparkles, Gavel,
+  HelpCircle, Calendar, Wrench,
 } from "lucide-react";
 
 
@@ -19,6 +20,7 @@ export type AdminSection =
 
 type NavItem =
   | { kind: "link"; id: AdminSection; icon: any; label: string }
+  | { kind: "route"; to: string; icon: any; label: string }
   | { kind: "section"; title: string; icon: any };
 
 const items: NavItem[] = [
@@ -36,6 +38,9 @@ const items: NavItem[] = [
   { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
   { kind: "link", id: "features", icon: Sparkles, label: "Features" },
   { kind: "link", id: "rules", icon: Gavel, label: "Rules" },
+  { kind: "route", to: "/admin/faqs", icon: HelpCircle, label: "FAQs" },
+  { kind: "route", to: "/admin/events", icon: Calendar, label: "Events" },
+  { kind: "route", to: "/admin/maintenance", icon: Wrench, label: "Maintenance" },
   { kind: "section", title: "Discord Bot", icon: Bot },
   { kind: "link", id: "bot-dashboard", icon: LayoutDashboard, label: "Bot Dashboard" },
   { kind: "link", id: "bot-management", icon: Code, label: "Management" },
@@ -96,6 +101,26 @@ export const AdminLayout = ({
                 );
               }
               const Icon = it.icon;
+              if (it.kind === "route") {
+                const routeBtn = (
+                  <Link
+                    to={it.to}
+                    className={cn(
+                      "relative flex items-center gap-3 rounded-lg w-full transition-all hover:bg-accent hover:text-foreground text-muted-foreground",
+                      collapsed ? "h-9 w-9 justify-center mx-auto" : "px-3 py-2"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {!collapsed && <span className="text-sm">{it.label}</span>}
+                  </Link>
+                );
+                return collapsed ? (
+                  <Tooltip key={it.to}>
+                    <TooltipTrigger asChild>{routeBtn}</TooltipTrigger>
+                    <TooltipContent side="right">{it.label}</TooltipContent>
+                  </Tooltip>
+                ) : <div key={it.to}>{routeBtn}</div>;
+              }
               const active = it.id === current;
               const btn = (
                 <button
