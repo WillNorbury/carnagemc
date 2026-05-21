@@ -33,6 +33,13 @@ import AdminNews from "./pages/AdminNews.tsx";
 import AdminApplications from "./pages/AdminApplications.tsx";
 import Features from "./pages/Features.tsx";
 import FeatureDetail from "./pages/FeatureDetail.tsx";
+import Leaderboard from "./pages/Leaderboard.tsx";
+import Faq from "./pages/Faq.tsx";
+import Events from "./pages/Events.tsx";
+import AdminFaqs from "./pages/AdminFaqs.tsx";
+import AdminEvents from "./pages/AdminEvents.tsx";
+import AdminMaintenance from "./pages/AdminMaintenance.tsx";
+import { MaintenanceGate } from "./components/site/MaintenanceGate.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -41,44 +48,52 @@ const Shell = () => {
   const { pathname } = useLocation();
   const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
   return (
-    <SidebarProvider>
-      {!isAdmin && <AppSidebar />}
-      <SidebarInset>
-        <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="/admin/roles" element={<AdminRoles />} />
-                <Route path="/admin/permissions" element={<AdminPermissions />} />
-                <Route path="/admin/changelog" element={<AdminChangelog />} />
-                <Route path="/admin/applications" element={<AdminApplications />} />
-                <Route path="/admin/news" element={<AdminNews />} />
-                <Route path="/admin/announcements" element={<AdminNews />} />
-                <Route path="/changelog" element={<Changelog />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/link-account" element={<LinkAccount />} />
-                <Route path="/apply" element={<Apply />} />
-                <Route path="/news" element={<News />} />
-                <Route path="/announcements" element={<News />} />
-                <Route path="/news/:slug" element={<NewsArticle />} />
-                <Route path="/announcements/:slug" element={<NewsArticle />} />
-                <Route path="/staff" element={<Staff />} />
-                <Route path="/vote" element={<Vote />} />
-                <Route path="/community" element={<Community />} />
-                <Route path="/rules" element={<Rules />} />
-                <Route path="/support" element={<Support />} />
-                <Route path="/tickets" element={<Tickets />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/users" element={<Users />} />
-                <Route path="/user/:shortId" element={<UserProfile />} />
-                <Route path="/plugins" element={<Plugins />} />
-                <Route path="/plugins/:shortId" element={<PluginDetail />} />
-                <Route path="/features" element={<Features />} />
-                <Route path="/features/:slug" element={<FeatureDetail />} />
-                <Route path="*" element={<NotFound />} />
-        </Routes>
-      </SidebarInset>
-    </SidebarProvider>
+    <MaintenanceGate>
+      <SidebarProvider>
+        {!isAdmin && <AppSidebar />}
+        <SidebarInset>
+          <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/admin/roles" element={<AdminRoles />} />
+                  <Route path="/admin/permissions" element={<AdminPermissions />} />
+                  <Route path="/admin/changelog" element={<AdminChangelog />} />
+                  <Route path="/admin/applications" element={<AdminApplications />} />
+                  <Route path="/admin/news" element={<AdminNews />} />
+                  <Route path="/admin/announcements" element={<AdminNews />} />
+                  <Route path="/admin/faqs" element={<AdminFaqs />} />
+                  <Route path="/admin/events" element={<AdminEvents />} />
+                  <Route path="/admin/maintenance" element={<AdminMaintenance />} />
+                  <Route path="/changelog" element={<Changelog />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/link-account" element={<LinkAccount />} />
+                  <Route path="/apply" element={<Apply />} />
+                  <Route path="/news" element={<News />} />
+                  <Route path="/announcements" element={<News />} />
+                  <Route path="/news/:slug" element={<NewsArticle />} />
+                  <Route path="/announcements/:slug" element={<NewsArticle />} />
+                  <Route path="/staff" element={<Staff />} />
+                  <Route path="/vote" element={<Vote />} />
+                  <Route path="/community" element={<Community />} />
+                  <Route path="/rules" element={<Rules />} />
+                  <Route path="/support" element={<Support />} />
+                  <Route path="/tickets" element={<Tickets />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/users" element={<Users />} />
+                  <Route path="/user/:shortId" element={<UserProfile />} />
+                  <Route path="/plugins" element={<Plugins />} />
+                  <Route path="/plugins/:shortId" element={<PluginDetail />} />
+                  <Route path="/features" element={<Features />} />
+                  <Route path="/features/:slug" element={<FeatureDetail />} />
+                  <Route path="/leaderboard" element={<Leaderboard />} />
+                  <Route path="/faq" element={<Faq />} />
+                  <Route path="/events" element={<Events />} />
+                  <Route path="*" element={<NotFound />} />
+          </Routes>
+        </SidebarInset>
+      </SidebarProvider>
+    </MaintenanceGate>
   );
 };
 

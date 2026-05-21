@@ -5,6 +5,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/auth";
 import logo from "@/assets/xylo-logo.png";
 import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield } from "lucide-react";
+import { GlobalSearch } from "./GlobalSearch";
 
 const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
@@ -38,6 +39,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-1">
+          <GlobalSearch />
           {user && (
             <Button variant="ghost" size="sm" onClick={() => nav("/dashboard")} className="hidden sm:inline-flex">
               <LayoutDashboard className="h-4 w-4 sm:mr-1" />
