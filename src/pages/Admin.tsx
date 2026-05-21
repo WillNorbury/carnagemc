@@ -1404,6 +1404,14 @@ const BotDashboardSection = () => {
   const [previewChannelId, setPreviewChannelId] = useState<string>("");
   const [previewAction_, setPreviewAction_] = useState<"roles" | "info" | "rules" | null>(null);
 
+  type EmbedOverride = { title?: string; description?: string; color?: string; footerText?: string };
+  const [embedOverrides, setEmbedOverrides] = useState<Record<"info" | "rules" | "roles", EmbedOverride>>({
+    info: {}, rules: {}, roles: {},
+  });
+  const [editingEmbed, setEditingEmbed] = useState<"info" | "rules" | "roles" | null>(null);
+  const [embedForm, setEmbedForm] = useState<EmbedOverride>({});
+  const [savingEmbed, setSavingEmbed] = useState(false);
+
   useEffect(() => {
     supabase
       .from("site_content")
@@ -1411,7 +1419,39 @@ const BotDashboardSection = () => {
       .eq("key", BOT_KEY)
       .maybeSingle()
       .then(({ data }) => data?.value && setCfg((c: any) => ({ ...c, ...(data.value as any) })));
+    supabase
+      .from("site_content")
+      .select("value")
+      .eq("key", "discord_embeds")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value && typeof data.value === "object") {
+          setEmbedOverrides((prev) => ({ ...prev, ...(data.value as any) }));
+        }
+      });
   }, []);
+
+  const openEditEmbed = (key: "info" | "rules" | "roles") => {
+    setEditingEmbed(key);
+    setEmbedForm(embedOverrides[key] ?? {});
+  };
+
+  const saveEmbed = async () => {
+    if (!editingEmbed) return;
+    setSavingEmbed(true);
+    const next = { ...embedOverrides, [editingEmbed]: embedForm };
+    const { error } = await supabase
+      .from("site_content")
+      .upsert({ key: "discord_embeds", value: next });
+    setSavingEmbed(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setEmbedOverrides(next);
+    setEditingEmbed(null);
+    toast.success("Embed saved. Click Run/Preview to apply.");
+  };
 
   const runTest = async () => {
     setTesting(true);
