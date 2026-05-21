@@ -126,6 +126,24 @@ Deno.serve(async (req) => {
     const { data: cfgRow } = await supabase.from("site_content").select("value").eq("key", "discord_bot").maybeSingle();
     const cfg: any = cfgRow?.value ?? {};
 
+    const { data: embedRow } = await supabase.from("site_content").select("value").eq("key", "discord_embeds").maybeSingle();
+    const embedOverrides: any = embedRow?.value ?? {};
+    const applyOverride = (embed: any, key: "info" | "rules" | "roles") => {
+      const o = embedOverrides?.[key];
+      if (!o || typeof o !== "object") return embed;
+      if (typeof o.title === "string" && o.title.trim()) embed.title = o.title;
+      if (typeof o.description === "string" && o.description.trim()) embed.description = o.description;
+      if (typeof o.color === "string" && /^#?[0-9a-fA-F]{6}$/.test(o.color)) {
+        embed.color = parseInt(o.color.replace("#", ""), 16);
+      } else if (typeof o.color === "number") {
+        embed.color = o.color;
+      }
+      if (typeof o.footerText === "string" && o.footerText.trim()) {
+        embed.footer = { ...(embed.footer ?? {}), text: o.footerText };
+      }
+      return embed;
+    };
+
     if (action === "announce") {
       const channelId = body.channelId || cfg.announceChannelId;
       const message = body.message || "📢 **Test announcement** from the XyloMC admin panel.";
