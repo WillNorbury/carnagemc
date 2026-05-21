@@ -4,9 +4,14 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { SEO } from "@/components/site/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Share2 } from "lucide-react";
 import { toast } from "sonner";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const ogImageFor = (title: string, eyebrow = "Announcement") =>
+  `${SUPABASE_URL}/functions/v1/og-image?eyebrow=${encodeURIComponent(eyebrow)}&title=${encodeURIComponent(title)}`;
 
 type Priority = "low" | "normal" | "high" | "urgent";
 
