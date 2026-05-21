@@ -67,10 +67,16 @@ const NewsArticle = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {article && (
+        <SEO
+          title={`${article.title} — XyloMC`}
+          description={(article.content || "").slice(0, 155).replace(/\s+/g, " ").trim() || "XyloMC announcement"}
+          path={`/announcements/${slug}`}
+          image={article.cover_url || ogImageFor(article.title)}
+          type="article"
+        />
+      )}
       <Navbar />
-      <main className="container pt-24 pb-16 max-w-3xl">
-        <div className="flex items-center justify-between mb-6">
-          <Link to="/announcements">
             <Button variant="ghost" size="sm" className="gap-1.5">
               <ArrowLeft className="h-4 w-4" /> Back
             </Button>
