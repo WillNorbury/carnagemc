@@ -1740,6 +1740,47 @@ const BotDashboardSection = () => {
                 placeholder="Default description"
               />
             </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Fields</Label>
+                <Button type="button" size="sm" variant="outline" onClick={addField}>
+                  + Add field
+                </Button>
+              </div>
+              {(embedForm.fields ?? []).length === 0 && (
+                <p className="text-xs text-muted-foreground">No fields. Click “Add field” to create one.</p>
+              )}
+              <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1">
+                {(embedForm.fields ?? []).map((f, i) => (
+                  <div key={i} className="rounded-md border border-border/60 p-3 space-y-2 bg-card/30">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={f.name}
+                        onChange={(e) => updateField(i, { name: e.target.value })}
+                        placeholder="Field name"
+                      />
+                      <Button type="button" size="sm" variant="ghost" onClick={() => removeField(i)}>
+                        Remove
+                      </Button>
+                    </div>
+                    <Textarea
+                      rows={2}
+                      value={f.value}
+                      onChange={(e) => updateField(i, { value: e.target.value })}
+                      placeholder="Field value (Markdown supported)"
+                    />
+                    <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <input
+                        type="checkbox"
+                        checked={!!f.inline}
+                        onChange={(e) => updateField(i, { inline: e.target.checked })}
+                      />
+                      Inline
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
             <div className="space-y-1">
               <Label>Footer text</Label>
               <Input
