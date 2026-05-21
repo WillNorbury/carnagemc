@@ -236,13 +236,13 @@ Deno.serve(async (req) => {
       if (!channelId) return json({ ok: false, error: "No roles channel configured" });
 
       const lines = SITE_ROLES.map((r) => `**${r.label}** — ${r.description}`).join("\n");
-      const embed = {
+      const embed = applyOverride({
         title: "XyloMC — Server Roles",
         description: lines,
         color: 0x5865f2,
         footer: { text: "XyloMC · Roles overview" },
         timestamp: new Date().toISOString(),
-      };
+      }, "roles");
 
       if (body.preview) {
         return json({ ok: true, preview: embed, channelId });
