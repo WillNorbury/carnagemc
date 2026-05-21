@@ -1404,7 +1404,14 @@ const BotDashboardSection = () => {
   const [previewChannelId, setPreviewChannelId] = useState<string>("");
   const [previewAction_, setPreviewAction_] = useState<"roles" | "info" | "rules" | null>(null);
 
-  type EmbedOverride = { title?: string; description?: string; color?: string; footerText?: string };
+  type EmbedField = { name: string; value: string; inline?: boolean };
+  type EmbedOverride = {
+    title?: string;
+    description?: string;
+    color?: string;
+    footerText?: string;
+    fields?: EmbedField[];
+  };
   const [embedOverrides, setEmbedOverrides] = useState<Record<"info" | "rules" | "roles", EmbedOverride>>({
     info: {}, rules: {}, roles: {},
   });
@@ -1435,7 +1442,6 @@ const BotDashboardSection = () => {
     setEditingEmbed(key);
     const existing = embedOverrides[key] ?? {};
     setEmbedForm(existing);
-    // Pre-fill blanks with the current rendered embed (defaults merged with overrides)
     try {
       const { data } = await supabase.functions.invoke("discord-bot-action", {
         body: { action: key, preview: true },
@@ -1446,10 +1452,28 @@ const BotDashboardSection = () => {
           title: f.title ?? p.title ?? "",
           description: f.description ?? p.description ?? "",
           footerText: f.footerText ?? p.footer?.text ?? "",
+          fields:
+            f.fields && f.fields.length > 0
+              ? f.fields
+              : Array.isArray(p.fields)
+                ? p.fields.map((x: any) => ({ name: x.name ?? "", value: x.value ?? "", inline: !!x.inline }))
+                : [],
         }));
       }
     } catch (_) { /* ignore */ }
   };
+
+  const updateField = (idx: number, patch: Partial<EmbedField>) => {
+    setEmbedForm((f) => {
+      const fields = [...(f.fields ?? [])];
+      fields[idx] = { ...fields[idx], ...patch };
+      return { ...f, fields };
+    });
+  };
+  const addField = () =>
+    setEmbedForm((f) => ({ ...f, fields: [...(f.fields ?? []), { name: "", value: "", inline: false }] }));
+  const removeField = (idx: number) =>
+    setEmbedForm((f) => ({ ...f, fields: (f.fields ?? []).filter((_, i) => i !== idx) }));
 
   const saveEmbed = async () => {
     if (!editingEmbed) return;
@@ -1687,15 +1711,15 @@ const BotDashboardSection = () => {
       </Card>
 
       <Dialog open={!!editingEmbed} onOpenChange={(o) => !o && setEditingEmbed(null)}>
-        <DialogContent className="max-w-xl">
+        <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               Edit {editingEmbed === "info" ? "Server Info" : editingEmbed === "rules" ? "Server Rules" : "Roles"} embed
             </DialogTitle>
             <DialogDescription>
-              Override the default title, description, color, and footer. Leave any field blank to keep the default.
-              {editingEmbed === "rules" && " Rule items are managed in the Rules section."}
-              {editingEmbed === "roles" && " The role list is generated automatically."}
+              Edit the title, description, fields, and footer. Values are prefilled from the current embed.
+              {editingEmbed === "rules" && " Rule items are normally managed in the Rules section; edits here override them."}
+              {editingEmbed === "roles" && " The role list is generated automatically; edits here override it."}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
@@ -1715,6 +1739,47 @@ const BotDashboardSection = () => {
                 onChange={(e) => setEmbedForm({ ...embedForm, description: e.target.value })}
                 placeholder="Default description"
               />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Fields</Label>
+                <Button type="button" size="sm" variant="outline" onClick={addField}>
+                  + Add field
+                </Button>
+              </div>
+              {(embedForm.fields ?? []).length === 0 && (
+                <p className="text-xs text-muted-foreground">No fields. Click “Add field” to create one.</p>
+              )}
+              <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1">
+                {(embedForm.fields ?? []).map((f, i) => (
+                  <div key={i} className="rounded-md border border-border/60 p-3 space-y-2 bg-card/30">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={f.name}
+                        onChange={(e) => updateField(i, { name: e.target.value })}
+                        placeholder="Field name"
+                      />
+                      <Button type="button" size="sm" variant="ghost" onClick={() => removeField(i)}>
+                        Remove
+                      </Button>
+                    </div>
+                    <Textarea
+                      rows={2}
+                      value={f.value}
+                      onChange={(e) => updateField(i, { value: e.target.value })}
+                      placeholder="Field value (Markdown supported)"
+                    />
+                    <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <input
+                        type="checkbox"
+                        checked={!!f.inline}
+                        onChange={(e) => updateField(i, { inline: e.target.checked })}
+                      />
+                      Inline
+                    </label>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="space-y-1">
               <Label>Footer text</Label>

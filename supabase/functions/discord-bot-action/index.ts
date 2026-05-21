@@ -141,6 +141,11 @@ Deno.serve(async (req) => {
       if (typeof o.footerText === "string" && o.footerText.trim()) {
         embed.footer = { ...(embed.footer ?? {}), text: o.footerText };
       }
+      if (Array.isArray(o.fields) && o.fields.length > 0) {
+        embed.fields = o.fields
+          .filter((f: any) => f && (typeof f.name === "string") && (typeof f.value === "string"))
+          .map((f: any) => ({ name: f.name, value: f.value, inline: !!f.inline }));
+      }
       return embed;
     };
 
