@@ -1404,7 +1404,14 @@ const BotDashboardSection = () => {
   const [previewChannelId, setPreviewChannelId] = useState<string>("");
   const [previewAction_, setPreviewAction_] = useState<"roles" | "info" | "rules" | null>(null);
 
-  type EmbedOverride = { title?: string; description?: string; color?: string; footerText?: string };
+  type EmbedField = { name: string; value: string; inline?: boolean };
+  type EmbedOverride = {
+    title?: string;
+    description?: string;
+    color?: string;
+    footerText?: string;
+    fields?: EmbedField[];
+  };
   const [embedOverrides, setEmbedOverrides] = useState<Record<"info" | "rules" | "roles", EmbedOverride>>({
     info: {}, rules: {}, roles: {},
   });
@@ -1435,7 +1442,6 @@ const BotDashboardSection = () => {
     setEditingEmbed(key);
     const existing = embedOverrides[key] ?? {};
     setEmbedForm(existing);
-    // Pre-fill blanks with the current rendered embed (defaults merged with overrides)
     try {
       const { data } = await supabase.functions.invoke("discord-bot-action", {
         body: { action: key, preview: true },
@@ -1446,10 +1452,28 @@ const BotDashboardSection = () => {
           title: f.title ?? p.title ?? "",
           description: f.description ?? p.description ?? "",
           footerText: f.footerText ?? p.footer?.text ?? "",
+          fields:
+            f.fields && f.fields.length > 0
+              ? f.fields
+              : Array.isArray(p.fields)
+                ? p.fields.map((x: any) => ({ name: x.name ?? "", value: x.value ?? "", inline: !!x.inline }))
+                : [],
         }));
       }
     } catch (_) { /* ignore */ }
   };
+
+  const updateField = (idx: number, patch: Partial<EmbedField>) => {
+    setEmbedForm((f) => {
+      const fields = [...(f.fields ?? [])];
+      fields[idx] = { ...fields[idx], ...patch };
+      return { ...f, fields };
+    });
+  };
+  const addField = () =>
+    setEmbedForm((f) => ({ ...f, fields: [...(f.fields ?? []), { name: "", value: "", inline: false }] }));
+  const removeField = (idx: number) =>
+    setEmbedForm((f) => ({ ...f, fields: (f.fields ?? []).filter((_, i) => i !== idx) }));
 
   const saveEmbed = async () => {
     if (!editingEmbed) return;
