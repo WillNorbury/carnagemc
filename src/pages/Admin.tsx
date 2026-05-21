@@ -1431,9 +1431,24 @@ const BotDashboardSection = () => {
       });
   }, []);
 
-  const openEditEmbed = (key: "info" | "rules" | "roles") => {
+  const openEditEmbed = async (key: "info" | "rules" | "roles") => {
     setEditingEmbed(key);
-    setEmbedForm(embedOverrides[key] ?? {});
+    const existing = embedOverrides[key] ?? {};
+    setEmbedForm(existing);
+    // Pre-fill blanks with the current rendered embed (defaults merged with overrides)
+    try {
+      const { data } = await supabase.functions.invoke("discord-bot-action", {
+        body: { action: key, preview: true },
+      });
+      const p = data?.preview;
+      if (p) {
+        setEmbedForm((f) => ({
+          title: f.title ?? p.title ?? "",
+          description: f.description ?? p.description ?? "",
+          footerText: f.footerText ?? p.footer?.text ?? "",
+        }));
+      }
+    } catch (_) { /* ignore */ }
   };
 
   const saveEmbed = async () => {
