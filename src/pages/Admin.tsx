@@ -1716,31 +1716,13 @@ const BotDashboardSection = () => {
                 placeholder="Default description"
               />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label>Color (hex)</Label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="color"
-                    value={/^#?[0-9a-fA-F]{6}$/.test(embedForm.color ?? "") ? (embedForm.color!.startsWith("#") ? embedForm.color : `#${embedForm.color}`) : "#5865f2"}
-                    onChange={(e) => setEmbedForm({ ...embedForm, color: e.target.value })}
-                    className="h-9 w-12 rounded border border-border bg-transparent"
-                  />
-                  <Input
-                    value={embedForm.color ?? ""}
-                    onChange={(e) => setEmbedForm({ ...embedForm, color: e.target.value })}
-                    placeholder="#5865f2"
-                  />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <Label>Footer text</Label>
-                <Input
-                  value={embedForm.footerText ?? ""}
-                  onChange={(e) => setEmbedForm({ ...embedForm, footerText: e.target.value })}
-                  placeholder="Default footer"
-                />
-              </div>
+            <div className="space-y-1">
+              <Label>Footer text</Label>
+              <Input
+                value={embedForm.footerText ?? ""}
+                onChange={(e) => setEmbedForm({ ...embedForm, footerText: e.target.value })}
+                placeholder="Default footer"
+              />
             </div>
           </div>
           <DialogFooter>
