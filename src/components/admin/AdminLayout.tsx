@@ -101,6 +101,26 @@ export const AdminLayout = ({
                 );
               }
               const Icon = it.icon;
+              if (it.kind === "route") {
+                const routeBtn = (
+                  <Link
+                    to={it.to}
+                    className={cn(
+                      "relative flex items-center gap-3 rounded-lg w-full transition-all hover:bg-accent hover:text-foreground text-muted-foreground",
+                      collapsed ? "h-9 w-9 justify-center mx-auto" : "px-3 py-2"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {!collapsed && <span className="text-sm">{it.label}</span>}
+                  </Link>
+                );
+                return collapsed ? (
+                  <Tooltip key={it.to}>
+                    <TooltipTrigger asChild>{routeBtn}</TooltipTrigger>
+                    <TooltipContent side="right">{it.label}</TooltipContent>
+                  </Tooltip>
+                ) : <div key={it.to}>{routeBtn}</div>;
+              }
               const active = it.id === current;
               const btn = (
                 <button
