@@ -111,6 +111,39 @@ const Vote = () => {
             )}
           </Card>
 
+          {streak && (
+            <Card className="p-6 max-w-3xl mx-auto border-orange-500/30 bg-gradient-to-br from-orange-500/5 via-transparent to-primary/5">
+              <div className="flex items-center justify-between gap-6 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-full bg-orange-500/15 flex items-center justify-center">
+                    <Flame className="h-6 w-6 text-orange-400" />
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.25em] text-orange-400/90">Your Vote Streak</div>
+                    <div className="font-display text-2xl font-bold">
+                      {streak.vote_streak} <span className="text-muted-foreground text-base font-normal">day{streak.vote_streak === 1 ? "" : "s"}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-5 text-sm">
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <Trophy className="h-4 w-4 text-amber-400" /> Best <span className="text-foreground font-semibold">{streak.vote_best}</span>
+                  </div>
+                  <div className="text-muted-foreground">
+                    Total <span className="text-foreground font-semibold">{streak.total_votes}</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {!user && (
+            <p className="text-center text-xs text-muted-foreground">
+              <a href="/auth" className="text-primary hover:underline">Sign in</a> to start tracking your vote streak.
+            </p>
+          )}
+
+
           {/* Vote sites */}
           <section>
             <div className="text-center mb-6">
