@@ -12,7 +12,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { roleLabel, type AppRole } from "@/lib/roles";
 import { toast } from "sonner";
-import { Loader2, User as UserIcon, FileText, LifeBuoy, ClipboardList, Link2, ExternalLink, CheckCircle2 } from "lucide-react";
+import { Loader2, User as UserIcon, FileText, LifeBuoy, ClipboardList, Link2, ExternalLink, CheckCircle2, Flame, Vote as VoteIcon, Trophy } from "lucide-react";
+
+type Streaks = {
+  login_streak: number;
+  login_best: number;
+  total_logins: number;
+  vote_streak: number;
+  vote_best: number;
+  total_votes: number;
+  last_vote_date: string | null;
+};
 
 type Application = {
   id: string;
@@ -32,6 +42,7 @@ const Dashboard = () => {
   const [tickets, setTickets] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [streaks, setStreaks] = useState<Streaks | null>(null);
 
   useEffect(() => {
     document.title = "Dashboard — XyloMC";
@@ -44,7 +55,7 @@ const Dashboard = () => {
       return;
     }
     (async () => {
-      const [{ data: p }, { data: r }, { data: a }, { count: tc }] = await Promise.all([
+      const [{ data: p }, { data: r }, { data: a }, { count: tc }, { data: streakRow }] = await Promise.all([
         supabase.from("profiles").select("display_name, mc_username").eq("id", user.id).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", user.id),
         supabase
@@ -53,6 +64,7 @@ const Dashboard = () => {
           .eq("user_id", user.id)
           .order("created_at", { ascending: false }),
         supabase.from("support_tickets").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.rpc("record_login_streak"),
       ]);
       if (!p?.mc_username) {
         navigate("/link-account", { replace: true });
@@ -64,6 +76,7 @@ const Dashboard = () => {
       setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
       setApps((a as Application[]) ?? []);
       setTickets(tc ?? 0);
+      if (streakRow) setStreaks(streakRow as unknown as Streaks);
       setLoading(false);
     })();
   }, [user, authLoading, navigate]);
