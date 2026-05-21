@@ -1711,15 +1711,15 @@ const BotDashboardSection = () => {
       </Card>
 
       <Dialog open={!!editingEmbed} onOpenChange={(o) => !o && setEditingEmbed(null)}>
-        <DialogContent className="max-w-xl">
+        <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               Edit {editingEmbed === "info" ? "Server Info" : editingEmbed === "rules" ? "Server Rules" : "Roles"} embed
             </DialogTitle>
             <DialogDescription>
-              Override the default title, description, color, and footer. Leave any field blank to keep the default.
-              {editingEmbed === "rules" && " Rule items are managed in the Rules section."}
-              {editingEmbed === "roles" && " The role list is generated automatically."}
+              Edit the title, description, fields, and footer. Values are prefilled from the current embed.
+              {editingEmbed === "rules" && " Rule items are normally managed in the Rules section; edits here override them."}
+              {editingEmbed === "roles" && " The role list is generated automatically; edits here override it."}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
