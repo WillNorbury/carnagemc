@@ -1431,9 +1431,24 @@ const BotDashboardSection = () => {
       });
   }, []);
 
-  const openEditEmbed = (key: "info" | "rules" | "roles") => {
+  const openEditEmbed = async (key: "info" | "rules" | "roles") => {
     setEditingEmbed(key);
-    setEmbedForm(embedOverrides[key] ?? {});
+    const existing = embedOverrides[key] ?? {};
+    setEmbedForm(existing);
+    // Pre-fill blanks with the current rendered embed (defaults merged with overrides)
+    try {
+      const { data } = await supabase.functions.invoke("discord-bot-action", {
+        body: { action: key, preview: true },
+      });
+      const p = data?.preview;
+      if (p) {
+        setEmbedForm((f) => ({
+          title: f.title ?? p.title ?? "",
+          description: f.description ?? p.description ?? "",
+          footerText: f.footerText ?? p.footer?.text ?? "",
+        }));
+      }
+    } catch (_) { /* ignore */ }
   };
 
   const saveEmbed = async () => {
@@ -1701,31 +1716,13 @@ const BotDashboardSection = () => {
                 placeholder="Default description"
               />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label>Color (hex)</Label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="color"
-                    value={/^#?[0-9a-fA-F]{6}$/.test(embedForm.color ?? "") ? (embedForm.color!.startsWith("#") ? embedForm.color : `#${embedForm.color}`) : "#5865f2"}
-                    onChange={(e) => setEmbedForm({ ...embedForm, color: e.target.value })}
-                    className="h-9 w-12 rounded border border-border bg-transparent"
-                  />
-                  <Input
-                    value={embedForm.color ?? ""}
-                    onChange={(e) => setEmbedForm({ ...embedForm, color: e.target.value })}
-                    placeholder="#5865f2"
-                  />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <Label>Footer text</Label>
-                <Input
-                  value={embedForm.footerText ?? ""}
-                  onChange={(e) => setEmbedForm({ ...embedForm, footerText: e.target.value })}
-                  placeholder="Default footer"
-                />
-              </div>
+            <div className="space-y-1">
+              <Label>Footer text</Label>
+              <Input
+                value={embedForm.footerText ?? ""}
+                onChange={(e) => setEmbedForm({ ...embedForm, footerText: e.target.value })}
+                placeholder="Default footer"
+              />
             </div>
           </div>
           <DialogFooter>
