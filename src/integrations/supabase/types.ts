@@ -188,6 +188,87 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          category: string
+          cover_url: string | null
+          created_at: string
+          description: string
+          ends_at: string | null
+          id: string
+          location: string | null
+          published: boolean
+          slug: string
+          sort_order: number
+          starts_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          cover_url?: string | null
+          created_at?: string
+          description?: string
+          ends_at?: string | null
+          id?: string
+          location?: string | null
+          published?: boolean
+          slug: string
+          sort_order?: number
+          starts_at: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          cover_url?: string | null
+          created_at?: string
+          description?: string
+          ends_at?: string | null
+          id?: string
+          location?: string | null
+          published?: boolean
+          slug?: string
+          sort_order?: number
+          starts_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      faqs: {
+        Row: {
+          answer: string
+          category: string
+          created_at: string
+          id: string
+          published: boolean
+          question: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          category?: string
+          created_at?: string
+          id?: string
+          published?: boolean
+          question: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          category?: string
+          created_at?: string
+          id?: string
+          published?: boolean
+          question?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       features: {
         Row: {
           created_at: string
