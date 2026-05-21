@@ -6,8 +6,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ExternalLink, Gift, CheckCircle2, Crown, Sparkles, Coins } from "lucide-react";
+import { ExternalLink, Gift, CheckCircle2, Crown, Sparkles, Coins, Flame, Trophy } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 
 const SITES = [
   { id: "mcservers", name: "MinecraftServers.org", url: "https://minecraftservers.org/", reward: "1 Vote Crate Key" },
@@ -26,7 +28,9 @@ const REWARDS = [
 const STORAGE_KEY = "xylo_votes";
 
 const Vote = () => {
+  const { user } = useAuth();
   const [voted, setVoted] = useState<Record<string, number>>({});
+  const [streak, setStreak] = useState<{ vote_streak: number; vote_best: number; total_votes: number } | null>(null);
 
   useEffect(() => {
     document.title = "Vote — XyloMC";
@@ -36,16 +40,39 @@ const Vote = () => {
     } catch {}
   }, []);
 
+  useEffect(() => {
+    if (!user) {
+      setStreak(null);
+      return;
+    }
+    supabase
+      .from("user_streaks")
+      .select("vote_streak, vote_best, total_votes")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => setStreak(data ?? { vote_streak: 0, vote_best: 0, total_votes: 0 }));
+  }, [user]);
+
   const isFresh = (ts?: number) => ts && Date.now() - ts < 24 * 60 * 60 * 1000;
   const completed = SITES.filter((s) => isFresh(voted[s.id])).length;
   const progress = (completed / SITES.length) * 100;
 
-  const handleVote = (id: string, url: string) => {
+  const handleVote = async (id: string, url: string) => {
+    const alreadyToday = SITES.some((s) => isFresh(voted[s.id]));
     const next = { ...voted, [id]: Date.now() };
     setVoted(next);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     window.open(url, "_blank", "noopener,noreferrer");
     toast.success("Vote registered! Run /vote in-game to claim your reward.");
+
+    if (user && !alreadyToday) {
+      const { data, error } = await supabase.rpc("record_vote_streak");
+      if (!error && data) {
+        const row = data as unknown as { vote_streak: number; vote_best: number; total_votes: number };
+        setStreak(row);
+        if (row.vote_streak > 1) toast(`🔥 ${row.vote_streak}-day vote streak!`);
+      }
+    }
   };
 
   return (
