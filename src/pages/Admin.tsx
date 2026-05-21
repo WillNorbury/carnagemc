@@ -1671,6 +1671,74 @@ const BotDashboardSection = () => {
         )}
       </Card>
 
+      <Dialog open={!!editingEmbed} onOpenChange={(o) => !o && setEditingEmbed(null)}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>
+              Edit {editingEmbed === "info" ? "Server Info" : editingEmbed === "rules" ? "Server Rules" : "Roles"} embed
+            </DialogTitle>
+            <DialogDescription>
+              Override the default title, description, color, and footer. Leave any field blank to keep the default.
+              {editingEmbed === "rules" && " Rule items are managed in the Rules section."}
+              {editingEmbed === "roles" && " The role list is generated automatically."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <Label>Title</Label>
+              <Input
+                value={embedForm.title ?? ""}
+                onChange={(e) => setEmbedForm({ ...embedForm, title: e.target.value })}
+                placeholder="Default title"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label>Description</Label>
+              <Textarea
+                rows={5}
+                value={embedForm.description ?? ""}
+                onChange={(e) => setEmbedForm({ ...embedForm, description: e.target.value })}
+                placeholder="Default description"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label>Color (hex)</Label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={/^#?[0-9a-fA-F]{6}$/.test(embedForm.color ?? "") ? (embedForm.color!.startsWith("#") ? embedForm.color : `#${embedForm.color}`) : "#5865f2"}
+                    onChange={(e) => setEmbedForm({ ...embedForm, color: e.target.value })}
+                    className="h-9 w-12 rounded border border-border bg-transparent"
+                  />
+                  <Input
+                    value={embedForm.color ?? ""}
+                    onChange={(e) => setEmbedForm({ ...embedForm, color: e.target.value })}
+                    placeholder="#5865f2"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <Label>Footer text</Label>
+                <Input
+                  value={embedForm.footerText ?? ""}
+                  onChange={(e) => setEmbedForm({ ...embedForm, footerText: e.target.value })}
+                  placeholder="Default footer"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEmbedForm({})} disabled={savingEmbed}>
+              Reset to defaults
+            </Button>
+            <Button onClick={saveEmbed} disabled={savingEmbed}>
+              {savingEmbed ? "Saving..." : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
         <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
