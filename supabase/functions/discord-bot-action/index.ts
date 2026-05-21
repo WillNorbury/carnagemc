@@ -126,6 +126,24 @@ Deno.serve(async (req) => {
     const { data: cfgRow } = await supabase.from("site_content").select("value").eq("key", "discord_bot").maybeSingle();
     const cfg: any = cfgRow?.value ?? {};
 
+    const { data: embedRow } = await supabase.from("site_content").select("value").eq("key", "discord_embeds").maybeSingle();
+    const embedOverrides: any = embedRow?.value ?? {};
+    const applyOverride = (embed: any, key: "info" | "rules" | "roles") => {
+      const o = embedOverrides?.[key];
+      if (!o || typeof o !== "object") return embed;
+      if (typeof o.title === "string" && o.title.trim()) embed.title = o.title;
+      if (typeof o.description === "string" && o.description.trim()) embed.description = o.description;
+      if (typeof o.color === "string" && /^#?[0-9a-fA-F]{6}$/.test(o.color)) {
+        embed.color = parseInt(o.color.replace("#", ""), 16);
+      } else if (typeof o.color === "number") {
+        embed.color = o.color;
+      }
+      if (typeof o.footerText === "string" && o.footerText.trim()) {
+        embed.footer = { ...(embed.footer ?? {}), text: o.footerText };
+      }
+      return embed;
+    };
+
     if (action === "announce") {
       const channelId = body.channelId || cfg.announceChannelId;
       const message = body.message || "📢 **Test announcement** from the XyloMC admin panel.";
@@ -218,13 +236,13 @@ Deno.serve(async (req) => {
       if (!channelId) return json({ ok: false, error: "No roles channel configured" });
 
       const lines = SITE_ROLES.map((r) => `**${r.label}** — ${r.description}`).join("\n");
-      const embed = {
+      const embed = applyOverride({
         title: "XyloMC — Server Roles",
         description: lines,
         color: 0x5865f2,
         footer: { text: "XyloMC · Roles overview" },
         timestamp: new Date().toISOString(),
-      };
+      }, "roles");
 
       if (body.preview) {
         return json({ ok: true, preview: embed, channelId });
@@ -310,7 +328,7 @@ Deno.serve(async (req) => {
       let content: string | undefined;
 
       if (action === "info") {
-        embed = {
+        embed = applyOverride({
           title: "🍸 XyloMC — Server Info",
           description:
             "Welcome to **XyloMC** — your home for premium survival, minigames, and community events.\n\nConnect using the details below and join the adventure!",
@@ -329,7 +347,7 @@ Deno.serve(async (req) => {
           ],
           footer: { text: "XyloMC · See you in-game!" },
           timestamp: new Date().toISOString(),
-        };
+        }, "info");
         content = body.mention === false ? undefined : "@everyone";
       } else {
         // rules — load sections from DB
@@ -344,7 +362,7 @@ Deno.serve(async (req) => {
           value: (s.items ?? []).map((it: string) => `• ${it}`).join("\n") || "—",
         }));
 
-        embed = {
+        embed = applyOverride({
           title: "📜 XyloMC Rules",
           description:
             "Please read and follow these rules. Violations may result in mutes, kicks, or bans at staff discretion.",
@@ -352,7 +370,7 @@ Deno.serve(async (req) => {
           fields: fields.length > 0 ? fields : [{ name: "No rules", value: "No rules configured." }],
           footer: { text: "XyloMC · Updated regularly" },
           timestamp: new Date().toISOString(),
-        };
+        }, "rules");
       }
 
       if (body.preview) {

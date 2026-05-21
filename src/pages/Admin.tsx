@@ -1404,6 +1404,14 @@ const BotDashboardSection = () => {
   const [previewChannelId, setPreviewChannelId] = useState<string>("");
   const [previewAction_, setPreviewAction_] = useState<"roles" | "info" | "rules" | null>(null);
 
+  type EmbedOverride = { title?: string; description?: string; color?: string; footerText?: string };
+  const [embedOverrides, setEmbedOverrides] = useState<Record<"info" | "rules" | "roles", EmbedOverride>>({
+    info: {}, rules: {}, roles: {},
+  });
+  const [editingEmbed, setEditingEmbed] = useState<"info" | "rules" | "roles" | null>(null);
+  const [embedForm, setEmbedForm] = useState<EmbedOverride>({});
+  const [savingEmbed, setSavingEmbed] = useState(false);
+
   useEffect(() => {
     supabase
       .from("site_content")
@@ -1411,7 +1419,39 @@ const BotDashboardSection = () => {
       .eq("key", BOT_KEY)
       .maybeSingle()
       .then(({ data }) => data?.value && setCfg((c: any) => ({ ...c, ...(data.value as any) })));
+    supabase
+      .from("site_content")
+      .select("value")
+      .eq("key", "discord_embeds")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value && typeof data.value === "object") {
+          setEmbedOverrides((prev) => ({ ...prev, ...(data.value as any) }));
+        }
+      });
   }, []);
+
+  const openEditEmbed = (key: "info" | "rules" | "roles") => {
+    setEditingEmbed(key);
+    setEmbedForm(embedOverrides[key] ?? {});
+  };
+
+  const saveEmbed = async () => {
+    if (!editingEmbed) return;
+    setSavingEmbed(true);
+    const next = { ...embedOverrides, [editingEmbed]: embedForm };
+    const { error } = await supabase
+      .from("site_content")
+      .upsert({ key: "discord_embeds", value: next });
+    setSavingEmbed(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setEmbedOverrides(next);
+    setEditingEmbed(null);
+    toast.success("Embed saved. Click Run/Preview to apply.");
+  };
 
   const runTest = async () => {
     setTesting(true);
@@ -1597,6 +1637,11 @@ const BotDashboardSection = () => {
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {previewKey && (
+                    <Button size="sm" variant="outline" onClick={() => openEditEmbed(previewKey)}>
+                      <Pencil className="h-3.5 w-3.5 mr-1" /> Edit
+                    </Button>
+                  )}
+                  {previewKey && (
                     <Button size="sm" variant="outline" onClick={() => previewAction(previewKey)} disabled={!!busy || !t.channel}>
                       {busy === `${previewKey}-preview` ? "Loading..." : "Preview"}
                     </Button>
@@ -1625,6 +1670,74 @@ const BotDashboardSection = () => {
           </a>
         )}
       </Card>
+
+      <Dialog open={!!editingEmbed} onOpenChange={(o) => !o && setEditingEmbed(null)}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>
+              Edit {editingEmbed === "info" ? "Server Info" : editingEmbed === "rules" ? "Server Rules" : "Roles"} embed
+            </DialogTitle>
+            <DialogDescription>
+              Override the default title, description, color, and footer. Leave any field blank to keep the default.
+              {editingEmbed === "rules" && " Rule items are managed in the Rules section."}
+              {editingEmbed === "roles" && " The role list is generated automatically."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <Label>Title</Label>
+              <Input
+                value={embedForm.title ?? ""}
+                onChange={(e) => setEmbedForm({ ...embedForm, title: e.target.value })}
+                placeholder="Default title"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label>Description</Label>
+              <Textarea
+                rows={5}
+                value={embedForm.description ?? ""}
+                onChange={(e) => setEmbedForm({ ...embedForm, description: e.target.value })}
+                placeholder="Default description"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label>Color (hex)</Label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={/^#?[0-9a-fA-F]{6}$/.test(embedForm.color ?? "") ? (embedForm.color!.startsWith("#") ? embedForm.color : `#${embedForm.color}`) : "#5865f2"}
+                    onChange={(e) => setEmbedForm({ ...embedForm, color: e.target.value })}
+                    className="h-9 w-12 rounded border border-border bg-transparent"
+                  />
+                  <Input
+                    value={embedForm.color ?? ""}
+                    onChange={(e) => setEmbedForm({ ...embedForm, color: e.target.value })}
+                    placeholder="#5865f2"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <Label>Footer text</Label>
+                <Input
+                  value={embedForm.footerText ?? ""}
+                  onChange={(e) => setEmbedForm({ ...embedForm, footerText: e.target.value })}
+                  placeholder="Default footer"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEmbedForm({})} disabled={savingEmbed}>
+              Reset to defaults
+            </Button>
+            <Button onClick={saveEmbed} disabled={savingEmbed}>
+              {savingEmbed ? "Saving..." : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
         <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
