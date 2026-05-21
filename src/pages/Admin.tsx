@@ -1637,6 +1637,11 @@ const BotDashboardSection = () => {
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {previewKey && (
+                    <Button size="sm" variant="outline" onClick={() => openEditEmbed(previewKey)}>
+                      <Pencil className="h-3.5 w-3.5 mr-1" /> Edit
+                    </Button>
+                  )}
+                  {previewKey && (
                     <Button size="sm" variant="outline" onClick={() => previewAction(previewKey)} disabled={!!busy || !t.channel}>
                       {busy === `${previewKey}-preview` ? "Loading..." : "Preview"}
                     </Button>
