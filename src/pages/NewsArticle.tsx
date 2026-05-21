@@ -4,9 +4,14 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { SEO } from "@/components/site/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Share2 } from "lucide-react";
 import { toast } from "sonner";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const ogImageFor = (title: string, eyebrow = "Announcement") =>
+  `${SUPABASE_URL}/functions/v1/og-image?eyebrow=${encodeURIComponent(eyebrow)}&title=${encodeURIComponent(title)}`;
 
 type Priority = "low" | "normal" | "high" | "urgent";
 
@@ -62,6 +67,15 @@ const NewsArticle = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {article && (
+        <SEO
+          title={`${article.title} — XyloMC`}
+          description={(article.content || "").slice(0, 155).replace(/\s+/g, " ").trim() || "XyloMC announcement"}
+          path={`/announcements/${slug}`}
+          image={article.cover_url || ogImageFor(article.title)}
+          type="article"
+        />
+      )}
       <Navbar />
       <main className="container pt-24 pb-16 max-w-3xl">
         <div className="flex items-center justify-between mb-6">
