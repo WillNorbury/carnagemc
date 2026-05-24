@@ -188,6 +188,27 @@ export type Database = {
         }
         Relationships: []
       }
+      discord_link_states: {
+        Row: {
+          created_at: string
+          expires_at: string
+          state: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          state: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          state?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           category: string
@@ -426,6 +447,9 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          discord_avatar: string | null
+          discord_id: string | null
+          discord_username: string | null
           display_name: string | null
           id: string
           mc_username: string | null
@@ -435,6 +459,9 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          discord_avatar?: string | null
+          discord_id?: string | null
+          discord_username?: string | null
           display_name?: string | null
           id: string
           mc_username?: string | null
@@ -444,6 +471,9 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          discord_avatar?: string | null
+          discord_id?: string | null
+          discord_username?: string | null
           display_name?: string | null
           id?: string
           mc_username?: string | null
