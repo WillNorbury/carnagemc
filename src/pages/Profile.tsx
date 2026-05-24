@@ -68,6 +68,31 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("discord");
+    const msg = params.get("msg");
+    if (status === "linked") {
+      toast.success(`Discord linked${msg ? ` as ${msg}` : ""}`);
+    } else if (status === "error") {
+      const map: Record<string, string> = {
+        already_linked: "That Discord account is already linked to another user.",
+        expired_state: "Link request expired. Please try again.",
+        invalid_state: "Invalid link request. Please try again.",
+        token_exchange_failed: "Discord rejected the authorization. Try again.",
+        fetch_user_failed: "Couldn't read your Discord profile.",
+      };
+      toast.error(map[msg ?? ""] ?? "Discord link failed");
+    }
+    if (status) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("discord");
+      url.searchParams.delete("msg");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, []);
+
+
+  useEffect(() => {
     if (authLoading) return;
     if (!user) { navigate("/auth"); return; }
     (async () => {
