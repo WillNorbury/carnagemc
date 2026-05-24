@@ -4,12 +4,14 @@ import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import logo from "@/assets/xylo-logo.png";
 import {
   LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
   PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound, Puzzle, ClipboardList, Zap, Sparkles, Gavel,
-  HelpCircle, Calendar, Wrench,
+  HelpCircle, Calendar, Wrench, Menu,
 } from "lucide-react";
 
 
@@ -58,6 +60,8 @@ export const AdminLayout = ({
   isOwner?: boolean;
 }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const isMobile = useIsMobile();
   const { signOut, user } = useAuth();
 
   const visibleItems = items.filter((it) => {
@@ -66,113 +70,150 @@ export const AdminLayout = ({
     return true;
   });
 
+  const handleNavigate = (s: AdminSection) => {
+    onNavigate(s);
+    setMobileOpen(false);
+  };
+
+  const navContent = (forceExpanded = false) => {
+    const isCollapsed = forceExpanded ? false : collapsed;
+    return (
+      <>
+        <div className={cn("flex h-[60px] items-center border-b px-4 shrink-0", isCollapsed ? "justify-center" : "justify-between")}>
+          {!isCollapsed && (
+            <Link to="/" className="flex items-center gap-2 font-semibold" onClick={() => setMobileOpen(false)}>
+              <img src={logo} alt="XyloMC" className="h-7 w-7" />
+              <span className="text-lg">XYLO<span className="text-gradient">MC</span></span>
+            </Link>
+          )}
+          {!forceExpanded && (
+            <Button variant="ghost" size="icon" className="h-8 w-8 hidden md:inline-flex" onClick={() => setCollapsed(!collapsed)}>
+              <PanelLeft className="h-5 w-5" />
+            </Button>
+          )}
+        </div>
+
+        <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-1">
+          {visibleItems.map((it, idx) => {
+            if (it.kind === "section") {
+              const SIcon = it.icon;
+              if (isCollapsed) return <div key={`s-${idx}`} className="my-2 border-t border-border/60" />;
+              return (
+                <div key={`s-${idx}`} className="px-3 pt-4 pb-1 flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground/80">
+                  <SIcon className="h-3 w-3" />
+                  {it.title}
+                </div>
+              );
+            }
+            const Icon = it.icon;
+            if (it.kind === "route") {
+              const routeBtn = (
+                <Link
+                  to={it.to}
+                  onClick={() => setMobileOpen(false)}
+                  className={cn(
+                    "relative flex items-center gap-3 rounded-lg w-full transition-all hover:bg-accent hover:text-foreground text-muted-foreground",
+                    isCollapsed ? "h-9 w-9 justify-center mx-auto" : "px-3 py-2"
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  {!isCollapsed && <span className="text-sm">{it.label}</span>}
+                </Link>
+              );
+              return isCollapsed ? (
+                <Tooltip key={it.to}>
+                  <TooltipTrigger asChild>{routeBtn}</TooltipTrigger>
+                  <TooltipContent side="right">{it.label}</TooltipContent>
+                </Tooltip>
+              ) : <div key={it.to}>{routeBtn}</div>;
+            }
+            const active = it.id === current;
+            const btn = (
+              <button
+                onClick={() => handleNavigate(it.id)}
+                className={cn(
+                  "relative flex items-center gap-3 rounded-lg w-full transition-all hover:bg-accent hover:text-foreground text-muted-foreground",
+                  isCollapsed ? "h-9 w-9 justify-center mx-auto" : "px-3 py-2",
+                  active && "bg-accent text-foreground"
+                )}
+              >
+                {active && <span className="absolute left-0 h-6 w-1 rounded-r-full bg-primary" />}
+                <Icon className="h-4 w-4" />
+                {!isCollapsed && <span className="text-sm">{it.label}</span>}
+              </button>
+            );
+            return isCollapsed ? (
+              <Tooltip key={it.id}>
+                <TooltipTrigger asChild>{btn}</TooltipTrigger>
+                <TooltipContent side="right">{it.label}</TooltipContent>
+              </Tooltip>
+            ) : <div key={it.id}>{btn}</div>;
+          })}
+        </nav>
+
+        <div className="mt-auto border-t p-2 shrink-0">
+          {!isCollapsed && user && (
+            <div className="px-3 py-2 text-xs text-muted-foreground truncate">
+              {user.email}
+            </div>
+          )}
+          <Button
+            variant="ghost"
+            className={cn("w-full text-muted-foreground", isCollapsed ? "h-9 w-9 justify-center p-0" : "justify-start gap-3 px-3")}
+            onClick={() => signOut()}
+          >
+            <LogOut className="h-4 w-4" />
+            {!isCollapsed && "Logout"}
+          </Button>
+        </div>
+      </>
+    );
+  };
+
   return (
     <TooltipProvider delayDuration={0}>
       <div className="flex min-h-screen bg-background text-foreground">
+        {/* Desktop sidebar */}
         <aside
           className={cn(
-            "relative flex flex-col h-screen sticky top-0 border-r bg-card transition-all duration-300 ease-in-out",
+            "relative hidden md:flex flex-col h-screen sticky top-0 border-r bg-card transition-all duration-300 ease-in-out",
             collapsed ? "w-20" : "w-64"
           )}
         >
-          <div className={cn("flex h-[60px] items-center border-b px-4", collapsed ? "justify-center" : "justify-between")}>
-            {!collapsed && (
-              <Link to="/" className="flex items-center gap-2 font-semibold">
-                <img src={logo} alt="XyloMC" className="h-7 w-7" />
-                <span className="text-lg">XYLO<span className="text-gradient">MC</span></span>
-              </Link>
-            )}
-            
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setCollapsed(!collapsed)}>
-              <PanelLeft className="h-5 w-5" />
-            </Button>
-          </div>
-
-          <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-1">
-            {visibleItems.map((it, idx) => {
-              if (it.kind === "section") {
-                const SIcon = it.icon;
-                if (collapsed) return <div key={`s-${idx}`} className="my-2 border-t border-border/60" />;
-                return (
-                  <div key={`s-${idx}`} className="px-3 pt-4 pb-1 flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground/80">
-                    <SIcon className="h-3 w-3" />
-                    {it.title}
-                  </div>
-                );
-              }
-              const Icon = it.icon;
-              if (it.kind === "route") {
-                const routeBtn = (
-                  <Link
-                    to={it.to}
-                    className={cn(
-                      "relative flex items-center gap-3 rounded-lg w-full transition-all hover:bg-accent hover:text-foreground text-muted-foreground",
-                      collapsed ? "h-9 w-9 justify-center mx-auto" : "px-3 py-2"
-                    )}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {!collapsed && <span className="text-sm">{it.label}</span>}
-                  </Link>
-                );
-                return collapsed ? (
-                  <Tooltip key={it.to}>
-                    <TooltipTrigger asChild>{routeBtn}</TooltipTrigger>
-                    <TooltipContent side="right">{it.label}</TooltipContent>
-                  </Tooltip>
-                ) : <div key={it.to}>{routeBtn}</div>;
-              }
-              const active = it.id === current;
-              const btn = (
-                <button
-                  onClick={() => onNavigate(it.id)}
-                  className={cn(
-                    "relative flex items-center gap-3 rounded-lg w-full transition-all hover:bg-accent hover:text-foreground text-muted-foreground",
-                    collapsed ? "h-9 w-9 justify-center mx-auto" : "px-3 py-2",
-                    active && "bg-accent text-foreground"
-                  )}
-                >
-                  {active && <span className="absolute left-0 h-6 w-1 rounded-r-full bg-primary" />}
-                  <Icon className="h-4 w-4" />
-                  {!collapsed && <span className="text-sm">{it.label}</span>}
-                </button>
-              );
-              return collapsed ? (
-                <Tooltip key={it.id}>
-                  <TooltipTrigger asChild>{btn}</TooltipTrigger>
-                  <TooltipContent side="right">{it.label}</TooltipContent>
-                </Tooltip>
-              ) : <div key={it.id}>{btn}</div>;
-            })}
-          </nav>
-
-
-          <div className="mt-auto border-t p-2">
-            {!collapsed && user && (
-              <div className="px-3 py-2 text-xs text-muted-foreground truncate">
-                {user.email}
-              </div>
-            )}
-            <Button
-              variant="ghost"
-              className={cn("w-full text-muted-foreground", collapsed ? "h-9 w-9 justify-center p-0" : "justify-start gap-3 px-3")}
-              onClick={() => signOut()}
-            >
-              <LogOut className="h-4 w-4" />
-              {!collapsed && "Logout"}
-            </Button>
-          </div>
+          {navContent()}
         </aside>
 
-        <ScrollArea className="h-screen flex-1">
-          <main className="p-6 md:p-8 space-y-8">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-                {description && <p className="mt-1.5 text-muted-foreground">{description}</p>}
-              </div>
-              {actions && <div className="flex items-center gap-2">{actions}</div>}
+        {/* Mobile drawer */}
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+          <SheetContent side="left" className="p-0 w-72 flex flex-col bg-card">
+            {navContent(true)}
+          </SheetContent>
+        </Sheet>
+
+        <ScrollArea className="h-screen flex-1 w-full">
+          <main className="p-4 sm:p-6 md:p-8 space-y-6 md:space-y-8">
+            {/* Mobile top bar */}
+            <div className="flex md:hidden items-center justify-between -mx-4 px-4 py-2 border-b -mt-4 sticky top-0 z-30 bg-background/95 backdrop-blur">
+              <Button variant="ghost" size="icon" onClick={() => setMobileOpen(true)}>
+                <Menu className="h-5 w-5" />
+              </Button>
+              <Link to="/" className="flex items-center gap-2 font-semibold">
+                <img src={logo} alt="XyloMC" className="h-6 w-6" />
+                <span className="text-sm">XYLO<span className="text-gradient">MC</span></span>
+              </Link>
+              <div className="w-9" />
             </div>
-            {children}
+
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="min-w-0">
+                <h1 className="text-2xl md:text-3xl font-bold tracking-tight truncate">{title}</h1>
+                {description && <p className="mt-1.5 text-sm md:text-base text-muted-foreground">{description}</p>}
+              </div>
+              {actions && <div className="flex items-center gap-2 flex-wrap">{actions}</div>}
+            </div>
+            <div className="min-w-0 overflow-x-auto">
+              {children}
+            </div>
           </main>
         </ScrollArea>
       </div>
