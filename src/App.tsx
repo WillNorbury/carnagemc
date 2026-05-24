@@ -52,6 +52,7 @@ const Shell = () => {
     <MaintenanceGate>
       <SidebarProvider>
         {!isAdmin && <AppSidebar />}
+        {!isAdmin && <SwipeToOpenSidebar />}
         <SidebarInset>
           <Routes>
                   <Route path="/" element={<Index />} />
