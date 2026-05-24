@@ -27,7 +27,7 @@ import { useAuth } from "@/lib/auth";
 import { roleLabel, type AppRole } from "@/lib/roles";
 import { applyTheme, DEFAULT_PREFS, type UserPreferences } from "@/lib/preferences";
 import { toast } from "sonner";
-import { Bell, ExternalLink, Loader2, Lock, Palette, Unlink } from "lucide-react";
+import { Bell, ExternalLink, Loader2, Lock, MessageCircle, Palette, Unlink } from "lucide-react";
 
 const Profile = () => {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -41,6 +41,9 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [unlinking, setUnlinking] = useState(false);
+  const [discord, setDiscord] = useState<{ id: string | null; username: string | null; avatar: string | null }>({ id: null, username: null, avatar: null });
+  const [linkingDiscord, setLinkingDiscord] = useState(false);
+  const [unlinkingDiscord, setUnlinkingDiscord] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [changingPw, setChangingPw] = useState(false);
@@ -69,12 +72,17 @@ const Profile = () => {
     if (!user) { navigate("/auth"); return; }
     (async () => {
       const [{ data: p }, { data: r }] = await Promise.all([
-        supabase.from("profiles").select("display_name, mc_username, avatar_url, preferences").eq("id", user.id).maybeSingle(),
+        supabase.from("profiles").select("display_name, mc_username, avatar_url, preferences, discord_id, discord_username, discord_avatar").eq("id", user.id).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", user.id),
       ]);
       setDisplayName(p?.display_name ?? "");
       setMcUsername(p?.mc_username ?? "");
       setSavedMc(p?.mc_username ?? null);
+      setDiscord({
+        id: (p as any)?.discord_id ?? null,
+        username: (p as any)?.discord_username ?? null,
+        avatar: (p as any)?.discord_avatar ?? null,
+      });
       setAvatarUrl(p?.avatar_url ?? "");
       setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
       const loaded = { ...DEFAULT_PREFS, ...((p?.preferences as UserPreferences) ?? {}) };
@@ -126,6 +134,31 @@ const Profile = () => {
     setMcUsername("");
     setSavedMc(null);
     toast.success("Minecraft account unlinked");
+  };
+
+  const linkDiscord = async () => {
+    setLinkingDiscord(true);
+    const { data, error } = await supabase.functions.invoke("discord-link-start", {
+      body: { return_to: `${window.location.origin}/profile` },
+    });
+    setLinkingDiscord(false);
+    if (error || !data?.url) {
+      return toast.error(error?.message || "Could not start Discord link");
+    }
+    window.location.href = data.url;
+  };
+
+  const unlinkDiscord = async () => {
+    if (!user) return;
+    setUnlinkingDiscord(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ discord_id: null, discord_username: null, discord_avatar: null })
+      .eq("id", user.id);
+    setUnlinkingDiscord(false);
+    if (error) return toast.error(error.message);
+    setDiscord({ id: null, username: null, avatar: null });
+    toast.success("Discord account unlinked");
   };
 
   if (authLoading || loading) {
@@ -242,6 +275,61 @@ const Profile = () => {
             </Button>
           </div>
         </Card>
+
+        <Card className="p-6 mt-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5 text-[#5865F2]" />
+            <h2 className="font-display font-bold text-lg">Discord account</h2>
+          </div>
+          {discord.id ? (
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-3 min-w-0">
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={discord.avatar ?? undefined} />
+                  <AvatarFallback>{(discord.username ?? "?").slice(0, 2).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <div className="font-semibold truncate">{discord.username}</div>
+                  <div className="text-xs text-muted-foreground font-mono truncate">ID: {discord.id}</div>
+                </div>
+              </div>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
+                    <Unlink className="h-3.5 w-3.5 mr-1" /> Unlink Discord
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Unlink Discord account?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      <strong>{discord.username}</strong> will be disconnected from your XyloMC account. You can re-link it any time.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={unlinkDiscord} disabled={unlinkingDiscord}>
+                      {unlinkingDiscord && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                      Unlink
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-sm text-muted-foreground">
+                Connect your Discord to display your tag on your public profile and unlock community features.
+              </p>
+              <Button onClick={linkDiscord} disabled={linkingDiscord} className="bg-[#5865F2] hover:bg-[#4752c4] text-white">
+                {linkingDiscord ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <MessageCircle className="h-4 w-4 mr-2" />}
+                Link Discord
+              </Button>
+            </div>
+          )}
+        </Card>
+
+
 
         <Card className="p-6 mt-6 space-y-6">
           <div>

@@ -6,5 +6,8 @@ verify_jwt = false
 [functions.discord-interactions]
 verify_jwt = false
 
+[functions.discord-link-callback]
+verify_jwt = false
+
 [functions.og-image]
 verify_jwt = false
