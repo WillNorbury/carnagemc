@@ -104,10 +104,23 @@ const Faq = () => {
                 {filtered.map((f) => (
                   <AccordionItem key={f.id} value={f.id} className="px-3">
                     <AccordionTrigger className="text-left">
-                      <span className="flex-1">{f.question}</span>
+                      <span className="flex-1">{highlight(f.question, q)}</span>
                     </AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground whitespace-pre-wrap">
-                      {f.answer}
+                    <AccordionContent>
+                      <div className="prose prose-sm prose-invert max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-code:text-primary prose-code:before:content-none prose-code:after:content-none prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            a: ({ node, ...props }) => (
+                              <a {...props} target="_blank" rel="noopener noreferrer" />
+                            ),
+                            text: ({ children }) =>
+                              typeof children === "string" ? <>{highlight(children, q)}</> : <>{children}</>,
+                          }}
+                        >
+                          {f.answer}
+                        </ReactMarkdown>
+                      </div>
                     </AccordionContent>
                   </AccordionItem>
                 ))}
