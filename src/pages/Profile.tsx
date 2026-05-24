@@ -136,7 +136,31 @@ const Profile = () => {
     toast.success("Minecraft account unlinked");
   };
 
-  if (authLoading || loading) {
+  const linkDiscord = async () => {
+    setLinkingDiscord(true);
+    const { data, error } = await supabase.functions.invoke("discord-link-start", {
+      body: { return_to: `${window.location.origin}/profile` },
+    });
+    setLinkingDiscord(false);
+    if (error || !data?.url) {
+      return toast.error(error?.message || "Could not start Discord link");
+    }
+    window.location.href = data.url;
+  };
+
+  const unlinkDiscord = async () => {
+    if (!user) return;
+    setUnlinkingDiscord(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ discord_id: null, discord_username: null, discord_avatar: null })
+      .eq("id", user.id);
+    setUnlinkingDiscord(false);
+    if (error) return toast.error(error.message);
+    setDiscord({ id: null, username: null, avatar: null });
+    toast.success("Discord account unlinked");
+  };
+
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
