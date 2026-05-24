@@ -161,6 +161,7 @@ const Profile = () => {
     toast.success("Discord account unlinked");
   };
 
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
