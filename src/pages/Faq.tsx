@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { HelpCircle, Search, LifeBuoy } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { highlight } from "@/components/site/Highlight";
 
 type Faq = { id: string; question: string; answer: string; category: string; sort_order: number };
 
