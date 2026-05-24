@@ -276,6 +276,61 @@ const Profile = () => {
           </div>
         </Card>
 
+        <Card className="p-6 mt-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5 text-[#5865F2]" />
+            <h2 className="font-display font-bold text-lg">Discord account</h2>
+          </div>
+          {discord.id ? (
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-3 min-w-0">
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={discord.avatar ?? undefined} />
+                  <AvatarFallback>{(discord.username ?? "?").slice(0, 2).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <div className="font-semibold truncate">{discord.username}</div>
+                  <div className="text-xs text-muted-foreground font-mono truncate">ID: {discord.id}</div>
+                </div>
+              </div>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
+                    <Unlink className="h-3.5 w-3.5 mr-1" /> Unlink Discord
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Unlink Discord account?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      <strong>{discord.username}</strong> will be disconnected from your XyloMC account. You can re-link it any time.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={unlinkDiscord} disabled={unlinkingDiscord}>
+                      {unlinkingDiscord && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                      Unlink
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-sm text-muted-foreground">
+                Connect your Discord to display your tag on your public profile and unlock community features.
+              </p>
+              <Button onClick={linkDiscord} disabled={linkingDiscord} className="bg-[#5865F2] hover:bg-[#4752c4] text-white">
+                {linkingDiscord ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <MessageCircle className="h-4 w-4 mr-2" />}
+                Link Discord
+              </Button>
+            </div>
+          )}
+        </Card>
+
+
+
         <Card className="p-6 mt-6 space-y-6">
           <div>
             <div className="flex items-center gap-2 mb-1">
