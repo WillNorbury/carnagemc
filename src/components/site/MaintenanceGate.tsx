@@ -5,14 +5,21 @@ import { useAuth } from "@/lib/auth";
 import { Wrench, Shield } from "lucide-react";
 import logo from "@/assets/xylo-logo.png";
 
-type Config = { enabled: boolean; title?: string; message?: string };
+type Config = {
+  enabled: boolean;
+  title?: string;
+  message?: string;
+  allowed_roles?: string[];
+  allowed_user_ids?: string[];
+};
 
 const ALLOW = ["/auth", "/admin"];
 
 export function MaintenanceGate({ children }: { children: React.ReactNode }) {
   const [cfg, setCfg] = useState<Config>({ enabled: false });
   const [loaded, setLoaded] = useState(false);
-  const { isAdmin } = useAuth();
+  const [userRoles, setUserRoles] = useState<string[]>([]);
+  const { isAdmin, user } = useAuth();
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -43,9 +50,31 @@ export function MaintenanceGate({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!user) {
+      setUserRoles([]);
+      return;
+    }
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .then(({ data }) => setUserRoles((data ?? []).map((r: any) => r.role)));
+  }, [user]);
+
   if (!loaded) return null;
 
-  const bypass = isAdmin || ALLOW.includes(pathname) || pathname.startsWith("/admin");
+  const allowedRoles = cfg.allowed_roles ?? [];
+  const allowedUsers = cfg.allowed_user_ids ?? [];
+  const roleAllowed = userRoles.some((r) => allowedRoles.includes(r));
+  const userAllowed = !!user && allowedUsers.includes(user.id);
+
+  const bypass =
+    isAdmin ||
+    roleAllowed ||
+    userAllowed ||
+    ALLOW.includes(pathname) ||
+    pathname.startsWith("/admin");
 
   if (!cfg.enabled || bypass) return <>{children}</>;
 
