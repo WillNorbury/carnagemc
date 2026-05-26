@@ -1,36 +1,36 @@
 export const ALL_ROLES = [
-  { value: "owner", label: "Owner" },
-  { value: "director", label: "Director" },
-  { value: "exec_manager", label: "Executive Manager" },
-  { value: "sr_manager", label: "Senior Manager" },
-  { value: "manager", label: "Manager" },
-  { value: "community_manager", label: "Community Manager" },
-  { value: "lead_developer", label: "Lead Developer" },
-  { value: "developer", label: "Developer" },
-  { value: "jr_developer", label: "Jr Developer" },
-  { value: "bot_developer", label: "Bot Developer" },
-  { value: "sr_admin", label: "Senior Admin" },
-  { value: "admin", label: "Admin" },
-  { value: "trial_admin", label: "Trial Admin" },
-  { value: "jr_admin", label: "Jr Admin" },
-  { value: "sr_mod", label: "Senior Moderator" },
-  { value: "mod", label: "Moderator" },
-  { value: "trial_mod", label: "Trial Moderator" },
-  { value: "chat_monitor", label: "Chat Monitor" },
-  { value: "sr_helper", label: "Senior Helper" },
-  { value: "helper", label: "Helper" },
-  { value: "trainee", label: "Trainee" },
-  { value: "partner", label: "Partner" },
-  { value: "content_creator", label: "Content Creator" },
-  { value: "og", label: "OG" },
-  { value: "champion", label: "Champion" },
-  { value: "media", label: "Media" },
-  { value: "elite", label: "Elite" },
-  { value: "mvp", label: "MVP" },
-  { value: "vip", label: "VIP" },
-  { value: "booster", label: "Booster" },
-  { value: "member", label: "Member" },
-  { value: "default", label: "Default" },
+  { value: "owner", label: "Owner", emoji: "👑" },
+  { value: "director", label: "Director", emoji: "🎬" },
+  { value: "exec_manager", label: "Executive Manager", emoji: "💼" },
+  { value: "sr_manager", label: "Senior Manager", emoji: "📋" },
+  { value: "manager", label: "Manager", emoji: "📌" },
+  { value: "community_manager", label: "Community Manager", emoji: "🌟" },
+  { value: "lead_developer", label: "Lead Developer", emoji: "🧠" },
+  { value: "developer", label: "Developer", emoji: "🔧" },
+  { value: "jr_developer", label: "Jr Developer", emoji: "✏️" },
+  { value: "bot_developer", label: "Bot Developer", emoji: "🤖" },
+  { value: "sr_admin", label: "Senior Admin", emoji: "🛡️" },
+  { value: "admin", label: "Admin", emoji: "🛡️" },
+  { value: "trial_admin", label: "Trial Admin", emoji: "⚔️" },
+  { value: "jr_admin", label: "Jr Admin", emoji: "🛠️" },
+  { value: "sr_mod", label: "Senior Moderator", emoji: "⚡" },
+  { value: "mod", label: "Moderator", emoji: "🔨" },
+  { value: "trial_mod", label: "Trial Moderator", emoji: "🌿" },
+  { value: "chat_monitor", label: "Chat Monitor", emoji: "💬" },
+  { value: "sr_helper", label: "Senior Helper", emoji: "💚" },
+  { value: "helper", label: "Helper", emoji: "🟢" },
+  { value: "trainee", label: "Trainee", emoji: "🌱" },
+  { value: "partner", label: "Partner", emoji: "🤝" },
+  { value: "content_creator", label: "Content Creator", emoji: "🎥" },
+  { value: "og", label: "OG", emoji: "✨" },
+  { value: "champion", label: "Champion", emoji: "🏆" },
+  { value: "media", label: "Media", emoji: "📰" },
+  { value: "elite", label: "Elite", emoji: "💎" },
+  { value: "mvp", label: "MVP", emoji: "🌟" },
+  { value: "vip", label: "VIP", emoji: "⭐" },
+  { value: "booster", label: "Booster", emoji: "🚀" },
+  { value: "member", label: "Member", emoji: "👤" },
+  { value: "default", label: "Default", emoji: "👤" },
 ] as const;
 
 export type AppRole = typeof ALL_ROLES[number]["value"];
@@ -61,5 +61,15 @@ export const STAFF_ROLES: AppRole[] = [
 
 export const isStaffRole = (v: string) => STAFF_ROLES.includes(v as AppRole);
 
-export const roleLabel = (v: string) =>
-  ALL_ROLES.find((r) => r.value === v)?.label ?? v;
+export const roleLabel = (v: string) => {
+  const r = ALL_ROLES.find((x) => x.value === v);
+  return r ? `${r.emoji} ${r.label}` : v;
+};
+
+export const roleEmoji = (v: string) =>
+  ALL_ROLES.find((r) => r.value === v)?.emoji ?? "";
+
+export const roleLabelWithEmoji = (v: string) => {
+  const r = ALL_ROLES.find((x) => x.value === v);
+  return r ? `${r.emoji} ${r.label}` : v;
+};
