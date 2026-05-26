@@ -37,7 +37,6 @@ import FeatureDetail from "./pages/FeatureDetail.tsx";
 import Leaderboard from "./pages/Leaderboard.tsx";
 import Faq from "./pages/Faq.tsx";
 import Events from "./pages/Events.tsx";
-import Store from "./pages/Store.tsx";
 import AdminFaqs from "./pages/AdminFaqs.tsx";
 import AdminEvents from "./pages/AdminEvents.tsx";
 import AdminMaintenance from "./pages/AdminMaintenance.tsx";
