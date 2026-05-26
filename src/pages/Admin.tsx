@@ -77,6 +77,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   applications: { title: "Applications", description: "Review staff, builder, and content creator applications." },
   features: { title: "Features", description: "Add, edit, reorder, and remove features shown on the website." },
   rules: { title: "Rules", description: "Edit the sections shown on the public Rules page." },
+  store: { title: "Store", description: "Manage store categories and items shown on the public Store page." },
   "bot-dashboard": {
     title: "Discord Bot — Dashboard",
     description: "Status and overview of the XyloMC Discord bot.",
