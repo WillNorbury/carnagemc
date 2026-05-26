@@ -137,12 +137,18 @@ const Admin = () => {
       {section === "status" && <StatusTab />}
       {section === "tickets" && <TicketsAdminSection />}
       {section === "logs" && <LogsTab />}
-      {section === "logs" && <LogsTab />}
       {section === "plugins" && <PluginsTab />}
       {section === "changelog" && <ChangelogTab />}
       {section === "applications" && <ApplicationsTab />}
       {section === "features" && <FeaturesTab />}
       {section === "rules" && <RulesTab />}
+      {section === "permissions" && (isOwner ? <PermissionsTab /> : (
+        <div className="flex flex-col items-center justify-center gap-4 py-20">
+          <ShieldOff className="h-12 w-12 text-destructive" />
+          <h2 className="text-xl font-bold">Access denied</h2>
+          <p className="text-muted-foreground">Only the owner can access this section.</p>
+        </div>
+      ))}
       {section === "bot-dashboard" && (isOwner ? <BotDashboardSection /> : (
         <div className="flex flex-col items-center justify-center gap-4 py-20">
           <ShieldOff className="h-12 w-12 text-destructive" />
