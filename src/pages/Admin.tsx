@@ -507,6 +507,15 @@ const UsersTab = () => {
                       <ShieldCheck className="h-4 w-4 mr-1" />
                       {isAdminFor(p.id) ? "Demote" : "Promote"}
                     </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-destructive hover:text-destructive border-destructive/40"
+                      onClick={() => deleteUser(p)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
+                    </Button>
                   </div>
                 </div>
               );
