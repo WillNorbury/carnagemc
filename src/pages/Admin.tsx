@@ -48,6 +48,7 @@ import { usePermissions } from "@/lib/usePermissions";
 import { FeaturesTab } from "@/components/admin/FeaturesTab";
 import { RulesTab } from "@/components/admin/RulesTab";
 import { NewsAnnouncementsTab } from "@/pages/AdminNews";
+import { StoreTab } from "@/components/admin/StoreTab";
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
 type RoleRow = { id: string; user_id: string; role: AppRole };
@@ -76,6 +77,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   applications: { title: "Applications", description: "Review staff, builder, and content creator applications." },
   features: { title: "Features", description: "Add, edit, reorder, and remove features shown on the website." },
   rules: { title: "Rules", description: "Edit the sections shown on the public Rules page." },
+  store: { title: "Store", description: "Manage store categories and items shown on the public Store page." },
   "bot-dashboard": {
     title: "Discord Bot — Dashboard",
     description: "Status and overview of the XyloMC Discord bot.",
@@ -143,6 +145,7 @@ const Admin = () => {
       {section === "applications" && <ApplicationsTab />}
       {section === "features" && <FeaturesTab />}
       {section === "rules" && <RulesTab />}
+      {section === "store" && <StoreTab />}
       {section === "bot-dashboard" && (isOwner ? <BotDashboardSection /> : (
         <div className="flex flex-col items-center justify-center gap-4 py-20">
           <ShieldOff className="h-12 w-12 text-destructive" />

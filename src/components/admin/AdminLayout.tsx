@@ -11,13 +11,13 @@ import logo from "@/assets/xylo-logo.png";
 import {
   LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
   PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound, Puzzle, ClipboardList, Zap, Sparkles, Gavel,
-  HelpCircle, Calendar, Wrench, Menu,
+  HelpCircle, Calendar, Wrench, Menu, Store as StoreIcon,
 } from "lucide-react";
 
 
 export type AdminSection =
   | "dashboard" | "users" | "roles" | "permissions" | "news" | "content" | "status" | "logs" | "tickets" | "plugins"
-  | "changelog" | "applications" | "features" | "rules"
+  | "changelog" | "applications" | "features" | "rules" | "store"
   | "bot-dashboard" | "bot-management";
 
 type NavItem =
@@ -40,6 +40,7 @@ const items: NavItem[] = [
   { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
   { kind: "link", id: "features", icon: Sparkles, label: "Features" },
   { kind: "link", id: "rules", icon: Gavel, label: "Rules" },
+  { kind: "link", id: "store", icon: StoreIcon, label: "Store" },
   { kind: "route", to: "/admin/faqs", icon: HelpCircle, label: "FAQs" },
   { kind: "route", to: "/admin/events", icon: Calendar, label: "Events" },
   { kind: "route", to: "/admin/maintenance", icon: Wrench, label: "Maintenance" },
