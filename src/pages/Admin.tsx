@@ -302,6 +302,27 @@ const UsersTab = () => {
     load();
   };
 
+  const deleteUser = async (p: Profile) => {
+    const ok = await confirm({
+      title: "Delete this user?",
+      description: `This will permanently delete ${p.display_name ?? p.mc_username ?? "this user"}'s account, profile, and roles. This cannot be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-delete-user", {
+        body: { user_id: p.id },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast.success("User deleted");
+      load();
+    } catch (e: any) {
+      toast.error(e.message ?? "Failed to delete user");
+    }
+  };
+
   const createUser = async () => {
     if (!newUser.email || !newUser.password) {
       toast.error("Email and password required");
