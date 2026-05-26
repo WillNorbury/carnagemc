@@ -306,7 +306,7 @@ const UsersTab = () => {
     const ok = await confirm({
       title: "Delete this user?",
       description: `This will permanently delete ${p.display_name ?? p.mc_username ?? "this user"}'s account, profile, and roles. This cannot be undone.`,
-      confirmLabel: "Delete",
+      confirmText: "Delete",
       destructive: true,
     });
     if (!ok) return;
