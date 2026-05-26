@@ -910,6 +910,21 @@ export type Database = {
         | "vip"
         | "booster"
         | "default"
+        | "director"
+        | "exec_manager"
+        | "sr_manager"
+        | "community_manager"
+        | "lead_developer"
+        | "jr_developer"
+        | "bot_developer"
+        | "trial_admin"
+        | "trial_mod"
+        | "chat_monitor"
+        | "trainee"
+        | "partner"
+        | "content_creator"
+        | "og"
+        | "member"
       application_status: "pending" | "approved" | "rejected"
       application_type: "staff" | "builder" | "youtuber"
       ticket_priority: "low" | "normal" | "high" | "urgent"
@@ -1060,6 +1075,21 @@ export const Constants = {
         "vip",
         "booster",
         "default",
+        "director",
+        "exec_manager",
+        "sr_manager",
+        "community_manager",
+        "lead_developer",
+        "jr_developer",
+        "bot_developer",
+        "trial_admin",
+        "trial_mod",
+        "chat_monitor",
+        "trainee",
+        "partner",
+        "content_creator",
+        "og",
+        "member",
       ],
       application_status: ["pending", "approved", "rejected"],
       application_type: ["staff", "builder", "youtuber"],
