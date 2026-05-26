@@ -61,8 +61,10 @@ export const STAFF_ROLES: AppRole[] = [
 
 export const isStaffRole = (v: string) => STAFF_ROLES.includes(v as AppRole);
 
-export const roleLabel = (v: string) =>
-  ALL_ROLES.find((r) => r.value === v)?.label ?? v;
+export const roleLabel = (v: string) => {
+  const r = ALL_ROLES.find((x) => x.value === v);
+  return r ? `${r.emoji} ${r.label}` : v;
+};
 
 export const roleEmoji = (v: string) =>
   ALL_ROLES.find((r) => r.value === v)?.emoji ?? "";
