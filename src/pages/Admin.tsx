@@ -48,6 +48,7 @@ import { usePermissions } from "@/lib/usePermissions";
 import { FeaturesTab } from "@/components/admin/FeaturesTab";
 import { RulesTab } from "@/components/admin/RulesTab";
 import { NewsAnnouncementsTab } from "@/pages/AdminNews";
+import { PermissionsTab } from "@/components/admin/PermissionsTab";
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
 type RoleRow = { id: string; user_id: string; role: AppRole };
@@ -137,12 +138,18 @@ const Admin = () => {
       {section === "status" && <StatusTab />}
       {section === "tickets" && <TicketsAdminSection />}
       {section === "logs" && <LogsTab />}
-      {section === "logs" && <LogsTab />}
       {section === "plugins" && <PluginsTab />}
       {section === "changelog" && <ChangelogTab />}
       {section === "applications" && <ApplicationsTab />}
       {section === "features" && <FeaturesTab />}
       {section === "rules" && <RulesTab />}
+      {section === "permissions" && (isOwner ? <PermissionsTab /> : (
+        <div className="flex flex-col items-center justify-center gap-4 py-20">
+          <ShieldOff className="h-12 w-12 text-destructive" />
+          <h2 className="text-xl font-bold">Access denied</h2>
+          <p className="text-muted-foreground">Only the owner can access this section.</p>
+        </div>
+      ))}
       {section === "bot-dashboard" && (isOwner ? <BotDashboardSection /> : (
         <div className="flex flex-col items-center justify-center gap-4 py-20">
           <ShieldOff className="h-12 w-12 text-destructive" />
