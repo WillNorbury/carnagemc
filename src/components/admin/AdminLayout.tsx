@@ -40,6 +40,7 @@ const items: NavItem[] = [
   { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
   { kind: "link", id: "features", icon: Sparkles, label: "Features" },
   { kind: "link", id: "rules", icon: Gavel, label: "Rules" },
+  { kind: "link", id: "store", icon: StoreIcon, label: "Store" },
   { kind: "route", to: "/admin/faqs", icon: HelpCircle, label: "FAQs" },
   { kind: "route", to: "/admin/events", icon: Calendar, label: "Events" },
   { kind: "route", to: "/admin/maintenance", icon: Wrench, label: "Maintenance" },
