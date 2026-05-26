@@ -72,7 +72,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Cleanup app data (profiles + roles); auth deletion cascades on user_id refs.
+    // Cleanup app data (profiles + roles + follows); auth deletion cascades on user_id refs.
+    await admin.from("user_follows").delete().or(`follower_id.eq.${user_id},followee_id.eq.${user_id}`);
     await admin.from("user_roles").delete().eq("user_id", user_id);
     await admin.from("profiles").delete().eq("id", user_id);
 
