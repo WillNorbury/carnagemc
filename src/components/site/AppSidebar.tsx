@@ -50,7 +50,6 @@ const publicLinks = [
   { to: "/vote", label: "Vote", icon: VoteIcon, soon: true },
   { to: "/rules", label: "Rules", icon: ScrollText },
   { to: "/plugins", label: "Plugins", icon: Puzzle },
-  { to: "/store", label: "Store", icon: Store },
   { to: "/apply", label: "Apply", icon: FileText },
   { to: "/faq", label: "FAQ", icon: HelpCircle },
   { to: "/support", label: "Support", icon: LifeBuoy },
