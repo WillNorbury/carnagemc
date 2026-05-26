@@ -3,7 +3,7 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import Particles from "@/components/site/Particles";
 import { Badge } from "@/components/ui/badge";
-import { Store, Sparkles } from "lucide-react";
+import { Store as StoreIcon, Sparkles } from "lucide-react";
 
 const Store = () => {
   useEffect(() => {
@@ -21,7 +21,7 @@ const Store = () => {
             <Sparkles className="h-3 w-3 mr-1" /> Coming Soon
           </Badge>
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Store className="h-10 w-10 text-primary" />
+            <StoreIcon className="h-10 w-10 text-primary" />
             <h1 className="font-display text-4xl md:text-6xl font-black">
               Store <span className="text-gradient">(Soon)</span>
             </h1>
