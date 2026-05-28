@@ -249,7 +249,7 @@ const ModDetail = () => {
                     <Download className="h-4 w-4" /> 0
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Heart className="h-4 w-4" /> 0
+                    <Heart className="h-4 w-4" /> {likeCount}
                   </span>
                   {mod.category && (
                     <Badge variant="secondary" className="rounded-full">
@@ -280,29 +280,53 @@ const ModDetail = () => {
                   </Button>
                 )}
                 <Button
-                  variant="outline"
+                  variant={liked ? "default" : "outline"}
                   size="icon"
                   className="rounded-full h-10 w-10"
                   aria-label="Like"
+                  onClick={toggleLike}
+                  disabled={actionBusy}
                 >
-                  <Heart className="h-4 w-4" />
+                  <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
                 </Button>
                 <Button
-                  variant="outline"
+                  variant={saved ? "default" : "outline"}
                   size="icon"
                   className="rounded-full h-10 w-10"
                   aria-label="Save"
+                  onClick={toggleSave}
+                  disabled={actionBusy}
                 >
-                  <Bookmark className="h-4 w-4" />
+                  {saved ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full h-10 w-10"
-                  aria-label="More"
-                >
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full h-10 w-10"
+                      aria-label="More"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={copyLink}>
+                      <LinkIcon className="h-4 w-4 mr-2" /> Copy link
+                    </DropdownMenuItem>
+                    {url && (
+                      <DropdownMenuItem asChild>
+                        <a href={url} target="_blank" rel="noopener noreferrer" download>
+                          <Download className="h-4 w-4 mr-2" /> Download jar
+                        </a>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={reportMod} className="text-destructive focus:text-destructive">
+                      <Flag className="h-4 w-4 mr-2" /> Report mod
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
 
