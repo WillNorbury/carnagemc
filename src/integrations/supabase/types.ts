@@ -955,6 +955,15 @@ export type Database = {
         Returns: boolean
       }
       gen_plugin_short_id: { Args: never; Returns: string }
+      get_my_private_profile: {
+        Args: never
+        Returns: {
+          discord_avatar: string
+          discord_id: string
+          discord_username: string
+          preferences: Json
+        }[]
+      }
       is_admin_user: { Args: { _user_id: string }; Returns: boolean }
       record_login_streak: {
         Args: never
