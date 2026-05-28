@@ -113,7 +113,7 @@ const Mods = () => {
               const url = getDownloadUrl(m);
               return (
                 <Card key={m.id} className="p-5 h-full flex flex-col hover:border-primary/50 hover:shadow-elegant transition group">
-                  <div className="flex items-start gap-3 mb-3">
+                  <Link to={`/mod/${m.slug}`} className="flex items-start gap-3 mb-3">
                     {m.icon_url ? (
                       <img src={m.icon_url} alt="" className="h-12 w-12 rounded-md object-cover border border-border" />
                     ) : (
@@ -126,11 +126,13 @@ const Mods = () => {
                         <h3 className="font-display font-semibold truncate group-hover:text-primary transition">{m.name}</h3>
                         {m.featured && <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />}
                       </div>
-                      <div className="text-xs text-muted-foreground font-mono">#{m.short_id}</div>
+                      <div className="text-xs text-muted-foreground font-mono">/mod/{m.slug}</div>
                     </div>
-                  </div>
+                  </Link>
                   {m.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{m.description}</p>
+                    <Link to={`/mod/${m.slug}`} className="block">
+                      <p className="text-sm text-muted-foreground line-clamp-2 mb-3 hover:text-foreground transition">{m.description}</p>
+                    </Link>
                   )}
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     {m.loader && <Badge variant="secondary">{m.loader}</Badge>}
@@ -142,10 +144,9 @@ const Mods = () => {
                     ))}
                   </div>
                   <div className="mt-auto flex items-center justify-between gap-2">
-                    <span className="text-xs text-muted-foreground truncate">
-                      {m.jar_filename ?? (m.author ? `by ${m.author}` : "")}
-                      {m.jar_size ? ` · ${formatSize(m.jar_size)}` : ""}
-                    </span>
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link to={`/mod/${m.slug}`}>View</Link>
+                    </Button>
                     {url ? (
                       <Button asChild size="sm">
                         <a href={url} target="_blank" rel="noopener noreferrer" download>
