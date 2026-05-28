@@ -77,7 +77,7 @@ const Stars = ({
 );
 
 const ModTiers = () => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [mods, setMods] = useState<Mod[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
@@ -202,9 +202,11 @@ const ModTiers = () => {
             {m.mc_version && <Badge variant="outline" className="text-[10px] px-1.5 py-0">MC {m.mc_version}</Badge>}
           </div>
         </div>
-        <Button size="sm" variant={mine ? "secondary" : "outline"} onClick={() => openReview(m)}>
-          {mine ? "Edit" : "Rate"}
-        </Button>
+        {isAdmin && (
+          <Button size="sm" variant={mine ? "secondary" : "outline"} onClick={() => openReview(m)}>
+            {mine ? "Edit" : "Rate"}
+          </Button>
+        )}
       </Card>
     );
   };
@@ -224,9 +226,9 @@ const ModTiers = () => {
           <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
             Rate mods from 1 to 5 stars and leave a review. Rankings are aggregated from the community.
           </p>
-          {!user && (
-            <p className="mt-3 text-sm">
-              <Link to="/auth" className="text-primary underline">Sign in</Link> to rate and review.
+          {!isAdmin && (
+            <p className="mt-3 text-sm text-muted-foreground">
+              Only server owners can rate and review mods.
             </p>
           )}
         </header>
@@ -303,9 +305,9 @@ const ModTiers = () => {
           <DialogHeader>
             <DialogTitle>Rate {openMod?.name}</DialogTitle>
           </DialogHeader>
-          {!user ? (
+          {!isAdmin ? (
             <p className="text-sm text-muted-foreground">
-              Please <Link to="/auth" className="text-primary underline">sign in</Link> to leave a rating.
+              Only server owners can rate mods.
             </p>
           ) : (
             <div className="space-y-4">
@@ -327,11 +329,11 @@ const ModTiers = () => {
             </div>
           )}
           <DialogFooter className="gap-2">
-            {user && reviews.find((r) => r.mod_id === openMod?.id && r.user_id === user.id) && (
+            {isAdmin && reviews.find((r) => r.mod_id === openMod?.id && r.user_id === user?.id) && (
               <Button variant="destructive" onClick={deleteMine}>Delete</Button>
             )}
             <Button variant="outline" onClick={() => setOpenMod(null)}>Cancel</Button>
-            {user && (
+            {isAdmin && (
               <Button onClick={submitReview} disabled={submitting}>
                 {submitting ? "Saving..." : "Save review"}
               </Button>
