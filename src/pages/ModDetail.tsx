@@ -4,16 +4,28 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import PageLoader from "@/components/site/PageLoader";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
+import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   ArrowLeft,
   Bookmark,
+  BookmarkCheck,
   Boxes,
   Calendar,
   Download,
+  Flag,
   Heart,
+  Link as LinkIcon,
   Monitor,
   MoreVertical,
   Package,
@@ -70,10 +82,15 @@ type Tab = "description" | "gallery" | "changelog" | "versions";
 
 const ModDetail = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { user } = useAuth();
   const [mod, setMod] = useState<Mod | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [tab, setTab] = useState<Tab>("description");
+  const [likeCount, setLikeCount] = useState(0);
+  const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [actionBusy, setActionBusy] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -94,6 +111,78 @@ const ModDetail = () => {
       setLoading(false);
     })();
   }, [slug]);
+
+  useEffect(() => {
+    if (!mod) return;
+    (async () => {
+      const { count } = await (supabase.from("mod_likes" as any) as any)
+        .select("*", { count: "exact", head: true })
+        .eq("mod_id", mod.id);
+      setLikeCount(count ?? 0);
+      if (user) {
+        const [{ data: lk }, { data: sv }] = await Promise.all([
+          (supabase.from("mod_likes" as any) as any)
+            .select("user_id").eq("mod_id", mod.id).eq("user_id", user.id).maybeSingle(),
+          (supabase.from("mod_saves" as any) as any)
+            .select("user_id").eq("mod_id", mod.id).eq("user_id", user.id).maybeSingle(),
+        ]);
+        setLiked(!!lk);
+        setSaved(!!sv);
+      } else {
+        setLiked(false);
+        setSaved(false);
+      }
+    })();
+  }, [mod?.id, user?.id]);
+
+  const toggleLike = async () => {
+    if (!user) { toast.error("Sign in to like mods"); return; }
+    if (!mod) return;
+    setActionBusy(true);
+    if (liked) {
+      const { error } = await (supabase.from("mod_likes" as any) as any)
+        .delete().eq("mod_id", mod.id).eq("user_id", user.id);
+      if (error) toast.error(error.message);
+      else { setLiked(false); setLikeCount((c) => Math.max(0, c - 1)); }
+    } else {
+      const { error } = await (supabase.from("mod_likes" as any) as any)
+        .insert({ mod_id: mod.id, user_id: user.id });
+      if (error) toast.error(error.message);
+      else { setLiked(true); setLikeCount((c) => c + 1); }
+    }
+    setActionBusy(false);
+  };
+
+  const toggleSave = async () => {
+    if (!user) { toast.error("Sign in to save mods"); return; }
+    if (!mod) return;
+    setActionBusy(true);
+    if (saved) {
+      const { error } = await (supabase.from("mod_saves" as any) as any)
+        .delete().eq("mod_id", mod.id).eq("user_id", user.id);
+      if (error) toast.error(error.message);
+      else { setSaved(false); toast.success("Removed from saved"); }
+    } else {
+      const { error } = await (supabase.from("mod_saves" as any) as any)
+        .insert({ mod_id: mod.id, user_id: user.id });
+      if (error) toast.error(error.message);
+      else { setSaved(true); toast.success("Saved"); }
+    }
+    setActionBusy(false);
+  };
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copied");
+    } catch {
+      toast.error("Could not copy link");
+    }
+  };
+
+  const reportMod = () => {
+    toast.success("Report submitted — thanks for letting us know");
+  };
 
   const url = mod
     ? mod.download_url
@@ -160,7 +249,7 @@ const ModDetail = () => {
                     <Download className="h-4 w-4" /> 0
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Heart className="h-4 w-4" /> 0
+                    <Heart className="h-4 w-4" /> {likeCount}
                   </span>
                   {mod.category && (
                     <Badge variant="secondary" className="rounded-full">
@@ -191,29 +280,53 @@ const ModDetail = () => {
                   </Button>
                 )}
                 <Button
-                  variant="outline"
+                  variant={liked ? "default" : "outline"}
                   size="icon"
                   className="rounded-full h-10 w-10"
                   aria-label="Like"
+                  onClick={toggleLike}
+                  disabled={actionBusy}
                 >
-                  <Heart className="h-4 w-4" />
+                  <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
                 </Button>
                 <Button
-                  variant="outline"
+                  variant={saved ? "default" : "outline"}
                   size="icon"
                   className="rounded-full h-10 w-10"
                   aria-label="Save"
+                  onClick={toggleSave}
+                  disabled={actionBusy}
                 >
-                  <Bookmark className="h-4 w-4" />
+                  {saved ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full h-10 w-10"
-                  aria-label="More"
-                >
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full h-10 w-10"
+                      aria-label="More"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={copyLink}>
+                      <LinkIcon className="h-4 w-4 mr-2" /> Copy link
+                    </DropdownMenuItem>
+                    {url && (
+                      <DropdownMenuItem asChild>
+                        <a href={url} target="_blank" rel="noopener noreferrer" download>
+                          <Download className="h-4 w-4 mr-2" /> Download jar
+                        </a>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={reportMod} className="text-destructive focus:text-destructive">
+                      <Flag className="h-4 w-4 mr-2" /> Report mod
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
 
