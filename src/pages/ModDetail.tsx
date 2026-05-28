@@ -4,16 +4,28 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import PageLoader from "@/components/site/PageLoader";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
+import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   ArrowLeft,
   Bookmark,
+  BookmarkCheck,
   Boxes,
   Calendar,
   Download,
+  Flag,
   Heart,
+  Link as LinkIcon,
   Monitor,
   MoreVertical,
   Package,
