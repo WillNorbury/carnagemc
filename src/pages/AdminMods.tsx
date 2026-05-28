@@ -149,8 +149,16 @@ const AdminMods = () => {
     }
     setSaving(true);
 
+    const finalSlug = slugify(form.slug.trim() || form.name);
+    if (!finalSlug) {
+      toast.error("Slug is required");
+      setSaving(false);
+      return;
+    }
+
     const payload: any = {
       name: form.name.trim(),
+      slug: finalSlug,
       description: form.description.trim() || null,
       long_description: form.long_description.trim() || null,
       version: form.version.trim() || null,
