@@ -203,6 +203,27 @@ const AdminMods = () => {
           await (supabase.from("mods" as any) as any).update(upload).eq("id", newId);
         }
         toast.success("Mod created");
+        // Notify Discord (best-effort, don't block on errors)
+        try {
+          const { error: notifyErr } = await supabase.functions.invoke("notify-new-mod", {
+            body: {
+              name: payload.name,
+              slug: payload.slug,
+              description: payload.description,
+              author: payload.author,
+              loader: payload.loader,
+              mc_version: payload.mc_version,
+              version: payload.version,
+              category: payload.category,
+              icon_url: payload.icon_url,
+              tags: payload.tags,
+            },
+          });
+          if (notifyErr) toast.error(`Discord notify failed: ${notifyErr.message}`);
+          else toast.success("Posted to #new-mod in Discord");
+        } catch (e: any) {
+          toast.error(`Discord notify failed: ${e.message ?? "unknown error"}`);
+        }
         reset();
         load();
       }
