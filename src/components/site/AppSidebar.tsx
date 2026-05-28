@@ -35,6 +35,8 @@ import {
   HelpCircle,
   Calendar,
   Store,
+  Boxes,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -45,6 +47,8 @@ const publicLinks = [
   { to: "/news", label: "News", icon: Newspaper },
   { to: "/events", label: "Events", icon: Calendar },
   { to: "/changelog", label: "Changelog", icon: ClipboardList },
+  { to: "/mods", label: "Mods", icon: Boxes },
+  { to: "/mod-tiers", label: "Mod Tiers", icon: Star },
   { to: "/community", label: "Community", icon: UsersIcon },
   { to: "/staff", label: "Staff", icon: ShieldCheck },
   { to: "/vote", label: "Vote", icon: VoteIcon, soon: true },
