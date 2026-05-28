@@ -257,6 +257,20 @@ const AdminMods = () => {
               <Label>Author</Label>
               <Input value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
             </div>
+            <div className="sm:col-span-2">
+              <Label>URL slug</Label>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground font-mono whitespace-nowrap">/mod/</span>
+                <Input
+                  value={form.slug}
+                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                  placeholder={slugify(form.name) || "hitping"}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Leave blank to auto-generate from name. Lowercase letters, numbers, and dashes only.
+              </p>
+            </div>
             <div>
               <Label>Loader</Label>
               <Input
