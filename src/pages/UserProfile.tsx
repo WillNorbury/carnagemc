@@ -26,6 +26,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { ALL_ROLES, roleLabel, type AppRole } from "@/lib/roles";
+import { matchesUserSlug, userProfileSlug } from "@/lib/userSlug";
 import {
   Loader2,
   Package,
@@ -85,7 +86,7 @@ const timeAgo = (iso: string | null) => {
 };
 
 const UserProfile = () => {
-  const { shortId } = useParams<{ shortId: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -108,16 +109,15 @@ const UserProfile = () => {
   const isOwn = !!user && !!profile && user.id === profile.id;
 
   useEffect(() => {
-    if (!shortId) return;
+    if (!slug) return;
     (async () => {
       setLoading(true);
       setNotFound(false);
-      const normalizedShortId = shortId.trim().toLowerCase();
       const { data: profiles } = await supabase
         .from("profiles")
         .select("id, display_name, avatar_url, mc_username, bio, created_at");
-      const match = (profiles ?? []).find((p) => p.id.toLowerCase().startsWith(normalizedShortId))
-        ?? (user?.id.toLowerCase().startsWith(normalizedShortId)
+      const match = (profiles ?? []).find((p) => matchesUserSlug(p, slug))
+        ?? (user?.id.toLowerCase().startsWith(slug.trim().toLowerCase())
           ? (profiles ?? []).find((p) => p.id === user.id)
           : null);
       if (!match) {
@@ -128,6 +128,10 @@ const UserProfile = () => {
       }
       const p = match as Profile;
       setProfile(p);
+      const canonicalSlug = userProfileSlug(p);
+      if (canonicalSlug !== slug.trim().toLowerCase()) {
+        navigate(`/user/${canonicalSlug}`, { replace: true });
+      }
       document.title = `${p.display_name ?? "Player"} — XyloMC`;
 
       // Roles
@@ -191,7 +195,7 @@ const UserProfile = () => {
 
       setLoading(false);
     })();
-  }, [shortId, user?.id]);
+  }, [slug, user?.id, navigate]);
 
   const openEdit = () => {
     if (!profile) return;
