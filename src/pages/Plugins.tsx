@@ -85,7 +85,7 @@ const Plugins = () => {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((p) => (
-              <Link key={p.id} to={`/plugins/${p.short_id}`}>
+              <Link key={p.id} to={`/discover/plugins/${p.short_id}`}>
                 <Card className="p-5 h-full hover:border-primary/50 hover:shadow-elegant transition group">
                   <div className="flex items-start gap-3 mb-3">
                     {p.icon_url ? (

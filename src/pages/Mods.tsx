@@ -330,7 +330,7 @@ const Mods = () => {
                     >
                       <div className="flex items-stretch gap-4 p-4">
                         <Link
-                          to={`/mod/${m.slug}`}
+                          to={`/discover/mod/${m.slug}`}
                           className="shrink-0"
                           aria-label={m.name}
                         >
@@ -350,7 +350,7 @@ const Mods = () => {
                         <div className="flex-1 min-w-0 flex flex-col">
                           <div className="flex items-baseline gap-2 flex-wrap">
                             <Link
-                              to={`/mod/${m.slug}`}
+                              to={`/discover/mod/${m.slug}`}
                               className="font-display font-bold text-lg group-hover:text-primary transition"
                             >
                               {m.name}

@@ -37,7 +37,7 @@ const PAGES: Hit[] = [
   { id: "p-staff", type: "page", title: "Staff", to: "/staff", icon: ShieldCheck },
   { id: "p-vote", type: "page", title: "Vote", to: "/vote", icon: VoteIcon },
   { id: "p-rules", type: "page", title: "Rules", to: "/rules", icon: ScrollText },
-  { id: "p-plugins", type: "page", title: "Plugins", to: "/plugins", icon: Puzzle },
+  { id: "p-plugins", type: "page", title: "Plugins", to: "/discover/plugins", icon: Puzzle },
   { id: "p-features", type: "page", title: "Features", to: "/features", icon: Sparkles },
   { id: "p-faq", type: "page", title: "FAQ", to: "/faq", icon: HelpCircle },
   { id: "p-events", type: "page", title: "Events", to: "/events", icon: Calendar },
@@ -87,7 +87,7 @@ export function GlobalSearch() {
         results.push({ id: `n-${n.id}`, type: "News", title: n.title, subtitle: n.excerpt ?? undefined, to: `/news/${n.slug}`, icon: Newspaper })
       );
       (plugins.data ?? []).forEach((p: any) =>
-        results.push({ id: `pl-${p.id}`, type: "Plugin", title: p.name, subtitle: p.description ?? undefined, to: `/plugins/${p.short_id}`, icon: Puzzle })
+        results.push({ id: `pl-${p.id}`, type: "Plugin", title: p.name, subtitle: p.description ?? undefined, to: `/discover/plugins/${p.short_id}`, icon: Puzzle })
       );
       (features.data ?? []).forEach((f: any) =>
         results.push({ id: `f-${f.id}`, type: "Feature", title: f.title, subtitle: f.description ?? undefined, to: `/features/${f.slug}`, icon: Sparkles })
