@@ -347,10 +347,6 @@ const ModDetail = () => {
                 <Card className="p-5">
                   <h3 className="font-bold mb-3">Details</h3>
                   <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <FileText className="h-4 w-4" />
-                      Licensed <span className="text-primary font-semibold">ARR</span>
-                    </div>
                     {mod.created_at && (
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Calendar className="h-4 w-4" />
