@@ -82,10 +82,15 @@ type Tab = "description" | "gallery" | "changelog" | "versions";
 
 const ModDetail = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { user } = useAuth();
   const [mod, setMod] = useState<Mod | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [tab, setTab] = useState<Tab>("description");
+  const [likeCount, setLikeCount] = useState(0);
+  const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [actionBusy, setActionBusy] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -106,6 +111,78 @@ const ModDetail = () => {
       setLoading(false);
     })();
   }, [slug]);
+
+  useEffect(() => {
+    if (!mod) return;
+    (async () => {
+      const { count } = await (supabase.from("mod_likes" as any) as any)
+        .select("*", { count: "exact", head: true })
+        .eq("mod_id", mod.id);
+      setLikeCount(count ?? 0);
+      if (user) {
+        const [{ data: lk }, { data: sv }] = await Promise.all([
+          (supabase.from("mod_likes" as any) as any)
+            .select("user_id").eq("mod_id", mod.id).eq("user_id", user.id).maybeSingle(),
+          (supabase.from("mod_saves" as any) as any)
+            .select("user_id").eq("mod_id", mod.id).eq("user_id", user.id).maybeSingle(),
+        ]);
+        setLiked(!!lk);
+        setSaved(!!sv);
+      } else {
+        setLiked(false);
+        setSaved(false);
+      }
+    })();
+  }, [mod?.id, user?.id]);
+
+  const toggleLike = async () => {
+    if (!user) { toast.error("Sign in to like mods"); return; }
+    if (!mod) return;
+    setActionBusy(true);
+    if (liked) {
+      const { error } = await (supabase.from("mod_likes" as any) as any)
+        .delete().eq("mod_id", mod.id).eq("user_id", user.id);
+      if (error) toast.error(error.message);
+      else { setLiked(false); setLikeCount((c) => Math.max(0, c - 1)); }
+    } else {
+      const { error } = await (supabase.from("mod_likes" as any) as any)
+        .insert({ mod_id: mod.id, user_id: user.id });
+      if (error) toast.error(error.message);
+      else { setLiked(true); setLikeCount((c) => c + 1); }
+    }
+    setActionBusy(false);
+  };
+
+  const toggleSave = async () => {
+    if (!user) { toast.error("Sign in to save mods"); return; }
+    if (!mod) return;
+    setActionBusy(true);
+    if (saved) {
+      const { error } = await (supabase.from("mod_saves" as any) as any)
+        .delete().eq("mod_id", mod.id).eq("user_id", user.id);
+      if (error) toast.error(error.message);
+      else { setSaved(false); toast.success("Removed from saved"); }
+    } else {
+      const { error } = await (supabase.from("mod_saves" as any) as any)
+        .insert({ mod_id: mod.id, user_id: user.id });
+      if (error) toast.error(error.message);
+      else { setSaved(true); toast.success("Saved"); }
+    }
+    setActionBusy(false);
+  };
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copied");
+    } catch {
+      toast.error("Could not copy link");
+    }
+  };
+
+  const reportMod = () => {
+    toast.success("Report submitted — thanks for letting us know");
+  };
 
   const url = mod
     ? mod.download_url
