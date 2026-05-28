@@ -47,6 +47,7 @@ const slugify = (s: string) =>
 
 const blank = {
   name: "",
+  slug: "",
   description: "",
   long_description: "",
   version: "",
