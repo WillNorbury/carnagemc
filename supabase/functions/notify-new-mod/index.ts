@@ -81,13 +81,7 @@ Deno.serve(async (req) => {
       {
         method: "POST",
         headers: { Authorization: `Bot ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: `<@&${1509702647962402897}> A new mod is live — check it out!`.replace(
-            `<@&${1509702647962402897}>`,
-            "",
-          ).trim() || undefined,
-          embeds: [embed],
-        }),
+        body: JSON.stringify({ embeds: [embed] }),
       },
     );
 
