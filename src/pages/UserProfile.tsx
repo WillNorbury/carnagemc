@@ -111,12 +111,18 @@ const UserProfile = () => {
     if (!shortId) return;
     (async () => {
       setLoading(true);
+      setNotFound(false);
+      const normalizedShortId = shortId.trim().toLowerCase();
       const { data: profiles } = await supabase
         .from("profiles")
         .select("id, display_name, avatar_url, mc_username, bio, created_at");
-      const match = (profiles ?? []).find((p) => p.id.startsWith(shortId));
+      const match = (profiles ?? []).find((p) => p.id.toLowerCase().startsWith(normalizedShortId))
+        ?? (user?.id.toLowerCase().startsWith(normalizedShortId)
+          ? (profiles ?? []).find((p) => p.id === user.id)
+          : null);
       if (!match) {
         setNotFound(true);
+        setProfile(null);
         setLoading(false);
         return;
       }
