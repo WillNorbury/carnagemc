@@ -42,6 +42,7 @@ import AdminEvents from "./pages/AdminEvents.tsx";
 import AdminMaintenance from "./pages/AdminMaintenance.tsx";
 import AdminMods from "./pages/AdminMods.tsx";
 import Mods from "./pages/Mods.tsx";
+import ModDetail from "./pages/ModDetail.tsx";
 import ModTiers from "./pages/ModTiers.tsx";
 import { MaintenanceGate } from "./components/site/MaintenanceGate.tsx";
 import NotFound from "./pages/NotFound.tsx";
