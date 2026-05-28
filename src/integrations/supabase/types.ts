@@ -332,6 +332,44 @@ export type Database = {
         }
         Relationships: []
       }
+      mod_reviews: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          mod_id: string
+          rating: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          id?: string
+          mod_id: string
+          rating: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          mod_id?: string
+          rating?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mod_reviews_mod_id_fkey"
+            columns: ["mod_id"]
+            isOneToOne: false
+            referencedRelation: "mods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mods: {
         Row: {
           author: string | null

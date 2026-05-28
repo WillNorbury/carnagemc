@@ -42,6 +42,7 @@ import AdminEvents from "./pages/AdminEvents.tsx";
 import AdminMaintenance from "./pages/AdminMaintenance.tsx";
 import AdminMods from "./pages/AdminMods.tsx";
 import Mods from "./pages/Mods.tsx";
+import ModTiers from "./pages/ModTiers.tsx";
 import { MaintenanceGate } from "./components/site/MaintenanceGate.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -71,6 +72,7 @@ const Shell = () => {
                   <Route path="/admin/maintenance" element={<AdminMaintenance />} />
                   <Route path="/admin/mods" element={<AdminMods />} />
                   <Route path="/mods" element={<Mods />} />
+                  <Route path="/mod-tiers" element={<ModTiers />} />
                   <Route path="/changelog" element={<Changelog />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/link-account" element={<LinkAccount />} />
