@@ -46,7 +46,7 @@ const Mods = () => {
     document.title = "Mods — XyloMC";
     (async () => {
       const { data } = await (supabase.from("mods" as any) as any)
-        .select("id, short_id, name, description, version, mc_version, loader, author, icon_url, category, tags, featured, jar_path, jar_filename, jar_size, download_url")
+        .select("id, slug, short_id, name, description, version, mc_version, loader, author, icon_url, category, tags, featured, jar_path, jar_filename, jar_size, download_url")
         .eq("published", true)
         .order("featured", { ascending: false })
         .order("sort_order", { ascending: true })
