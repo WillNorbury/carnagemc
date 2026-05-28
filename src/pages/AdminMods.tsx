@@ -17,6 +17,7 @@ import {
 
 type Mod = {
   id: string;
+  slug: string;
   short_id: string;
   name: string;
   description: string | null;
@@ -37,8 +38,16 @@ type Mod = {
   sort_order: number;
 };
 
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+
 const blank = {
   name: "",
+  slug: "",
   description: "",
   long_description: "",
   version: "",
@@ -91,6 +100,7 @@ const AdminMods = () => {
     setEditing(m);
     setForm({
       name: m.name,
+      slug: m.slug ?? "",
       description: m.description ?? "",
       long_description: m.long_description ?? "",
       version: m.version ?? "",
@@ -139,8 +149,16 @@ const AdminMods = () => {
     }
     setSaving(true);
 
+    const finalSlug = slugify(form.slug.trim() || form.name);
+    if (!finalSlug) {
+      toast.error("Slug is required");
+      setSaving(false);
+      return;
+    }
+
     const payload: any = {
       name: form.name.trim(),
+      slug: finalSlug,
       description: form.description.trim() || null,
       long_description: form.long_description.trim() || null,
       version: form.version.trim() || null,
@@ -238,6 +256,20 @@ const AdminMods = () => {
             <div>
               <Label>Author</Label>
               <Input value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
+            </div>
+            <div className="sm:col-span-2">
+              <Label>URL slug</Label>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground font-mono whitespace-nowrap">/mod/</span>
+                <Input
+                  value={form.slug}
+                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                  placeholder={slugify(form.name) || "hitping"}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Leave blank to auto-generate from name. Lowercase letters, numbers, and dashes only.
+              </p>
             </div>
             <div>
               <Label>Loader</Label>
