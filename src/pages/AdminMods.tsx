@@ -281,7 +281,7 @@ const AdminMods = () => {
             <div className="sm:col-span-2">
               <Label>URL slug</Label>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground font-mono whitespace-nowrap">/discover/mod/</span>
+                <span className="text-xs text-muted-foreground font-mono whitespace-nowrap">/mod/</span>
                 <Input
                   value={form.slug}
                   onChange={(e) => setForm({ ...form, slug: e.target.value })}
