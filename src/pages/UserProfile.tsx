@@ -1,16 +1,47 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { ALL_ROLES, roleLabel, type AppRole } from "@/lib/roles";
-import { Loader2, ArrowLeft, UserPlus, UserCheck, Users, Sparkles } from "lucide-react";
+import {
+  Loader2,
+  Package,
+  Download,
+  Heart,
+  Calendar,
+  Pencil,
+  MoreVertical,
+  Globe,
+  Flag,
+  Link as LinkIcon,
+  UserPlus,
+  UserCheck,
+  Boxes,
+  Building2,
+} from "lucide-react";
 import { toast } from "sonner";
 
 type Profile = {
@@ -18,7 +49,22 @@ type Profile = {
   display_name: string | null;
   avatar_url: string | null;
   mc_username: string | null;
+  bio: string | null;
   created_at: string;
+};
+
+type Project = {
+  kind: "mod" | "plugin";
+  id: string;
+  slug?: string;
+  name: string;
+  description: string | null;
+  icon_url: string | null;
+  category: string | null;
+  tags: string[];
+  likes: number;
+  short_id: string;
+  updated_at: string | null;
 };
 
 const roleRank = (r: AppRole) => {
@@ -26,125 +72,40 @@ const roleRank = (r: AppRole) => {
   return idx === -1 ? 999 : idx;
 };
 
+const timeAgo = (iso: string | null) => {
+  if (!iso) return "recently";
+  const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  const d = s / 86400;
+  if (d < 1) return "today";
+  if (d < 30) return `${Math.floor(d)} days ago`;
+  const mo = d / 30;
+  if (mo < 12) return `${Math.floor(mo)} month${Math.floor(mo) === 1 ? "" : "s"} ago`;
+  const y = Math.floor(d / 365);
+  return `${y} year${y === 1 ? "" : "s"} ago`;
+};
+
 const UserProfile = () => {
   const { shortId } = useParams<{ shortId: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+
+  const [projects, setProjects] = useState<Project[]>([]);
   const [followerCount, setFollowerCount] = useState(0);
-  const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followBusy, setFollowBusy] = useState(false);
-  const [listMode, setListMode] = useState<null | "followers" | "following">(null);
-  const [listLoading, setListLoading] = useState(false);
-  const [listUsers, setListUsers] = useState<Profile[]>([]);
-  const [followsMeBack, setFollowsMeBack] = useState(false);
-  const [recommendations, setRecommendations] = useState<(Profile & { reason: string })[]>([]);
-  const [recsLoading, setRecsLoading] = useState(false);
-  const [recBusy, setRecBusy] = useState<string | null>(null);
-  const [followedRecs, setFollowedRecs] = useState<Set<string>>(new Set());
 
-  const openList = async (mode: "followers" | "following") => {
-    if (!profile) return;
-    setListMode(mode);
-    setListLoading(true);
-    setListUsers([]);
-    const col = mode === "followers" ? "followee_id" : "follower_id";
-    const otherCol = mode === "followers" ? "follower_id" : "followee_id";
-    const { data: rels } = await supabase
-      .from("user_follows")
-      .select(otherCol)
-      .eq(col, profile.id);
-    const ids = (rels ?? []).map((r: Record<string, string>) => r[otherCol]).filter(Boolean);
-    if (ids.length === 0) { setListLoading(false); return; }
-    const { data: profs } = await supabase
-      .from("profiles")
-      .select("id, display_name, avatar_url, mc_username, created_at")
-      .in("id", ids);
-    setListUsers((profs ?? []) as Profile[]);
-    setListLoading(false);
-  };
+  const [editOpen, setEditOpen] = useState(false);
+  const [editDisplay, setEditDisplay] = useState("");
+  const [editBio, setEditBio] = useState("");
+  const [editAvatar, setEditAvatar] = useState("");
+  const [editBusy, setEditBusy] = useState(false);
 
-  const loadCounts = async (targetId: string, viewerId: string | undefined) => {
-    const [{ count: followers }, { count: following }] = await Promise.all([
-      supabase.from("user_follows").select("*", { count: "exact", head: true }).eq("followee_id", targetId),
-      supabase.from("user_follows").select("*", { count: "exact", head: true }).eq("follower_id", targetId),
-    ]);
-    setFollowerCount(followers ?? 0);
-    setFollowingCount(following ?? 0);
-    if (viewerId && viewerId !== targetId) {
-      const [{ data: a }, { data: b }] = await Promise.all([
-        supabase.from("user_follows").select("follower_id")
-          .eq("follower_id", viewerId).eq("followee_id", targetId).maybeSingle(),
-        supabase.from("user_follows").select("follower_id")
-          .eq("follower_id", targetId).eq("followee_id", viewerId).maybeSingle(),
-      ]);
-      setIsFollowing(!!a);
-      setFollowsMeBack(!!b);
-    } else {
-      setIsFollowing(false);
-      setFollowsMeBack(false);
-    }
-  };
-
-  const loadRecommendations = async (viewerId: string, viewerRoles: AppRole[]) => {
-    setRecsLoading(true);
-    // Already-followed ids
-    const { data: followingRows } = await supabase
-      .from("user_follows").select("followee_id").eq("follower_id", viewerId);
-    const excluded = new Set<string>([viewerId, ...((followingRows ?? []).map((r) => r.followee_id))]);
-
-    // Candidates by shared role
-    let roleCandidates: { user_id: string; role: AppRole }[] = [];
-    if (viewerRoles.length > 0) {
-      const { data } = await supabase
-        .from("user_roles").select("user_id, role").in("role", viewerRoles).limit(100);
-      roleCandidates = (data ?? []) as { user_id: string; role: AppRole }[];
-    }
-
-    // Recent activity: latest profiles (joined recently)
-    const { data: recentProfiles } = await supabase
-      .from("profiles").select("id, display_name, avatar_url, mc_username, created_at")
-      .order("created_at", { ascending: false }).limit(30);
-
-    const reasons = new Map<string, string>();
-    for (const rc of roleCandidates) {
-      if (excluded.has(rc.user_id)) continue;
-      if (!reasons.has(rc.user_id)) reasons.set(rc.user_id, `Shared role: ${roleLabel(rc.role)}`);
-    }
-    for (const p of (recentProfiles ?? [])) {
-      if (excluded.has(p.id) || reasons.has(p.id)) continue;
-      reasons.set(p.id, "Recently joined");
-    }
-
-    const ids = Array.from(reasons.keys()).slice(0, 5);
-    if (ids.length === 0) { setRecommendations([]); setRecsLoading(false); return; }
-
-    const { data: profs } = await supabase
-      .from("profiles").select("id, display_name, avatar_url, mc_username, created_at").in("id", ids);
-    const ordered = ids
-      .map((id) => (profs ?? []).find((p) => p.id === id))
-      .filter(Boolean)
-      .map((p) => ({ ...(p as Profile), reason: reasons.get((p as Profile).id)! }));
-    setRecommendations(ordered);
-    setRecsLoading(false);
-  };
-
-  const followRecommendation = async (id: string) => {
-    if (!user) return;
-    setRecBusy(id);
-    const { error } = await supabase
-      .from("user_follows").insert({ follower_id: user.id, followee_id: id });
-    setRecBusy(null);
-    if (error) { toast.error(error.message); return; }
-    setFollowedRecs((s) => new Set(s).add(id));
-    if (profile && id === profile.id) {
-      setIsFollowing(true);
-      setFollowerCount((c) => c + 1);
-    }
-  };
+  const isOwn = !!user && !!profile && user.id === profile.id;
 
   useEffect(() => {
     if (!shortId) return;
@@ -152,31 +113,105 @@ const UserProfile = () => {
       setLoading(true);
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("id, display_name, avatar_url, mc_username, created_at");
+        .select("id, display_name, avatar_url, mc_username, bio, created_at");
       const match = (profiles ?? []).find((p) => p.id.startsWith(shortId));
       if (!match) {
         setNotFound(true);
         setLoading(false);
         return;
       }
+      const p = match as Profile;
+      setProfile(p);
+      document.title = `${p.display_name ?? "Player"} — XyloMC`;
+
+      // Roles
       const { data: r } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", match.id);
-      setProfile(match as Profile);
+        .from("user_roles").select("role").eq("user_id", p.id);
       setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role).sort((a, b) => roleRank(a) - roleRank(b)));
-      document.title = `${match.display_name ?? "Player"} — XyloMC`;
-      const sortedRoles = ((r ?? []) as { role: AppRole }[]).map((x) => x.role).sort((a, b) => roleRank(a) - roleRank(b));
-      await loadCounts(match.id, user?.id);
-      if (user?.id && user.id === match.id) {
-        await loadRecommendations(user.id, sortedRoles);
-      } else {
-        setRecommendations([]);
-        setFollowedRecs(new Set());
+
+      // Projects: match by author = display_name or mc_username
+      const authorMatches = [p.display_name, p.mc_username].filter(Boolean) as string[];
+      let allProjects: Project[] = [];
+      if (authorMatches.length > 0) {
+        const [{ data: mods }, { data: plugins }] = await Promise.all([
+          (supabase.from("mods" as any) as any)
+            .select("id, slug, short_id, name, description, icon_url, category, tags, updated_at")
+            .eq("published", true)
+            .in("author", authorMatches),
+          (supabase.from("plugins" as any) as any)
+            .select("id, short_id, name, description, icon_url, category, tags, updated_at")
+            .eq("published", true)
+            .in("author", authorMatches),
+        ]);
+        const modIds = (mods ?? []).map((m: any) => m.id);
+        let likesByMod: Record<string, number> = {};
+        if (modIds.length) {
+          const { data: likes } = await (supabase.from("mod_likes" as any) as any)
+            .select("mod_id").in("mod_id", modIds);
+          for (const l of (likes ?? []) as { mod_id: string }[]) {
+            likesByMod[l.mod_id] = (likesByMod[l.mod_id] ?? 0) + 1;
+          }
+        }
+        allProjects = [
+          ...((mods ?? []) as any[]).map((m) => ({
+            kind: "mod" as const, id: m.id, slug: m.slug, short_id: m.short_id,
+            name: m.name, description: m.description, icon_url: m.icon_url,
+            category: m.category, tags: m.tags ?? [], updated_at: m.updated_at,
+            likes: likesByMod[m.id] ?? 0,
+          })),
+          ...((plugins ?? []) as any[]).map((pl) => ({
+            kind: "plugin" as const, id: pl.id, short_id: pl.short_id,
+            name: pl.name, description: pl.description, icon_url: pl.icon_url,
+            category: pl.category, tags: pl.tags ?? [], updated_at: pl.updated_at,
+            likes: 0,
+          })),
+        ];
       }
+      setProjects(allProjects);
+
+      // Follower counts
+      const { count: followers } = await supabase
+        .from("user_follows").select("*", { count: "exact", head: true })
+        .eq("followee_id", p.id);
+      setFollowerCount(followers ?? 0);
+      if (user?.id && user.id !== p.id) {
+        const { data: a } = await supabase
+          .from("user_follows").select("follower_id")
+          .eq("follower_id", user.id).eq("followee_id", p.id).maybeSingle();
+        setIsFollowing(!!a);
+      } else {
+        setIsFollowing(false);
+      }
+
       setLoading(false);
     })();
   }, [shortId, user?.id]);
+
+  const openEdit = () => {
+    if (!profile) return;
+    setEditDisplay(profile.display_name ?? "");
+    setEditBio(profile.bio ?? "");
+    setEditAvatar(profile.avatar_url ?? "");
+    setEditOpen(true);
+  };
+
+  const saveEdit = async () => {
+    if (!profile) return;
+    setEditBusy(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        display_name: editDisplay.trim() || null,
+        bio: editBio.trim() || null,
+        avatar_url: editAvatar.trim() || null,
+      })
+      .eq("id", profile.id);
+    setEditBusy(false);
+    if (error) { toast.error(error.message); return; }
+    setProfile({ ...profile, display_name: editDisplay.trim() || null, bio: editBio.trim() || null, avatar_url: editAvatar.trim() || null });
+    setEditOpen(false);
+    toast.success("Profile updated");
+  };
 
   const toggleFollow = async () => {
     if (!user) { toast.error("Sign in to follow players"); return; }
@@ -196,6 +231,15 @@ const UserProfile = () => {
       else { setIsFollowing(true); setFollowerCount((c) => c + 1); }
     }
     setFollowBusy(false);
+  };
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success("Profile link copied");
+    } catch {
+      toast.error("Could not copy link");
+    }
   };
 
   if (loading) {
@@ -228,178 +272,208 @@ const UserProfile = () => {
   const avatar = profile.avatar_url || (profile.mc_username ? `https://mc-heads.net/avatar/${profile.mc_username}/256` : undefined);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-12 max-w-3xl">
-        <Button asChild variant="ghost" size="sm" className="mb-6">
-          <Link to="/users"><ArrowLeft className="h-4 w-4 mr-2" />All members</Link>
-        </Button>
+      <main className="flex-1 container mx-auto px-4 pt-24 pb-16 max-w-6xl">
+        {/* Header row */}
+        <div className="flex items-start gap-5 pb-6 border-b border-border">
+          <Avatar className="h-24 w-24 rounded-full border border-border shrink-0">
+            <AvatarImage src={avatar} />
+            <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
+          </Avatar>
 
-        <Card className="p-8">
-          <div className="flex items-start gap-6 flex-wrap">
-            <Avatar className="h-32 w-32 border-2 border-primary/30">
-              <AvatarImage src={avatar} />
-              <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-3xl font-display font-bold text-glow mb-1">
-                {profile.display_name ?? "Unnamed Player"}
-              </h1>
-              {profile.mc_username && (
-                <p className="text-muted-foreground font-mono text-sm">@{profile.mc_username}</p>
-              )}
-              <p className="text-xs text-muted-foreground font-mono mt-1">
-                ID: {profile.id.slice(0, 8)}
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl md:text-3xl font-display font-bold leading-tight">
+              {profile.display_name ?? "Unnamed Player"}
+            </h1>
+            {profile.bio ? (
+              <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{profile.bio}</p>
+            ) : isOwn ? (
+              <p className="text-sm text-muted-foreground/70 italic mt-1">
+                Add a bio to tell people about yourself.
               </p>
-              <p className="text-xs text-muted-foreground mt-2">
-                Joined {new Date(profile.created_at).toLocaleDateString()}
-              </p>
+            ) : null}
 
-              <div className="flex flex-wrap gap-2 mt-4">
-                {roles.length === 0 && <span className="text-sm text-muted-foreground">No roles assigned</span>}
-                {roles.map((r) => (
-                  <Badge key={r} variant="secondary" className="text-sm">{roleLabel(r)}</Badge>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-4 mt-4 text-sm">
-                <button onClick={() => openList("followers")} className="hover:text-primary transition-colors">
-                  <strong className="text-foreground">{followerCount}</strong> <span className="text-muted-foreground">followers</span>
-                </button>
-                <button onClick={() => openList("following")} className="hover:text-primary transition-colors">
-                  <strong className="text-foreground">{followingCount}</strong> <span className="text-muted-foreground">following</span>
-                </button>
-              </div>
-
-              {user && user.id !== profile.id && (
-                <div className="flex items-center gap-2 mt-4 flex-wrap">
-                  <Button
-                    onClick={toggleFollow}
-                    disabled={followBusy}
-                    variant={isFollowing ? "outline" : "default"}
-                    size="sm"
-                  >
-                    {followBusy ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : isFollowing ? (
-                      <><UserCheck className="h-4 w-4" /> Following</>
-                    ) : (
-                      <><UserPlus className="h-4 w-4" /> Follow</>
-                    )}
-                  </Button>
-                  {isFollowing && followsMeBack && (
-                    <Badge variant="default" className="gap-1">
-                      <Users className="h-3 w-3" /> Mutuals
-                    </Badge>
-                  )}
-                  {!isFollowing && followsMeBack && (
-                    <Badge variant="secondary">Follows you</Badge>
-                  )}
-                </div>
-              )}
+            <div className="flex items-center gap-5 mt-3 text-sm text-muted-foreground flex-wrap">
+              <span className="flex items-center gap-1.5">
+                <Package className="h-4 w-4" />
+                <strong className="text-foreground">{projects.length}</strong> project{projects.length === 1 ? "" : "s"}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Download className="h-4 w-4" />
+                <strong className="text-foreground">0</strong> downloads
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Calendar className="h-4 w-4" />
+                Joined {timeAgo(profile.created_at)}
+              </span>
+              {roles.length > 0 && roles.slice(0, 3).map((r) => (
+                <Badge key={r} variant="secondary" className="rounded-full">{roleLabel(r)}</Badge>
+              ))}
             </div>
           </div>
-        </Card>
 
-        {user && user.id === profile.id && (
-          <Card className="p-6 mt-6">
-            <div className="flex items-center gap-2 mb-1">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <h2 className="font-display font-bold text-lg">Who to follow</h2>
-            </div>
-            <p className="text-sm text-muted-foreground mb-4">
-              Suggested players based on your roles and recent activity.
-            </p>
-            {recsLoading ? (
-              <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
-            ) : recommendations.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">No suggestions right now — check back later.</p>
-            ) : (
-              <ul className="space-y-2">
-                {recommendations.map((u) => {
-                  const av = u.avatar_url || (u.mc_username ? `https://mc-heads.net/avatar/${u.mc_username}/64` : undefined);
-                  const init = (u.display_name ?? "?").slice(0, 2).toUpperCase();
-                  const followed = followedRecs.has(u.id);
-                  return (
-                    <li key={u.id} className="flex items-center gap-3 p-2 rounded-md hover:bg-accent/50 transition-colors">
-                      <Link to={`/user/${u.id.slice(0, 8)}`} className="flex items-center gap-3 min-w-0 flex-1">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={av} />
-                          <AvatarFallback>{init}</AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0">
-                          <div className="font-medium truncate">{u.display_name ?? "Unnamed Player"}</div>
-                          <div className="text-xs text-muted-foreground truncate">{u.reason}</div>
-                        </div>
-                      </Link>
-                      <Button
-                        size="sm"
-                        variant={followed ? "outline" : "default"}
-                        disabled={followed || recBusy === u.id}
-                        onClick={() => followRecommendation(u.id)}
-                      >
-                        {recBusy === u.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : followed ? (
-                          <><UserCheck className="h-4 w-4" /> Following</>
-                        ) : (
-                          <><UserPlus className="h-4 w-4" /> Follow</>
-                        )}
-                      </Button>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </Card>
-        )}
+          <div className="flex items-center gap-2 shrink-0">
+            {isOwn ? (
+              <Button variant="outline" size="sm" className="rounded-md" onClick={openEdit}>
+                <Pencil className="h-4 w-4 mr-1.5" /> Edit
+              </Button>
+            ) : user ? (
+              <Button
+                size="sm"
+                variant={isFollowing ? "outline" : "default"}
+                onClick={toggleFollow}
+                disabled={followBusy}
+              >
+                {followBusy ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : isFollowing ? (
+                  <><UserCheck className="h-4 w-4 mr-1" /> Following</>
+                ) : (
+                  <><UserPlus className="h-4 w-4 mr-1" /> Follow</>
+                )}
+              </Button>
+            ) : null}
 
-        <Dialog open={!!listMode} onOpenChange={(o) => !o && setListMode(null)}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle className="capitalize">
-                {listMode === "followers" ? `Followers (${followerCount})` : `Following (${followingCount})`}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="max-h-96 overflow-y-auto -mx-6 px-6">
-              {listLoading ? (
-                <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
-              ) : listUsers.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  {listMode === "followers" ? "No followers yet." : "Not following anyone yet."}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-md" aria-label="More">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={copyLink}>
+                  <LinkIcon className="h-4 w-4 mr-2" /> Copy profile link
+                </DropdownMenuItem>
+                {isOwn ? (
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    <Pencil className="h-4 w-4 mr-2" /> Account settings
+                  </DropdownMenuItem>
+                ) : (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => toast.success("Report submitted — thanks for letting us know")}
+                      className="text-destructive focus:text-destructive"
+                    >
+                      <Flag className="h-4 w-4 mr-2" /> Report user
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+
+        {/* Body: projects + sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 mt-6">
+          <div className="space-y-3">
+            {projects.length === 0 ? (
+              <Card className="p-10 text-center">
+                <Boxes className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                <h2 className="font-bold text-lg mb-1">No projects yet</h2>
+                <p className="text-sm text-muted-foreground">
+                  {isOwn ? "Projects you publish will show up here." : "This member hasn't published any projects."}
                 </p>
-              ) : (
-                <ul className="space-y-1">
-                  {listUsers.map((u) => {
-                    const av = u.avatar_url || (u.mc_username ? `https://mc-heads.net/avatar/${u.mc_username}/64` : undefined);
-                    const init = (u.display_name ?? "?").slice(0, 2).toUpperCase();
-                    return (
-                      <li key={u.id}>
-                        <Link
-                          to={`/user/${u.id.slice(0, 8)}`}
-                          onClick={() => setListMode(null)}
-                          className="flex items-center gap-3 p-2 rounded-md hover:bg-accent transition-colors"
-                        >
-                          <Avatar className="h-9 w-9">
-                            <AvatarImage src={av} />
-                            <AvatarFallback>{init}</AvatarFallback>
-                          </Avatar>
-                          <div className="min-w-0 flex-1">
-                            <div className="font-medium truncate">{u.display_name ?? "Unnamed Player"}</div>
-                            {u.mc_username && (
-                              <div className="text-xs text-muted-foreground font-mono truncate">@{u.mc_username}</div>
-                            )}
+              </Card>
+            ) : (
+              projects.map((p) => {
+                const href = p.kind === "mod" ? `/mod/${p.slug}` : `/plugin/${p.short_id}`;
+                return (
+                  <Link key={`${p.kind}-${p.id}`} to={href}>
+                    <Card className="p-4 hover:border-primary/50 transition-colors">
+                      <div className="flex items-start gap-4">
+                        {p.icon_url ? (
+                          <img src={p.icon_url} alt="" className="h-16 w-16 rounded-md object-cover border border-border bg-card shrink-0" />
+                        ) : (
+                          <div className="h-16 w-16 rounded-md bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0">
+                            <Boxes className="h-7 w-7 text-primary" />
                           </div>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="font-bold text-base">{p.name}</h3>
+                            <span className="text-xs text-muted-foreground inline-flex items-center gap-1">
+                              <Globe className="h-3 w-3" /> Public
+                            </span>
+                          </div>
+                          {p.description && (
+                            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{p.description}</p>
+                          )}
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {p.category && (
+                              <Badge variant="secondary" className="rounded-full">{p.category}</Badge>
+                            )}
+                            {p.tags?.slice(0, 3).map((t) => (
+                              <Badge key={t} variant="secondary" className="rounded-full">{t}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="text-right text-sm text-muted-foreground shrink-0 space-y-1">
+                          <div className="flex items-center justify-end gap-3">
+                            <span className="flex items-center gap-1"><Download className="h-3.5 w-3.5" /> 0</span>
+                            <span className="flex items-center gap-1"><Heart className="h-3.5 w-3.5" /> {p.likes}</span>
+                          </div>
+                          <div className="text-xs">{timeAgo(p.updated_at)}</div>
+                        </div>
+                      </div>
+                    </Card>
+                  </Link>
+                );
+              })
+            )}
+          </div>
+
+          <aside className="space-y-4">
+            <Card className="p-5">
+              <h3 className="font-bold mb-3 flex items-center gap-2">
+                <Building2 className="h-4 w-4" /> Organizations
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {isOwn ? "You're not a member of any organizations yet." : "No organizations."}
+              </p>
+            </Card>
+
+            <Card className="p-5">
+              <h3 className="font-bold mb-3">Followers</h3>
+              <div className="text-2xl font-display font-bold text-glow">{followerCount}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {followerCount === 1 ? "person follows" : "people follow"} this member
+              </p>
+            </Card>
+          </aside>
+        </div>
       </main>
+
+      {/* Edit dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit profile</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label htmlFor="dn">Display name</Label>
+              <Input id="dn" value={editDisplay} onChange={(e) => setEditDisplay(e.target.value)} />
+            </div>
+            <div>
+              <Label htmlFor="av">Avatar URL</Label>
+              <Input id="av" value={editAvatar} onChange={(e) => setEditAvatar(e.target.value)} placeholder="https://…" />
+            </div>
+            <div>
+              <Label htmlFor="bio">Bio</Label>
+              <Textarea id="bio" value={editBio} onChange={(e) => setEditBio(e.target.value)} rows={3} placeholder="A few words about you" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
+            <Button onClick={saveEdit} disabled={editBusy}>
+              {editBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );
