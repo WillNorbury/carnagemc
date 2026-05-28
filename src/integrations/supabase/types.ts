@@ -955,6 +955,7 @@ export type Database = {
         Returns: boolean
       }
       gen_plugin_short_id: { Args: never; Returns: string }
+      is_admin_user: { Args: { _user_id: string }; Returns: boolean }
       record_login_streak: {
         Args: never
         Returns: {
