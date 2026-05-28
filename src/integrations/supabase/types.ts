@@ -389,6 +389,7 @@ export type Database = {
           name: string
           published: boolean
           short_id: string
+          slug: string
           sort_order: number
           tags: string[]
           updated_at: string
@@ -412,6 +413,7 @@ export type Database = {
           name: string
           published?: boolean
           short_id?: string
+          slug: string
           sort_order?: number
           tags?: string[]
           updated_at?: string
@@ -435,6 +437,7 @@ export type Database = {
           name?: string
           published?: boolean
           short_id?: string
+          slug?: string
           sort_order?: number
           tags?: string[]
           updated_at?: string
