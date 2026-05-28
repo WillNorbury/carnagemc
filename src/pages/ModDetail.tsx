@@ -13,7 +13,6 @@ import {
   Boxes,
   Calendar,
   Download,
-  FileText,
   Heart,
   Monitor,
   MoreVertical,
