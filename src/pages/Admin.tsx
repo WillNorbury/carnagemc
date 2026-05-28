@@ -283,7 +283,7 @@ const UsersTab = () => {
 
   const load = async () => {
     const [{ data: p }, { data: r }] = await Promise.all([
-      supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+      supabase.from("profiles").select("id, display_name, mc_username, created_at").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("id, user_id, role"),
     ]);
     setProfiles((p ?? []) as Profile[]);
