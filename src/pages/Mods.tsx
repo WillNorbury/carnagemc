@@ -12,6 +12,7 @@ import { Boxes, Download, Search, Sparkles } from "lucide-react";
 
 type Mod = {
   id: string;
+  slug: string;
   short_id: string;
   name: string;
   description: string | null;
