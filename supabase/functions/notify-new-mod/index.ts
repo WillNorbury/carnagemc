@@ -54,7 +54,7 @@ Deno.serve(async (req) => {
 
     if (!name || !slug) return json({ ok: false, error: "name and slug required" }, 400);
 
-    const url = `${SITE_BASE}/mod/${slug}`;
+    const url = `${SITE_BASE}/discover/mod/${slug}`;
 
     const fields: any[] = [];
     if (author) fields.push({ name: "Author", value: String(author), inline: true });
