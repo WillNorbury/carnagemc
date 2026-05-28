@@ -25,6 +25,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { roleLabel, type AppRole } from "@/lib/roles";
+import { userProfilePath } from "@/lib/userSlug";
 import { applyTheme, DEFAULT_PREFS, type UserPreferences } from "@/lib/preferences";
 import { toast } from "sonner";
 import { Bell, ExternalLink, Loader2, Lock, MessageCircle, Palette, Unlink } from "lucide-react";
@@ -201,6 +202,7 @@ const Profile = () => {
   }
 
   const shortId = user!.id.slice(0, 8);
+  const publicProfilePath = userProfilePath({ id: user!.id, display_name: displayName, mc_username: mcUsername });
   const initials = (displayName || user!.email || "?").slice(0, 2).toUpperCase();
 
   return (
@@ -213,7 +215,7 @@ const Profile = () => {
             <p className="text-muted-foreground mt-1">Manage your XyloMC account</p>
           </div>
           <Button asChild variant="outline">
-            <Link to={`/user/${shortId}`}>
+            <Link to={publicProfilePath}>
               View public profile <ExternalLink className="h-4 w-4 ml-2" />
             </Link>
           </Button>
