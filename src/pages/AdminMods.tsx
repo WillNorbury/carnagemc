@@ -17,6 +17,7 @@ import {
 
 type Mod = {
   id: string;
+  slug: string;
   short_id: string;
   name: string;
   description: string | null;
@@ -36,6 +37,13 @@ type Mod = {
   published: boolean;
   sort_order: number;
 };
+
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
 
 const blank = {
   name: "",
