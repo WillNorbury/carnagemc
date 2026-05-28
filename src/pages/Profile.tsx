@@ -96,21 +96,23 @@ const Profile = () => {
     if (authLoading) return;
     if (!user) { navigate("/auth"); return; }
     (async () => {
-      const [{ data: p }, { data: r }] = await Promise.all([
-        supabase.from("profiles").select("display_name, mc_username, avatar_url, preferences, discord_id, discord_username, discord_avatar").eq("id", user.id).maybeSingle(),
+      const [{ data: p }, { data: r }, { data: priv }] = await Promise.all([
+        supabase.from("profiles").select("display_name, mc_username, avatar_url").eq("id", user.id).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", user.id),
+        supabase.rpc("get_my_private_profile"),
       ]);
+      const privateRow = Array.isArray(priv) ? priv[0] : null;
       setDisplayName(p?.display_name ?? "");
       setMcUsername(p?.mc_username ?? "");
       setSavedMc(p?.mc_username ?? null);
       setDiscord({
-        id: (p as any)?.discord_id ?? null,
-        username: (p as any)?.discord_username ?? null,
-        avatar: (p as any)?.discord_avatar ?? null,
+        id: (privateRow as any)?.discord_id ?? null,
+        username: (privateRow as any)?.discord_username ?? null,
+        avatar: (privateRow as any)?.discord_avatar ?? null,
       });
       setAvatarUrl(p?.avatar_url ?? "");
       setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
-      const loaded = { ...DEFAULT_PREFS, ...((p?.preferences as UserPreferences) ?? {}) };
+      const loaded = { ...DEFAULT_PREFS, ...(((privateRow as any)?.preferences as UserPreferences) ?? {}) };
       setPrefs(loaded);
       applyTheme(loaded.theme);
       setLoading(false);
