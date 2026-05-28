@@ -329,11 +329,11 @@ const ModTiers = () => {
             </div>
           )}
           <DialogFooter className="gap-2">
-            {user && reviews.find((r) => r.mod_id === openMod?.id && r.user_id === user.id) && (
+            {isAdmin && reviews.find((r) => r.mod_id === openMod?.id && r.user_id === user?.id) && (
               <Button variant="destructive" onClick={deleteMine}>Delete</Button>
             )}
             <Button variant="outline" onClick={() => setOpenMod(null)}>Cancel</Button>
-            {user && (
+            {isAdmin && (
               <Button onClick={submitReview} disabled={submitting}>
                 {submitting ? "Saving..." : "Save review"}
               </Button>
