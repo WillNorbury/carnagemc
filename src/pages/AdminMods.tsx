@@ -100,6 +100,7 @@ const AdminMods = () => {
     setEditing(m);
     setForm({
       name: m.name,
+      slug: m.slug ?? "",
       description: m.description ?? "",
       long_description: m.long_description ?? "",
       version: m.version ?? "",
