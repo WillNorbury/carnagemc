@@ -72,8 +72,8 @@ const Shell = () => {
                   <Route path="/admin/events" element={<AdminEvents />} />
                   <Route path="/admin/maintenance" element={<AdminMaintenance />} />
                   <Route path="/admin/mods" element={<AdminMods />} />
-                  <Route path="/mods" element={<Mods />} />
-                  <Route path="/mod/:slug" element={<ModDetail />} />
+                  <Route path="/discover/mods" element={<Mods />} />
+                  <Route path="/discover/mod/:slug" element={<ModDetail />} />
                   <Route path="/mod-tiers" element={<ModTiers />} />
                   <Route path="/changelog" element={<Changelog />} />
                   <Route path="/dashboard" element={<Dashboard />} />
@@ -92,8 +92,8 @@ const Shell = () => {
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/users" element={<Users />} />
                   <Route path="/user/:shortId" element={<UserProfile />} />
-                  <Route path="/plugins" element={<Plugins />} />
-                  <Route path="/plugins/:shortId" element={<PluginDetail />} />
+                  <Route path="/discover/plugins" element={<Plugins />} />
+                  <Route path="/discover/plugins/:shortId" element={<PluginDetail />} />
                   <Route path="/features" element={<Features />} />
                   <Route path="/features/:slug" element={<FeatureDetail />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />

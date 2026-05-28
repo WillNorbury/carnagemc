@@ -70,7 +70,7 @@ const PluginDetail = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <main className="container pt-28 pb-16 max-w-4xl">
-        <Link to="/plugins" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition mb-6">
+        <Link to="/discover/plugins" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition mb-6">
           <ArrowLeft className="h-4 w-4" /> Back to plugins
         </Link>
 
@@ -80,7 +80,7 @@ const PluginDetail = () => {
           <Card className="p-10 text-center">
             <h1 className="text-2xl font-bold mb-2">Plugin not found</h1>
             <p className="text-muted-foreground mb-6">This plugin doesn't exist or isn't published.</p>
-            <Button asChild><Link to="/plugins">Browse plugins</Link></Button>
+            <Button asChild><Link to="/discover/plugins">Browse plugins</Link></Button>
           </Card>
         ) : (
           <>

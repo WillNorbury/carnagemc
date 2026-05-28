@@ -263,7 +263,7 @@ const AdminMods = () => {
           <h1 className="text-3xl font-bold flex items-center gap-2">
             <Boxes className="h-7 w-7 text-primary" /> Mods
           </h1>
-          <p className="text-muted-foreground">Upload and manage .jar mods shown on /mods.</p>
+          <p className="text-muted-foreground">Upload and manage .jar mods shown on /discover/mods.</p>
         </div>
 
         <Card className="p-6 space-y-4">
@@ -281,7 +281,7 @@ const AdminMods = () => {
             <div className="sm:col-span-2">
               <Label>URL slug</Label>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground font-mono whitespace-nowrap">/mod/</span>
+                <span className="text-xs text-muted-foreground font-mono whitespace-nowrap">/discover/mod/</span>
                 <Input
                   value={form.slug}
                   onChange={(e) => setForm({ ...form, slug: e.target.value })}
