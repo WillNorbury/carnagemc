@@ -332,6 +332,78 @@ export type Database = {
         }
         Relationships: []
       }
+      mods: {
+        Row: {
+          author: string | null
+          category: string | null
+          created_at: string
+          description: string | null
+          download_url: string | null
+          featured: boolean
+          icon_url: string | null
+          id: string
+          jar_filename: string | null
+          jar_path: string | null
+          jar_size: number | null
+          loader: string | null
+          long_description: string | null
+          mc_version: string | null
+          name: string
+          published: boolean
+          short_id: string
+          sort_order: number
+          tags: string[]
+          updated_at: string
+          version: string | null
+        }
+        Insert: {
+          author?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          download_url?: string | null
+          featured?: boolean
+          icon_url?: string | null
+          id?: string
+          jar_filename?: string | null
+          jar_path?: string | null
+          jar_size?: number | null
+          loader?: string | null
+          long_description?: string | null
+          mc_version?: string | null
+          name: string
+          published?: boolean
+          short_id?: string
+          sort_order?: number
+          tags?: string[]
+          updated_at?: string
+          version?: string | null
+        }
+        Update: {
+          author?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          download_url?: string | null
+          featured?: boolean
+          icon_url?: string | null
+          id?: string
+          jar_filename?: string | null
+          jar_path?: string | null
+          jar_size?: number | null
+          loader?: string | null
+          long_description?: string | null
+          mc_version?: string | null
+          name?: string
+          published?: boolean
+          short_id?: string
+          sort_order?: number
+          tags?: string[]
+          updated_at?: string
+          version?: string | null
+        }
+        Relationships: []
+      }
       news: {
         Row: {
           author_id: string | null
