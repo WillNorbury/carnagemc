@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { ALL_ROLES, roleLabel, type AppRole } from "@/lib/roles";
+import { userProfilePath } from "@/lib/userSlug";
 import { Link } from "react-router-dom";
 
 type StaffMember = {
@@ -111,7 +112,7 @@ const Staff = () => {
                       : null;
                     return (
                       <Card key={m.user_id} className="p-0 hover:border-primary/50 hover:shadow-md transition">
-                        <Link to={`/user/${m.user_id.slice(0, 8)}`} className="flex items-center gap-4 p-5">
+                        <Link to={userProfilePath({ id: m.user_id, display_name: m.display_name, mc_username: m.mc_username })} className="flex items-center gap-4 p-5">
                           <Avatar className="h-14 w-14">
                             <AvatarImage src={skin ?? m.avatar_url ?? undefined} alt={name} />
                             <AvatarFallback>{initials}</AvatarFallback>

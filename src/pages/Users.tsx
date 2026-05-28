@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { ALL_ROLES, roleLabel, type AppRole } from "@/lib/roles";
+import { userProfilePath } from "@/lib/userSlug";
 import { Loader2, Search, Users as UsersIcon } from "lucide-react";
 
 type Profile = {
@@ -93,7 +94,7 @@ const Users = () => {
                 const initials = (p.display_name ?? "?").slice(0, 2).toUpperCase();
                 const avatar = p.avatar_url || (p.mc_username ? `https://mc-heads.net/avatar/${p.mc_username}/128` : undefined);
                 return (
-                  <Link key={p.id} to={`/user/${p.id.slice(0, 8)}`}>
+                  <Link key={p.id} to={userProfilePath(p)}>
                     <Card className="p-4 flex items-center gap-3 hover:border-primary/50 transition-colors h-full">
                       <Avatar className="h-12 w-12">
                         <AvatarImage src={avatar} />

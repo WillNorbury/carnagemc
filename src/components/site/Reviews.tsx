@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { userProfilePath } from "@/lib/userSlug";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -280,7 +281,7 @@ const Reviews = () => {
                     </div>
                   )}
                   <div className="min-w-0">
-                    <Link to={`/user/${r.user_id.slice(0, 8)}`} className="font-semibold text-sm hover:text-primary truncate block">
+                    <Link to={p ? userProfilePath(p) : `/user/${r.user_id.slice(0, 8)}`} className="font-semibold text-sm hover:text-primary truncate block">
                       {name}
                     </Link>
                     <div className="text-xs text-muted-foreground">
