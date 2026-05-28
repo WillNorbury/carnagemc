@@ -332,6 +332,32 @@ export type Database = {
         }
         Relationships: []
       }
+      mod_likes: {
+        Row: {
+          created_at: string
+          mod_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          mod_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          mod_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mod_likes_mod_id_fkey"
+            columns: ["mod_id"]
+            isOneToOne: false
+            referencedRelation: "mods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mod_reviews: {
         Row: {
           body: string
@@ -363,6 +389,32 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "mod_reviews_mod_id_fkey"
+            columns: ["mod_id"]
+            isOneToOne: false
+            referencedRelation: "mods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mod_saves: {
+        Row: {
+          created_at: string
+          mod_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          mod_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          mod_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mod_saves_mod_id_fkey"
             columns: ["mod_id"]
             isOneToOne: false
             referencedRelation: "mods"
@@ -559,6 +611,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
           created_at: string
           discord_avatar: string | null
           discord_id: string | null
@@ -571,6 +624,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           discord_avatar?: string | null
           discord_id?: string | null
@@ -583,6 +637,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           discord_avatar?: string | null
           discord_id?: string | null
