@@ -96,6 +96,7 @@ const Shell = () => {
                   <Route path="/org/:slug" element={<OrgProfile />} />
                   <Route path="/discover/plugins" element={<Plugins />} />
                   <Route path="/discover/plugins/:shortId" element={<PluginDetail />} />
+                  <Route path="/plugin/:slug" element={<PluginDetail />} />
                   <Route path="/features" element={<Features />} />
                   <Route path="/features/:slug" element={<FeatureDetail />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
