@@ -439,6 +439,7 @@ export type Database = {
           long_description: string | null
           mc_version: string | null
           name: string
+          org_id: string | null
           published: boolean
           short_id: string
           slug: string
@@ -463,6 +464,7 @@ export type Database = {
           long_description?: string | null
           mc_version?: string | null
           name: string
+          org_id?: string | null
           published?: boolean
           short_id?: string
           slug: string
@@ -487,6 +489,7 @@ export type Database = {
           long_description?: string | null
           mc_version?: string | null
           name?: string
+          org_id?: string | null
           published?: boolean
           short_id?: string
           slug?: string
@@ -495,7 +498,15 @@ export type Database = {
           updated_at?: string
           version?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "mods_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       news: {
         Row: {
@@ -616,6 +627,7 @@ export type Database = {
           jar_size: number | null
           long_description: string | null
           name: string
+          org_id: string | null
           platform: string | null
           published: boolean
           screenshots: string[]
@@ -638,6 +650,7 @@ export type Database = {
           jar_size?: number | null
           long_description?: string | null
           name: string
+          org_id?: string | null
           platform?: string | null
           published?: boolean
           screenshots?: string[]
@@ -660,6 +673,7 @@ export type Database = {
           jar_size?: number | null
           long_description?: string | null
           name?: string
+          org_id?: string | null
           platform?: string | null
           published?: boolean
           screenshots?: string[]
@@ -668,7 +682,15 @@ export type Database = {
           updated_at?: string
           version?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "plugins_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
