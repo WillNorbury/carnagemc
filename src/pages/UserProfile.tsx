@@ -96,6 +96,7 @@ const UserProfile = () => {
   const [notFound, setNotFound] = useState(false);
 
   const [projects, setProjects] = useState<Project[]>([]);
+  const [orgs, setOrgs] = useState<{ id: string; slug: string; name: string; avatar_url: string | null; role: string }[]>([]);
   const [followerCount, setFollowerCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followBusy, setFollowBusy] = useState(false);
