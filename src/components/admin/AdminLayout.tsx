@@ -17,7 +17,7 @@ import {
 
 export type AdminSection =
   | "dashboard" | "users" | "roles" | "permissions" | "news" | "content" | "status" | "logs" | "tickets" | "plugins"
-  | "changelog" | "applications" | "features" | "rules"
+  | "changelog" | "applications" | "features" | "rules" | "store"
   | "bot-dashboard" | "bot-management";
 
 type NavItem =
