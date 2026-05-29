@@ -49,6 +49,7 @@ import { FeaturesTab } from "@/components/admin/FeaturesTab";
 import { RulesTab } from "@/components/admin/RulesTab";
 import { NewsAnnouncementsTab } from "@/pages/AdminNews";
 import { PermissionsTab } from "@/components/admin/PermissionsTab";
+import { StoreTab } from "@/components/admin/StoreTab";
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
 type RoleRow = { id: string; user_id: string; role: AppRole };
