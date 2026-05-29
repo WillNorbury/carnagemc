@@ -11,6 +11,8 @@ import { Puzzle, Search, Sparkles } from "lucide-react";
 type Plugin = {
   id: string;
   short_id: string;
+  slug: string | null;
+
   name: string;
   description: string | null;
   version: string | null;
