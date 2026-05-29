@@ -45,6 +45,7 @@ import Mods from "./pages/Mods.tsx";
 import ModDetail from "./pages/ModDetail.tsx";
 import ModTiers from "./pages/ModTiers.tsx";
 import { MaintenanceGate } from "./components/site/MaintenanceGate.tsx";
+import OrgProfile from "./pages/OrgProfile.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
