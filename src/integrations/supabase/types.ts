@@ -539,6 +539,68 @@ export type Database = {
         }
         Relationships: []
       }
+      organization_members: {
+        Row: {
+          created_at: string
+          org_id: string
+          role: Database["public"]["Enums"]["org_member_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          org_id: string
+          role?: Database["public"]["Enums"]["org_member_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          org_id?: string
+          role?: Database["public"]["Enums"]["org_member_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          description: string
+          id: string
+          name: string
+          owner_id: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          name: string
+          owner_id: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          owner_id?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       plugins: {
         Row: {
           author: string | null
@@ -1105,6 +1167,7 @@ export type Database = {
         | "member"
       application_status: "pending" | "approved" | "rejected"
       application_type: "staff" | "builder" | "youtuber"
+      org_member_role: "owner" | "admin" | "member"
       ticket_priority: "low" | "normal" | "high" | "urgent"
       ticket_status: "open" | "in_progress" | "waiting_user" | "closed"
     }
@@ -1271,6 +1334,7 @@ export const Constants = {
       ],
       application_status: ["pending", "approved", "rejected"],
       application_type: ["staff", "builder", "youtuber"],
+      org_member_role: ["owner", "admin", "member"],
       ticket_priority: ["low", "normal", "high", "urgent"],
       ticket_status: ["open", "in_progress", "waiting_user", "closed"],
     },
