@@ -33,7 +33,7 @@ const Plugins = () => {
     (async () => {
       const { data } = await supabase
         .from("plugins")
-        .select("id, short_id, name, description, version, author, icon_url, category, tags, featured")
+        .select("id, short_id, slug, name, description, version, author, icon_url, category, tags, featured")
         .eq("published", true)
         .order("featured", { ascending: false })
         .order("created_at", { ascending: false });
