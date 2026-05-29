@@ -115,27 +115,84 @@ const Store = () => {
     </Card>
   );
 
+  const recentPayments = useMemo(() => {
+    const names = ["Rosie", "Steve_99", "AlexCraft", "NotchFan", "EnderQueen", "DiamondMike", "PixelKnight", "ShadowWolf"];
+    const pool = items.length ? items : [];
+    return Array.from({ length: 6 }).map((_, i) => {
+      const it = pool[i % Math.max(pool.length, 1)];
+      return {
+        id: i,
+        user: names[i % names.length],
+        item: it?.name ?? "Mystery Crate",
+        price: it ? formatPrice(it.price, it.currency) : "$4.99",
+        ago: `${i * 3 + 2}m ago`,
+      };
+    });
+  }, [items]);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <main className="flex-1 relative">
         <section className="relative overflow-hidden border-b">
-          <Particles count={20} />
+          <Particles count={28} />
           <div className="absolute inset-0 bg-grid opacity-[0.08]" />
-          <div className="container relative py-14 md:py-20 text-center">
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <StoreIcon className="h-9 w-9 text-primary" />
-              <h1 className="font-display text-4xl md:text-6xl font-black">
-                XyloMC <span className="text-gradient">Store</span>
-              </h1>
-            </div>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              Browse ranks, crates, cosmetics, and more to support the server.
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 pointer-events-none" />
+          <div className="container relative py-20 md:py-28 text-center">
+            <Badge variant="secondary" className="mb-5 border-primary/40 text-primary">
+              <Sparkles className="h-3 w-3 mr-1" /> Premium Perks
+            </Badge>
+            <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-black mb-5">
+              Level Up Your <span className="text-gradient">Experience</span>
+            </h1>
+            <p className="text-muted-foreground max-w-xl mx-auto text-lg mb-8">
+              Support the server and unlock exclusive ranks, cosmetics, and crate keys.
             </p>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Button size="lg" asChild className="animate-pulse-glow">
+                <a href="#packages">
+                  <ShoppingBag className="h-4 w-4 mr-2" /> Browse Store
+                </a>
+              </Button>
+              <Button size="lg" variant="secondary" asChild>
+                <a href="https://discord.xylomc.net" target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="h-4 w-4 mr-2" /> Join Discord
+                </a>
+              </Button>
+            </div>
           </div>
         </section>
 
-        <div className="container py-10 space-y-10">
+        {categories.length > 0 && (
+          <section className="container py-14 space-y-6">
+            <div className="text-center">
+              <h2 className="font-display text-3xl md:text-4xl font-black">Store <span className="text-gradient">Categories</span></h2>
+              <p className="text-muted-foreground mt-2">Pick a category to start shopping.</p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {categories.slice(0, 8).map((c) => (
+                <a key={c.id} href={`#cat-${c.id}`} className="group">
+                  <Card className="relative overflow-hidden p-6 h-full hover-lift hover-glow border-primary/10">
+                    <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-2xl group-hover:scale-125 transition-transform duration-500" />
+                    <div className="relative space-y-2">
+                      <Package className="h-7 w-7 text-primary" />
+                      <h3 className="font-display text-xl font-bold">{c.name}</h3>
+                      {c.description && (
+                        <p className="text-sm text-muted-foreground line-clamp-2">{c.description}</p>
+                      )}
+                      <div className="flex items-center gap-1 text-primary text-sm font-semibold pt-1">
+                        View <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </Card>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <div id="packages" className="container py-10 space-y-10 scroll-mt-20">
+
           {loading ? (
             <p className="text-center text-muted-foreground py-16">Loading store...</p>
           ) : items.length === 0 ? (
