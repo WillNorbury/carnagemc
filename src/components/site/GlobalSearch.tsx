@@ -77,7 +77,7 @@ export function GlobalSearch() {
       const results: Hit[] = [];
       const [news, plugins, features, profiles, faqs, events] = await Promise.all([
         supabase.from("news").select("id,title,slug,excerpt").eq("published", true).ilike("title", like).limit(5),
-        supabase.from("plugins").select("id,short_id,name,description").eq("published", true).ilike("name", like).limit(5),
+        supabase.from("plugins").select("id,short_id,slug,name,description").eq("published", true).ilike("name", like).limit(5),
         supabase.from("features").select("id,title,slug,description").eq("published", true).ilike("title", like).limit(5),
         supabase.from("profiles").select("id,display_name,mc_username").or(`display_name.ilike.${like},mc_username.ilike.${like}`).limit(5),
         (supabase.from("faqs" as any) as any).select("id,question").eq("published", true).ilike("question", like).limit(5),
@@ -87,7 +87,7 @@ export function GlobalSearch() {
         results.push({ id: `n-${n.id}`, type: "News", title: n.title, subtitle: n.excerpt ?? undefined, to: `/news/${n.slug}`, icon: Newspaper })
       );
       (plugins.data ?? []).forEach((p: any) =>
-        results.push({ id: `pl-${p.id}`, type: "Plugin", title: p.name, subtitle: p.description ?? undefined, to: `/discover/plugins/${p.short_id}`, icon: Puzzle })
+        results.push({ id: `pl-${p.id}`, type: "Plugin", title: p.name, subtitle: p.description ?? undefined, to: `/plugin/${p.slug ?? p.short_id}`, icon: Puzzle })
       );
       (features.data ?? []).forEach((f: any) =>
         results.push({ id: `f-${f.id}`, type: "Feature", title: f.title, subtitle: f.description ?? undefined, to: `/features/${f.slug}`, icon: Sparkles })

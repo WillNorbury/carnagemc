@@ -11,6 +11,8 @@ import { Puzzle, Search, Sparkles } from "lucide-react";
 type Plugin = {
   id: string;
   short_id: string;
+  slug: string | null;
+
   name: string;
   description: string | null;
   version: string | null;
@@ -31,7 +33,7 @@ const Plugins = () => {
     (async () => {
       const { data } = await supabase
         .from("plugins")
-        .select("id, short_id, name, description, version, author, icon_url, category, tags, featured")
+        .select("id, short_id, slug, name, description, version, author, icon_url, category, tags, featured")
         .eq("published", true)
         .order("featured", { ascending: false })
         .order("created_at", { ascending: false });
@@ -85,7 +87,7 @@ const Plugins = () => {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((p) => (
-              <Link key={p.id} to={`/discover/plugins/${p.short_id}`}>
+              <Link key={p.id} to={`/plugin/${p.slug ?? p.short_id}`}>
                 <Card className="p-5 h-full hover:border-primary/50 hover:shadow-elegant transition group">
                   <div className="flex items-start gap-3 mb-3">
                     {p.icon_url ? (
