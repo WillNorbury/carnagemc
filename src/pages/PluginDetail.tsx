@@ -51,9 +51,11 @@ const PluginDetail = () => {
   useEffect(() => {
     if (!key) return;
     (async () => {
-      let query = supabase.from("plugins").select("*").eq("published", true);
-      query = slug ? query.eq("slug", slug) : query.eq("short_id", key);
-      const { data } = await query.maybeSingle();
+      let { data } = await supabase.from("plugins").select("*").eq("published", true).eq("slug", key).maybeSingle();
+      if (!data) {
+        const fb = await supabase.from("plugins").select("*").eq("published", true).eq("short_id", key).maybeSingle();
+        data = fb.data;
+      }
       if (!data) {
         setNotFound(true);
       } else {
