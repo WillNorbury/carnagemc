@@ -270,6 +270,35 @@ const Store = () => {
             </>
           )}
         </div>
+
+        <section className="border-t bg-card/30">
+          <div className="container py-14 space-y-6">
+            <div className="text-center">
+              <h2 className="font-display text-3xl md:text-4xl font-black flex items-center justify-center gap-2">
+                <Receipt className="h-7 w-7 text-primary" /> Recent <span className="text-gradient">Payments</span>
+              </h2>
+              <p className="text-muted-foreground mt-2">Latest supporters of the server.</p>
+            </div>
+            <div className="max-w-2xl mx-auto space-y-3">
+              {recentPayments.map((p) => (
+                <Card key={p.id} className="p-4 flex items-center justify-between hover:border-primary/40 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center font-display font-black text-primary-foreground">
+                      {p.user.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-semibold leading-tight">
+                        <span className="text-primary">{p.user}</span> purchased {p.item}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{p.ago}</p>
+                    </div>
+                  </div>
+                  <span className="font-display font-bold text-gradient">{p.price}</span>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>
