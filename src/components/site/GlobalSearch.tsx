@@ -87,7 +87,7 @@ export function GlobalSearch() {
         results.push({ id: `n-${n.id}`, type: "News", title: n.title, subtitle: n.excerpt ?? undefined, to: `/news/${n.slug}`, icon: Newspaper })
       );
       (plugins.data ?? []).forEach((p: any) =>
-        results.push({ id: `pl-${p.id}`, type: "Plugin", title: p.name, subtitle: p.description ?? undefined, to: `/discover/plugins/${p.short_id}`, icon: Puzzle })
+        results.push({ id: `pl-${p.id}`, type: "Plugin", title: p.name, subtitle: p.description ?? undefined, to: `/plugin/${p.slug ?? p.short_id}`, icon: Puzzle })
       );
       (features.data ?? []).forEach((f: any) =>
         results.push({ id: `f-${f.id}`, type: "Feature", title: f.title, subtitle: f.description ?? undefined, to: `/features/${f.slug}`, icon: Sparkles })
