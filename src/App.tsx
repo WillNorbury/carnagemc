@@ -103,6 +103,7 @@ const Shell = () => {
                   <Route path="/leaderboard" element={<Leaderboard />} />
                   <Route path="/faq" element={<Faq />} />
                   <Route path="/events" element={<Events />} />
+                  <Route path="/store" element={<Store />} />
                   <Route path="*" element={<NotFound />} />
           </Routes>
         </SidebarInset>
