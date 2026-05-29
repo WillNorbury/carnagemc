@@ -11,7 +11,7 @@ import logo from "@/assets/xylo-logo.png";
 import {
   LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
   PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound, Puzzle, ClipboardList, Zap, Sparkles, Gavel,
-  HelpCircle, Calendar, Wrench, Menu, Boxes,
+  HelpCircle, Calendar, Wrench, Menu, Boxes, ShoppingBag,
 } from "lucide-react";
 
 
