@@ -34,7 +34,7 @@ import {
   Trophy,
   HelpCircle,
   Calendar,
-  Store,
+  
   Boxes,
   Star,
 } from "lucide-react";
