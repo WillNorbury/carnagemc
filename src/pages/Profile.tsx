@@ -359,6 +359,8 @@ const Profile = () => {
           )}
         </Card>
 
+        <OrganizationsCard userId={user!.id} />
+
 
 
         <Card className="p-6 mt-6 space-y-6">
