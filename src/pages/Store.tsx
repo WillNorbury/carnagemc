@@ -224,7 +224,7 @@ const Store = () => {
                 <TabsContent value="all" className="space-y-8">
                   {categories.map((c) =>
                     itemsByCat[c.id]?.length ? (
-                      <section key={c.id} className="space-y-3">
+                      <section key={c.id} id={`cat-${c.id}`} className="space-y-3 scroll-mt-24">
                         <div>
                           <h3 className="font-display text-xl font-bold">{c.name}</h3>
                           {c.description && <p className="text-sm text-muted-foreground">{c.description}</p>}
