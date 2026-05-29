@@ -180,6 +180,23 @@ const UserProfile = () => {
       }
       setProjects(allProjects);
 
+      // Organizations the user is a member of
+      const { data: memberships } = await supabase
+        .from("organization_members")
+        .select("role, organizations(id, slug, name, avatar_url)")
+        .eq("user_id", p.id);
+      setOrgs(
+        ((memberships ?? []) as any[])
+          .filter((m) => m.organizations)
+          .map((m) => ({
+            id: m.organizations.id,
+            slug: m.organizations.slug,
+            name: m.organizations.name,
+            avatar_url: m.organizations.avatar_url,
+            role: m.role,
+          }))
+      );
+
       // Follower counts
       const { count: followers } = await supabase
         .from("user_follows").select("*", { count: "exact", head: true })
