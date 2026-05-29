@@ -153,11 +153,20 @@
     0% { transform: translateX(-100%); }
     100% { transform: translateX(200%); }
   }
+  @keyframes scan {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+  }
   .scan-line::after {
     content: '';
     position: absolute; inset: 0;
     background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.15), transparent);
     animation: scan 4s linear infinite;
     pointer-events: none;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
   }
 }
