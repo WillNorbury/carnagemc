@@ -27,7 +27,33 @@ Deno.serve(async (req) => {
     const userId = claims.claims.sub as string;
 
     const body = await req.json().catch(() => ({}));
-    const returnTo = typeof body.return_to === "string" ? body.return_to : null;
+    const rawReturnTo = typeof body.return_to === "string" ? body.return_to : null;
+
+    // Allowlist of acceptable redirect origins for post-OAuth return.
+    const ALLOWED_ORIGINS = new Set([
+      "https://xylomc.net",
+      "https://www.xylomc.net",
+      "https://havocsmp.net",
+      "https://www.havocsmp.net",
+      "https://alsnetwork.fun",
+      "https://www.alsnetwork.fun",
+      "https://zyphoramc.net",
+      "https://www.zyphoramc.net",
+      "https://xylomc.lovable.app",
+    ]);
+
+    let returnTo: string | null = null;
+    if (rawReturnTo) {
+      try {
+        const parsed = new URL(rawReturnTo);
+        const isAllowed =
+          ALLOWED_ORIGINS.has(parsed.origin) ||
+          /\.lovable\.app$/.test(parsed.hostname);
+        if (isAllowed && (parsed.protocol === "https:" || parsed.protocol === "http:")) {
+          returnTo = parsed.toString();
+        }
+      } catch { /* invalid URL, ignore */ }
+    }
 
     const state = crypto.randomUUID() + crypto.randomUUID().replace(/-/g, "");
 

@@ -23,15 +23,27 @@ function extractCodeFromUrl(input: string): string | null {
   return null;
 }
 
+const ALLOWED_FETCH_HOSTS = new Set([
+  "discord.gg",
+  "discord.com",
+  "www.discord.com",
+  "discordapp.com",
+  "www.discordapp.com",
+]);
+
 async function extractCode(input: string): Promise<string | null> {
   if (!input) return null;
   const trimmed = input.trim();
   const direct = extractCodeFromUrl(trimmed);
   if (direct) return direct;
-  // Vanity/redirect URL — follow redirects to resolve the real invite
+  // Vanity/redirect URL — only follow if it points at a Discord-owned host
   if (/^https?:\/\//i.test(trimmed)) {
     try {
-      const r = await fetch(trimmed, { redirect: "follow", headers: { "User-Agent": "XyloMC-Site/1.0" } });
+      const parsed = new URL(trimmed);
+      if (parsed.protocol !== "https:" || !ALLOWED_FETCH_HOSTS.has(parsed.hostname)) {
+        return null;
+      }
+      const r = await fetch(parsed.toString(), { redirect: "follow", headers: { "User-Agent": "XyloMC-Site/1.0" } });
       const finalUrl = r.url;
       await r.body?.cancel();
       const code = extractCodeFromUrl(finalUrl);

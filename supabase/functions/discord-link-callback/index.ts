@@ -1,7 +1,31 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
+const ALLOWED_ORIGINS = new Set([
+  "https://xylomc.net",
+  "https://www.xylomc.net",
+  "https://havocsmp.net",
+  "https://www.havocsmp.net",
+  "https://alsnetwork.fun",
+  "https://www.alsnetwork.fun",
+  "https://zyphoramc.net",
+  "https://www.zyphoramc.net",
+  "https://xylomc.lovable.app",
+]);
+
+function safeReturnTo(input: string | null): string {
+  const fallback = "https://xylomc.net/profile";
+  if (!input) return fallback;
+  try {
+    const u = new URL(input);
+    const ok = ALLOWED_ORIGINS.has(u.origin) || /\.lovable\.app$/.test(u.hostname);
+    return ok ? u.toString() : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 function redirect(returnTo: string | null, status: string, msg?: string) {
-  const base = returnTo || "https://xylomc.net/profile";
+  const base = safeReturnTo(returnTo);
   const url = new URL(base);
   url.searchParams.set("discord", status);
   if (msg) url.searchParams.set("msg", msg);
