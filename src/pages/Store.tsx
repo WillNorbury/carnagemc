@@ -7,7 +7,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Store as StoreIcon, Package, Sparkles, ExternalLink } from "lucide-react";
+import { Store as StoreIcon, Package, Sparkles, ExternalLink, ShoppingBag, MessageCircle, Receipt, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 type Category = { id: string; slug: string; name: string; description: string; sort_order: number };
 type Item = {
