@@ -7,8 +7,6 @@ const ALLOWED_ORIGINS = new Set([
   "https://www.havocsmp.net",
   "https://alsnetwork.fun",
   "https://www.alsnetwork.fun",
-  "https://zyphoramc.net",
-  "https://www.zyphoramc.net",
   "https://xylomc.lovable.app",
 ]);
 

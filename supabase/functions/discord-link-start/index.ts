@@ -37,8 +37,6 @@ Deno.serve(async (req) => {
       "https://www.havocsmp.net",
       "https://alsnetwork.fun",
       "https://www.alsnetwork.fun",
-      "https://zyphoramc.net",
-      "https://www.zyphoramc.net",
       "https://xylomc.lovable.app",
     ]);
 
