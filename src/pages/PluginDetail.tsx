@@ -42,20 +42,18 @@ const buildJarName = (plugin: Plugin) => {
 };
 
 const PluginDetail = () => {
-  const { shortId } = useParams<{ shortId: string }>();
+  const { slug, shortId } = useParams<{ slug?: string; shortId?: string }>();
+  const key = slug ?? shortId;
   const [plugin, setPlugin] = useState<Plugin | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (!shortId) return;
+    if (!key) return;
     (async () => {
-      const { data } = await supabase
-        .from("plugins")
-        .select("*")
-        .eq("short_id", shortId)
-        .eq("published", true)
-        .maybeSingle();
+      let query = supabase.from("plugins").select("*").eq("published", true);
+      query = slug ? query.eq("slug", slug) : query.eq("short_id", key);
+      const { data } = await query.maybeSingle();
       if (!data) {
         setNotFound(true);
       } else {
@@ -64,7 +62,8 @@ const PluginDetail = () => {
       }
       setLoading(false);
     })();
-  }, [shortId]);
+  }, [key, slug]);
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
