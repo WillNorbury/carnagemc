@@ -36,17 +36,20 @@ async function extractCode(input: string): Promise<string | null> {
   const trimmed = input.trim();
   const direct = extractCodeFromUrl(trimmed);
   if (direct) return direct;
-  // Vanity/redirect URL — only follow if it points at a Discord-owned host
+  // Vanity/redirect URL — allow any https origin, but only accept the code
+  // if the FINAL resolved URL lands on a Discord-owned host.
   if (/^https?:\/\//i.test(trimmed)) {
     try {
       const parsed = new URL(trimmed);
-      if (parsed.protocol !== "https:" || !ALLOWED_FETCH_HOSTS.has(parsed.hostname)) {
-        return null;
-      }
-      const r = await fetch(parsed.toString(), { redirect: "follow", headers: { "User-Agent": "XyloMC-Site/1.0" } });
-      const finalUrl = r.url;
+      if (parsed.protocol !== "https:") return null;
+      const r = await fetch(parsed.toString(), {
+        redirect: "follow",
+        headers: { "User-Agent": "XyloMC-Site/1.0" },
+      });
+      const finalUrl = new URL(r.url);
       await r.body?.cancel();
-      const code = extractCodeFromUrl(finalUrl);
+      if (!ALLOWED_FETCH_HOSTS.has(finalUrl.hostname)) return null;
+      const code = extractCodeFromUrl(r.url);
       if (code) return code;
     } catch (_) { /* ignore */ }
     return null;
