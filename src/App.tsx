@@ -45,6 +45,7 @@ import Mods from "./pages/Mods.tsx";
 import ModDetail from "./pages/ModDetail.tsx";
 import ModTiers from "./pages/ModTiers.tsx";
 import { MaintenanceGate } from "./components/site/MaintenanceGate.tsx";
+import OrgProfile from "./pages/OrgProfile.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -92,6 +93,7 @@ const Shell = () => {
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/users" element={<Users />} />
                   <Route path="/user/:slug" element={<UserProfile />} />
+                  <Route path="/org/:slug" element={<OrgProfile />} />
                   <Route path="/discover/plugins" element={<Plugins />} />
                   <Route path="/discover/plugins/:shortId" element={<PluginDetail />} />
                   <Route path="/features" element={<Features />} />
