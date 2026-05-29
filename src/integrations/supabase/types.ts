@@ -632,6 +632,7 @@ export type Database = {
           published: boolean
           screenshots: string[]
           short_id: string
+          slug: string | null
           tags: string[]
           updated_at: string
           version: string | null
@@ -655,6 +656,7 @@ export type Database = {
           published?: boolean
           screenshots?: string[]
           short_id?: string
+          slug?: string | null
           tags?: string[]
           updated_at?: string
           version?: string | null
@@ -678,6 +680,7 @@ export type Database = {
           published?: boolean
           screenshots?: string[]
           short_id?: string
+          slug?: string | null
           tags?: string[]
           updated_at?: string
           version?: string | null
@@ -1151,6 +1154,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      slugify: { Args: { _input: string }; Returns: string }
     }
     Enums: {
       app_role:
