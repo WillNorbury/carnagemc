@@ -77,7 +77,7 @@ export function GlobalSearch() {
       const results: Hit[] = [];
       const [news, plugins, features, profiles, faqs, events] = await Promise.all([
         supabase.from("news").select("id,title,slug,excerpt").eq("published", true).ilike("title", like).limit(5),
-        supabase.from("plugins").select("id,short_id,name,description").eq("published", true).ilike("name", like).limit(5),
+        supabase.from("plugins").select("id,short_id,slug,name,description").eq("published", true).ilike("name", like).limit(5),
         supabase.from("features").select("id,title,slug,description").eq("published", true).ilike("title", like).limit(5),
         supabase.from("profiles").select("id,display_name,mc_username").or(`display_name.ilike.${like},mc_username.ilike.${like}`).limit(5),
         (supabase.from("faqs" as any) as any).select("id,question").eq("published", true).ilike("question", like).limit(5),
