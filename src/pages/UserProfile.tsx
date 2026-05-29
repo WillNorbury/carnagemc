@@ -457,9 +457,34 @@ const UserProfile = () => {
               <h3 className="font-bold mb-3 flex items-center gap-2">
                 <Building2 className="h-4 w-4" /> Organizations
               </h3>
-              <p className="text-sm text-muted-foreground">
-                {isOwn ? "You're not a member of any organizations yet." : "No organizations."}
-              </p>
+              {orgs.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  {isOwn ? "You're not a member of any organizations yet." : "No organizations."}
+                </p>
+              ) : (
+                <ul className="space-y-2">
+                  {orgs.map((o) => {
+                    const initials = o.name.slice(0, 2).toUpperCase();
+                    return (
+                      <li key={o.id}>
+                        <Link
+                          to={`/org/${o.slug}`}
+                          className="flex items-center gap-3 rounded-md p-2 -mx-2 hover:bg-muted transition-colors"
+                        >
+                          <Avatar className="h-9 w-9">
+                            <AvatarImage src={o.avatar_url ?? undefined} />
+                            <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-semibold text-sm truncate">{o.name}</div>
+                            <div className="text-xs text-muted-foreground capitalize">{o.role}</div>
+                          </div>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
             </Card>
 
             <Card className="p-5">
