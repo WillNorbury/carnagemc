@@ -58,6 +58,10 @@ const Navbar = () => {
               <span className="hidden md:inline">Admin</span>
             </Button>
           )}
+          <Button variant="ghost" size="sm" onClick={() => nav("/install")} title="How to install">
+            <Download className="h-4 w-4 sm:mr-1" />
+            <span className="hidden md:inline">How to install</span>
+          </Button>
           {user ? (
             <Button variant="outline" size="sm" onClick={async () => { await signOut(); nav("/"); }}>
               <LogOut className="h-4 w-4 sm:mr-1" />
