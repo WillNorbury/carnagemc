@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/auth";
 import logo from "@/assets/xylo-logo.png";
-import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield } from "lucide-react";
+import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
 
 const Navbar = () => {
