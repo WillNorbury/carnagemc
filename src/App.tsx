@@ -46,6 +46,7 @@ import ModDetail from "./pages/ModDetail.tsx";
 import ModTiers from "./pages/ModTiers.tsx";
 import { MaintenanceGate } from "./components/site/MaintenanceGate.tsx";
 import OrgProfile from "./pages/OrgProfile.tsx";
+import Install from "./pages/Install.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 
@@ -103,6 +104,7 @@ const Shell = () => {
                   <Route path="/leaderboard" element={<Leaderboard />} />
                   <Route path="/faq" element={<Faq />} />
                   <Route path="/events" element={<Events />} />
+                  <Route path="/install" element={<Install />} />
                   
                   <Route path="*" element={<NotFound />} />
           </Routes>
