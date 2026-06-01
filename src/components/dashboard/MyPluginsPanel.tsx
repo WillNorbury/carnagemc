@@ -697,6 +697,18 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {versionsFor && (
+        <PluginVersionsDialog
+          open={!!versionsFor}
+          onOpenChange={(v) => !v && setVersionsFor(null)}
+          pluginId={versionsFor.id}
+          pluginName={versionsFor.name}
+          userId={userId}
+          onChanged={load}
+        />
+      )}
     </Card>
   );
 }
+
