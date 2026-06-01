@@ -269,11 +269,28 @@ const Plugins = () => {
                                   <h3 className="font-display font-semibold text-lg group-hover:text-primary transition truncate">
                                     {p.name}
                                   </h3>
-                                  {p.author && (
-                                    <span className="text-sm text-muted-foreground">
-                                      by <span className="text-foreground/80">{p.author}</span>
-                                    </span>
-                                  )}
+                                  {(() => {
+                                    const creator = p.user_id ? creators[p.user_id] : undefined;
+                                    const username = creator?.display_name || creator?.mc_username;
+                                    const label = username ?? p.author;
+                                    if (!label) return null;
+                                    return (
+                                      <span className="text-sm text-muted-foreground">
+                                        by{" "}
+                                        {username && p.user_id ? (
+                                          <Link
+                                            to={`/user/${username}`}
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="text-foreground/80 hover:text-primary transition"
+                                          >
+                                            {username}
+                                          </Link>
+                                        ) : (
+                                          <span className="text-foreground/80">{label}</span>
+                                        )}
+                                      </span>
+                                    );
+                                  })()}
                                   {p.featured && <Sparkles className="h-3.5 w-3.5 text-primary" />}
                                 </div>
                                 {p.description && (
