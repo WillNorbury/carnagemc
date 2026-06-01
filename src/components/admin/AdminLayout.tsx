@@ -11,13 +11,14 @@ import logo from "@/assets/xylo-logo.png";
 import {
   LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
   PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound, Puzzle, ClipboardList, Zap, Sparkles, Gavel,
-  HelpCircle, Calendar, Wrench, Menu, Boxes,
+  HelpCircle, Calendar, Wrench, Menu, Boxes, Package, Database, Sun, Layers, Globe,
 } from "lucide-react";
 
 
 export type AdminSection =
   | "dashboard" | "users" | "roles" | "permissions" | "news" | "content" | "status" | "logs" | "tickets" | "plugins"
   | "changelog" | "applications" | "features" | "rules"
+  | "resource-packs" | "data-packs" | "shaders" | "modpacks" | "servers"
   | "bot-dashboard" | "bot-management";
 
 type NavItem =
@@ -36,6 +37,11 @@ const items: NavItem[] = [
   { kind: "link", id: "tickets", icon: Ticket, label: "Support Tickets" },
   { kind: "link", id: "logs", icon: ScrollText, label: "Admin Logs" },
   { kind: "link", id: "plugins", icon: Puzzle, label: "Plugins" },
+  { kind: "link", id: "resource-packs", icon: Package, label: "Resource Packs" },
+  { kind: "link", id: "data-packs", icon: Database, label: "Data Packs" },
+  { kind: "link", id: "shaders", icon: Sun, label: "Shaders" },
+  { kind: "link", id: "modpacks", icon: Layers, label: "Modpacks" },
+  { kind: "link", id: "servers", icon: Globe, label: "Servers" },
   { kind: "link", id: "changelog", icon: Zap, label: "Changelog" },
   { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
   { kind: "link", id: "features", icon: Sparkles, label: "Features" },

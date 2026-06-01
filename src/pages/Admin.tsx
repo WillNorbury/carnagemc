@@ -29,6 +29,7 @@ import {
   ChevronDown,
   Puzzle,
   Pencil,
+  Sparkles,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
@@ -78,6 +79,12 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   applications: { title: "Applications", description: "Review staff, builder, and content creator applications." },
   features: { title: "Features", description: "Add, edit, reorder, and remove features shown on the website." },
   rules: { title: "Rules", description: "Edit the sections shown on the public Rules page." },
+  "resource-packs": { title: "Resource Packs", description: "Manage discoverable resource packs." },
+  "data-packs": { title: "Data Packs", description: "Manage discoverable data packs." },
+  shaders: { title: "Shaders", description: "Manage discoverable shaders." },
+  modpacks: { title: "Modpacks", description: "Manage discoverable modpacks." },
+  servers: { title: "Servers", description: "Manage discoverable servers." },
+  
   
   "bot-dashboard": {
     title: "Discord Bot — Dashboard",
@@ -145,6 +152,9 @@ const Admin = () => {
       {section === "applications" && <ApplicationsTab />}
       {section === "features" && <FeaturesTab />}
       {section === "rules" && <RulesTab />}
+      {(section === "resource-packs" || section === "data-packs" || section === "shaders" || section === "modpacks" || section === "servers") && (
+        <ComingSoonAdminSection label={sectionMeta[section].title} />
+      )}
       
       {section === "permissions" && (isOwner ? <PermissionsTab /> : (
         <div className="flex flex-col items-center justify-center gap-4 py-20">
@@ -170,6 +180,17 @@ const Admin = () => {
     </AdminLayout>
   );
 };
+
+const ComingSoonAdminSection = ({ label }: { label: string }) => (
+  <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
+    <Sparkles className="h-10 w-10 text-primary" />
+    <h2 className="text-xl font-bold">{label} admin coming soon</h2>
+    <p className="text-muted-foreground max-w-md">
+      Management tools for {label.toLowerCase()} aren't built yet. The public
+      discover page is live as a placeholder.
+    </p>
+  </div>
+);
 
 const DashboardSection = ({ onNavigate }: { onNavigate: (s: AdminSection) => void }) => {
   const [stats, setStats] = useState({ users: 0, news: 0, admins: 0, online: false, players: 0, max: 0 });
