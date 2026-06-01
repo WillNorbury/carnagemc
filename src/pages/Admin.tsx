@@ -2653,9 +2653,11 @@ const PluginsTab = () => {
       jar_size: form.jar_size || null,
       screenshots: form.screenshots,
     };
+    const { data: auth } = await supabase.auth.getUser();
+    const insertPayload = { ...payload, user_id: auth.user?.id ?? null };
     const { error } = editingId
       ? await supabase.from("plugins").update(payload).eq("id", editingId)
-      : await supabase.from("plugins").insert(payload);
+      : await supabase.from("plugins").insert(insertPayload);
     setSaving(false);
     if (error) return toast.error(error.message);
     toast.success(editingId ? "Plugin updated" : "Plugin added");
