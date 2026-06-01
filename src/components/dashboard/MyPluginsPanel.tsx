@@ -236,8 +236,15 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       return;
     }
     setSaving(true);
+    const cleanSlug = slugify(form.slug);
+    if (form.slug.trim() && !cleanSlug) {
+      toast.error("Slug must contain letters or numbers");
+      setSaving(false);
+      return;
+    }
     const payload = {
       name: form.name.trim(),
+      slug: cleanSlug || null,
       description: form.description.trim() || null,
       long_description: form.long_description.trim() || null,
       version: form.version.trim() || null,
