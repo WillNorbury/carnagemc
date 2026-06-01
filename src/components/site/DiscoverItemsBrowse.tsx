@@ -137,6 +137,8 @@ const DiscoverItemsBrowse = ({
   const [pageSize, setPageSize] = useState(20);
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Record<string, Set<string>>>({});
+  const [openItem, setOpenItem] = useState<DiscoverItem | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = `${title} — XyloMC`;
@@ -147,7 +149,7 @@ const DiscoverItemsBrowse = ({
     (async () => {
       const { data } = await (supabase.from("discover_items" as any) as any)
         .select(
-          "id, kind, name, slug, description, author, version, icon_url, category, tags, featured, download_url, external_url, created_at, updated_at",
+          "id, kind, name, slug, description, long_description, author, version, icon_url, banner_url, category, tags, featured, download_url, external_url, meta, created_at, updated_at",
         )
         .eq("kind", kind)
         .eq("published", true)
@@ -157,6 +159,22 @@ const DiscoverItemsBrowse = ({
       setLoading(false);
     })();
   }, [kind]);
+
+  const copyIp = async (it: DiscoverItem) => {
+    const ip = getServerIp(it);
+    if (!ip) {
+      toast.error("No IP set for this server");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(ip);
+      setCopiedId(it.id);
+      toast.success(`Copied ${ip}`);
+      setTimeout(() => setCopiedId((c) => (c === it.id ? null : c)), 1500);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
 
   const toggle = (group: string, value: string) => {
     setSelected((prev) => {
