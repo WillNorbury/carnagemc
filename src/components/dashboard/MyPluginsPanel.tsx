@@ -59,6 +59,7 @@ type Plugin = {
 type FormState = {
   id: string | null;
   name: string;
+  slug: string;
   description: string;
   long_description: string;
   version: string;
@@ -77,6 +78,7 @@ type FormState = {
 const EMPTY: FormState = {
   id: null,
   name: "",
+  slug: "",
   description: "",
   long_description: "",
   version: "",
@@ -91,6 +93,13 @@ const EMPTY: FormState = {
   screenshots: [],
   published: true,
 };
+
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 const PLATFORMS = ["paper", "spigot", "bukkit", "folia", "purpur", "velocity", "bungeecord"];
 
