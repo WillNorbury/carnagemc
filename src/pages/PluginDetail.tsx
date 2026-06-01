@@ -388,7 +388,38 @@ const PluginDetail = () => {
                   )}
                   {tab === "versions" && (
                     <div className="space-y-2">
-                      {plugin.download_url ? (
+                      {versions.length > 0 ? (
+                        versions.map((v, i) => {
+                          const url = resolveVersionUrl(v);
+                          return (
+                            <div key={v.id} className="flex items-start justify-between p-3 rounded-md border border-border gap-3">
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="font-medium text-sm">v{v.version}</span>
+                                  {i === 0 && <Badge>Latest</Badge>}
+                                  <span className="text-xs text-muted-foreground">{timeAgo(v.created_at)}</span>
+                                </div>
+                                {v.jar_filename && (
+                                  <div className="text-xs text-muted-foreground mt-0.5">
+                                    {v.jar_filename}
+                                    {v.jar_size ? ` · ${formatSize(v.jar_size)}` : ""}
+                                  </div>
+                                )}
+                                {v.changelog && (
+                                  <p className="text-xs text-muted-foreground whitespace-pre-wrap mt-1.5">{v.changelog}</p>
+                                )}
+                              </div>
+                              {url ? (
+                                <Button asChild size="sm" variant="outline">
+                                  <a href={url} target="_blank" rel="noopener noreferrer" download>
+                                    <Download className="h-4 w-4 mr-1" /> Download
+                                  </a>
+                                </Button>
+                              ) : null}
+                            </div>
+                          );
+                        })
+                      ) : latestDownloadUrl && plugin ? (
                         <div className="flex items-center justify-between p-3 rounded-md border border-border gap-3">
                           <div className="min-w-0">
                             <div className="font-medium text-sm truncate">
@@ -409,6 +440,7 @@ const PluginDetail = () => {
                       )}
                     </div>
                   )}
+
                 </Card>
               </div>
 
