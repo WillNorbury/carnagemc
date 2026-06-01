@@ -109,6 +109,10 @@ const PluginDetail = () => {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const [downloadOpen, setDownloadOpen] = useState(false);
+  const [versionOpen, setVersionOpen] = useState(false);
+  const [versionQuery, setVersionQuery] = useState("");
+  const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
 
   useEffect(() => {
     if (!key) return;
