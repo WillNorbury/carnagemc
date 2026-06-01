@@ -106,10 +106,22 @@ const GAME_VERSIONS = [
 
 type Tab = "description" | "gallery" | "versions";
 
+type PluginVersion = {
+  id: string;
+  version: string;
+  changelog: string | null;
+  jar_filename: string | null;
+  jar_size: number | null;
+  download_url: string | null;
+  jar_path: string | null;
+  created_at: string;
+};
+
 const PluginDetail = () => {
   const { slug, shortId } = useParams<{ slug?: string; shortId?: string }>();
   const key = slug ?? shortId;
   const [plugin, setPlugin] = useState<Plugin | null>(null);
+  const [versions, setVersions] = useState<PluginVersion[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [tab, setTab] = useState<Tab>("description");
@@ -134,10 +146,29 @@ const PluginDetail = () => {
       else {
         setPlugin(data as Plugin);
         document.title = `${(data as Plugin).name} — Plugin — XyloMC`;
+        const { data: vs } = await (supabase.from("plugin_versions" as any) as any)
+          .select("*")
+          .eq("plugin_id", (data as Plugin).id)
+          .order("created_at", { ascending: false });
+        setVersions((vs ?? []) as PluginVersion[]);
       }
       setLoading(false);
     })();
   }, [key]);
+
+  const resolveVersionUrl = (v: PluginVersion) => {
+    if (v.download_url) return v.download_url;
+    if (v.jar_path) {
+      const { data } = supabase.storage.from("plugin-jars").getPublicUrl(v.jar_path);
+      return data.publicUrl;
+    }
+    return null;
+  };
+
+  const latestDownloadUrl =
+    plugin?.download_url ||
+    (versions.length > 0 ? resolveVersionUrl(versions[0]) : null);
+
 
   const copyLink = async () => {
     try {
@@ -154,10 +185,10 @@ const PluginDetail = () => {
     .filter(Boolean);
 
   const doDownload = async () => {
-    if (!plugin?.download_url) return;
+    if (!plugin || !latestDownloadUrl) return;
     const filename = buildJarName(plugin);
     try {
-      const res = await fetch(plugin.download_url);
+      const res = await fetch(latestDownloadUrl);
       if (!res.ok) throw new Error();
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -169,14 +200,15 @@ const PluginDetail = () => {
       a.remove();
       URL.revokeObjectURL(url);
     } catch {
-      window.open(plugin.download_url, "_blank", "noopener");
+      window.open(latestDownloadUrl, "_blank", "noopener");
     }
   };
 
   const handleDownload = () => {
-    if (!plugin?.download_url) return;
+    if (!latestDownloadUrl) return;
     setDownloadOpen(true);
   };
+
 
   const tabs: { id: Tab; label: string }[] = [
     { id: "description", label: "Description" },
@@ -250,13 +282,14 @@ const PluginDetail = () => {
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
-                {plugin.download_url ? (
+                {latestDownloadUrl ? (
                   <Button onClick={handleDownload} className="bg-primary hover:bg-primary/90 rounded-full px-5">
                     <Download className="h-4 w-4 mr-1.5" /> Download
                   </Button>
                 ) : (
                   <Button disabled className="rounded-full px-5">Unavailable</Button>
                 )}
+
                 <Button
                   variant={liked ? "default" : "outline"}
                   size="icon"
@@ -285,11 +318,12 @@ const PluginDetail = () => {
                     <DropdownMenuItem onClick={copyLink}>
                       <LinkIcon className="h-4 w-4 mr-2" /> Copy link
                     </DropdownMenuItem>
-                    {plugin.download_url && (
+                    {latestDownloadUrl && (
                       <DropdownMenuItem onClick={handleDownload}>
                         <Download className="h-4 w-4 mr-2" /> Download jar
                       </DropdownMenuItem>
                     )}
+
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => toast.success("Report submitted — thanks for letting us know")}
@@ -354,7 +388,38 @@ const PluginDetail = () => {
                   )}
                   {tab === "versions" && (
                     <div className="space-y-2">
-                      {plugin.download_url ? (
+                      {versions.length > 0 ? (
+                        versions.map((v, i) => {
+                          const url = resolveVersionUrl(v);
+                          return (
+                            <div key={v.id} className="flex items-start justify-between p-3 rounded-md border border-border gap-3">
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="font-medium text-sm">v{v.version}</span>
+                                  {i === 0 && <Badge>Latest</Badge>}
+                                  <span className="text-xs text-muted-foreground">{timeAgo(v.created_at)}</span>
+                                </div>
+                                {v.jar_filename && (
+                                  <div className="text-xs text-muted-foreground mt-0.5">
+                                    {v.jar_filename}
+                                    {v.jar_size ? ` · ${formatSize(v.jar_size)}` : ""}
+                                  </div>
+                                )}
+                                {v.changelog && (
+                                  <p className="text-xs text-muted-foreground whitespace-pre-wrap mt-1.5">{v.changelog}</p>
+                                )}
+                              </div>
+                              {url ? (
+                                <Button asChild size="sm" variant="outline">
+                                  <a href={url} target="_blank" rel="noopener noreferrer" download>
+                                    <Download className="h-4 w-4 mr-1" /> Download
+                                  </a>
+                                </Button>
+                              ) : null}
+                            </div>
+                          );
+                        })
+                      ) : latestDownloadUrl && plugin ? (
                         <div className="flex items-center justify-between p-3 rounded-md border border-border gap-3">
                           <div className="min-w-0">
                             <div className="font-medium text-sm truncate">
@@ -375,6 +440,7 @@ const PluginDetail = () => {
                       )}
                     </div>
                   )}
+
                 </Card>
               </div>
 
@@ -549,7 +615,7 @@ const PluginDetail = () => {
                 doDownload();
                 setDownloadOpen(false);
               }}
-              disabled={!plugin?.download_url}
+              disabled={!latestDownloadUrl}
               className="w-full bg-primary hover:bg-primary/90"
             >
               <Download className="h-4 w-4 mr-1.5" />
