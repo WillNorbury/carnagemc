@@ -15,7 +15,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Package, Download, Search, Sparkles, Clock, ChevronUp, ExternalLink } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import {
+  Package,
+  Download,
+  Search,
+  Sparkles,
+  Clock,
+  ChevronUp,
+  ExternalLink,
+  Copy,
+  Check,
+  Server as ServerIcon,
+} from "lucide-react";
 
 type DiscoverItem = {
   id: string;
@@ -23,16 +42,24 @@ type DiscoverItem = {
   name: string;
   slug: string | null;
   description: string | null;
+  long_description: string | null;
   author: string | null;
   version: string | null;
   icon_url: string | null;
+  banner_url: string | null;
   category: string | null;
   tags: string[];
   featured: boolean;
   download_url: string | null;
   external_url: string | null;
+  meta: Record<string, any> | null;
   created_at: string;
   updated_at: string;
+};
+
+const getServerIp = (it: DiscoverItem): string | null => {
+  const m = it.meta || {};
+  return (m.ip || m.address || m.host || null) as string | null;
 };
 
 const DISCOVER_TABS = [
