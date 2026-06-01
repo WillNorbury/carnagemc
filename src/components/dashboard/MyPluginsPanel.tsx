@@ -59,6 +59,7 @@ type Plugin = {
 type FormState = {
   id: string | null;
   name: string;
+  slug: string;
   description: string;
   long_description: string;
   version: string;
@@ -77,6 +78,7 @@ type FormState = {
 const EMPTY: FormState = {
   id: null,
   name: "",
+  slug: "",
   description: "",
   long_description: "",
   version: "",
@@ -91,6 +93,13 @@ const EMPTY: FormState = {
   screenshots: [],
   published: true,
 };
+
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 const PLATFORMS = ["paper", "spigot", "bukkit", "folia", "purpur", "velocity", "bungeecord"];
 
@@ -138,6 +147,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
     setForm({
       id: p.id,
       name: p.name,
+      slug: p.slug ?? "",
       description: p.description ?? "",
       long_description: p.long_description ?? "",
       version: p.version ?? "",
@@ -226,8 +236,15 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       return;
     }
     setSaving(true);
+    const cleanSlug = slugify(form.slug);
+    if (form.slug.trim() && !cleanSlug) {
+      toast.error("Slug must contain letters or numbers");
+      setSaving(false);
+      return;
+    }
     const payload = {
       name: form.name.trim(),
+      slug: cleanSlug || null,
       description: form.description.trim() || null,
       long_description: form.long_description.trim() || null,
       version: form.version.trim() || null,
@@ -437,6 +454,21 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
                   placeholder="1.0.0"
                 />
               </div>
+            </div>
+
+            <div>
+              <Label htmlFor="p-slug">URL slug</Label>
+              <Input
+                id="p-slug"
+                value={form.slug}
+                onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                onBlur={(e) => setForm({ ...form, slug: slugify(e.target.value) })}
+                maxLength={80}
+                placeholder="my-awesome-plugin"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Used in the URL: /plugins/<span className="font-mono">{slugify(form.slug) || "auto-generated"}</span>. Leave blank to auto-generate from the name. Must be unique.
+              </p>
             </div>
 
             <div>
