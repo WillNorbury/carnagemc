@@ -15,7 +15,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Package, Download, Search, Sparkles, Clock, ChevronUp, ExternalLink } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import {
+  Package,
+  Download,
+  Search,
+  Sparkles,
+  Clock,
+  ChevronUp,
+  ExternalLink,
+  Copy,
+  Check,
+  Server as ServerIcon,
+} from "lucide-react";
 
 type DiscoverItem = {
   id: string;
@@ -23,16 +42,24 @@ type DiscoverItem = {
   name: string;
   slug: string | null;
   description: string | null;
+  long_description: string | null;
   author: string | null;
   version: string | null;
   icon_url: string | null;
+  banner_url: string | null;
   category: string | null;
   tags: string[];
   featured: boolean;
   download_url: string | null;
   external_url: string | null;
+  meta: Record<string, any> | null;
   created_at: string;
   updated_at: string;
+};
+
+const getServerIp = (it: DiscoverItem): string | null => {
+  const m = it.meta || {};
+  return (m.ip || m.address || m.host || it.download_url || null) as string | null;
 };
 
 const DISCOVER_TABS = [
@@ -110,6 +137,8 @@ const DiscoverItemsBrowse = ({
   const [pageSize, setPageSize] = useState(20);
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Record<string, Set<string>>>({});
+  const [openItem, setOpenItem] = useState<DiscoverItem | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = `${title} — XyloMC`;
@@ -120,7 +149,7 @@ const DiscoverItemsBrowse = ({
     (async () => {
       const { data } = await (supabase.from("discover_items" as any) as any)
         .select(
-          "id, kind, name, slug, description, author, version, icon_url, category, tags, featured, download_url, external_url, created_at, updated_at",
+          "id, kind, name, slug, description, long_description, author, version, icon_url, banner_url, category, tags, featured, download_url, external_url, meta, created_at, updated_at",
         )
         .eq("kind", kind)
         .eq("published", true)
@@ -130,6 +159,22 @@ const DiscoverItemsBrowse = ({
       setLoading(false);
     })();
   }, [kind]);
+
+  const copyIp = async (it: DiscoverItem) => {
+    const ip = getServerIp(it);
+    if (!ip) {
+      toast.error("No IP set for this server");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(ip);
+      setCopiedId(it.id);
+      toast.success(`Copied ${ip}`);
+      setTimeout(() => setCopiedId((c) => (c === it.id ? null : c)), 1500);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
 
   const toggle = (group: string, value: string) => {
     setSelected((prev) => {
@@ -296,10 +341,15 @@ const DiscoverItemsBrowse = ({
                 {pageItems.map((it) => {
                   const url = getUrl(it);
                   const isExternal = !it.download_url && !!it.external_url;
+                  const isServer = it.kind === "server";
+                  const ip = isServer ? getServerIp(it) : null;
                   return (
                     <div
                       key={it.id}
-                      className="rounded-lg border border-border bg-card hover:border-primary/50 hover:shadow-elegant transition group"
+                      onClick={() => isServer && setOpenItem(it)}
+                      className={`rounded-lg border border-border bg-card hover:border-primary/50 hover:shadow-elegant transition group ${
+                        isServer ? "cursor-pointer" : ""
+                      }`}
                     >
                       <div className="flex items-stretch gap-4 p-4">
                         <div className="shrink-0">
@@ -311,7 +361,11 @@ const DiscoverItemsBrowse = ({
                             />
                           ) : (
                             <div className="h-20 w-20 rounded-md bg-primary/10 border border-primary/30 flex items-center justify-center">
-                              <Package className="h-10 w-10 text-primary" />
+                              {isServer ? (
+                                <ServerIcon className="h-10 w-10 text-primary" />
+                              ) : (
+                                <Package className="h-10 w-10 text-primary" />
+                              )}
                             </div>
                           )}
                         </div>
@@ -334,6 +388,11 @@ const DiscoverItemsBrowse = ({
                             </p>
                           )}
                           <div className="flex flex-wrap gap-1.5 mt-2">
+                            {ip && (
+                              <Badge variant="outline" className="font-mono font-normal">
+                                {ip}
+                              </Badge>
+                            )}
                             {it.version && (
                               <Badge variant="outline" className="font-normal">
                                 v{it.version}
@@ -352,12 +411,32 @@ const DiscoverItemsBrowse = ({
                           </div>
                         </div>
 
-                        <div className="hidden md:flex flex-col items-end justify-between text-xs text-muted-foreground shrink-0 min-w-[140px]">
+                        <div
+                          className="hidden md:flex flex-col items-end justify-between text-xs text-muted-foreground shrink-0 min-w-[140px]"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <div className="flex items-center gap-1">
                             <Clock className="h-3.5 w-3.5" />
                             {timeAgo(it.updated_at)}
                           </div>
-                          {url ? (
+                          {isServer ? (
+                            <Button
+                              size="sm"
+                              className="mt-2"
+                              onClick={() => copyIp(it)}
+                              disabled={!ip}
+                            >
+                              {copiedId === it.id ? (
+                                <>
+                                  <Check className="h-3.5 w-3.5 mr-1" /> Copied
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="h-3.5 w-3.5 mr-1" /> Copy IP
+                                </>
+                              )}
+                            </Button>
+                          ) : url ? (
                             <Button asChild size="sm" className="mt-2">
                               <a href={url} target="_blank" rel="noopener noreferrer">
                                 {isExternal ? (
@@ -426,6 +505,95 @@ const DiscoverItemsBrowse = ({
           </section>
         </div>
       </main>
+
+      <Dialog open={!!openItem} onOpenChange={(o) => !o && setOpenItem(null)}>
+        <DialogContent className="max-w-2xl">
+          {openItem && (
+            <>
+              {openItem.banner_url && (
+                <img
+                  src={openItem.banner_url}
+                  alt=""
+                  className="w-full h-40 object-cover rounded-md border border-border"
+                />
+              )}
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-3">
+                  {openItem.icon_url ? (
+                    <img
+                      src={openItem.icon_url}
+                      alt=""
+                      className="h-10 w-10 rounded-md object-cover border border-border"
+                    />
+                  ) : (
+                    <div className="h-10 w-10 rounded-md bg-primary/10 border border-primary/30 flex items-center justify-center">
+                      <ServerIcon className="h-5 w-5 text-primary" />
+                    </div>
+                  )}
+                  <span>{openItem.name}</span>
+                  {openItem.featured && <Sparkles className="h-4 w-4 text-primary" />}
+                </DialogTitle>
+                {openItem.description && (
+                  <DialogDescription>{openItem.description}</DialogDescription>
+                )}
+              </DialogHeader>
+
+              {getServerIp(openItem) && (
+                <div className="flex items-center gap-2 rounded-md border border-border bg-muted/40 p-3">
+                  <ServerIcon className="h-4 w-4 text-muted-foreground" />
+                  <code className="flex-1 font-mono text-sm truncate">
+                    {getServerIp(openItem)}
+                  </code>
+                  <Button size="sm" onClick={() => copyIp(openItem)}>
+                    {copiedId === openItem.id ? (
+                      <>
+                        <Check className="h-3.5 w-3.5 mr-1" /> Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3.5 w-3.5 mr-1" /> Copy IP
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              <div className="flex flex-wrap gap-1.5">
+                {openItem.version && (
+                  <Badge variant="outline" className="font-normal">
+                    v{openItem.version}
+                  </Badge>
+                )}
+                {openItem.category && (
+                  <Badge variant="secondary" className="font-normal">
+                    {openItem.category}
+                  </Badge>
+                )}
+                {openItem.tags.map((t) => (
+                  <Badge key={t} variant="outline" className="text-xs font-normal">
+                    {t}
+                  </Badge>
+                ))}
+              </div>
+
+              {openItem.long_description && (
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                  {openItem.long_description}
+                </p>
+              )}
+
+              {openItem.external_url && (
+                <Button asChild variant="outline" size="sm">
+                  <a href={openItem.external_url} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-3.5 w-3.5 mr-1" /> Visit website
+                  </a>
+                </Button>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );
