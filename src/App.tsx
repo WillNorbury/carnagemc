@@ -48,6 +48,11 @@ import { MaintenanceGate } from "./components/site/MaintenanceGate.tsx";
 import OrgProfile from "./pages/OrgProfile.tsx";
 import Install from "./pages/Install.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import ResourcePacks from "./pages/ResourcePacks.tsx";
+import DataPacks from "./pages/DataPacks.tsx";
+import Shaders from "./pages/Shaders.tsx";
+import Modpacks from "./pages/Modpacks.tsx";
+import Servers from "./pages/Servers.tsx";
 
 
 const queryClient = new QueryClient();
