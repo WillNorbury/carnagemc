@@ -2721,8 +2721,8 @@ const PluginsTab = () => {
       user_id: ownerUserId !== undefined ? ownerUserId : auth.user?.id ?? null,
     };
     const { error } = editingId
-      ? await supabase.from("plugins").update(payload).eq("id", editingId)
-      : await supabase.from("plugins").insert(insertPayload);
+      ? await (supabase.from("plugins") as any).update(payload).eq("id", editingId)
+      : await (supabase.from("plugins") as any).insert(insertPayload);
     setSaving(false);
     if (error) return toast.error(error.message);
     toast.success(editingId ? "Plugin updated" : "Plugin added");
