@@ -17,6 +17,7 @@ type Plugin = {
   description: string | null;
   version: string | null;
   author: string | null;
+  user_id: string | null;
   icon_url: string | null;
   category: string | null;
   tags: string[];
@@ -24,6 +25,8 @@ type Plugin = {
   featured: boolean;
   updated_at: string;
 };
+
+type CreatorProfile = { display_name: string | null; mc_username: string | null };
 
 const DISCOVER_TABS = [
   { label: "Mods", to: "/discover/mods", enabled: true },
