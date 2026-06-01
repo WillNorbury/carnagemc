@@ -2785,6 +2785,7 @@ const PluginsTab = () => {
             <p className="text-xs text-muted-foreground mt-1">
               The plugin will appear in this user's /dashboard. Leave blank to keep it admin-owned.
             </p>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>Category</Label>
