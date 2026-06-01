@@ -146,7 +146,7 @@ const PluginDetail = () => {
     .map((p) => p.trim().toLowerCase())
     .filter(Boolean);
 
-  const handleDownload = async () => {
+  const doDownload = async () => {
     if (!plugin?.download_url) return;
     const filename = buildJarName(plugin);
     try {
@@ -164,6 +164,11 @@ const PluginDetail = () => {
     } catch {
       window.open(plugin.download_url, "_blank", "noopener");
     }
+  };
+
+  const handleDownload = () => {
+    if (!plugin?.download_url) return;
+    setDownloadOpen(true);
   };
 
   const tabs: { id: Tab; label: string }[] = [
