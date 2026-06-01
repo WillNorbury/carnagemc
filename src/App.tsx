@@ -104,6 +104,11 @@ const Shell = () => {
                   <Route path="/discover/plugins" element={<Plugins />} />
                   <Route path="/discover/plugins/:shortId" element={<PluginDetail />} />
                   <Route path="/plugin/:slug" element={<PluginDetail />} />
+                  <Route path="/discover/resource-packs" element={<ResourcePacks />} />
+                  <Route path="/discover/data-packs" element={<DataPacks />} />
+                  <Route path="/discover/shaders" element={<Shaders />} />
+                  <Route path="/discover/modpacks" element={<Modpacks />} />
+                  <Route path="/discover/servers" element={<Servers />} />
                   <Route path="/features" element={<Features />} />
                   <Route path="/features/:slug" element={<FeatureDetail />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
