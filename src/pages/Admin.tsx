@@ -2668,7 +2668,31 @@ const PluginsTab = () => {
   const submit = async () => {
     if (!form.name.trim()) return toast.error("Name is required");
     setSaving(true);
-    const payload = {
+
+    // Resolve owner username -> user_id (case-insensitive match on display_name or mc_username)
+    let ownerUserId: string | null | undefined = undefined; // undefined = don't change
+    const uname = form.owner_username.trim();
+    if (uname) {
+      const { data: matches } = await supabase
+        .from("profiles")
+        .select("id, display_name, mc_username")
+        .or(`display_name.ilike.${uname},mc_username.ilike.${uname}`)
+        .limit(2);
+      if (!matches || matches.length === 0) {
+        setSaving(false);
+        return toast.error(`No user found with username "${uname}"`);
+      }
+      if (matches.length > 1) {
+        setSaving(false);
+        return toast.error(`Multiple users match "${uname}". Please be more specific.`);
+      }
+      ownerUserId = matches[0].id;
+    } else if (editingId) {
+      // explicitly cleared -> unassign
+      ownerUserId = null;
+    }
+
+    const payload: Record<string, any> = {
       name: form.name.trim(),
       description: form.description.trim() || null,
       long_description: form.long_description.trim() || null,
@@ -2689,8 +2713,13 @@ const PluginsTab = () => {
       jar_size: form.jar_size || null,
       screenshots: form.screenshots,
     };
+    if (ownerUserId !== undefined) payload.user_id = ownerUserId;
+
     const { data: auth } = await supabase.auth.getUser();
-    const insertPayload = { ...payload, user_id: auth.user?.id ?? null };
+    const insertPayload = {
+      ...payload,
+      user_id: ownerUserId !== undefined ? ownerUserId : auth.user?.id ?? null,
+    };
     const { error } = editingId
       ? await supabase.from("plugins").update(payload).eq("id", editingId)
       : await supabase.from("plugins").insert(insertPayload);
