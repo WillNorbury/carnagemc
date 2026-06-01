@@ -15,7 +15,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Gamepad2, ChevronDown, Search, KeyRound, Info, Puzzle as PuzzleIcon } from "lucide-react";
 import {
   ArrowLeft,
   Bookmark,
