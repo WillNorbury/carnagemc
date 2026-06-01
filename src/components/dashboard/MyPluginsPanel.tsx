@@ -33,6 +33,7 @@ import {
   Upload,
   Image as ImageIcon,
   X,
+  Search,
 } from "lucide-react";
 
 type Plugin = {
