@@ -2775,6 +2775,16 @@ const PluginsTab = () => {
               <Input value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
             </div>
           </div>
+          <div>
+            <Label>Assign to user (username)</Label>
+            <Input
+              value={form.owner_username}
+              onChange={(e) => setForm({ ...form, owner_username: e.target.value })}
+              placeholder="Their display name or Minecraft username"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              The plugin will appear in this user's /dashboard. Leave blank to keep it admin-owned.
+            </p>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>Category</Label>
