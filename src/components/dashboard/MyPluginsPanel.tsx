@@ -107,6 +107,11 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
   const iconRef = useRef<HTMLInputElement>(null);
   const shotsRef = useRef<HTMLInputElement>(null);
 
+  const [search, setSearch] = useState("");
+  const [platformFilter, setPlatformFilter] = useState<string>("all");
+  const [versionFilter, setVersionFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
+
   const load = async () => {
     setLoading(true);
     const { data, error } = await supabase
