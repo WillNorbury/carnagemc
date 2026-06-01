@@ -463,6 +463,94 @@ const PluginDetail = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      <Dialog open={downloadOpen} onOpenChange={setDownloadOpen}>
+        <DialogContent className="max-w-md bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5 text-lg">
+              {plugin?.icon_url ? (
+                <img src={plugin.icon_url} alt="" className="h-7 w-7 rounded-md object-cover border border-border" />
+              ) : (
+                <div className="h-7 w-7 rounded-md bg-primary/15 border border-primary/30 flex items-center justify-center">
+                  <Puzzle className="h-4 w-4 text-primary" />
+                </div>
+              )}
+              <span>Download {plugin?.name}</span>
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3 pt-1">
+            <div className="rounded-md border border-border bg-background/40 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setVersionOpen((v) => !v)}
+                className="w-full flex items-center justify-between px-3 py-2.5 text-sm hover:bg-accent/40 transition-colors"
+              >
+                <span className="flex items-center gap-2 text-foreground/90">
+                  <Gamepad2 className="h-4 w-4 text-muted-foreground" />
+                  {selectedVersion ? `Game version: ${selectedVersion}` : "Select game version"}
+                </span>
+                <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${versionOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {versionOpen && (
+                <div className="border-t border-border">
+                  <div className="p-2">
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                      <Input
+                        value={versionQuery}
+                        onChange={(e) => setVersionQuery(e.target.value)}
+                        placeholder="Search game versions..."
+                        className="h-8 pl-8 text-sm bg-background/60"
+                      />
+                    </div>
+                  </div>
+                  <div className="max-h-56 overflow-y-auto px-2 pb-2 space-y-1">
+                    {GAME_VERSIONS.filter((v) => v.toLowerCase().includes(versionQuery.toLowerCase())).map((v) => (
+                      <button
+                        key={v}
+                        type="button"
+                        onClick={() => {
+                          setSelectedVersion(v);
+                          setVersionOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-1.5 rounded text-sm transition-colors ${
+                          selectedVersion === v
+                            ? "bg-primary/15 text-primary"
+                            : "hover:bg-accent/50 text-foreground/85"
+                        }`}
+                      >
+                        {v}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between rounded-md border border-border bg-background/40 px-3 py-2.5 text-sm">
+              <span className="flex items-center gap-2 text-foreground/90">
+                <KeyRound className="h-4 w-4 text-muted-foreground" />
+                Platform: {PLATFORM_LABELS[platforms[0]] ?? (plugin?.platform || "Unknown")}
+              </span>
+              <Info className="h-3.5 w-3.5 text-muted-foreground" />
+            </div>
+
+            <Button
+              onClick={() => {
+                doDownload();
+                setDownloadOpen(false);
+              }}
+              disabled={!plugin?.download_url}
+              className="w-full bg-primary hover:bg-primary/90"
+            >
+              <Download className="h-4 w-4 mr-1.5" />
+              Download {plugin?.version ? `v${plugin.version}` : "jar"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
