@@ -406,7 +406,8 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
             </div>
           ))}
         </div>
-      )}
+        );
+      })()}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
