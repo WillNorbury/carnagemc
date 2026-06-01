@@ -209,6 +209,75 @@ export type Database = {
         }
         Relationships: []
       }
+      discover_items: {
+        Row: {
+          author: string | null
+          banner_url: string | null
+          category: string | null
+          created_at: string
+          description: string | null
+          download_url: string | null
+          external_url: string | null
+          featured: boolean
+          icon_url: string | null
+          id: string
+          kind: string
+          long_description: string | null
+          meta: Json
+          name: string
+          published: boolean
+          slug: string | null
+          tags: string[]
+          updated_at: string
+          user_id: string | null
+          version: string | null
+        }
+        Insert: {
+          author?: string | null
+          banner_url?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          download_url?: string | null
+          external_url?: string | null
+          featured?: boolean
+          icon_url?: string | null
+          id?: string
+          kind: string
+          long_description?: string | null
+          meta?: Json
+          name: string
+          published?: boolean
+          slug?: string | null
+          tags?: string[]
+          updated_at?: string
+          user_id?: string | null
+          version?: string | null
+        }
+        Update: {
+          author?: string | null
+          banner_url?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          download_url?: string | null
+          external_url?: string | null
+          featured?: boolean
+          icon_url?: string | null
+          id?: string
+          kind?: string
+          long_description?: string | null
+          meta?: Json
+          name?: string
+          published?: boolean
+          slug?: string | null
+          tags?: string[]
+          updated_at?: string
+          user_id?: string | null
+          version?: string | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           category: string
