@@ -17,6 +17,7 @@ type Plugin = {
   description: string | null;
   version: string | null;
   author: string | null;
+  user_id: string | null;
   icon_url: string | null;
   category: string | null;
   tags: string[];
@@ -24,6 +25,8 @@ type Plugin = {
   featured: boolean;
   updated_at: string;
 };
+
+type CreatorProfile = { display_name: string | null; mc_username: string | null };
 
 const DISCOVER_TABS = [
   { label: "Mods", to: "/discover/mods", enabled: true },
@@ -71,6 +74,7 @@ const timeAgo = (iso: string) => {
 
 const Plugins = () => {
   const [plugins, setPlugins] = useState<Plugin[]>([]);
+  const [creators, setCreators] = useState<Record<string, CreatorProfile>>({});
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [activeCats, setActiveCats] = useState<string[]>([]);
@@ -81,11 +85,24 @@ const Plugins = () => {
     (async () => {
       const { data } = await supabase
         .from("plugins")
-        .select("id, short_id, slug, name, description, version, author, icon_url, category, tags, platform, featured, updated_at")
+        .select("id, short_id, slug, name, description, version, author, user_id, icon_url, category, tags, platform, featured, updated_at")
         .eq("published", true)
         .order("featured", { ascending: false })
         .order("created_at", { ascending: false });
-      setPlugins((data ?? []) as Plugin[]);
+      const rows = (data ?? []) as Plugin[];
+      setPlugins(rows);
+      const ids = Array.from(new Set(rows.map((r) => r.user_id).filter(Boolean) as string[]));
+      if (ids.length) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("id, display_name, mc_username")
+          .in("id", ids);
+        const map: Record<string, CreatorProfile> = {};
+        (profs ?? []).forEach((p: any) => {
+          map[p.id] = { display_name: p.display_name, mc_username: p.mc_username };
+        });
+        setCreators(map);
+      }
       setLoading(false);
     })();
   }, []);
@@ -252,11 +269,28 @@ const Plugins = () => {
                                   <h3 className="font-display font-semibold text-lg group-hover:text-primary transition truncate">
                                     {p.name}
                                   </h3>
-                                  {p.author && (
-                                    <span className="text-sm text-muted-foreground">
-                                      by <span className="text-foreground/80">{p.author}</span>
-                                    </span>
-                                  )}
+                                  {(() => {
+                                    const creator = p.user_id ? creators[p.user_id] : undefined;
+                                    const username = creator?.display_name || creator?.mc_username;
+                                    const label = username ?? p.author;
+                                    if (!label) return null;
+                                    return (
+                                      <span className="text-sm text-muted-foreground">
+                                        by{" "}
+                                        {username && p.user_id ? (
+                                          <Link
+                                            to={`/user/${username}`}
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="text-foreground/80 hover:text-primary transition"
+                                          >
+                                            {username}
+                                          </Link>
+                                        ) : (
+                                          <span className="text-foreground/80">{label}</span>
+                                        )}
+                                      </span>
+                                    );
+                                  })()}
                                   {p.featured && <Sparkles className="h-3.5 w-3.5 text-primary" />}
                                 </div>
                                 {p.description && (
