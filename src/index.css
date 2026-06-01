@@ -82,11 +82,16 @@
 
 @layer base {
   * { @apply border-border; }
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Rajdhani', 'Inter', system-ui, -apple-system, sans-serif;
     padding-bottom: env(safe-area-inset-bottom);
   }
+
 
   h1, h2, h3, h4 {
     font-family: 'Orbitron', 'Rajdhani', system-ui, sans-serif;
