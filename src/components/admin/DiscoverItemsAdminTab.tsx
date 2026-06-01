@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { confirm } from "@/components/ui/confirm";
+import { confirm } from "@/lib/confirm";
 import { Pencil, Trash2, Plus, Search, X } from "lucide-react";
 
 export type DiscoverKind = "resource_pack" | "data_pack" | "shader" | "modpack" | "server";
