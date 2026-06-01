@@ -48,6 +48,11 @@ import { MaintenanceGate } from "./components/site/MaintenanceGate.tsx";
 import OrgProfile from "./pages/OrgProfile.tsx";
 import Install from "./pages/Install.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import ResourcePacks from "./pages/ResourcePacks.tsx";
+import DataPacks from "./pages/DataPacks.tsx";
+import Shaders from "./pages/Shaders.tsx";
+import Modpacks from "./pages/Modpacks.tsx";
+import Servers from "./pages/Servers.tsx";
 
 
 const queryClient = new QueryClient();
@@ -99,6 +104,11 @@ const Shell = () => {
                   <Route path="/discover/plugins" element={<Plugins />} />
                   <Route path="/discover/plugins/:shortId" element={<PluginDetail />} />
                   <Route path="/plugin/:slug" element={<PluginDetail />} />
+                  <Route path="/discover/resource-packs" element={<ResourcePacks />} />
+                  <Route path="/discover/data-packs" element={<DataPacks />} />
+                  <Route path="/discover/shaders" element={<Shaders />} />
+                  <Route path="/discover/modpacks" element={<Modpacks />} />
+                  <Route path="/discover/servers" element={<Servers />} />
                   <Route path="/features" element={<Features />} />
                   <Route path="/features/:slug" element={<FeatureDetail />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
