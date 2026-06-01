@@ -147,6 +147,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
     setForm({
       id: p.id,
       name: p.name,
+      slug: p.slug ?? "",
       description: p.description ?? "",
       long_description: p.long_description ?? "",
       version: p.version ?? "",
