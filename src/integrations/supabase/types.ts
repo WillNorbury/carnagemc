@@ -635,6 +635,7 @@ export type Database = {
           slug: string | null
           tags: string[]
           updated_at: string
+          user_id: string | null
           version: string | null
         }
         Insert: {
@@ -659,6 +660,7 @@ export type Database = {
           slug?: string | null
           tags?: string[]
           updated_at?: string
+          user_id?: string | null
           version?: string | null
         }
         Update: {
@@ -683,6 +685,7 @@ export type Database = {
           slug?: string | null
           tags?: string[]
           updated_at?: string
+          user_id?: string | null
           version?: string | null
         }
         Relationships: [
