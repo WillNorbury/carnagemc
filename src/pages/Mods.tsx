@@ -8,21 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Boxes,
-  Download,
-  Search,
-  Sparkles,
-  Clock,
-  ChevronUp,
-} from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Boxes, Download, Search, Sparkles, Clock, ChevronUp } from "lucide-react";
 
 type Mod = {
   id: string;
@@ -53,6 +40,38 @@ const formatSize = (bytes: number | null) => {
   return `${(kb / 1024).toFixed(1)} MB`;
 };
 
+const DISCOVER_TABS = [
+  { label: "Mods", to: "/discover/mods", enabled: true },
+  { label: "Resource Packs", to: "/discover/resource-packs", enabled: false },
+  { label: "Data Packs", to: "/discover/data-packs", enabled: false },
+  { label: "Shaders", to: "/discover/shaders", enabled: false },
+  { label: "Modpacks", to: "/discover/modpacks", enabled: false },
+  { label: "Plugins", to: "/discover/plugins", enabled: true },
+  { label: "Servers", to: "/discover/servers", enabled: false },
+];
+
+const CATEGORIES = [
+  "Adventure",
+  "Cursed",
+  "Decoration",
+  "Economy",
+  "Equipment",
+  "Food",
+  "Game Mechanics",
+  "Library",
+  "Magic",
+  "Management",
+  "Minigame",
+  "Mobs",
+  "Optimization",
+  "Social",
+  "Storage",
+  "Technology",
+  "Transportation",
+  "Utility",
+  "World Generation",
+];
+
 const timeAgo = (iso: string) => {
   const s = (Date.now() - new Date(iso).getTime()) / 1000;
   if (s < 60) return "just now";
@@ -69,13 +88,7 @@ const timeAgo = (iso: string) => {
 
 type SortKey = "relevance" | "newest" | "updated" | "name";
 
-const FilterSection = ({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) => {
+const FilterSection = ({ title, children }: { title: string; children: React.ReactNode }) => {
   const [open, setOpen] = useState(true);
   return (
     <div className="rounded-lg border border-border bg-card">
@@ -84,11 +97,7 @@ const FilterSection = ({
         className="w-full flex items-center justify-between p-3 font-semibold text-sm"
       >
         {title}
-        <ChevronUp
-          className={`h-4 w-4 text-muted-foreground transition-transform ${
-            open ? "" : "rotate-180"
-          }`}
-        />
+        <ChevronUp className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "" : "rotate-180"}`} />
       </button>
       {open && <div className="px-3 pb-3 space-y-1.5">{children}</div>}
     </div>
@@ -112,7 +121,7 @@ const Mods = () => {
     (async () => {
       const { data } = await (supabase.from("mods" as any) as any)
         .select(
-          "id, slug, short_id, name, description, version, mc_version, loader, author, icon_url, category, tags, featured, jar_path, jar_filename, jar_size, download_url, created_at, updated_at, sort_order"
+          "id, slug, short_id, name, description, version, mc_version, loader, author, icon_url, category, tags, featured, jar_path, jar_filename, jar_size, download_url, created_at, updated_at, sort_order",
         )
         .eq("published", true)
         .order("featured", { ascending: false })
@@ -176,13 +185,9 @@ const Mods = () => {
     });
 
     if (sort === "newest") {
-      list = [...list].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
+      list = [...list].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     } else if (sort === "updated") {
-      list = [...list].sort(
-        (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-      );
+      list = [...list].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
     } else if (sort === "name") {
       list = [...list].sort((a, b) => a.name.localeCompare(b.name));
     }
@@ -208,14 +213,9 @@ const Mods = () => {
           <aside className="space-y-4">
             <FilterSection title="Game version">
               <div className="max-h-56 overflow-y-auto pr-1 space-y-1.5">
-                {versions.length === 0 && (
-                  <p className="text-xs text-muted-foreground">No versions yet</p>
-                )}
+                {versions.length === 0 && <p className="text-xs text-muted-foreground">No versions yet</p>}
                 {versions.map((v) => (
-                  <label
-                    key={v}
-                    className="flex items-center gap-2 text-sm cursor-pointer hover:text-primary"
-                  >
+                  <label key={v} className="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
                     <Checkbox
                       checked={selectedVersions.has(v)}
                       onCheckedChange={() => toggle(selectedVersions, v, setSelectedVersions)}
@@ -227,14 +227,9 @@ const Mods = () => {
             </FilterSection>
 
             <FilterSection title="Loader">
-              {loaders.length === 0 && (
-                <p className="text-xs text-muted-foreground">No loaders yet</p>
-              )}
+              {loaders.length === 0 && <p className="text-xs text-muted-foreground">No loaders yet</p>}
               {loaders.map((l) => (
-                <label
-                  key={l}
-                  className="flex items-center gap-2 text-sm cursor-pointer hover:text-primary"
-                >
+                <label key={l} className="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
                   <Checkbox
                     checked={selectedLoaders.has(l)}
                     onCheckedChange={() => toggle(selectedLoaders, l, setSelectedLoaders)}
@@ -245,14 +240,9 @@ const Mods = () => {
             </FilterSection>
 
             <FilterSection title="Category">
-              {categories.length === 0 && (
-                <p className="text-xs text-muted-foreground">No categories yet</p>
-              )}
+              {categories.length === 0 && <p className="text-xs text-muted-foreground">No categories yet</p>}
               {categories.map((c) => (
-                <label
-                  key={c}
-                  className="flex items-center gap-2 text-sm cursor-pointer hover:text-primary"
-                >
+                <label key={c} className="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
                   <Checkbox
                     checked={selectedCategories.has(c)}
                     onCheckedChange={() => toggle(selectedCategories, c, setSelectedCategories)}
@@ -329,11 +319,7 @@ const Mods = () => {
                       className="rounded-lg border border-border bg-card hover:border-primary/50 hover:shadow-elegant transition group"
                     >
                       <div className="flex items-stretch gap-4 p-4">
-                        <Link
-                          to={`/mod/${m.slug}`}
-                          className="shrink-0"
-                          aria-label={m.name}
-                        >
+                        <Link to={`/mod/${m.slug}`} className="shrink-0" aria-label={m.name}>
                           {m.icon_url ? (
                             <img
                               src={m.icon_url}
@@ -360,14 +346,10 @@ const Mods = () => {
                                 by <span className="text-foreground/80">{m.author}</span>
                               </span>
                             )}
-                            {m.featured && (
-                              <Sparkles className="h-4 w-4 text-primary" />
-                            )}
+                            {m.featured && <Sparkles className="h-4 w-4 text-primary" />}
                           </div>
                           {m.description && (
-                            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                              {m.description}
-                            </p>
+                            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{m.description}</p>
                           )}
                           <div className="flex flex-wrap gap-1.5 mt-2">
                             {m.loader && (
@@ -391,11 +373,7 @@ const Mods = () => {
                               </Badge>
                             )}
                             {m.tags.slice(0, 3).map((t) => (
-                              <Badge
-                                key={t}
-                                variant="outline"
-                                className="text-xs font-normal"
-                              >
+                              <Badge key={t} variant="outline" className="text-xs font-normal">
                                 {t}
                               </Badge>
                             ))}
@@ -413,12 +391,7 @@ const Mods = () => {
                           </div>
                           {url ? (
                             <Button asChild size="sm" className="mt-2">
-                              <a
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                download
-                              >
+                              <a href={url} target="_blank" rel="noopener noreferrer" download>
                                 <Download className="h-3.5 w-3.5 mr-1" /> Download
                               </a>
                             </Button>
@@ -446,17 +419,10 @@ const Mods = () => {
                   Prev
                 </Button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1)
-                  .filter(
-                    (p) =>
-                      p === 1 ||
-                      p === totalPages ||
-                      (p >= page - 1 && p <= page + 1)
-                  )
+                  .filter((p) => p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1))
                   .map((p, i, arr) => (
                     <span key={p} className="flex items-center">
-                      {i > 0 && arr[i - 1] !== p - 1 && (
-                        <span className="px-2 text-muted-foreground">…</span>
-                      )}
+                      {i > 0 && arr[i - 1] !== p - 1 && <span className="px-2 text-muted-foreground">…</span>}
                       <Button
                         variant={p === page ? "default" : "outline"}
                         size="sm"
