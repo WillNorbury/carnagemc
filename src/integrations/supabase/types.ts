@@ -681,6 +681,53 @@ export type Database = {
         }
         Relationships: []
       }
+      plugin_versions: {
+        Row: {
+          changelog: string | null
+          created_at: string
+          created_by: string | null
+          download_url: string | null
+          id: string
+          jar_filename: string | null
+          jar_path: string | null
+          jar_size: number | null
+          plugin_id: string
+          version: string
+        }
+        Insert: {
+          changelog?: string | null
+          created_at?: string
+          created_by?: string | null
+          download_url?: string | null
+          id?: string
+          jar_filename?: string | null
+          jar_path?: string | null
+          jar_size?: number | null
+          plugin_id: string
+          version: string
+        }
+        Update: {
+          changelog?: string | null
+          created_at?: string
+          created_by?: string | null
+          download_url?: string | null
+          id?: string
+          jar_filename?: string | null
+          jar_path?: string | null
+          jar_size?: number | null
+          plugin_id?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plugin_versions_plugin_id_fkey"
+            columns: ["plugin_id"]
+            isOneToOne: false
+            referencedRelation: "plugins"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plugins: {
         Row: {
           author: string | null

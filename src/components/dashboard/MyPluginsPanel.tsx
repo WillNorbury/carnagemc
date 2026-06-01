@@ -34,7 +34,10 @@ import {
   Image as ImageIcon,
   X,
   Search,
+  History,
 } from "lucide-react";
+import PluginVersionsDialog from "./PluginVersionsDialog";
+
 
 type Plugin = {
   id: string;
@@ -120,6 +123,8 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [versionFilter, setVersionFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
+  const [versionsFor, setVersionsFor] = useState<Plugin | null>(null);
+
 
   const load = async () => {
     setLoading(true);
@@ -407,9 +412,13 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
                     </Link>
                   </Button>
                 )}
+                <Button size="icon" variant="ghost" onClick={() => setVersionsFor(p)} aria-label="Versions" title="Manage versions">
+                  <History className="h-4 w-4" />
+                </Button>
                 <Button size="icon" variant="ghost" onClick={() => openEdit(p)} aria-label="Edit">
                   <Pencil className="h-4 w-4" />
                 </Button>
+
                 <Button
                   size="icon"
                   variant="ghost"
@@ -688,6 +697,18 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {versionsFor && (
+        <PluginVersionsDialog
+          open={!!versionsFor}
+          onOpenChange={(v) => !v && setVersionsFor(null)}
+          pluginId={versionsFor.id}
+          pluginName={versionsFor.name}
+          userId={userId}
+          onChanged={load}
+        />
+      )}
     </Card>
   );
 }
+
