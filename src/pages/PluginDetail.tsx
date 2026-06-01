@@ -318,11 +318,12 @@ const PluginDetail = () => {
                     <DropdownMenuItem onClick={copyLink}>
                       <LinkIcon className="h-4 w-4 mr-2" /> Copy link
                     </DropdownMenuItem>
-                    {plugin.download_url && (
+                    {latestDownloadUrl && (
                       <DropdownMenuItem onClick={handleDownload}>
                         <Download className="h-4 w-4 mr-2" /> Download jar
                       </DropdownMenuItem>
                     )}
+
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => toast.success("Report submitted — thanks for letting us know")}
