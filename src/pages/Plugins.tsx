@@ -74,6 +74,7 @@ const timeAgo = (iso: string) => {
 
 const Plugins = () => {
   const [plugins, setPlugins] = useState<Plugin[]>([]);
+  const [creators, setCreators] = useState<Record<string, CreatorProfile>>({});
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [activeCats, setActiveCats] = useState<string[]>([]);
@@ -84,11 +85,24 @@ const Plugins = () => {
     (async () => {
       const { data } = await supabase
         .from("plugins")
-        .select("id, short_id, slug, name, description, version, author, icon_url, category, tags, platform, featured, updated_at")
+        .select("id, short_id, slug, name, description, version, author, user_id, icon_url, category, tags, platform, featured, updated_at")
         .eq("published", true)
         .order("featured", { ascending: false })
         .order("created_at", { ascending: false });
-      setPlugins((data ?? []) as Plugin[]);
+      const rows = (data ?? []) as Plugin[];
+      setPlugins(rows);
+      const ids = Array.from(new Set(rows.map((r) => r.user_id).filter(Boolean) as string[]));
+      if (ids.length) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("id, display_name, mc_username")
+          .in("id", ids);
+        const map: Record<string, CreatorProfile> = {};
+        (profs ?? []).forEach((p: any) => {
+          map[p.id] = { display_name: p.display_name, mc_username: p.mc_username };
+        });
+        setCreators(map);
+      }
       setLoading(false);
     })();
   }, []);
