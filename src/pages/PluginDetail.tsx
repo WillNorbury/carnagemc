@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Gamepad2, ChevronDown, Search, KeyRound, Info, Puzzle as PuzzleIcon } from "lucide-react";
+import { Gamepad2, ChevronDown, Search, KeyRound, Info } from "lucide-react";
 import {
   ArrowLeft,
   Bookmark,
