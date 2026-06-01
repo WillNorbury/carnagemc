@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   ArrowLeft,
   Bookmark,
@@ -105,6 +106,7 @@ const PluginDetail = () => {
   const [tab, setTab] = useState<Tab>("description");
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [lightbox, setLightbox] = useState<string | null>(null);
 
   useEffect(() => {
     if (!key) return;
@@ -313,14 +315,19 @@ const PluginDetail = () => {
                     plugin.screenshots?.length > 0 ? (
                       <div className="grid gap-3 sm:grid-cols-2">
                         {plugin.screenshots.map((url) => (
-                          <a key={url} href={url} target="_blank" rel="noopener noreferrer" className="block group">
+                          <button
+                            key={url}
+                            type="button"
+                            onClick={() => setLightbox(url)}
+                            className="block group text-left"
+                          >
                             <img
                               src={url}
                               alt={`${plugin.name} screenshot`}
                               loading="lazy"
-                              className="w-full rounded-lg border border-border object-cover aspect-video group-hover:border-primary/50 transition"
+                              className="w-full rounded-lg border border-border object-cover aspect-video group-hover:border-primary/50 transition cursor-zoom-in"
                             />
-                          </a>
+                          </button>
                         ))}
                       </div>
                     ) : (
@@ -434,6 +441,17 @@ const PluginDetail = () => {
         )}
       </main>
       <Footer />
+      <Dialog open={!!lightbox} onOpenChange={(o) => !o && setLightbox(null)}>
+        <DialogContent className="max-w-5xl p-2 bg-background/95 border-border">
+          {lightbox && (
+            <img
+              src={lightbox}
+              alt="Screenshot"
+              className="w-full h-auto rounded-md object-contain max-h-[85vh]"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
