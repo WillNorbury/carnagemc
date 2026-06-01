@@ -59,7 +59,7 @@ type DiscoverItem = {
 
 const getServerIp = (it: DiscoverItem): string | null => {
   const m = it.meta || {};
-  return (m.ip || m.address || m.host || null) as string | null;
+  return (m.ip || m.address || m.host || it.download_url || null) as string | null;
 };
 
 const DISCOVER_TABS = [
