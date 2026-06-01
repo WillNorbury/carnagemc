@@ -615,7 +615,7 @@ const PluginDetail = () => {
                 doDownload();
                 setDownloadOpen(false);
               }}
-              disabled={!plugin?.download_url}
+              disabled={!latestDownloadUrl}
               className="w-full bg-primary hover:bg-primary/90"
             >
               <Download className="h-4 w-4 mr-1.5" />
