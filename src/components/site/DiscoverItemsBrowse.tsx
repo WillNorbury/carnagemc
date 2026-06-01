@@ -505,6 +505,95 @@ const DiscoverItemsBrowse = ({
           </section>
         </div>
       </main>
+
+      <Dialog open={!!openItem} onOpenChange={(o) => !o && setOpenItem(null)}>
+        <DialogContent className="max-w-2xl">
+          {openItem && (
+            <>
+              {openItem.banner_url && (
+                <img
+                  src={openItem.banner_url}
+                  alt=""
+                  className="w-full h-40 object-cover rounded-md border border-border"
+                />
+              )}
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-3">
+                  {openItem.icon_url ? (
+                    <img
+                      src={openItem.icon_url}
+                      alt=""
+                      className="h-10 w-10 rounded-md object-cover border border-border"
+                    />
+                  ) : (
+                    <div className="h-10 w-10 rounded-md bg-primary/10 border border-primary/30 flex items-center justify-center">
+                      <ServerIcon className="h-5 w-5 text-primary" />
+                    </div>
+                  )}
+                  <span>{openItem.name}</span>
+                  {openItem.featured && <Sparkles className="h-4 w-4 text-primary" />}
+                </DialogTitle>
+                {openItem.description && (
+                  <DialogDescription>{openItem.description}</DialogDescription>
+                )}
+              </DialogHeader>
+
+              {getServerIp(openItem) && (
+                <div className="flex items-center gap-2 rounded-md border border-border bg-muted/40 p-3">
+                  <ServerIcon className="h-4 w-4 text-muted-foreground" />
+                  <code className="flex-1 font-mono text-sm truncate">
+                    {getServerIp(openItem)}
+                  </code>
+                  <Button size="sm" onClick={() => copyIp(openItem)}>
+                    {copiedId === openItem.id ? (
+                      <>
+                        <Check className="h-3.5 w-3.5 mr-1" /> Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3.5 w-3.5 mr-1" /> Copy IP
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              <div className="flex flex-wrap gap-1.5">
+                {openItem.version && (
+                  <Badge variant="outline" className="font-normal">
+                    v{openItem.version}
+                  </Badge>
+                )}
+                {openItem.category && (
+                  <Badge variant="secondary" className="font-normal">
+                    {openItem.category}
+                  </Badge>
+                )}
+                {openItem.tags.map((t) => (
+                  <Badge key={t} variant="outline" className="text-xs font-normal">
+                    {t}
+                  </Badge>
+                ))}
+              </div>
+
+              {openItem.long_description && (
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                  {openItem.long_description}
+                </p>
+              )}
+
+              {openItem.external_url && (
+                <Button asChild variant="outline" size="sm">
+                  <a href={openItem.external_url} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-3.5 w-3.5 mr-1" /> Visit website
+                  </a>
+                </Button>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );
