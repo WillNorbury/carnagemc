@@ -151,6 +151,9 @@ const Admin = () => {
       {section === "applications" && <ApplicationsTab />}
       {section === "features" && <FeaturesTab />}
       {section === "rules" && <RulesTab />}
+      {(section === "resource-packs" || section === "data-packs" || section === "shaders" || section === "modpacks" || section === "servers") && (
+        <ComingSoonAdminSection label={sectionMeta[section].title} />
+      )}
       
       {section === "permissions" && (isOwner ? <PermissionsTab /> : (
         <div className="flex flex-col items-center justify-center gap-4 py-20">
