@@ -2482,6 +2482,7 @@ type PluginRow = {
   jar_filename: string | null;
   jar_size: number | null;
   screenshots: string[];
+  user_id: string | null;
 };
 
 const emptyPluginForm = {
@@ -2490,6 +2491,7 @@ const emptyPluginForm = {
   long_description: "",
   version: "",
   author: "",
+  owner_username: "",
   download_url: "",
   icon_url: "",
   category: "",
@@ -2524,14 +2526,24 @@ const PluginsTab = () => {
     load();
   }, []);
 
-  const startEdit = (p: PluginRow) => {
+  const startEdit = async (p: PluginRow) => {
     setEditingId(p.id);
+    let ownerUsername = "";
+    if (p.user_id) {
+      const { data: prof } = await supabase
+        .from("profiles")
+        .select("display_name, mc_username")
+        .eq("id", p.user_id)
+        .maybeSingle();
+      ownerUsername = prof?.display_name || prof?.mc_username || "";
+    }
     setForm({
       name: p.name,
       description: p.description ?? "",
       long_description: p.long_description ?? "",
       version: p.version ?? "",
       author: p.author ?? "",
+      owner_username: ownerUsername,
       download_url: p.download_url ?? "",
       icon_url: p.icon_url ?? "",
       category: p.category ?? "",
@@ -2656,7 +2668,31 @@ const PluginsTab = () => {
   const submit = async () => {
     if (!form.name.trim()) return toast.error("Name is required");
     setSaving(true);
-    const payload = {
+
+    // Resolve owner username -> user_id (case-insensitive match on display_name or mc_username)
+    let ownerUserId: string | null | undefined = undefined; // undefined = don't change
+    const uname = form.owner_username.trim();
+    if (uname) {
+      const { data: matches } = await supabase
+        .from("profiles")
+        .select("id, display_name, mc_username")
+        .or(`display_name.ilike.${uname},mc_username.ilike.${uname}`)
+        .limit(2);
+      if (!matches || matches.length === 0) {
+        setSaving(false);
+        return toast.error(`No user found with username "${uname}"`);
+      }
+      if (matches.length > 1) {
+        setSaving(false);
+        return toast.error(`Multiple users match "${uname}". Please be more specific.`);
+      }
+      ownerUserId = matches[0].id;
+    } else if (editingId) {
+      // explicitly cleared -> unassign
+      ownerUserId = null;
+    }
+
+    const payload: Record<string, any> = {
       name: form.name.trim(),
       description: form.description.trim() || null,
       long_description: form.long_description.trim() || null,
@@ -2677,11 +2713,16 @@ const PluginsTab = () => {
       jar_size: form.jar_size || null,
       screenshots: form.screenshots,
     };
+    if (ownerUserId !== undefined) payload.user_id = ownerUserId;
+
     const { data: auth } = await supabase.auth.getUser();
-    const insertPayload = { ...payload, user_id: auth.user?.id ?? null };
+    const insertPayload = {
+      ...payload,
+      user_id: ownerUserId !== undefined ? ownerUserId : auth.user?.id ?? null,
+    };
     const { error } = editingId
-      ? await supabase.from("plugins").update(payload).eq("id", editingId)
-      : await supabase.from("plugins").insert(insertPayload);
+      ? await (supabase.from("plugins") as any).update(payload).eq("id", editingId)
+      : await (supabase.from("plugins") as any).insert(insertPayload);
     setSaving(false);
     if (error) return toast.error(error.message);
     toast.success(editingId ? "Plugin updated" : "Plugin added");
@@ -2733,6 +2774,17 @@ const PluginsTab = () => {
               <Label>Author</Label>
               <Input value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
             </div>
+          </div>
+          <div>
+            <Label>Assign to user (username)</Label>
+            <Input
+              value={form.owner_username}
+              onChange={(e) => setForm({ ...form, owner_username: e.target.value })}
+              placeholder="Their display name or Minecraft username"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              The plugin will appear in this user's /dashboard. Leave blank to keep it admin-owned.
+            </p>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
