@@ -412,9 +412,13 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
                     </Link>
                   </Button>
                 )}
+                <Button size="icon" variant="ghost" onClick={() => setVersionsFor(p)} aria-label="Versions" title="Manage versions">
+                  <History className="h-4 w-4" />
+                </Button>
                 <Button size="icon" variant="ghost" onClick={() => openEdit(p)} aria-label="Edit">
                   <Pencil className="h-4 w-4" />
                 </Button>
+
                 <Button
                   size="icon"
                   variant="ghost"
