@@ -13,6 +13,7 @@ import { useAuth } from "@/lib/auth";
 import { roleLabel, type AppRole } from "@/lib/roles";
 import { toast } from "sonner";
 import { Loader2, User as UserIcon, FileText, LifeBuoy, ClipboardList, Link2, ExternalLink, CheckCircle2, Flame, Vote as VoteIcon, Trophy } from "lucide-react";
+import MyPluginsPanel from "@/components/dashboard/MyPluginsPanel";
 
 type Streaks = {
   login_streak: number;
@@ -274,6 +275,9 @@ const Dashboard = () => {
             </div>
           )}
         </Card>
+
+        {/* My Plugins */}
+        <MyPluginsPanel userId={user!.id} />
 
         {/* Quick links */}
         <Card className="p-6">
