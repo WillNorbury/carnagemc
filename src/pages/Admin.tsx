@@ -180,6 +180,17 @@ const Admin = () => {
   );
 };
 
+const ComingSoonAdminSection = ({ label }: { label: string }) => (
+  <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
+    <Sparkles className="h-10 w-10 text-primary" />
+    <h2 className="text-xl font-bold">{label} admin coming soon</h2>
+    <p className="text-muted-foreground max-w-md">
+      Management tools for {label.toLowerCase()} aren't built yet. The public
+      discover page is live as a placeholder.
+    </p>
+  </div>
+);
+
 const DashboardSection = ({ onNavigate }: { onNavigate: (s: AdminSection) => void }) => {
   const [stats, setStats] = useState({ users: 0, news: 0, admins: 0, online: false, players: 0, max: 0 });
   const [recent, setRecent] = useState<any[]>([]);
