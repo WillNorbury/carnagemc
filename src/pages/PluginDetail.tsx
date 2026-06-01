@@ -106,10 +106,22 @@ const GAME_VERSIONS = [
 
 type Tab = "description" | "gallery" | "versions";
 
+type PluginVersion = {
+  id: string;
+  version: string;
+  changelog: string | null;
+  jar_filename: string | null;
+  jar_size: number | null;
+  download_url: string | null;
+  jar_path: string | null;
+  created_at: string;
+};
+
 const PluginDetail = () => {
   const { slug, shortId } = useParams<{ slug?: string; shortId?: string }>();
   const key = slug ?? shortId;
   const [plugin, setPlugin] = useState<Plugin | null>(null);
+  const [versions, setVersions] = useState<PluginVersion[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [tab, setTab] = useState<Tab>("description");
@@ -134,10 +146,29 @@ const PluginDetail = () => {
       else {
         setPlugin(data as Plugin);
         document.title = `${(data as Plugin).name} — Plugin — XyloMC`;
+        const { data: vs } = await (supabase.from("plugin_versions" as any) as any)
+          .select("*")
+          .eq("plugin_id", (data as Plugin).id)
+          .order("created_at", { ascending: false });
+        setVersions((vs ?? []) as PluginVersion[]);
       }
       setLoading(false);
     })();
   }, [key]);
+
+  const resolveVersionUrl = (v: PluginVersion) => {
+    if (v.download_url) return v.download_url;
+    if (v.jar_path) {
+      const { data } = supabase.storage.from("plugin-jars").getPublicUrl(v.jar_path);
+      return data.publicUrl;
+    }
+    return null;
+  };
+
+  const latestDownloadUrl =
+    plugin?.download_url ||
+    (versions.length > 0 ? resolveVersionUrl(versions[0]) : null);
+
 
   const copyLink = async () => {
     try {
