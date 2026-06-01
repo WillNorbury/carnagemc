@@ -2526,14 +2526,24 @@ const PluginsTab = () => {
     load();
   }, []);
 
-  const startEdit = (p: PluginRow) => {
+  const startEdit = async (p: PluginRow) => {
     setEditingId(p.id);
+    let ownerUsername = "";
+    if (p.user_id) {
+      const { data: prof } = await supabase
+        .from("profiles")
+        .select("display_name, mc_username")
+        .eq("id", p.user_id)
+        .maybeSingle();
+      ownerUsername = prof?.display_name || prof?.mc_username || "";
+    }
     setForm({
       name: p.name,
       description: p.description ?? "",
       long_description: p.long_description ?? "",
       version: p.version ?? "",
       author: p.author ?? "",
+      owner_username: ownerUsername,
       download_url: p.download_url ?? "",
       icon_url: p.icon_url ?? "",
       category: p.category ?? "",
