@@ -123,6 +123,8 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [versionFilter, setVersionFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
+  const [versionsFor, setVersionsFor] = useState<Plugin | null>(null);
+
 
   const load = async () => {
     setLoading(true);
