@@ -26,8 +26,10 @@ const Navbar = () => {
           ? "bg-background/85 backdrop-blur-xl border-b border-primary/20 shadow-elegant"
           : "bg-background/40 backdrop-blur-sm border-b border-border/40"
       }`}
+      style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
-      <div className="flex items-center justify-between gap-2 h-14 px-3 md:px-6">
+      <div className="flex items-center justify-between gap-2 h-14 px-3 md:px-6 pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))]">
+
         <div className="flex items-center gap-2 min-w-0">
           <SidebarTrigger />
           <Link to="/" className="flex items-center gap-2 group min-w-0">
