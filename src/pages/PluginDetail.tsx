@@ -185,10 +185,10 @@ const PluginDetail = () => {
     .filter(Boolean);
 
   const doDownload = async () => {
-    if (!plugin?.download_url) return;
+    if (!plugin || !latestDownloadUrl) return;
     const filename = buildJarName(plugin);
     try {
-      const res = await fetch(plugin.download_url);
+      const res = await fetch(latestDownloadUrl);
       if (!res.ok) throw new Error();
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -200,14 +200,15 @@ const PluginDetail = () => {
       a.remove();
       URL.revokeObjectURL(url);
     } catch {
-      window.open(plugin.download_url, "_blank", "noopener");
+      window.open(latestDownloadUrl, "_blank", "noopener");
     }
   };
 
   const handleDownload = () => {
-    if (!plugin?.download_url) return;
+    if (!latestDownloadUrl) return;
     setDownloadOpen(true);
   };
+
 
   const tabs: { id: Tab; label: string }[] = [
     { id: "description", label: "Description" },
