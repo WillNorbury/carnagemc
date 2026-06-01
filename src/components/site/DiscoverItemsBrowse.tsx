@@ -341,10 +341,15 @@ const DiscoverItemsBrowse = ({
                 {pageItems.map((it) => {
                   const url = getUrl(it);
                   const isExternal = !it.download_url && !!it.external_url;
+                  const isServer = it.kind === "server";
+                  const ip = isServer ? getServerIp(it) : null;
                   return (
                     <div
                       key={it.id}
-                      className="rounded-lg border border-border bg-card hover:border-primary/50 hover:shadow-elegant transition group"
+                      onClick={() => isServer && setOpenItem(it)}
+                      className={`rounded-lg border border-border bg-card hover:border-primary/50 hover:shadow-elegant transition group ${
+                        isServer ? "cursor-pointer" : ""
+                      }`}
                     >
                       <div className="flex items-stretch gap-4 p-4">
                         <div className="shrink-0">
@@ -356,7 +361,11 @@ const DiscoverItemsBrowse = ({
                             />
                           ) : (
                             <div className="h-20 w-20 rounded-md bg-primary/10 border border-primary/30 flex items-center justify-center">
-                              <Package className="h-10 w-10 text-primary" />
+                              {isServer ? (
+                                <ServerIcon className="h-10 w-10 text-primary" />
+                              ) : (
+                                <Package className="h-10 w-10 text-primary" />
+                              )}
                             </div>
                           )}
                         </div>
@@ -379,6 +388,11 @@ const DiscoverItemsBrowse = ({
                             </p>
                           )}
                           <div className="flex flex-wrap gap-1.5 mt-2">
+                            {ip && (
+                              <Badge variant="outline" className="font-mono font-normal">
+                                {ip}
+                              </Badge>
+                            )}
                             {it.version && (
                               <Badge variant="outline" className="font-normal">
                                 v{it.version}
@@ -397,12 +411,32 @@ const DiscoverItemsBrowse = ({
                           </div>
                         </div>
 
-                        <div className="hidden md:flex flex-col items-end justify-between text-xs text-muted-foreground shrink-0 min-w-[140px]">
+                        <div
+                          className="hidden md:flex flex-col items-end justify-between text-xs text-muted-foreground shrink-0 min-w-[140px]"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <div className="flex items-center gap-1">
                             <Clock className="h-3.5 w-3.5" />
                             {timeAgo(it.updated_at)}
                           </div>
-                          {url ? (
+                          {isServer ? (
+                            <Button
+                              size="sm"
+                              className="mt-2"
+                              onClick={() => copyIp(it)}
+                              disabled={!ip}
+                            >
+                              {copiedId === it.id ? (
+                                <>
+                                  <Check className="h-3.5 w-3.5 mr-1" /> Copied
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="h-3.5 w-3.5 mr-1" /> Copy IP
+                                </>
+                              )}
+                            </Button>
+                          ) : url ? (
                             <Button asChild size="sm" className="mt-2">
                               <a href={url} target="_blank" rel="noopener noreferrer">
                                 {isExternal ? (
