@@ -457,6 +457,21 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
             </div>
 
             <div>
+              <Label htmlFor="p-slug">URL slug</Label>
+              <Input
+                id="p-slug"
+                value={form.slug}
+                onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                onBlur={(e) => setForm({ ...form, slug: slugify(e.target.value) })}
+                maxLength={80}
+                placeholder="my-awesome-plugin"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Used in the URL: /plugins/<span className="font-mono">{slugify(form.slug) || "auto-generated"}</span>. Leave blank to auto-generate from the name. Must be unique.
+              </p>
+            </div>
+
+            <div>
               <Label htmlFor="p-desc">Short description</Label>
               <Input
                 id="p-desc"
