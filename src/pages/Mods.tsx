@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import PageLoader from "@/components/site/PageLoader";
@@ -202,11 +202,38 @@ const Mods = () => {
       <PageLoader loading={loading} label="Loading mods" />
       <Navbar />
       <main className="container pt-24 pb-16">
-        <div className="flex items-center gap-2 mb-6 text-sm font-semibold">
-          <span className="px-3 py-1.5 rounded-full border border-primary/60 text-primary bg-primary/10 flex items-center gap-1.5">
-            <Boxes className="h-3.5 w-3.5" /> Mods
-          </span>
+        {/* Discover tabs */}
+        <div className="flex justify-center mb-6">
+          <div className="inline-flex flex-wrap gap-1 p-1 rounded-full border border-border bg-card/60">
+            {DISCOVER_TABS.map((t) =>
+              t.enabled ? (
+                <NavLink
+                  key={t.label}
+                  to={t.to}
+                  end
+                  className={({ isActive }) =>
+                    `px-4 py-1.5 rounded-full text-sm font-medium transition ${
+                      isActive
+                        ? "bg-primary/15 text-primary border border-primary/40"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`
+                  }
+                >
+                  {t.label}
+                </NavLink>
+              ) : (
+                <span
+                  key={t.label}
+                  className="px-4 py-1.5 rounded-full text-sm font-medium text-muted-foreground/40 cursor-not-allowed"
+                  title="Coming soon"
+                >
+                  {t.label}
+                </span>
+              ),
+            )}
+          </div>
         </div>
+
 
         <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
           {/* Sidebar filters */}
