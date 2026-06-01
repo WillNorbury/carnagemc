@@ -34,7 +34,10 @@ import {
   Image as ImageIcon,
   X,
   Search,
+  History,
 } from "lucide-react";
+import PluginVersionsDialog from "./PluginVersionsDialog";
+
 
 type Plugin = {
   id: string;
