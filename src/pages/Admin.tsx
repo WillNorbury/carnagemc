@@ -43,6 +43,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
+import { DiscoverItemsAdminTab } from "@/components/admin/DiscoverItemsAdminTab";
 import { StatCard } from "@/components/admin/StatCard";
 import { ALL_ROLES, roleLabel, isStaffRole, type AppRole } from "@/lib/roles";
 import { usePermissions } from "@/lib/usePermissions";
@@ -152,9 +153,11 @@ const Admin = () => {
       {section === "applications" && <ApplicationsTab />}
       {section === "features" && <FeaturesTab />}
       {section === "rules" && <RulesTab />}
-      {(section === "resource-packs" || section === "data-packs" || section === "shaders" || section === "modpacks" || section === "servers") && (
-        <ComingSoonAdminSection label={sectionMeta[section].title} />
-      )}
+      {section === "resource-packs" && <DiscoverItemsAdminTab kind="resource_pack" />}
+      {section === "data-packs" && <DiscoverItemsAdminTab kind="data_pack" />}
+      {section === "shaders" && <DiscoverItemsAdminTab kind="shader" />}
+      {section === "modpacks" && <DiscoverItemsAdminTab kind="modpack" />}
+      {section === "servers" && <DiscoverItemsAdminTab kind="server" />}
       
       {section === "permissions" && (isOwner ? <PermissionsTab /> : (
         <div className="flex flex-col items-center justify-center gap-4 py-20">
