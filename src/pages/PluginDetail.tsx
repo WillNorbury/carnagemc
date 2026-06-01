@@ -410,12 +410,11 @@ const PluginDetail = () => {
                                 )}
                               </div>
                               {url ? (
-                                <Button asChild size="sm" variant="outline">
-                                  <a href={url} target="_blank" rel="noopener noreferrer" download>
-                                    <Download className="h-4 w-4 mr-1" /> Download
-                                  </a>
+                                <Button size="sm" variant="outline" onClick={() => downloadVersion(v)}>
+                                  <Download className="h-4 w-4 mr-1" /> Download
                                 </Button>
                               ) : null}
+
                             </div>
                           );
                         })
