@@ -282,13 +282,14 @@ const PluginDetail = () => {
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
-                {plugin.download_url ? (
+                {latestDownloadUrl ? (
                   <Button onClick={handleDownload} className="bg-primary hover:bg-primary/90 rounded-full px-5">
                     <Download className="h-4 w-4 mr-1.5" /> Download
                   </Button>
                 ) : (
                   <Button disabled className="rounded-full px-5">Unavailable</Button>
                 )}
+
                 <Button
                   variant={liked ? "default" : "outline"}
                   size="icon"
