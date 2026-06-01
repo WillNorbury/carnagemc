@@ -184,7 +184,35 @@ const PluginDetail = () => {
     .map((p) => p.trim().toLowerCase())
     .filter(Boolean);
 
+  const downloadVersion = async (v: PluginVersion) => {
+    if (!plugin) return;
+    const url = resolveVersionUrl(v);
+    if (!url) return;
+    const sanitize = (s: string | null) => (s ? s.replace(/\s+/g, "-") : "");
+    const filename =
+      v.jar_filename ||
+      [sanitize(plugin.name), sanitize(plugin.platform), sanitize(v.version)]
+        .filter(Boolean)
+        .join("-") + ".jar";
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      window.open(url, "_blank", "noopener");
+    }
+  };
+
   const doDownload = async () => {
+
     if (!plugin || !latestDownloadUrl) return;
     const filename = buildJarName(plugin);
     try {
