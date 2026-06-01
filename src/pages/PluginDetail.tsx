@@ -441,6 +441,17 @@ const PluginDetail = () => {
         )}
       </main>
       <Footer />
+      <Dialog open={!!lightbox} onOpenChange={(o) => !o && setLightbox(null)}>
+        <DialogContent className="max-w-5xl p-2 bg-background/95 border-border">
+          {lightbox && (
+            <img
+              src={lightbox}
+              alt="Screenshot"
+              className="w-full h-auto rounded-md object-contain max-h-[85vh]"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
