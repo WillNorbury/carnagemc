@@ -33,6 +33,7 @@ import {
   Upload,
   Image as ImageIcon,
   X,
+  Search,
 } from "lucide-react";
 
 type Plugin = {
@@ -105,6 +106,11 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
   const jarRef = useRef<HTMLInputElement>(null);
   const iconRef = useRef<HTMLInputElement>(null);
   const shotsRef = useRef<HTMLInputElement>(null);
+
+  const [search, setSearch] = useState("");
+  const [platformFilter, setPlatformFilter] = useState<string>("all");
+  const [versionFilter, setVersionFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
 
   const load = async () => {
     setLoading(true);
@@ -276,6 +282,46 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
         </Button>
       </div>
 
+      {plugins.length > 0 && (
+        <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto_auto] mb-4">
+          <div className="relative">
+            <Search className="h-4 w-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by name..."
+              className="pl-8 h-9"
+            />
+          </div>
+          <Select value={platformFilter} onValueChange={setPlatformFilter}>
+            <SelectTrigger className="h-9 w-[140px]"><SelectValue placeholder="Platform" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All platforms</SelectItem>
+              {Array.from(new Set(plugins.map((p) => p.platform).filter(Boolean))).map((p) => (
+                <SelectItem key={p as string} value={p as string} className="capitalize">{p}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={versionFilter} onValueChange={setVersionFilter}>
+            <SelectTrigger className="h-9 w-[140px]"><SelectValue placeholder="Version" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All versions</SelectItem>
+              {Array.from(new Set(plugins.map((p) => p.version).filter(Boolean))).map((v) => (
+                <SelectItem key={v as string} value={v as string}>v{v}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
+            <SelectTrigger className="h-9 w-[130px]"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All status</SelectItem>
+              <SelectItem value="published">Published</SelectItem>
+              <SelectItem value="draft">Draft</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       {loading ? (
         <div className="flex items-center justify-center py-6">
           <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -284,9 +330,22 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
         <p className="text-sm text-muted-foreground">
           You haven't published any plugins yet. Click "New plugin" to get started.
         </p>
-      ) : (
+      ) : (() => {
+        const q = search.trim().toLowerCase();
+        const filtered = plugins.filter((p) => {
+          if (q && !p.name.toLowerCase().includes(q)) return false;
+          if (platformFilter !== "all" && p.platform !== platformFilter) return false;
+          if (versionFilter !== "all" && p.version !== versionFilter) return false;
+          if (statusFilter === "published" && !p.published) return false;
+          if (statusFilter === "draft" && p.published) return false;
+          return true;
+        });
+        if (filtered.length === 0) {
+          return <p className="text-sm text-muted-foreground">No plugins match your filters.</p>;
+        }
+        return (
         <div className="space-y-2">
-          {plugins.map((p) => (
+          {filtered.map((p) => (
             <div
               key={p.id}
               className="flex items-center gap-3 p-3 rounded-lg border border-border/60"
@@ -347,7 +406,8 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
             </div>
           ))}
         </div>
-      )}
+        );
+      })()}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
