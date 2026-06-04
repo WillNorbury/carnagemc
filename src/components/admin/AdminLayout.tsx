@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import logo from "@/assets/xylo-logo.png";
+import { ThemeToggle } from "@/components/site/ThemeToggle";
 import {
   LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
   PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound, Puzzle, ClipboardList, Zap, Sparkles, Gavel,
@@ -209,7 +210,7 @@ export const AdminLayout = ({
                 <img src={logo} alt="XyloMC" className="h-6 w-6" />
                 <span className="text-sm">XYLO<span className="text-gradient">MC</span></span>
               </Link>
-              <div className="w-9" />
+              <ThemeToggle />
             </div>
 
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -217,7 +218,10 @@ export const AdminLayout = ({
                 <h1 className="text-2xl md:text-3xl font-bold tracking-tight truncate">{title}</h1>
                 {description && <p className="mt-1.5 text-sm md:text-base text-muted-foreground">{description}</p>}
               </div>
-              {actions && <div className="flex items-center gap-2 flex-wrap">{actions}</div>}
+              <div className="flex items-center gap-2 flex-wrap">
+                {actions}
+                <ThemeToggle className="hidden md:inline-flex" />
+              </div>
             </div>
             <div className="min-w-0 overflow-x-auto">
               {children}
