@@ -133,7 +133,7 @@ const UserProfile = () => {
       if (canonicalSlug !== slug.trim().toLowerCase()) {
         navigate(`/user/${canonicalSlug}`, { replace: true });
       }
-      document.title = `${p.display_name ?? "Player"} — XyloMC`;
+      document.title = `${p.display_name ?? "Player"} — HavocSMP`;
 
       // Roles
       const { data: r } = await supabase

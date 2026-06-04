@@ -145,7 +145,7 @@ const PluginDetail = () => {
       if (!data) setNotFound(true);
       else {
         setPlugin(data as Plugin);
-        document.title = `${(data as Plugin).name} — Plugin — XyloMC`;
+        document.title = `${(data as Plugin).name} — Plugin — HavocSMP`;
         const { data: vs } = await (supabase.from("plugin_versions" as any) as any)
           .select("*")
           .eq("plugin_id", (data as Plugin).id)

@@ -141,7 +141,7 @@ const DiscoverItemsBrowse = ({
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = `${title} — XyloMC`;
+    document.title = `${title} — HavocSMP`;
   }, [title]);
 
   useEffect(() => {

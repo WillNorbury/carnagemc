@@ -46,7 +46,7 @@ const Dashboard = () => {
   const [streaks, setStreaks] = useState<Streaks | null>(null);
 
   useEffect(() => {
-    document.title = "Dashboard — XyloMC";
+    document.title = "Dashboard — HavocSMP";
   }, []);
 
   useEffect(() => {
@@ -125,7 +125,7 @@ const Dashboard = () => {
           <h1 className="font-display text-4xl md:text-5xl font-black">
             Welcome back<span className="text-gradient">.</span>
           </h1>
-          <p className="text-muted-foreground mt-1">Your XyloMC hub</p>
+          <p className="text-muted-foreground mt-1">Your HavocSMP hub</p>
         </header>
 
         {/* Top: profile summary */}

@@ -66,7 +66,7 @@ const Profile = () => {
   const mcInvalid = !MC_RE.test(mcUsername.trim());
 
   useEffect(() => {
-    document.title = "My Profile — XyloMC";
+    document.title = "My Profile — HavocSMP";
   }, []);
 
   useEffect(() => {
@@ -213,7 +213,7 @@ const Profile = () => {
         <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
           <div>
             <h1 className="text-4xl font-display font-bold text-glow">My Profile</h1>
-            <p className="text-muted-foreground mt-1">Manage your XyloMC account</p>
+            <p className="text-muted-foreground mt-1">Manage your HavocSMP account</p>
           </div>
           <Button asChild variant="outline">
             <Link to={publicProfilePath}>
@@ -333,7 +333,7 @@ const Profile = () => {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Unlink Discord account?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      <strong>{discord.username}</strong> will be disconnected from your XyloMC account. You can re-link it any time.
+                      <strong>{discord.username}</strong> will be disconnected from your HavocSMP account. You can re-link it any time.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -369,7 +369,7 @@ const Profile = () => {
               <Palette className="h-5 w-5 text-primary" />
               <h2 className="font-display font-bold text-lg">Appearance</h2>
             </div>
-            <p className="text-sm text-muted-foreground mb-3">Choose how XyloMC looks on this device.</p>
+            <p className="text-sm text-muted-foreground mb-3">Choose how HavocSMP looks on this device.</p>
             <div className="max-w-xs">
               <Label htmlFor="theme">Theme</Label>
               <Select value={prefs.theme} onValueChange={(v) => updatePref("theme", v as typeof prefs.theme)}>

@@ -31,7 +31,7 @@ const AdminFaqs = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    document.title = "FAQs — Admin · XyloMC";
+    document.title = "FAQs — Admin · HavocSMP";
     load();
   }, []);
 

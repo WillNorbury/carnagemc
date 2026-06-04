@@ -34,7 +34,7 @@ const Staff = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = "Staff — XyloMC";
+    document.title = "Staff — HavocSMP";
     (async () => {
       const { data: roles } = await supabase
         .from("user_roles")
@@ -87,7 +87,7 @@ const Staff = () => {
         <header className="mb-10 text-center">
           <h1 className="text-4xl font-bold tracking-tight">Meet the Staff</h1>
           <p className="text-muted-foreground mt-2">
-            The team keeping XyloMC running smoothly.
+            The team keeping HavocSMP running smoothly.
           </p>
         </header>
 

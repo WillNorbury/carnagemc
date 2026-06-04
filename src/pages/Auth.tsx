@@ -80,14 +80,14 @@ const Auth = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-grid">
       <SEO
-        title="Sign in — XyloMC"
-        description="Sign in or create your XyloMC account to apply for staff, vote, manage your profile, and access the dashboard."
+        title="Sign in — HavocSMP"
+        description="Sign in or create your HavocSMP account to apply for staff, vote, manage your profile, and access the dashboard."
         path="/auth"
       />
       <div className="absolute inset-0 -z-10" style={{ background: "var(--gradient-hero)" }} />
       <Card className="w-full max-w-md p-8 backdrop-blur-xl bg-card/90 border-primary/20 shadow-elegant">
         <Link to="/" className="flex items-center justify-center gap-2 mb-6">
-          <img src={logo} alt="XyloMC" className="h-10 w-10" />
+          <img src={logo} alt="HavocSMP" className="h-10 w-10" />
           <span className="font-bold text-xl">Xylo<span className="text-primary">MC</span></span>
         </Link>
 

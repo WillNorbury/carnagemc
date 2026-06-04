@@ -40,7 +40,7 @@ const NewsPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = "News — XyloMC";
+    document.title = "News — HavocSMP";
     supabase
       .from("news")
       .select("id,title,excerpt,content,slug,cover_url,priority,created_at")
@@ -64,7 +64,7 @@ const NewsPage = () => {
               <h1 className="font-display text-4xl sm:text-5xl font-bold text-foreground">News</h1>
             </div>
             <p className="text-lg text-muted-foreground">
-              Stay up to date with the latest from XyloMC.
+              Stay up to date with the latest from HavocSMP.
             </p>
           </div>
         </section>

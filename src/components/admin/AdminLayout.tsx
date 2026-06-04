@@ -91,7 +91,7 @@ export const AdminLayout = ({
         <div className={cn("flex h-[60px] items-center border-b px-4 shrink-0", isCollapsed ? "justify-center" : "justify-between")}>
           {!isCollapsed && (
             <Link to="/" className="flex items-center gap-2 font-semibold" onClick={() => setMobileOpen(false)}>
-              <img src={logo} alt="XyloMC" className="h-7 w-7" />
+              <img src={logo} alt="HavocSMP" className="h-7 w-7" />
               <span className="text-lg">XYLO<span className="text-gradient">MC</span></span>
             </Link>
           )}
@@ -207,7 +207,7 @@ export const AdminLayout = ({
                 <Menu className="h-5 w-5" />
               </Button>
               <Link to="/" className="flex items-center gap-2 font-semibold">
-                <img src={logo} alt="XyloMC" className="h-6 w-6" />
+                <img src={logo} alt="HavocSMP" className="h-6 w-6" />
                 <span className="text-sm">XYLO<span className="text-gradient">MC</span></span>
               </Link>
               <ThemeToggle />
