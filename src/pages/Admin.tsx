@@ -280,12 +280,30 @@ const UsersTab = () => {
   const [search, setSearch] = useState("");
   const [staffOnly, setStaffOnly] = useState(false);
   const [editing, setEditing] = useState<Profile | null>(null);
-  const [editForm, setEditForm] = useState({ display_name: "", mc_username: "" });
+  const [editForm, setEditForm] = useState({ display_name: "", mc_username: "", email: "" });
+  const [originalEmail, setOriginalEmail] = useState("");
+  const [loadingEmail, setLoadingEmail] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
 
-  const openEdit = (p: Profile) => {
+  const openEdit = async (p: Profile) => {
     setEditing(p);
-    setEditForm({ display_name: p.display_name ?? "", mc_username: p.mc_username ?? "" });
+    setEditForm({ display_name: p.display_name ?? "", mc_username: p.mc_username ?? "", email: "" });
+    setOriginalEmail("");
+    setLoadingEmail(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-update-user-email", {
+        body: { user_id: p.id },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      const em = (data as any)?.email ?? "";
+      setOriginalEmail(em);
+      setEditForm((f) => ({ ...f, email: em }));
+    } catch (e: any) {
+      toast.error(e.message ?? "Failed to load email");
+    } finally {
+      setLoadingEmail(false);
+    }
   };
 
   const saveEdit = async () => {
@@ -298,11 +316,26 @@ const UsersTab = () => {
         mc_username: editForm.mc_username.trim() || null,
       })
       .eq("id", editing.id);
-    setSavingEdit(false);
     if (error) {
+      setSavingEdit(false);
       toast.error(error.message);
       return;
     }
+    const newEmail = editForm.email.trim().toLowerCase();
+    if (newEmail && newEmail !== originalEmail.toLowerCase()) {
+      try {
+        const { data, error: emailErr } = await supabase.functions.invoke("admin-update-user-email", {
+          body: { user_id: editing.id, email: newEmail },
+        });
+        if (emailErr) throw emailErr;
+        if ((data as any)?.error) throw new Error((data as any).error);
+      } catch (e: any) {
+        setSavingEdit(false);
+        toast.error(e.message ?? "Failed to update email");
+        return;
+      }
+    }
+    setSavingEdit(false);
     toast.success("Profile updated");
     setEditing(null);
     load();
@@ -579,7 +612,7 @@ const UsersTab = () => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit member</DialogTitle>
-          <DialogDescription>Update the display name or Minecraft username.</DialogDescription>
+          <DialogDescription>Update profile details or the account email.</DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
           <div>
@@ -598,10 +631,24 @@ const UsersTab = () => {
               maxLength={32}
             />
           </div>
+          <div>
+            <Label>Email</Label>
+            <Input
+              type="email"
+              value={editForm.email}
+              onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+              maxLength={255}
+              placeholder={loadingEmail ? "Loading…" : "user@example.com"}
+              disabled={loadingEmail}
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Changing the email will mark it as confirmed and update the login address.
+            </p>
+          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
-          <Button onClick={saveEdit} disabled={savingEdit}>{savingEdit ? "Saving..." : "Save"}</Button>
+          <Button onClick={saveEdit} disabled={savingEdit || loadingEmail}>{savingEdit ? "Saving..." : "Save"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
