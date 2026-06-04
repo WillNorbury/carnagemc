@@ -1,0 +1,55 @@
+import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { applyTheme, type ThemePref } from "@/lib/preferences";
+import { cn } from "@/lib/utils";
+
+const readStored = (): ThemePref => {
+  try {
+    return (localStorage.getItem("zy-theme") as ThemePref | null) ?? "dark";
+  } catch {
+    return "dark";
+  }
+};
+
+const isLightActive = (t: ThemePref) =>
+  t === "light" ||
+  (t === "system" && window.matchMedia?.("(prefers-color-scheme: light)").matches);
+
+export const ThemeToggle = ({ className }: { className?: string }) => {
+  const [theme, setTheme] = useState<ThemePref>(() => readStored());
+
+  // Re-sync if another tab/page changes preference
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "zy-theme" && e.newValue) setTheme(e.newValue as ThemePref);
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
+  const light = isLightActive(theme);
+
+  const toggle = () => {
+    const next: ThemePref = light ? "dark" : "light";
+    setTheme(next);
+    applyTheme(next);
+  };
+
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      onClick={toggle}
+      aria-label={light ? "Switch to dark mode" : "Switch to light mode"}
+      title={light ? "Switch to dark mode" : "Switch to light mode"}
+      className={cn("h-9 w-9", className)}
+    >
+      <Sun className={cn("h-4 w-4 transition-all", light ? "scale-0 -rotate-90" : "scale-100 rotate-0")} />
+      <Moon className={cn("absolute h-4 w-4 transition-all", light ? "scale-100 rotate-0" : "scale-0 rotate-90")} />
+    </Button>
+  );
+};
+
+export default ThemeToggle;

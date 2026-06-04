@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import logo from "@/assets/xylo-logo.png";
 import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
+import { ThemeToggle } from "./ThemeToggle";
 
 const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
@@ -42,6 +43,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-1">
           <GlobalSearch />
+          <ThemeToggle />
           {user && (
             <Button variant="ghost" size="sm" onClick={() => nav("/dashboard")} className="hidden sm:inline-flex">
               <LayoutDashboard className="h-4 w-4 sm:mr-1" />
