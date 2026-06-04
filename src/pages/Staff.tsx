@@ -19,7 +19,7 @@ type StaffMember = {
 
 const STAFF_ROLES: AppRole[] = [
   "owner", "manager", "developer",
-  "sr_admin", "admin", "jr_admin",
+  "sr_admin", "admin",
   "sr_mod", "mod",
   "sr_helper", "helper",
 ];
