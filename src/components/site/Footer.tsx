@@ -10,7 +10,7 @@ const Footer = () => (
         <div className="flex items-center gap-2 mb-4">
           <img src={logo} alt="HavocSMP" className="h-9 w-9" />
           <span className="font-display font-bold text-lg tracking-wider">
-            XYLO<span className="text-gradient">MC</span>
+            HAVOC<span className="text-gradient">SMP</span>
           </span>
         </div>
         <p className="text-sm text-muted-foreground max-w-md">
