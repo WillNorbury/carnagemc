@@ -151,7 +151,7 @@ export default function OrgProfile() {
         return;
       }
       setOrg(o as Org);
-      document.title = `${o.name} — XyloMC`;
+      document.title = `${o.name} — HavocSMP`;
 
       const { data: m } = await supabase
         .from("organization_members")

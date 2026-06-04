@@ -14,7 +14,7 @@ const Rules = () => {
   const [sections, setSections] = useState<Section[]>([]);
 
   useEffect(() => {
-    document.title = "Rules — XyloMC";
+    document.title = "Rules — HavocSMP";
   }, []);
 
   useEffect(() => {
@@ -38,9 +38,9 @@ const Rules = () => {
           <div className="absolute inset-0 bg-grid opacity-[0.08]" />
           <div className="container relative text-center">
             <Badge variant="secondary" className="mb-4 text-primary border-primary/40"><ShieldCheck className="h-3 w-3 mr-1" /> Code of Conduct</Badge>
-            <h1 className="font-display text-4xl md:text-6xl font-black mb-3"><span className="text-gradient">XyloMC</span> Rules</h1>
+            <h1 className="font-display text-4xl md:text-6xl font-black mb-3"><span className="text-gradient">HavocSMP</span> Rules</h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              These rules keep the XyloMC community competitive, fair, and welcoming. By playing, you agree to follow them.
+              These rules keep the HavocSMP community competitive, fair, and welcoming. By playing, you agree to follow them.
             </p>
           </div>
         </section>
@@ -79,7 +79,7 @@ const Rules = () => {
               <div>
                 <h3 className="font-display font-bold mb-1">Zero Tolerance</h3>
                 <p className="text-sm text-muted-foreground">
-                  Cheating, doxxing, and DDoS threats result in immediate permanent bans across all XyloMC services with no appeal.
+                  Cheating, doxxing, and DDoS threats result in immediate permanent bans across all HavocSMP services with no appeal.
                 </p>
               </div>
             </div>

@@ -66,7 +66,7 @@ type News = {
 };
 
 const sectionMeta: Record<AdminSection, { title: string; description: string }> = {
-  dashboard: { title: "Dashboard", description: "Overview of XyloMC activity." },
+  dashboard: { title: "Dashboard", description: "Overview of HavocSMP activity." },
   users: { title: "Users", description: "Promote or demote admin access." },
   roles: { title: "Roles", description: "Assign and manage roles for members." },
   permissions: { title: "Permissions", description: "Define what each role can do." },
@@ -89,7 +89,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   
   "bot-dashboard": {
     title: "Discord Bot — Dashboard",
-    description: "Status and overview of the XyloMC Discord bot.",
+    description: "Status and overview of the HavocSMP Discord bot.",
   },
   "bot-management": { title: "Discord Bot — Management", description: "Configure commands and bot integration." },
 };
@@ -1683,14 +1683,14 @@ const BotDashboardSection = () => {
       {
         key: "rules",
         label: "Send server rules",
-        desc: "Posts (or updates) the full XyloMC rules embed in the rules channel.",
+        desc: "Posts (or updates) the full HavocSMP rules embed in the rules channel.",
         channel: cfg.rulesChannelId,
         canPreview: true,
       },
       {
         key: "roles",
         label: "Send Discord roles",
-        desc: "Posts (or updates) the full XyloMC roles overview embed in the server-roles channel.",
+        desc: "Posts (or updates) the full HavocSMP roles overview embed in the server-roles channel.",
         channel: cfg.rolesChannelId || "1498961753457954847",
         canPreview: true,
       },
@@ -1811,7 +1811,7 @@ const BotDashboardSection = () => {
       <Card className="p-6 space-y-3">
         <h2 className="font-bold">About the Discord Bot</h2>
         <p className="text-sm text-muted-foreground">
-          Configure your bot in the Management section. When enabled, it can sync with your XyloMC server to deliver
+          Configure your bot in the Management section. When enabled, it can sync with your HavocSMP server to deliver
           announcements, role assignments, and live server status to your Discord guild.
         </p>
         {cfg.inviteUrl && (
@@ -2118,7 +2118,7 @@ const BotManagementSection = () => {
     rolesChannelId: "1498961753457954847",
     infoChannelId: "",
     rulesChannelId: "",
-    welcomeMessage: "Welcome to XyloMC, {user}!",
+    welcomeMessage: "Welcome to HavocSMP, {user}!",
   });
   const [loading, setLoading] = useState(true);
 

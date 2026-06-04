@@ -26,7 +26,7 @@ type Props = {
 
 const DiscoverComingSoon = ({ title, searchPlaceholder, sections }: Props) => {
   useEffect(() => {
-    document.title = `${title} — XyloMC`;
+    document.title = `${title} — HavocSMP`;
   }, [title]);
 
   return (
@@ -94,7 +94,7 @@ const DiscoverComingSoon = ({ title, searchPlaceholder, sections }: Props) => {
                 {title} are coming soon
               </h2>
               <p className="text-muted-foreground max-w-md">
-                We're working on bringing {title.toLowerCase()} to XyloMC. Check
+                We're working on bringing {title.toLowerCase()} to HavocSMP. Check
                 back soon to browse, search, and download.
               </p>
             </Card>

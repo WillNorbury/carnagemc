@@ -53,7 +53,7 @@ const Events = () => {
   const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
 
   useEffect(() => {
-    document.title = "Events — XyloMC";
+    document.title = "Events — HavocSMP";
     (supabase.from("events" as any) as any)
       .select("id,title,slug,description,location,starts_at,ends_at,cover_url,category")
       .eq("published", true)
@@ -93,7 +93,7 @@ const Events = () => {
               Up<span className="text-gradient">coming</span> Events
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Tournaments, drops, resets, and community gatherings on XyloMC.
+              Tournaments, drops, resets, and community gatherings on HavocSMP.
             </p>
           </div>
         </section>

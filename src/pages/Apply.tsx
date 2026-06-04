@@ -30,7 +30,7 @@ type AppType = "staff" | "builder" | "youtuber";
 const TYPES: { key: AppType; label: string; desc: string; icon: any }[] = [
   { key: "staff", label: "Staff", desc: "Help moderate, support players, and keep the server safe.", icon: ShieldCheck },
   { key: "builder", label: "Builder", desc: "Design and build spawns, hubs, and event arenas.", icon: Hammer },
-  { key: "youtuber", label: "Content Creator", desc: "Stream or create videos featuring XyloMC.", icon: Youtube },
+  { key: "youtuber", label: "Content Creator", desc: "Stream or create videos featuring HavocSMP.", icon: Youtube },
 ];
 
 const STEPS = ["Role", "About you", "Your story", "Review"] as const;
@@ -140,8 +140,8 @@ const Apply = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <SEO
-        title="Apply — Join the XyloMC Team"
-        description="Apply to join the XyloMC team as Staff, Builder, or Content Creator. Help shape the server and earn exclusive perks."
+        title="Apply — Join the HavocSMP Team"
+        description="Apply to join the HavocSMP team as Staff, Builder, or Content Creator. Help shape the server and earn exclusive perks."
         path="/apply"
       />
       <Navbar />
@@ -154,7 +154,7 @@ const Apply = () => {
             Join the <span className="text-gradient">Team</span>
           </h1>
           <p className="text-muted-foreground">
-            Help shape XyloMC. Pick a role and tell us about yourself.
+            Help shape HavocSMP. Pick a role and tell us about yourself.
           </p>
         </header>
 

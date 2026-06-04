@@ -35,7 +35,7 @@ const Leaderboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = "Leaderboard — XyloMC";
+    document.title = "Leaderboard — HavocSMP";
   }, []);
 
   useEffect(() => {
@@ -82,7 +82,7 @@ const Leaderboard = () => {
               Leader<span className="text-gradient">board</span>
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              The most dedicated members on XyloMC, ranked by login and vote streaks.
+              The most dedicated members on HavocSMP, ranked by login and vote streaks.
             </p>
           </div>
         </section>

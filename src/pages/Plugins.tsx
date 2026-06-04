@@ -81,7 +81,7 @@ const Plugins = () => {
   const [sortBy, setSortBy] = useState<"relevance" | "downloads" | "updated" | "newest">("relevance");
 
   useEffect(() => {
-    document.title = "Plugins — XyloMC";
+    document.title = "Plugins — HavocSMP";
     (async () => {
       const { data } = await supabase
         .from("plugins")

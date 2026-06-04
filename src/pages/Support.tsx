@@ -34,7 +34,7 @@ const Support = () => {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [sending, setSending] = useState(false);
 
-  useEffect(() => { document.title = "Support — XyloMC"; }, []);
+  useEffect(() => { document.title = "Support — HavocSMP"; }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,7 +103,7 @@ const Support = () => {
               </div>
               <p className="text-sm text-muted-foreground mb-4">Open a ticket in our #support channel for instant help from staff and the community.</p>
               <Button asChild className="w-full glow">
-                <a href="https://discord.xylomc.net" target="_blank" rel="noreferrer">Join Discord</a>
+                <a href="https://discord.havocsmp.net" target="_blank" rel="noreferrer">Join Discord</a>
               </Button>
             </Card>
             <Card className="p-7 border-border hover-lift hover-glow">
@@ -118,7 +118,7 @@ const Support = () => {
               </div>
               <p className="text-sm text-muted-foreground mb-4">For billing, privacy, or formal requests — reach us directly by email.</p>
               <Button asChild variant="outline" className="w-full">
-                <a href="mailto:support@xylomc.net">support@xylomc.net</a>
+                <a href="mailto:support@havocsmp.net">support@havocsmp.net</a>
               </Button>
             </Card>
           </section>

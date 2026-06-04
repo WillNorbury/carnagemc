@@ -111,7 +111,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <Link to="/" className="flex items-center gap-2 px-2 py-1 group">
-          <img src={logo} alt="XyloMC" className="h-8 w-8 transition-transform group-hover:scale-110" />
+          <img src={logo} alt="HavocSMP" className="h-8 w-8 transition-transform group-hover:scale-110" />
           {!collapsed && (
             <span className="font-display font-bold text-base tracking-wider">
               XYLO<span className="text-gradient">MC</span>

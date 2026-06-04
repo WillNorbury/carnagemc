@@ -25,7 +25,7 @@ type Config = {
 const DEFAULT: Config = {
   enabled: false,
   title: "We'll be right back",
-  message: "XyloMC is undergoing scheduled maintenance. Check back soon!",
+  message: "HavocSMP is undergoing scheduled maintenance. Check back soon!",
   allowed_roles: [],
   allowed_user_ids: [],
 };
@@ -42,7 +42,7 @@ const AdminMaintenance = () => {
   const [searching, setSearching] = useState(false);
 
   useEffect(() => {
-    document.title = "Maintenance — Admin · XyloMC";
+    document.title = "Maintenance — Admin · HavocSMP";
     supabase
       .from("site_content")
       .select("value")

@@ -82,7 +82,7 @@ export function MaintenanceGate({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background flex items-center justify-center p-6 relative overflow-hidden">
       <div className="absolute inset-0 bg-grid opacity-[0.06]" />
       <div className="relative max-w-md text-center space-y-6">
-        <img src={logo} alt="XyloMC" className="h-20 w-20 mx-auto" />
+        <img src={logo} alt="HavocSMP" className="h-20 w-20 mx-auto" />
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/40 bg-primary/10 text-primary text-xs uppercase tracking-widest">
           <Wrench className="h-3 w-3" /> Maintenance
         </div>
@@ -90,7 +90,7 @@ export function MaintenanceGate({ children }: { children: React.ReactNode }) {
           {cfg.title || "We'll be right back"}
         </h1>
         <p className="text-muted-foreground whitespace-pre-wrap">
-          {cfg.message || "XyloMC is undergoing scheduled maintenance. Check back soon!"}
+          {cfg.message || "HavocSMP is undergoing scheduled maintenance. Check back soon!"}
         </p>
         {isAdmin && (
           <div className="text-xs text-muted-foreground inline-flex items-center gap-1">
