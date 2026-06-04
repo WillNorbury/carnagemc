@@ -90,14 +90,6 @@ export const DEFAULT_PERMISSIONS: PermissionMatrix = {
     "tickets.view_all", "tickets.reply", "tickets.update_status", "tickets.delete",
     "bot.view", "bot.test", "bot.configure",
   ],
-  jr_admin: [
-    "admin.access", "admin.dashboard.view",
-    "users.view", "roles.view",
-    "news.view", "news.create",
-    "status.view",
-    "tickets.view_all", "tickets.reply", "tickets.update_status",
-    "bot.view",
-  ],
   sr_mod: [
     "admin.access", "admin.dashboard.view",
     "users.view", "roles.view",
@@ -115,11 +107,7 @@ export const DEFAULT_PERMISSIONS: PermissionMatrix = {
   helper: [
     "admin.access", "tickets.view_all", "tickets.reply",
   ],
-  champion: [],
   media: [],
-  elite: [],
-  mvp: [],
-  vip: [],
-  booster: [],
+  donut_plus: [],
   default: [],
 };
