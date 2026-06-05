@@ -78,13 +78,13 @@ Deno.serve(async (req) => {
   } catch {}
 
   const siteUrl = "https://www.havocsmp.net";
-  const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
+  // Any < 500 response means the API gateway is alive
   const apiHealth = `${SUPABASE_URL}/rest/v1/`;
 
   const checks = await Promise.all([
     checkHttp("website", siteUrl),
     checkMinecraft("minecraft", mcHost),
-    checkHttp("api", apiHealth, true, { apikey: ANON, Authorization: `Bearer ${ANON}` }),
+    checkHttp("api", apiHealth, false),
   ]);
 
   const { error } = await supabase.from("uptime_checks").insert(checks);
