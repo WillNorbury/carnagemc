@@ -246,6 +246,8 @@ const PluginDetail = () => {
 
   const handleDownload = () => {
     if (!latestDownloadUrl) return;
+    if (platforms.length === 1) setSelectedPlatform((p) => p ?? platforms[0]);
+    if (mcVersions.length === 1) setSelectedVersion((v) => v ?? mcVersions[0]);
     setDownloadOpen(true);
   };
 
