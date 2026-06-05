@@ -3486,6 +3486,8 @@ const AlertsTab = () => {
   const [previewKind, setPreviewKind] = useState<"down" | "up">("down");
   const [previewPayload, setPreviewPayload] = useState("");
   const [sendingTest, setSendingTest] = useState(false);
+  const [previewButtonsDetected, setPreviewButtonsDetected] = useState(true);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const sampleVars: Record<string, string> = {
     service_name: "Minecraft Server",
