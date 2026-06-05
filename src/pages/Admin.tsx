@@ -3531,14 +3531,13 @@ const AlertsTab = () => {
     toast.success("Alert settings saved");
   };
 
-  const addWebhookFromEnv = () => {
-    setWebhookInput((prev) => {
-      const existing = prev.split(/\n+/).map((s) => s.trim()).filter(Boolean);
-      return [...existing, "https://discord.com/api/webhooks/..."].join("\n");
-    });
-  };
-
-  return (
+      {saving ? "Saving..." : "Save Settings"}
+        </Button>
+        {loading && <span className="text-sm text-muted-foreground">Loading...</span>}
+      </div>
+    </div>
+  );
+};
     <div className="space-y-6">
       <Card className="p-6 space-y-4">
         <h2 className="font-bold flex items-center gap-2">
