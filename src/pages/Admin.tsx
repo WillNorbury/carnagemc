@@ -3678,7 +3678,7 @@ const AlertsTab = () => {
         </div>
       </Card>
 
-      <Card className="p-6 space-y-4">
+      <Card className="p-6 space-y-4" ref={cardRef}>
         <h2 className="font-bold flex items-center gap-2">
           <Code className="h-4 w-4" /> Custom Payload Templates
         </h2>
