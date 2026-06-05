@@ -80,13 +80,12 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   applications: { title: "Applications", description: "Review staff, builder, and content creator applications." },
   features: { title: "Features", description: "Add, edit, reorder, and remove features shown on the website." },
   rules: { title: "Rules", description: "Edit the sections shown on the public Rules page." },
+  alerts: { title: "Alert Settings", description: "Configure webhook payload templates and alert recipients." },
   "resource-packs": { title: "Resource Packs", description: "Manage discoverable resource packs." },
   "data-packs": { title: "Data Packs", description: "Manage discoverable data packs." },
   shaders: { title: "Shaders", description: "Manage discoverable shaders." },
   modpacks: { title: "Modpacks", description: "Manage discoverable modpacks." },
   servers: { title: "Servers", description: "Manage discoverable servers." },
-  
-  
   "bot-dashboard": {
     title: "Discord Bot — Dashboard",
     description: "Status and overview of the HavocSMP Discord bot.",
