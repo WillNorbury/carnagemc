@@ -46,6 +46,8 @@ type Plugin = {
   icon_url: string | null;
   category: string | null;
   platform: string | null;
+  platforms: string[] | null;
+  mc_versions: string[] | null;
   tags: string[];
   featured: boolean;
   created_at: string;
@@ -54,6 +56,7 @@ type Plugin = {
   jar_size: number | null;
   screenshots: string[];
 };
+
 
 const formatSize = (b: number | null) => {
   if (!b) return "";
@@ -179,10 +182,17 @@ const PluginDetail = () => {
     }
   };
 
-  const platforms = (plugin?.platform || "")
-    .split(/[,/|]/)
-    .map((p) => p.trim().toLowerCase())
-    .filter(Boolean);
+  const platforms = (
+    plugin?.platforms && plugin.platforms.length
+      ? plugin.platforms
+      : (plugin?.platform || "")
+          .split(/[,/|]/)
+          .map((p) => p.trim())
+          .filter(Boolean)
+  ).map((p) => p.toLowerCase());
+
+  const mcVersions = plugin?.mc_versions ?? [];
+
 
   const downloadVersion = async (v: PluginVersion) => {
     if (!plugin) return;

@@ -22,9 +22,12 @@ type Plugin = {
   category: string | null;
   tags: string[];
   platform: string | null;
+  platforms: string[] | null;
+  mc_versions: string[] | null;
   featured: boolean;
   updated_at: string;
 };
+
 
 type CreatorProfile = { display_name: string | null; mc_username: string | null };
 
@@ -85,7 +88,7 @@ const Plugins = () => {
     (async () => {
       const { data } = await supabase
         .from("plugins")
-        .select("id, short_id, slug, name, description, version, author, user_id, icon_url, category, tags, platform, featured, updated_at")
+        .select("id, short_id, slug, name, description, version, author, user_id, icon_url, category, tags, platform, platforms, mc_versions, featured, updated_at")
         .eq("published", true)
         .order("featured", { ascending: false })
         .order("created_at", { ascending: false });
@@ -243,10 +246,13 @@ const Plugins = () => {
             ) : (
               <div className="space-y-3">
                 {filtered.map((p) => {
-                  const platforms = [p.platform, ...p.tags.filter((t) => PLATFORM_COLORS[t.toLowerCase()])]
+                  const basePlatforms = p.platforms && p.platforms.length ? p.platforms : p.platform ? [p.platform] : [];
+                  const platforms = [...basePlatforms, ...p.tags.filter((t) => PLATFORM_COLORS[t.toLowerCase()])]
                     .filter(Boolean)
                     .filter((v, i, a) => a.findIndex((x) => x?.toLowerCase() === v?.toLowerCase()) === i) as string[];
+                  const mcVersions = p.mc_versions ?? [];
                   const otherTags = p.tags.filter((t) => !PLATFORM_COLORS[t.toLowerCase()]);
+
                   return (
                     <Link key={p.id} to={`/plugin/${p.slug ?? p.short_id}`}>
                       <Card className="p-4 hover:border-primary/50 hover:shadow-elegant transition group">
@@ -318,6 +324,12 @@ const Plugins = () => {
                                       {pl}
                                     </Badge>
                                   ))}
+                                  {mcVersions.slice(0, 4).map((v) => (
+                                    <Badge key={`mc-${v}`} variant="outline" className="text-xs">
+                                      MC {v}
+                                    </Badge>
+                                  ))}
+
                                 </div>
                               </div>
                               <div className="shrink-0 text-right text-sm space-y-1">
