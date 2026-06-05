@@ -645,12 +645,12 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
               </div>
 
               <DialogFooter>
-                <Button variant="ghost" onClick={() => setForm(null)} disabled={saving}>
+                <Button variant="ghost" onClick={() => setForm(null)} disabled={saving || uploadingZip}>
                   Cancel
                 </Button>
-                <Button onClick={save} disabled={saving}>
-                  {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                  {form.id ? "Save changes" : `Create ${meta.label}`}
+                <Button onClick={save} disabled={saving || uploadingZip}>
+                  {(saving || uploadingZip) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                  {uploadingZip ? "Uploading .zip..." : form.id ? "Save changes" : `Create ${meta.label}`}
                 </Button>
               </DialogFooter>
             </>
