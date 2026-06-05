@@ -82,9 +82,10 @@ const timeAgo = (iso: string | null) => {
   return `${Math.floor(d / 365)} years ago`;
 };
 
-const buildJarName = (plugin: Plugin) => {
+const buildJarName = (plugin: Plugin, platform?: string | null) => {
   const sanitize = (s: string | null) => (s ? s.replace(/\s+/g, "-") : "");
-  const parts = [sanitize(plugin.name), sanitize(plugin.platform), sanitize(plugin.version)].filter(Boolean);
+  const plat = platform ?? plugin.platform;
+  const parts = [sanitize(plugin.name), sanitize(plat), sanitize(plugin.version)].filter(Boolean);
   return parts.length > 0 ? `${parts.join("-")}.jar` : `${sanitize(plugin.name) || "plugin"}.jar`;
 };
 
@@ -224,9 +225,8 @@ const PluginDetail = () => {
   };
 
   const doDownload = async () => {
-
     if (!plugin || !latestDownloadUrl) return;
-    const filename = buildJarName(plugin);
+    const filename = buildJarName(plugin, selectedPlatform);
     try {
       const res = await fetch(latestDownloadUrl);
       if (!res.ok) throw new Error();
@@ -702,6 +702,13 @@ const PluginDetail = () => {
                   ))}
                 </div>
               )}
+            </div>
+
+            <div className="rounded-md border border-border bg-background/40 px-3 py-2 flex items-center gap-2 text-sm">
+              <Info className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="text-muted-foreground truncate font-mono">
+                {buildJarName(plugin, selectedPlatform)}
+              </span>
             </div>
 
             <Button
