@@ -78,12 +78,13 @@ Deno.serve(async (req) => {
   } catch {}
 
   const siteUrl = "https://www.havocsmp.net";
-  const apiHealth = `${SUPABASE_URL}/auth/v1/health`;
+  const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
+  const apiHealth = `${SUPABASE_URL}/rest/v1/`;
 
   const checks = await Promise.all([
     checkHttp("website", siteUrl),
     checkMinecraft("minecraft", mcHost),
-    checkHttp("api", apiHealth),
+    checkHttp("api", apiHealth, true, { apikey: ANON, Authorization: `Bearer ${ANON}` }),
   ]);
 
   const { error } = await supabase.from("uptime_checks").insert(checks);
