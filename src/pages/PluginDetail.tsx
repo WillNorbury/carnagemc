@@ -225,9 +225,8 @@ const PluginDetail = () => {
   };
 
   const doDownload = async () => {
-
     if (!plugin || !latestDownloadUrl) return;
-    const filename = buildJarName(plugin);
+    const filename = buildJarName(plugin, selectedPlatform);
     try {
       const res = await fetch(latestDownloadUrl);
       if (!res.ok) throw new Error();
