@@ -30,6 +30,8 @@ import {
   Puzzle,
   Pencil,
   Sparkles,
+  Bell,
+  Code,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
