@@ -233,7 +233,34 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
       toast.error("Name is required");
       return;
     }
+
+    // Resource packs require a .zip file on create
+    if (form.kind === "resource_pack" && !form.id && !zipFile) {
+      toast.error("Please upload a .zip file for the resource pack");
+      return;
+    }
+
     setSaving(true);
+
+    let downloadUrl = form.download_url.trim() || null;
+
+    // Upload zip file for resource packs
+    if (form.kind === "resource_pack" && zipFile) {
+      setUploadingZip(true);
+      const filePath = `${userId}/${Date.now()}_${zipFile.name.replace(/[^a-zA-Z0-9_.-]/g, "_")}`;
+      const { error: uploadError } = await supabase.storage
+        .from("resource-packs")
+        .upload(filePath, zipFile, { upsert: true, contentType: "application/zip" });
+      setUploadingZip(false);
+      if (uploadError) {
+        setSaving(false);
+        toast.error(`Upload failed: ${uploadError.message}`);
+        return;
+      }
+      const { data: urlData } = supabase.storage.from("resource-packs").getPublicUrl(filePath);
+      downloadUrl = urlData.publicUrl;
+    }
+
     const payload = {
       kind: form.kind,
       name: form.name.trim(),
@@ -244,7 +271,7 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
       version: form.version.trim() || null,
       icon_url: form.icon_url.trim() || null,
       banner_url: form.banner_url.trim() || null,
-      download_url: form.download_url.trim() || null,
+      download_url: downloadUrl,
       external_url: form.external_url.trim() || null,
       category: form.category.trim() || null,
       tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
@@ -260,6 +287,7 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
       return;
     }
     toast.success(form.id ? `${KIND_META[form.kind].label} updated` : `${KIND_META[form.kind].label} created`);
+    setZipFile(null);
     setForm(null);
     load();
   };
