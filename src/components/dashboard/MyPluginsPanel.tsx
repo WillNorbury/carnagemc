@@ -312,7 +312,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
         <div className="flex items-center gap-2">
           <Puzzle className="h-5 w-5 text-primary" />
-          <h2 className="font-display font-bold text-lg">My Plugins</h2>
+          <h2 className="font-display font-bold text-lg">Plugins</h2>
         </div>
         <Button size="sm" onClick={openNew}>
           <Plus className="h-4 w-4 mr-1" /> New plugin
