@@ -14,6 +14,7 @@ import { roleLabel, type AppRole } from "@/lib/roles";
 import { toast } from "sonner";
 import { Loader2, User as UserIcon, FileText, LifeBuoy, ClipboardList, Link2, ExternalLink, CheckCircle2, Flame, Vote as VoteIcon, Trophy } from "lucide-react";
 import MyPluginsPanel from "@/components/dashboard/MyPluginsPanel";
+import MyDiscoverItemsPanel from "@/components/dashboard/MyDiscoverItemsPanel";
 
 type Streaks = {
   login_streak: number;
@@ -276,8 +277,10 @@ const Dashboard = () => {
           )}
         </Card>
 
-        {/* My Plugins */}
+        {/* My Stuff */}
+        <h2 className="font-display text-2xl font-black mb-3 mt-2">My Stuff</h2>
         <MyPluginsPanel userId={user!.id} />
+        <MyDiscoverItemsPanel userId={user!.id} />
 
         {/* Quick links */}
         <Card className="p-6">
