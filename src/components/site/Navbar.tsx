@@ -36,7 +36,7 @@ const Navbar = () => {
           <Link to="/" className="flex items-center gap-2 group min-w-0">
             <img src={logo} alt="HavocSMP" className="h-7 w-7 shrink-0 transition-transform group-hover:scale-110" />
             <span className="font-display font-bold text-sm md:text-base tracking-wider truncate">
-              XYLO<span className="text-gradient">MC</span>
+              HAVOC<span className="text-gradient">SMP</span>
             </span>
           </Link>
         </div>

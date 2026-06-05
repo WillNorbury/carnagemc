@@ -114,7 +114,7 @@ export function AppSidebar() {
           <img src={logo} alt="HavocSMP" className="h-8 w-8 transition-transform group-hover:scale-110" />
           {!collapsed && (
             <span className="font-display font-bold text-base tracking-wider">
-              XYLO<span className="text-gradient">MC</span>
+              HAVOC<span className="text-gradient">SMP</span>
             </span>
           )}
         </Link>
