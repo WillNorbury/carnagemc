@@ -32,6 +32,8 @@ import {
   Sparkles,
   Bell,
   Code,
+  Eye,
+  Play,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
@@ -3478,6 +3480,92 @@ const AlertsTab = () => {
   const [upJson, setUpJson] = useState("");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewKind, setPreviewKind] = useState<"down" | "up">("down");
+  const [previewPayload, setPreviewPayload] = useState("");
+  const [sendingTest, setSendingTest] = useState(false);
+
+  const sampleVars: Record<string, string> = {
+    service_name: "Minecraft Server",
+    service_key: "minecraft",
+    status: "DOWN",
+    uptime_window: "99.42%",
+    incident_duration: "12m 34s",
+    error: "Connection timeout after 10s",
+    timestamp: new Date().toISOString(),
+  };
+
+  const interpolateTemplate = (template: unknown, vars: Record<string, string>): unknown => {
+    if (typeof template === "string") {
+      return template.replace(/\{\{(\w+)\}\}/g, (_: string, key: string) => vars[key] ?? `{{${key}}}`);
+    }
+    if (Array.isArray(template)) {
+      return template.map((item) => interpolateTemplate(item, vars));
+    }
+    if (template && typeof template === "object") {
+      const obj: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(template as Record<string, unknown>)) {
+        obj[k] = interpolateTemplate(v, vars);
+      }
+      return obj;
+    }
+    return template;
+  };
+
+  const buildPreview = (kind: "down" | "up") => {
+    const jsonStr = kind === "down" ? downJson : upJson;
+    const vars = {
+      ...sampleVars,
+      status: kind === "down" ? "DOWN" : "UP",
+      error: kind === "down" ? sampleVars.error : "",
+    };
+    let template: unknown;
+    if (jsonStr.trim()) {
+      try { template = JSON.parse(jsonStr); } catch { toast.error(`${kind} payload JSON is invalid`); return; }
+    } else {
+      // Default fallback matching edge function
+      template = {
+        username: "Uptime Monitor",
+        embeds: [{
+          title: kind === "down" ? `🔴 {{service_name}} is DOWN` : `🟢 {{service_name}} recovered`,
+          description: kind === "down"
+            ? `Service has failed multiple consecutive checks.\n**Uptime (24h):** {{uptime_window}}\n**Error:** {{error}}`
+            : `Service is responding successfully again.\n**Uptime (24h):** {{uptime_window}}\n**Incident lasted:** {{incident_duration}}`,
+          color: kind === "down" ? 0xef4444 : 0x22c55e,
+          timestamp: "{{timestamp}}",
+        }],
+      };
+    }
+    const payload = interpolateTemplate(template, vars);
+    setPreviewPayload(JSON.stringify(payload, null, 2));
+    setPreviewKind(kind);
+    setPreviewOpen(true);
+  };
+
+  const sendTestWebhook = async () => {
+    const urls = webhookInput.split(/\n+/).map((s) => s.trim()).filter((s) => /^https?:\/\//i.test(s));
+    if (urls.length === 0) {
+      toast.error("No valid webhook URLs configured");
+      return;
+    }
+    setSendingTest(true);
+    try {
+      const res = await fetch(urls[0], {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: previewPayload,
+      });
+      if (res.ok) {
+        toast.success(`Test ${previewKind} sent to webhook`);
+      } else {
+        toast.error(`Webhook returned ${res.status}`);
+      }
+    } catch (e: any) {
+      toast.error(e.message ?? "Webhook request failed");
+    } finally {
+      setSendingTest(false);
+    }
+  };
 
   useEffect(() => {
     supabase
@@ -3577,8 +3665,15 @@ const AlertsTab = () => {
           Leave empty to use the default Discord embed format.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label>Down Payload (JSON)</Label>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label>Down Payload (JSON)</Label>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => buildPreview("down")}>
+                  <Eye className="h-3.5 w-3.5 mr-1" /> Preview
+                </Button>
+              </div>
+            </div>
             <Textarea
               value={downJson}
               onChange={(e) => setDownJson(e.target.value)}
@@ -3595,8 +3690,15 @@ const AlertsTab = () => {
               className="font-mono text-xs"
             />
           </div>
-          <div>
-            <Label>Up Payload (JSON)</Label>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label>Up Payload (JSON)</Label>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => buildPreview("up")}>
+                  <Eye className="h-3.5 w-3.5 mr-1" /> Preview
+                </Button>
+              </div>
+            </div>
             <Textarea
               value={upJson}
               onChange={(e) => setUpJson(e.target.value)}
@@ -3622,6 +3724,30 @@ const AlertsTab = () => {
         </Button>
         {loading && <span className="text-sm text-muted-foreground">Loading...</span>}
       </div>
+
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="h-4 w-4" />
+              {previewKind === "down" ? "Down Alert Preview" : "Up Alert Preview"}
+            </DialogTitle>
+            <DialogDescription>
+              Exact payload that will be sent to all configured webhooks.
+            </DialogDescription>
+          </DialogHeader>
+          <pre className="bg-secondary/40 rounded-lg p-4 text-xs font-mono overflow-x-auto whitespace-pre-wrap">
+            {previewPayload}
+          </pre>
+          <DialogFooter className="flex items-center gap-3">
+            <Button variant="outline" onClick={() => setPreviewOpen(false)}>Close</Button>
+            <Button onClick={sendTestWebhook} disabled={sendingTest}>
+              <Play className="h-3.5 w-3.5 mr-1" />
+              {sendingTest ? "Sending..." : "Send Test to First Webhook"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
