@@ -85,6 +85,7 @@ Deno.serve(async (req) => {
     checkHttp("website", siteUrl),
     checkMinecraft("minecraft", mcHost),
     checkHttp("api", apiHealth, false),
+    checkHttp("panel", "https://panel.voxelnode.dev"),
   ]);
 
   const { error } = await supabase.from("uptime_checks").insert(checks);
