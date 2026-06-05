@@ -53,6 +53,7 @@ import DataPacks from "./pages/DataPacks.tsx";
 import Shaders from "./pages/Shaders.tsx";
 import Modpacks from "./pages/Modpacks.tsx";
 import Servers from "./pages/Servers.tsx";
+import Status from "./pages/Status.tsx";
 
 
 const queryClient = new QueryClient();
@@ -115,6 +116,7 @@ const Shell = () => {
                   <Route path="/faq" element={<Faq />} />
                   <Route path="/events" element={<Events />} />
                   <Route path="/install" element={<Install />} />
+                  <Route path="/status" element={<Status />} />
                   
                   <Route path="*" element={<NotFound />} />
           </Routes>
