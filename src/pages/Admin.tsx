@@ -3757,7 +3757,7 @@ const AlertsTab = () => {
             <Button variant="outline" onClick={() => setPreviewOpen(false)}>Close</Button>
             <Button onClick={sendTestWebhook} disabled={sendingTest}>
               <Play className="h-3.5 w-3.5 mr-1" />
-              {sendingTest ? "Sending..." : "Send Test to First Webhook"}
+              {sendingTest ? "Sending..." : "Send Test to All Webhooks"}
             </Button>
           </DialogFooter>
         </DialogContent>
