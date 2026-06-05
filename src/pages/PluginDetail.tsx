@@ -498,12 +498,23 @@ const PluginDetail = () => {
                       </div>
                     </>
                   )}
+                  {mcVersions.length > 0 && (
+                    <>
+                      <div className="text-sm font-semibold mb-1">Minecraft versions</div>
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        {mcVersions.map((v) => (
+                          <Badge key={v} variant="secondary" className="rounded-full">{v}</Badge>
+                        ))}
+                      </div>
+                    </>
+                  )}
                   <div className="text-sm font-semibold mb-1">Supported environments</div>
                   <Badge variant="secondary" className="rounded-full">
                     <Monitor className="h-3 w-3 mr-1" />
                     Server-side
                   </Badge>
                 </Card>
+
 
                 {plugin.tags?.length > 0 && (
                   <Card className="p-5">
