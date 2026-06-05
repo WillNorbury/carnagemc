@@ -3693,6 +3693,22 @@ const AlertsTab = () => {
           <code className="text-xs bg-secondary px-1 rounded">timestamp</code>.
           Leave empty to use the default Discord embed format.
         </p>
+        {!previewButtonsDetected && (
+          <div className="rounded-lg border border-dashed border-destructive/40 p-4 bg-destructive/10 flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex-1">
+              <p className="text-sm font-medium flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-destructive" />
+                Preview buttons not detected
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                The page may be cached. Try a hard reload to load the latest version.
+              </p>
+            </div>
+            <Button size="sm" variant="outline" onClick={() => window.location.reload()}>
+              <RefreshCw className="h-3.5 w-3.5 mr-1" /> Reload page
+            </Button>
+          </div>
+        )}
         <div className="rounded-lg border border-dashed border-muted-foreground/30 p-4 bg-secondary/20">
           <p className="text-sm font-medium">Troubleshooting: Preview buttons not showing?</p>
           <ul className="text-xs text-muted-foreground list-disc list-inside mt-1 space-y-0.5">
