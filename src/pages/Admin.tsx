@@ -3550,15 +3550,29 @@ const AlertsTab = () => {
     }
     setSendingTest(true);
     try {
-      const res = await fetch(urls[0], {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: previewPayload,
-      });
-      if (res.ok) {
-        toast.success(`Test ${previewKind} sent to webhook`);
+      const results = await Promise.allSettled(
+        urls.map(async (url) => {
+          const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: previewPayload,
+          });
+          return { url, ok: res.ok, status: res.status };
+        })
+      );
+      const successes = results.filter((r) => r.status === "fulfilled" && r.value.ok).length;
+      const failures = results.filter((r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value.ok)).length;
+      if (failures === 0) {
+        toast.success(`Test ${previewKind} sent to all ${successes} webhook(s)`);
       } else {
-        toast.error(`Webhook returned ${res.status}`);
+        toast.error(`${failures} of ${urls.length} webhooks failed — check console for details`);
+        for (const r of results) {
+          if (r.status === "rejected") {
+            console.error("Webhook failed:", r.reason);
+          } else if (!r.value.ok) {
+            console.error("Webhook returned error:", r.value.url, r.value.status);
+          }
+        }
       }
     } catch (e: any) {
       toast.error(e.message ?? "Webhook request failed");
