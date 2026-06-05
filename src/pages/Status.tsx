@@ -56,7 +56,7 @@ const DayGrid = ({ days }: { days: number }) => {
 };
 
 const Status = () => {
-  const [range, setRange] = useState<Range>(90 as any > 0 ? 30 : 30);
+  const [range, setRange] = useState<Range>(30);
 
   useEffect(() => {
     document.title = "Status — HavocSMP";
