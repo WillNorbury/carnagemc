@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -35,7 +35,11 @@ import {
   Server,
   FileCode,
   ChevronDown,
+  Upload,
+  FileArchive,
+  X,
 } from "lucide-react";
+
 
 export type DiscoverKind = "resource_pack" | "data_pack" | "shader" | "modpack" | "server";
 
