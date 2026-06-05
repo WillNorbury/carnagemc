@@ -13,6 +13,13 @@ type Check = {
   error: string | null;
 };
 
+const SERVICE_NAMES: Record<string, string> = {
+  website: "Website",
+  minecraft: "Minecraft Server",
+  api: "API",
+  panel: "Panel",
+};
+
 async function checkHttp(service_key: string, url: string, expectOk = true, headers: Record<string, string> = {}): Promise<Check> {
   const start = Date.now();
   try {
@@ -62,6 +69,33 @@ async function checkMinecraft(service_key: string, host: string): Promise<Check>
   }
 }
 
+async function sendWebhook(name: string, error: string | null, kind: "down" | "up") {
+  const url = Deno.env.get("ALERT_WEBHOOK_URL");
+  if (!url) return;
+  const color = kind === "down" ? 0xef4444 : 0x22c55e;
+  const title = kind === "down" ? `🔴 ${name} is DOWN` : `🟢 ${name} recovered`;
+  const description = kind === "down"
+    ? `Service has failed multiple consecutive checks.${error ? `\n**Error:** ${error}` : ""}`
+    : `Service is responding successfully again.`;
+  try {
+    await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: "Uptime Monitor",
+        embeds: [{
+          title,
+          description,
+          color,
+          timestamp: new Date().toISOString(),
+        }],
+      }),
+    });
+  } catch (e) {
+    console.error("webhook failed", e);
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -69,7 +103,6 @@ Deno.serve(async (req) => {
   const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
 
-  // Read MC server IP from site_content if present
   let mcHost = "play.havocsmp.net";
   try {
     const { data } = await supabase.from("site_content").select("value").eq("key", "server").maybeSingle();
@@ -78,7 +111,6 @@ Deno.serve(async (req) => {
   } catch {}
 
   const siteUrl = "https://www.havocsmp.net";
-  // Any < 500 response means the API gateway is alive
   const apiHealth = `${SUPABASE_URL}/rest/v1/`;
 
   const checks = await Promise.all([
@@ -88,15 +120,61 @@ Deno.serve(async (req) => {
     checkHttp("panel", "https://panel.voxelnode.dev"),
   ]);
 
-  const { error } = await supabase.from("uptime_checks").insert(checks);
-  if (error) {
-    return new Response(JSON.stringify({ ok: false, error: error.message }), {
+  const { error: insertErr } = await supabase.from("uptime_checks").insert(checks);
+  if (insertErr) {
+    return new Response(JSON.stringify({ ok: false, error: insertErr.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
-  return new Response(JSON.stringify({ ok: true, checks }), {
+  // Alerting: open/close incidents
+  const alerts: { service: string; kind: "down" | "up" }[] = [];
+  for (const c of checks) {
+    const name = SERVICE_NAMES[c.service_key] || c.service_key;
+    const { data: openIncident } = await supabase
+      .from("uptime_incidents")
+      .select("id, alerted")
+      .eq("service_key", c.service_key)
+      .is("closed_at", null)
+      .maybeSingle();
+
+    if (!c.is_up) {
+      // Check last 2 checks (including current) for this service to require 2+ consecutive failures
+      const { data: recent } = await supabase
+        .from("uptime_checks")
+        .select("is_up")
+        .eq("service_key", c.service_key)
+        .order("checked_at", { ascending: false })
+        .limit(2);
+      const twoDown = (recent?.length ?? 0) >= 2 && recent!.every((r) => !r.is_up);
+
+      if (!openIncident && twoDown) {
+        const { data: inc } = await supabase
+          .from("uptime_incidents")
+          .insert({ service_key: c.service_key, last_error: c.error })
+          .select("id")
+          .single();
+        if (inc) {
+          await sendWebhook(name, c.error, "down");
+          await supabase.from("uptime_incidents").update({ alerted: true }).eq("id", inc.id);
+          alerts.push({ service: c.service_key, kind: "down" });
+        }
+      } else if (openIncident && !openIncident.alerted) {
+        await sendWebhook(name, c.error, "down");
+        await supabase.from("uptime_incidents").update({ alerted: true, last_error: c.error }).eq("id", openIncident.id);
+        alerts.push({ service: c.service_key, kind: "down" });
+      }
+    } else if (openIncident) {
+      await supabase.from("uptime_incidents").update({ closed_at: new Date().toISOString() }).eq("id", openIncident.id);
+      if (openIncident.alerted) {
+        await sendWebhook(name, null, "up");
+        alerts.push({ service: c.service_key, kind: "up" });
+      }
+    }
+  }
+
+  return new Response(JSON.stringify({ ok: true, checks, alerts }), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 });
