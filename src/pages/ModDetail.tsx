@@ -40,7 +40,9 @@ type Mod = {
   long_description: string | null;
   version: string | null;
   mc_version: string | null;
+  mc_versions: string[] | null;
   loader: string | null;
+  loaders: string[] | null;
   author: string | null;
   icon_url: string | null;
   category: string | null;
@@ -53,6 +55,12 @@ type Mod = {
   created_at: string | null;
   updated_at: string | null;
 };
+
+const modLoaders = (m: Mod): string[] =>
+  m.loaders && m.loaders.length ? m.loaders : m.loader ? [m.loader] : [];
+const modMcVersions = (m: Mod): string[] =>
+  m.mc_versions && m.mc_versions.length ? m.mc_versions : m.mc_version ? [m.mc_version] : [];
+
 
 const formatSize = (bytes: number | null) => {
   if (!bytes) return "";
@@ -98,11 +106,12 @@ const ModDetail = () => {
       setLoading(true);
       const { data } = await (supabase.from("mods" as any) as any)
         .select(
-          "id, slug, short_id, name, description, long_description, version, mc_version, loader, author, icon_url, category, tags, featured, jar_path, jar_filename, jar_size, download_url, published, created_at, updated_at"
+          "id, slug, short_id, name, description, long_description, version, mc_version, mc_versions, loader, loaders, author, icon_url, category, tags, featured, jar_path, jar_filename, jar_size, download_url, published, created_at, updated_at"
         )
         .eq("slug", slug)
         .eq("published", true)
         .maybeSingle();
+
       if (!data) setNotFound(true);
       else {
         setMod(data as Mod);
@@ -381,8 +390,8 @@ const ModDetail = () => {
                             </div>
                             <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-2 flex-wrap">
                               {mod.version && <span>v{mod.version}</span>}
-                              {mod.mc_version && <span>· MC {mod.mc_version}</span>}
-                              {mod.loader && <span>· {mod.loader}</span>}
+                              {modMcVersions(mod).length > 0 && <span>· MC {modMcVersions(mod).join(", ")}</span>}
+                              {modLoaders(mod).length > 0 && <span>· {modLoaders(mod).join(", ")}</span>}
                               {mod.jar_size ? <span>· {formatSize(mod.jar_size)}</span> : null}
                             </div>
                           </div>
@@ -399,6 +408,7 @@ const ModDetail = () => {
                       )}
                     </div>
                   )}
+
                 </Card>
               </div>
 
@@ -407,18 +417,27 @@ const ModDetail = () => {
                 <Card className="p-5">
                   <h3 className="font-bold mb-3">Compatibility</h3>
                   <div className="text-sm font-semibold mb-1">Minecraft: Java Edition</div>
-                  {mod.mc_version && (
-                    <Badge variant="secondary" className="rounded-full mb-4">
-                      {mod.mc_version}
-                    </Badge>
-                  )}
-                  {mod.loader && (
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {modMcVersions(mod).map((v) => (
+                      <Badge key={v} variant="secondary" className="rounded-full">
+                        {v}
+                      </Badge>
+                    ))}
+                    {modMcVersions(mod).length === 0 && (
+                      <span className="text-xs text-muted-foreground">Any</span>
+                    )}
+                  </div>
+                  {modLoaders(mod).length > 0 && (
                     <>
                       <div className="text-sm font-semibold mb-1 mt-3">Platforms</div>
-                      <Badge variant="secondary" className="rounded-full mb-4">
-                        <Package className="h-3 w-3 mr-1" />
-                        {mod.loader}
-                      </Badge>
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {modLoaders(mod).map((l) => (
+                          <Badge key={l} variant="secondary" className="rounded-full">
+                            <Package className="h-3 w-3 mr-1" />
+                            {l}
+                          </Badge>
+                        ))}
+                      </div>
                     </>
                   )}
                   <div className="text-sm font-semibold mb-1 mt-3">Supported environments</div>
@@ -427,6 +446,7 @@ const ModDetail = () => {
                     Client-side
                   </Badge>
                 </Card>
+
 
                 {mod.tags?.length > 0 && (
                   <Card className="p-5">

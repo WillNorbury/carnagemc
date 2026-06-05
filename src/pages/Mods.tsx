@@ -19,7 +19,9 @@ type Mod = {
   description: string | null;
   version: string | null;
   mc_version: string | null;
+  mc_versions: string[] | null;
   loader: string | null;
+  loaders: string[] | null;
   author: string | null;
   icon_url: string | null;
   category: string | null;
@@ -32,6 +34,12 @@ type Mod = {
   created_at: string;
   updated_at: string;
 };
+
+const modLoaders = (m: Mod): string[] =>
+  m.loaders && m.loaders.length ? m.loaders : m.loader ? [m.loader] : [];
+const modMcVersions = (m: Mod): string[] =>
+  m.mc_versions && m.mc_versions.length ? m.mc_versions : m.mc_version ? [m.mc_version] : [];
+
 
 const formatSize = (bytes: number | null) => {
   if (!bytes) return "";
@@ -121,7 +129,7 @@ const Mods = () => {
     (async () => {
       const { data } = await (supabase.from("mods" as any) as any)
         .select(
-          "id, slug, short_id, name, description, version, mc_version, loader, author, icon_url, category, tags, featured, jar_path, jar_filename, jar_size, download_url, created_at, updated_at, sort_order",
+          "id, slug, short_id, name, description, version, mc_version, mc_versions, loader, loaders, author, icon_url, category, tags, featured, jar_path, jar_filename, jar_size, download_url, created_at, updated_at, sort_order",
         )
         .eq("published", true)
         .order("featured", { ascending: false })
@@ -134,13 +142,13 @@ const Mods = () => {
 
   const versions = useMemo(() => {
     const s = new Set<string>();
-    mods.forEach((m) => m.mc_version && s.add(m.mc_version));
+    mods.forEach((m) => modMcVersions(m).forEach((v) => s.add(v)));
     return [...s].sort().reverse();
   }, [mods]);
 
   const loaders = useMemo(() => {
     const s = new Set<string>();
-    mods.forEach((m) => m.loader && s.add(m.loader));
+    mods.forEach((m) => modLoaders(m).forEach((l) => s.add(l)));
     return [...s].sort();
   }, [mods]);
 
@@ -149,6 +157,7 @@ const Mods = () => {
     mods.forEach((m) => m.category && s.add(m.category));
     return [...s].sort();
   }, [mods]);
+
 
   const getDownloadUrl = (m: Mod) => {
     if (m.download_url) return m.download_url;
@@ -170,19 +179,22 @@ const Mods = () => {
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
     let list = mods.filter((m) => {
-      if (selectedVersions.size && !(m.mc_version && selectedVersions.has(m.mc_version))) return false;
-      if (selectedLoaders.size && !(m.loader && selectedLoaders.has(m.loader))) return false;
+      const ls = modLoaders(m);
+      const vs = modMcVersions(m);
+      if (selectedVersions.size && !vs.some((v) => selectedVersions.has(v))) return false;
+      if (selectedLoaders.size && !ls.some((l) => selectedLoaders.has(l))) return false;
       if (selectedCategories.size && !(m.category && selectedCategories.has(m.category))) return false;
       if (!s) return true;
       return (
         m.name.toLowerCase().includes(s) ||
         (m.description ?? "").toLowerCase().includes(s) ||
         (m.author ?? "").toLowerCase().includes(s) ||
-        (m.loader ?? "").toLowerCase().includes(s) ||
+        ls.some((l) => l.toLowerCase().includes(s)) ||
         (m.category ?? "").toLowerCase().includes(s) ||
         m.tags.some((t) => t.toLowerCase().includes(s))
       );
     });
+
 
     if (sort === "newest") {
       list = [...list].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -379,21 +391,22 @@ const Mods = () => {
                             <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{m.description}</p>
                           )}
                           <div className="flex flex-wrap gap-1.5 mt-2">
-                            {m.loader && (
-                              <Badge variant="secondary" className="font-normal">
-                                {m.loader}
+                            {modLoaders(m).map((l) => (
+                              <Badge key={`l-${l}`} variant="secondary" className="font-normal">
+                                {l}
                               </Badge>
-                            )}
-                            {m.mc_version && (
-                              <Badge variant="outline" className="font-normal">
-                                MC {m.mc_version}
+                            ))}
+                            {modMcVersions(m).map((v) => (
+                              <Badge key={`v-${v}`} variant="outline" className="font-normal">
+                                MC {v}
                               </Badge>
-                            )}
+                            ))}
                             {m.version && (
                               <Badge variant="outline" className="font-normal">
                                 v{m.version}
                               </Badge>
                             )}
+
                             {m.category && (
                               <Badge variant="outline" className="font-normal">
                                 {m.category}
