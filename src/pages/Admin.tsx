@@ -1,5 +1,5 @@
 import { confirm } from "@/lib/confirm";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,6 +34,8 @@ import {
   Code,
   Eye,
   Play,
+  AlertTriangle,
+  RefreshCw,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
@@ -3484,6 +3486,8 @@ const AlertsTab = () => {
   const [previewKind, setPreviewKind] = useState<"down" | "up">("down");
   const [previewPayload, setPreviewPayload] = useState("");
   const [sendingTest, setSendingTest] = useState(false);
+  const [previewButtonsDetected, setPreviewButtonsDetected] = useState(true);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const sampleVars: Record<string, string> = {
     service_name: "Minecraft Server",
@@ -3604,6 +3608,17 @@ const AlertsTab = () => {
       });
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (cardRef.current) {
+        const buttons = cardRef.current.querySelectorAll('button');
+        const hasPreview = Array.from(buttons).some((b) => b.textContent?.includes('Preview'));
+        setPreviewButtonsDetected(hasPreview);
+      }
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [loading]);
+
   const save = async () => {
     let downTemplate: object | null = null;
     let upTemplate: object | null = null;
@@ -3663,7 +3678,7 @@ const AlertsTab = () => {
         </div>
       </Card>
 
-      <Card className="p-6 space-y-4">
+      <Card className="p-6 space-y-4" ref={cardRef}>
         <h2 className="font-bold flex items-center gap-2">
           <Code className="h-4 w-4" /> Custom Payload Templates
         </h2>
@@ -3678,6 +3693,22 @@ const AlertsTab = () => {
           <code className="text-xs bg-secondary px-1 rounded">timestamp</code>.
           Leave empty to use the default Discord embed format.
         </p>
+        {!previewButtonsDetected && (
+          <div className="rounded-lg border border-dashed border-destructive/40 p-4 bg-destructive/10 flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex-1">
+              <p className="text-sm font-medium flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-destructive" />
+                Preview buttons not detected
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                The page may be cached. Try a hard reload to load the latest version.
+              </p>
+            </div>
+            <Button size="sm" variant="outline" onClick={() => window.location.reload()}>
+              <RefreshCw className="h-3.5 w-3.5 mr-1" /> Reload page
+            </Button>
+          </div>
+        )}
         <div className="rounded-lg border border-dashed border-muted-foreground/30 p-4 bg-secondary/20">
           <p className="text-sm font-medium">Troubleshooting: Preview buttons not showing?</p>
           <ul className="text-xs text-muted-foreground list-disc list-inside mt-1 space-y-0.5">
