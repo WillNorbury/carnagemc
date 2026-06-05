@@ -1240,7 +1240,7 @@ export type Database = {
           preferences: Json
         }[]
       }
-      is_admin_user: { Args: { _user_id: string }; Returns: boolean }
+      is_current_user_admin: { Args: never; Returns: boolean }
       record_login_streak: {
         Args: never
         Returns: {
