@@ -3608,6 +3608,17 @@ const AlertsTab = () => {
       });
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (cardRef.current) {
+        const buttons = cardRef.current.querySelectorAll('button');
+        const hasPreview = Array.from(buttons).some((b) => b.textContent?.includes('Preview'));
+        setPreviewButtonsDetected(hasPreview);
+      }
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [loading]);
+
   const save = async () => {
     let downTemplate: object | null = null;
     let upTemplate: object | null = null;
