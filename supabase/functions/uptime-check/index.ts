@@ -13,12 +13,12 @@ type Check = {
   error: string | null;
 };
 
-async function checkHttp(service_key: string, url: string, expectOk = true): Promise<Check> {
+async function checkHttp(service_key: string, url: string, expectOk = true, headers: Record<string, string> = {}): Promise<Check> {
   const start = Date.now();
   try {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 10_000);
-    const r = await fetch(url, { signal: ctrl.signal, redirect: "follow" });
+    const r = await fetch(url, { signal: ctrl.signal, redirect: "follow", headers });
     clearTimeout(t);
     await r.arrayBuffer().catch(() => {});
     return {
