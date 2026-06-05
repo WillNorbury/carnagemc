@@ -527,24 +527,102 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
                   </div>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <div>
-                    <Label>{meta.downloadLabel}</Label>
-                    <Input
-                      value={form.download_url}
-                      onChange={(e) => setForm({ ...form, download_url: e.target.value })}
-                      placeholder={meta.downloadPlaceholder}
-                    />
+                {form.kind === "resource_pack" ? (
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Resource Pack .zip *</Label>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".zip,application/zip,application/x-zip-compressed"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] ?? null;
+                          if (file && !file.name.toLowerCase().endsWith(".zip")) {
+                            toast.error("Only .zip files are allowed for resource packs");
+                            if (fileInputRef.current) fileInputRef.current.value = "";
+                            setZipFile(null);
+                            return;
+                          }
+                          setZipFile(file);
+                        }}
+                      />
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <Upload className="h-4 w-4 mr-1.5" />
+                          {zipFile ? "Change .zip" : form.download_url ? "Replace .zip" : "Upload .zip"}
+                        </Button>
+                        {zipFile && (
+                          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                            <FileArchive className="h-4 w-4 text-primary" />
+                            <span className="truncate max-w-[200px]">{zipFile.name}</span>
+                            <span className="text-xs">({(zipFile.size / 1024 / 1024).toFixed(2)} MB)</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setZipFile(null);
+                                if (fileInputRef.current) fileInputRef.current.value = "";
+                              }}
+                              className="ml-1 text-destructive hover:text-destructive/80"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        )}
+                        {!zipFile && form.download_url && (
+                          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                            <FileArchive className="h-4 w-4 text-primary" />
+                            <a
+                              href={form.download_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="truncate max-w-[240px] underline hover:text-primary"
+                            >
+                              {form.download_url.split("/").pop() || "Current file"}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                      {!zipFile && !form.download_url && (
+                        <p className="text-xs text-muted-foreground mt-1.5">
+                          A .zip file is required for resource packs.
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <Label>External / source URL</Label>
+                      <Input
+                        value={form.external_url}
+                        onChange={(e) => setForm({ ...form, external_url: e.target.value })}
+                        placeholder="https://github.com/..."
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <Label>External / source URL</Label>
-                    <Input
-                      value={form.external_url}
-                      onChange={(e) => setForm({ ...form, external_url: e.target.value })}
-                      placeholder="https://github.com/..."
-                    />
+                ) : (
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <div>
+                      <Label>{meta.downloadLabel}</Label>
+                      <Input
+                        value={form.download_url}
+                        onChange={(e) => setForm({ ...form, download_url: e.target.value })}
+                        placeholder={meta.downloadPlaceholder}
+                      />
+                    </div>
+                    <div>
+                      <Label>External / source URL</Label>
+                      <Input
+                        value={form.external_url}
+                        onChange={(e) => setForm({ ...form, external_url: e.target.value })}
+                        placeholder="https://github.com/..."
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div>
                   <Label>Tags (comma-separated)</Label>
