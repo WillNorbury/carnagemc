@@ -707,7 +707,7 @@ const PluginDetail = () => {
             <div className="rounded-md border border-border bg-background/40 px-3 py-2 flex items-center gap-2 text-sm">
               <Info className="h-4 w-4 text-muted-foreground shrink-0" />
               <span className="text-muted-foreground truncate font-mono">
-                {buildJarName(plugin, selectedPlatform)}
+                {plugin ? buildJarName(plugin, selectedPlatform) : ""}
               </span>
             </div>
 
