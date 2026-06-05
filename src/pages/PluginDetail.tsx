@@ -618,46 +618,88 @@ const PluginDetail = () => {
 
               {versionOpen && (
                 <div className="border-t border-border">
-                  <div className="p-2">
-                    <div className="relative">
-                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                      <Input
-                        value={versionQuery}
-                        onChange={(e) => setVersionQuery(e.target.value)}
-                        placeholder="Search game versions..."
-                        className="h-8 pl-8 text-sm bg-background/60"
-                      />
+                  {mcVersions.length > 4 && (
+                    <div className="p-2">
+                      <div className="relative">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                        <Input
+                          value={versionQuery}
+                          onChange={(e) => setVersionQuery(e.target.value)}
+                          placeholder="Search game versions..."
+                          className="h-8 pl-8 text-sm bg-background/60"
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="max-h-56 overflow-y-auto px-2 pb-2 space-y-1">
-                    {GAME_VERSIONS.filter((v) => v.toLowerCase().includes(versionQuery.toLowerCase())).map((v) => (
-                      <button
-                        key={v}
-                        type="button"
-                        onClick={() => {
-                          setSelectedVersion(v);
-                          setVersionOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-1.5 rounded text-sm transition-colors ${
-                          selectedVersion === v
-                            ? "bg-primary/15 text-primary"
-                            : "hover:bg-accent/50 text-foreground/85"
-                        }`}
-                      >
-                        {v}
-                      </button>
-                    ))}
+                  )}
+                  <div className="max-h-56 overflow-y-auto px-2 pb-2 pt-2 space-y-1">
+                    {mcVersions.length === 0 ? (
+                      <div className="px-3 py-2 text-xs text-muted-foreground">No supported versions listed.</div>
+                    ) : (
+                      mcVersions
+                        .filter((v) => v.toLowerCase().includes(versionQuery.toLowerCase()))
+                        .map((v) => (
+                          <button
+                            key={v}
+                            type="button"
+                            onClick={() => {
+                              setSelectedVersion(v);
+                              setVersionOpen(false);
+                            }}
+                            className={`w-full text-left px-3 py-1.5 rounded text-sm transition-colors ${
+                              selectedVersion === v
+                                ? "bg-primary/15 text-primary"
+                                : "hover:bg-accent/50 text-foreground/85"
+                            }`}
+                          >
+                            {v}
+                          </button>
+                        ))
+                    )}
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="flex items-center justify-between rounded-md border border-border bg-background/40 px-3 py-2.5 text-sm">
-              <span className="flex items-center gap-2 text-foreground/90">
-                <KeyRound className="h-4 w-4 text-muted-foreground" />
-                Platform: {PLATFORM_LABELS[platforms[0]] ?? (plugin?.platform || "Unknown")}
-              </span>
-              <Info className="h-3.5 w-3.5 text-muted-foreground" />
+            <div className="rounded-md border border-border bg-background/40 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setPlatformOpen((v) => !v)}
+                disabled={platforms.length === 0}
+                className="w-full flex items-center justify-between px-3 py-2.5 text-sm hover:bg-accent/40 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <span className="flex items-center gap-2 text-foreground/90">
+                  <KeyRound className="h-4 w-4 text-muted-foreground" />
+                  {selectedPlatform
+                    ? `Platform: ${PLATFORM_LABELS[selectedPlatform] ?? selectedPlatform}`
+                    : platforms.length === 0
+                      ? "Platform: Unknown"
+                      : "Select platform"}
+                </span>
+                {platforms.length > 0 && (
+                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${platformOpen ? "rotate-180" : ""}`} />
+                )}
+              </button>
+              {platformOpen && platforms.length > 0 && (
+                <div className="border-t border-border max-h-56 overflow-y-auto p-2 space-y-1">
+                  {platforms.map((p) => (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => {
+                        setSelectedPlatform(p);
+                        setPlatformOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-1.5 rounded text-sm transition-colors ${
+                        selectedPlatform === p
+                          ? "bg-primary/15 text-primary"
+                          : "hover:bg-accent/50 text-foreground/85"
+                      }`}
+                    >
+                      {PLATFORM_LABELS[p] ?? p}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <Button
