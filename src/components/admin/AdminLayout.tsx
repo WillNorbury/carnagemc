@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import logo from "@/assets/xylo-logo.png";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
 import {
-  LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
+  LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText, Activity,
   PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound, Puzzle, ClipboardList, Zap, Sparkles, Gavel,
   HelpCircle, Calendar, Wrench, Menu, Boxes, Package, Database, Sun, Layers, Globe,
 } from "lucide-react";
