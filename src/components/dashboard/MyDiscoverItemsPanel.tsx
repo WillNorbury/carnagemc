@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -35,7 +35,11 @@ import {
   Server,
   FileCode,
   ChevronDown,
+  Upload,
+  FileArchive,
+  X,
 } from "lucide-react";
+
 
 export type DiscoverKind = "resource_pack" | "data_pack" | "shader" | "modpack" | "server";
 
@@ -174,6 +178,9 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState<FormState | null>(null);
   const [saving, setSaving] = useState(false);
+  const [zipFile, setZipFile] = useState<File | null>(null);
+  const [uploadingZip, setUploadingZip] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
     setLoading(true);
@@ -193,9 +200,13 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  const openNew = (kind: DiscoverKind) => setForm(emptyForm(kind));
+  const openNew = (kind: DiscoverKind) => {
+    setZipFile(null);
+    setForm(emptyForm(kind));
+  };
 
-  const openEdit = (r: Row) =>
+  const openEdit = (r: Row) => {
+    setZipFile(null);
     setForm({
       id: r.id,
       kind: r.kind,
@@ -214,6 +225,7 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
       featured: r.featured,
       published: r.published,
     });
+  };
 
   const save = async () => {
     if (!form) return;
@@ -221,7 +233,34 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
       toast.error("Name is required");
       return;
     }
+
+    // Resource packs require a .zip file on create
+    if (form.kind === "resource_pack" && !form.id && !zipFile) {
+      toast.error("Please upload a .zip file for the resource pack");
+      return;
+    }
+
     setSaving(true);
+
+    let downloadUrl = form.download_url.trim() || null;
+
+    // Upload zip file for resource packs
+    if (form.kind === "resource_pack" && zipFile) {
+      setUploadingZip(true);
+      const filePath = `${userId}/${Date.now()}_${zipFile.name.replace(/[^a-zA-Z0-9_.-]/g, "_")}`;
+      const { error: uploadError } = await supabase.storage
+        .from("resource-packs")
+        .upload(filePath, zipFile, { upsert: true, contentType: "application/zip" });
+      setUploadingZip(false);
+      if (uploadError) {
+        setSaving(false);
+        toast.error(`Upload failed: ${uploadError.message}`);
+        return;
+      }
+      const { data: urlData } = supabase.storage.from("resource-packs").getPublicUrl(filePath);
+      downloadUrl = urlData.publicUrl;
+    }
+
     const payload = {
       kind: form.kind,
       name: form.name.trim(),
@@ -232,7 +271,7 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
       version: form.version.trim() || null,
       icon_url: form.icon_url.trim() || null,
       banner_url: form.banner_url.trim() || null,
-      download_url: form.download_url.trim() || null,
+      download_url: downloadUrl,
       external_url: form.external_url.trim() || null,
       category: form.category.trim() || null,
       tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
@@ -248,6 +287,7 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
       return;
     }
     toast.success(form.id ? `${KIND_META[form.kind].label} updated` : `${KIND_META[form.kind].label} created`);
+    setZipFile(null);
     setForm(null);
     load();
   };
@@ -487,24 +527,102 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
                   </div>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <div>
-                    <Label>{meta.downloadLabel}</Label>
-                    <Input
-                      value={form.download_url}
-                      onChange={(e) => setForm({ ...form, download_url: e.target.value })}
-                      placeholder={meta.downloadPlaceholder}
-                    />
+                {form.kind === "resource_pack" ? (
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Resource Pack .zip *</Label>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".zip,application/zip,application/x-zip-compressed"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] ?? null;
+                          if (file && !file.name.toLowerCase().endsWith(".zip")) {
+                            toast.error("Only .zip files are allowed for resource packs");
+                            if (fileInputRef.current) fileInputRef.current.value = "";
+                            setZipFile(null);
+                            return;
+                          }
+                          setZipFile(file);
+                        }}
+                      />
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <Upload className="h-4 w-4 mr-1.5" />
+                          {zipFile ? "Change .zip" : form.download_url ? "Replace .zip" : "Upload .zip"}
+                        </Button>
+                        {zipFile && (
+                          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                            <FileArchive className="h-4 w-4 text-primary" />
+                            <span className="truncate max-w-[200px]">{zipFile.name}</span>
+                            <span className="text-xs">({(zipFile.size / 1024 / 1024).toFixed(2)} MB)</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setZipFile(null);
+                                if (fileInputRef.current) fileInputRef.current.value = "";
+                              }}
+                              className="ml-1 text-destructive hover:text-destructive/80"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        )}
+                        {!zipFile && form.download_url && (
+                          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                            <FileArchive className="h-4 w-4 text-primary" />
+                            <a
+                              href={form.download_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="truncate max-w-[240px] underline hover:text-primary"
+                            >
+                              {form.download_url.split("/").pop() || "Current file"}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                      {!zipFile && !form.download_url && (
+                        <p className="text-xs text-muted-foreground mt-1.5">
+                          A .zip file is required for resource packs.
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <Label>External / source URL</Label>
+                      <Input
+                        value={form.external_url}
+                        onChange={(e) => setForm({ ...form, external_url: e.target.value })}
+                        placeholder="https://github.com/..."
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <Label>External / source URL</Label>
-                    <Input
-                      value={form.external_url}
-                      onChange={(e) => setForm({ ...form, external_url: e.target.value })}
-                      placeholder="https://github.com/..."
-                    />
+                ) : (
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <div>
+                      <Label>{meta.downloadLabel}</Label>
+                      <Input
+                        value={form.download_url}
+                        onChange={(e) => setForm({ ...form, download_url: e.target.value })}
+                        placeholder={meta.downloadPlaceholder}
+                      />
+                    </div>
+                    <div>
+                      <Label>External / source URL</Label>
+                      <Input
+                        value={form.external_url}
+                        onChange={(e) => setForm({ ...form, external_url: e.target.value })}
+                        placeholder="https://github.com/..."
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div>
                   <Label>Tags (comma-separated)</Label>
@@ -527,12 +645,12 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
               </div>
 
               <DialogFooter>
-                <Button variant="ghost" onClick={() => setForm(null)} disabled={saving}>
+                <Button variant="ghost" onClick={() => setForm(null)} disabled={saving || uploadingZip}>
                   Cancel
                 </Button>
-                <Button onClick={save} disabled={saving}>
-                  {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                  {form.id ? "Save changes" : `Create ${meta.label}`}
+                <Button onClick={save} disabled={saving || uploadingZip}>
+                  {(saving || uploadingZip) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                  {uploadingZip ? "Uploading .zip..." : form.id ? "Save changes" : `Create ${meta.label}`}
                 </Button>
               </DialogFooter>
             </>
