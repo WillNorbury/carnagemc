@@ -42,6 +42,8 @@ async function extractCode(input: string): Promise<string | null> {
     try {
       const parsed = new URL(trimmed);
       if (parsed.protocol !== "https:") return null;
+      // Prevent SSRF: only fetch URLs that already point at a Discord-owned host.
+      if (!ALLOWED_FETCH_HOSTS.has(parsed.hostname)) return null;
       const r = await fetch(parsed.toString(), {
         redirect: "follow",
         headers: { "User-Agent": "XyloMC-Site/1.0" },
