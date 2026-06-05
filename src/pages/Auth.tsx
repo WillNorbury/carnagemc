@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
-import logo from "@/assets/xylo-logo.png";
+import logoAsset from "@/assets/havocsmp-logo.png.asset.json";
 import { Link } from "react-router-dom";
 import { SEO } from "@/components/site/SEO";
 
@@ -87,8 +87,8 @@ const Auth = () => {
       <div className="absolute inset-0 -z-10" style={{ background: "var(--gradient-hero)" }} />
       <Card className="w-full max-w-md p-8 backdrop-blur-xl bg-card/90 border-primary/20 shadow-elegant">
         <Link to="/" className="flex items-center justify-center gap-2 mb-6">
-          <img src={logo} alt="HavocSMP" className="h-10 w-10" />
-          <span className="font-bold text-xl">Xylo<span className="text-primary">MC</span></span>
+          <img src={logoAsset.url} alt="HavocSMP" className="h-12 w-12 object-contain" />
+          <span className="font-bold text-xl">Havoc<span className="text-primary">SMP</span></span>
         </Link>
 
         <Tabs value={mode} onValueChange={(v) => setMode(v as any)}>
