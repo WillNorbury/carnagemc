@@ -3531,13 +3531,12 @@ const AlertsTab = () => {
     toast.success("Alert settings saved");
   };
 
-      {saving ? "Saving..." : "Save Settings"}
-        </Button>
-        {loading && <span className="text-sm text-muted-foreground">Loading...</span>}
-      </div>
-    </div>
-  );
-};
+  return (
+    <div className="space-y-6">
+      <Card className="p-6 space-y-4">
+        <h2 className="font-bold flex items-center gap-2">
+          <Bell className="h-4 w-4" /> Alert Recipients
+        </h2>
     <div className="space-y-6">
       <Card className="p-6 space-y-4">
         <h2 className="font-bold flex items-center gap-2">
