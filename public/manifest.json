@@ -1,7 +1,7 @@
 {
-  "name": "XyloMC",
-  "short_name": "XyloMC",
-  "description": "XyloMC — Premium Minecraft Survival Server",
+  "name": "HavocSMP",
+  "short_name": "HavocSMP",
+  "description": "HavocSMP — Premium Minecraft Survival Server",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
