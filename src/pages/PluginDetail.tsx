@@ -135,6 +135,8 @@ const PluginDetail = () => {
   const [versionOpen, setVersionOpen] = useState(false);
   const [versionQuery, setVersionQuery] = useState("");
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
+  const [platformOpen, setPlatformOpen] = useState(false);
+  const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
 
   useEffect(() => {
     if (!key) return;
