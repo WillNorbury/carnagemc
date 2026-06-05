@@ -3467,8 +3467,8 @@ const AlertsTab = () => {
   const [settings, setSettings] = useState({
     webhook_urls: [] as string[],
     email_recipients: [] as string[],
-    down_payload_template: null as object | null,
-    up_payload_template: null as object | null,
+    down_payload_template: null as Json | null,
+    up_payload_template: null as Json | null,
   });
   const [webhookInput, setWebhookInput] = useState("");
   const [emailInput, setEmailInput] = useState("");
