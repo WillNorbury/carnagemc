@@ -178,6 +178,9 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState<FormState | null>(null);
   const [saving, setSaving] = useState(false);
+  const [zipFile, setZipFile] = useState<File | null>(null);
+  const [uploadingZip, setUploadingZip] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
     setLoading(true);
