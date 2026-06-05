@@ -3522,7 +3522,7 @@ const AlertsTab = () => {
         email_recipients: emails,
         down_payload_template: downTemplate,
         up_payload_template: upTemplate,
-      });
+      } as any);
     setSaving(false);
     if (error) {
       toast.error(error.message);
