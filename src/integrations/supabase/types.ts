@@ -1169,6 +1169,36 @@ export type Database = {
         }
         Relationships: []
       }
+      uptime_incidents: {
+        Row: {
+          alerted: boolean
+          closed_at: string | null
+          created_at: string
+          id: string
+          last_error: string | null
+          opened_at: string
+          service_key: string
+        }
+        Insert: {
+          alerted?: boolean
+          closed_at?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          opened_at?: string
+          service_key: string
+        }
+        Update: {
+          alerted?: boolean
+          closed_at?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          opened_at?: string
+          service_key?: string
+        }
+        Relationships: []
+      }
       user_follows: {
         Row: {
           created_at: string
