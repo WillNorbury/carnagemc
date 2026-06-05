@@ -30,6 +30,8 @@ import {
   Puzzle,
   Pencil,
   Sparkles,
+  Bell,
+  Code,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
@@ -80,13 +82,12 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   applications: { title: "Applications", description: "Review staff, builder, and content creator applications." },
   features: { title: "Features", description: "Add, edit, reorder, and remove features shown on the website." },
   rules: { title: "Rules", description: "Edit the sections shown on the public Rules page." },
+  alerts: { title: "Alert Settings", description: "Configure webhook payload templates and alert recipients." },
   "resource-packs": { title: "Resource Packs", description: "Manage discoverable resource packs." },
   "data-packs": { title: "Data Packs", description: "Manage discoverable data packs." },
   shaders: { title: "Shaders", description: "Manage discoverable shaders." },
   modpacks: { title: "Modpacks", description: "Manage discoverable modpacks." },
   servers: { title: "Servers", description: "Manage discoverable servers." },
-  
-  
   "bot-dashboard": {
     title: "Discord Bot — Dashboard",
     description: "Status and overview of the HavocSMP Discord bot.",
@@ -153,6 +154,7 @@ const Admin = () => {
       {section === "applications" && <ApplicationsTab />}
       {section === "features" && <FeaturesTab />}
       {section === "rules" && <RulesTab />}
+      {section === "alerts" && <AlertsTab />}
       {section === "resource-packs" && <DiscoverItemsAdminTab kind="resource_pack" />}
       {section === "data-packs" && <DiscoverItemsAdminTab kind="data_pack" />}
       {section === "shaders" && <DiscoverItemsAdminTab kind="shader" />}
@@ -3459,6 +3461,167 @@ const ApplicationsTab = () => {
           })}
         </div>
       )}
+    </div>
+  );
+};
+
+const AlertsTab = () => {
+  const [settings, setSettings] = useState({
+    webhook_urls: [] as string[],
+    email_recipients: [] as string[],
+    down_payload_template: null as any,
+    up_payload_template: null as any,
+  });
+  const [webhookInput, setWebhookInput] = useState("");
+  const [emailInput, setEmailInput] = useState("");
+  const [downJson, setDownJson] = useState("");
+  const [upJson, setUpJson] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase
+      .from("alert_settings")
+      .select("*")
+      .eq("id", 1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          setSettings({
+            webhook_urls: data.webhook_urls ?? [],
+            email_recipients: data.email_recipients ?? [],
+            down_payload_template: data.down_payload_template,
+            up_payload_template: data.up_payload_template,
+          });
+          setWebhookInput((data.webhook_urls ?? []).join("\n"));
+          setEmailInput((data.email_recipients ?? []).join("\n"));
+          setDownJson(data.down_payload_template ? JSON.stringify(data.down_payload_template, null, 2) : "");
+          setUpJson(data.up_payload_template ? JSON.stringify(data.up_payload_template, null, 2) : "");
+        }
+        setLoading(false);
+      });
+  }, []);
+
+  const save = async () => {
+    let downTemplate: object | null = null;
+    let upTemplate: object | null = null;
+    if (downJson.trim()) {
+      try { downTemplate = JSON.parse(downJson); } catch { toast.error("Down payload JSON is invalid"); return; }
+    }
+    if (upJson.trim()) {
+      try { upTemplate = JSON.parse(upJson); } catch { toast.error("Up payload JSON is invalid"); return; }
+    }
+    setSaving(true);
+    const urls = webhookInput.split(/\n+/).map((s) => s.trim()).filter((s) => /^https?:\/\//i.test(s));
+    const emails = emailInput.split(/\n+/).map((s) => s.trim()).filter((s) => /^[^\s@]+@[^\s@\.]+\.[^\s@]+$/i.test(s));
+    const { error } = await supabase
+      .from("alert_settings")
+      .upsert({
+        id: 1,
+        webhook_urls: urls,
+        email_recipients: emails,
+        down_payload_template: downTemplate,
+        up_payload_template: upTemplate,
+      } as any);
+    setSaving(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Alert settings saved");
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card className="p-6 space-y-4">
+        <h2 className="font-bold flex items-center gap-2">
+          <Bell className="h-4 w-4" /> Alert Recipients
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label>Webhook URLs (one per line)</Label>
+            <Textarea
+              value={webhookInput}
+              onChange={(e) => setWebhookInput(e.target.value)}
+              rows={4}
+              placeholder="https://discord.com/api/webhooks/..."
+            />
+            <p className="text-xs text-muted-foreground mt-1">Each URL gets the payload in parallel.</p>
+          </div>
+          <div>
+            <Label>Email Recipients (one per line)</Label>
+            <Textarea
+              value={emailInput}
+              onChange={(e) => setEmailInput(e.target.value)}
+              rows={4}
+              placeholder="admin@example.com"
+            />
+            <p className="text-xs text-muted-foreground mt-1">Email delivery requires a verified domain.</p>
+          </div>
+        </div>
+      </Card>
+
+      <Card className="p-6 space-y-4">
+        <h2 className="font-bold flex items-center gap-2">
+          <Code className="h-4 w-4" /> Custom Payload Templates
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Override the default Discord embed payload. Use <code className="text-xs bg-secondary px-1 rounded">{"{{variable}}"}</code> placeholders.
+          Available variables: <code className="text-xs bg-secondary px-1 rounded">service_name</code>,{" "}
+          <code className="text-xs bg-secondary px-1 rounded">service_key</code>,{" "}
+          <code className="text-xs bg-secondary px-1 rounded">status</code>,{" "}
+          <code className="text-xs bg-secondary px-1 rounded">uptime_window</code>,{" "}
+          <code className="text-xs bg-secondary px-1 rounded">incident_duration</code>,{" "}
+          <code className="text-xs bg-secondary px-1 rounded">error</code>,{" "}
+          <code className="text-xs bg-secondary px-1 rounded">timestamp</code>.
+          Leave empty to use the default Discord embed format.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label>Down Payload (JSON)</Label>
+            <Textarea
+              value={downJson}
+              onChange={(e) => setDownJson(e.target.value)}
+              rows={12}
+              placeholder={JSON.stringify({
+                username: "Uptime Monitor",
+                embeds: [{
+                  title: "🔴 {{service_name}} is DOWN",
+                  description: "Uptime (24h): {{uptime_window}}\nDuration: {{incident_duration}}\nError: {{error}}",
+                  color: 0xef4444,
+                  timestamp: "{{timestamp}}",
+                }],
+              }, null, 2)}
+              className="font-mono text-xs"
+            />
+          </div>
+          <div>
+            <Label>Up Payload (JSON)</Label>
+            <Textarea
+              value={upJson}
+              onChange={(e) => setUpJson(e.target.value)}
+              rows={12}
+              placeholder={JSON.stringify({
+                username: "Uptime Monitor",
+                embeds: [{
+                  title: "🟢 {{service_name}} recovered",
+                  description: "Uptime (24h): {{uptime_window}}\nIncident lasted: {{incident_duration}}",
+                  color: 0x22c55e,
+                  timestamp: "{{timestamp}}",
+                }],
+              }, null, 2)}
+              className="font-mono text-xs"
+            />
+          </div>
+        </div>
+      </Card>
+
+      <div className="flex items-center gap-3">
+        <Button onClick={save} disabled={saving || loading}>
+          {saving ? "Saving..." : "Save Settings"}
+        </Button>
+        {loading && <span className="text-sm text-muted-foreground">Loading...</span>}
+      </div>
     </div>
   );
 };

@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import logo from "@/assets/xylo-logo.png";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
 import {
-  LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText,
+  LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText, Activity,
   PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound, Puzzle, ClipboardList, Zap, Sparkles, Gavel,
   HelpCircle, Calendar, Wrench, Menu, Boxes, Package, Database, Sun, Layers, Globe,
 } from "lucide-react";
@@ -18,7 +18,7 @@ import {
 
 export type AdminSection =
   | "dashboard" | "users" | "roles" | "permissions" | "news" | "content" | "status" | "logs" | "tickets" | "plugins"
-  | "changelog" | "applications" | "features" | "rules"
+  | "changelog" | "applications" | "features" | "rules" | "alerts"
   | "resource-packs" | "data-packs" | "shaders" | "modpacks" | "servers"
   | "bot-dashboard" | "bot-management";
 
@@ -35,6 +35,7 @@ const items: NavItem[] = [
   { kind: "link", id: "news", icon: Newspaper, label: "News" },
   { kind: "link", id: "content", icon: FileText, label: "Site Content" },
   { kind: "link", id: "status", icon: Server, label: "Server Status" },
+  { kind: "link", id: "alerts", icon: Activity, label: "Alert Settings" },
   { kind: "link", id: "tickets", icon: Ticket, label: "Support Tickets" },
   { kind: "link", id: "logs", icon: ScrollText, label: "Admin Logs" },
   { kind: "link", id: "plugins", icon: Puzzle, label: "Plugins" },
