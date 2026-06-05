@@ -47,6 +47,33 @@ export type Database = {
         }
         Relationships: []
       }
+      alert_settings: {
+        Row: {
+          down_payload_template: Json | null
+          email_recipients: string[]
+          id: number
+          up_payload_template: Json | null
+          updated_at: string
+          webhook_urls: string[]
+        }
+        Insert: {
+          down_payload_template?: Json | null
+          email_recipients?: string[]
+          id?: number
+          up_payload_template?: Json | null
+          updated_at?: string
+          webhook_urls?: string[]
+        }
+        Update: {
+          down_payload_template?: Json | null
+          email_recipients?: string[]
+          id?: number
+          up_payload_template?: Json | null
+          updated_at?: string
+          webhook_urls?: string[]
+        }
+        Relationships: []
+      }
       applications: {
         Row: {
           age: number | null
