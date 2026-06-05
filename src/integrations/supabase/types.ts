@@ -1139,6 +1139,36 @@ export type Database = {
         }
         Relationships: []
       }
+      uptime_checks: {
+        Row: {
+          checked_at: string
+          error: string | null
+          id: string
+          is_up: boolean
+          latency_ms: number | null
+          service_key: string
+          status_code: number | null
+        }
+        Insert: {
+          checked_at?: string
+          error?: string | null
+          id?: string
+          is_up: boolean
+          latency_ms?: number | null
+          service_key: string
+          status_code?: number | null
+        }
+        Update: {
+          checked_at?: string
+          error?: string | null
+          id?: string
+          is_up?: boolean
+          latency_ms?: number | null
+          service_key?: string
+          status_code?: number | null
+        }
+        Relationships: []
+      }
       user_follows: {
         Row: {
           created_at: string
@@ -1238,6 +1268,16 @@ export type Database = {
           discord_id: string
           discord_username: string
           preferences: Json
+        }[]
+      }
+      get_uptime_daily: {
+        Args: { _days?: number }
+        Returns: {
+          day: string
+          service_key: string
+          total_checks: number
+          up_checks: number
+          uptime_pct: number
         }[]
       }
       is_current_user_admin: { Args: never; Returns: boolean }
