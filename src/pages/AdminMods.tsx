@@ -14,6 +14,7 @@ import { confirm } from "@/lib/confirm";
 import {
   ArrowLeft, Plus, Pencil, Trash2, Upload, Download, Boxes, Loader2,
 } from "lucide-react";
+import { MultiTagInput } from "@/components/ui/multi-tag-input";
 
 type Mod = {
   id: string;
@@ -24,7 +25,9 @@ type Mod = {
   long_description: string | null;
   version: string | null;
   mc_version: string | null;
+  mc_versions: string[] | null;
   loader: string | null;
+  loaders: string[] | null;
   author: string | null;
   icon_url: string | null;
   category: string | null;
@@ -37,6 +40,9 @@ type Mod = {
   published: boolean;
   sort_order: number;
 };
+
+const LOADER_SUGGESTIONS = ["Forge", "Fabric", "NeoForge", "Quilt"];
+const MC_VERSION_SUGGESTIONS = ["1.21.4", "1.21", "1.20.6", "1.20.4", "1.20.1", "1.19.4", "1.19.2"];
 
 const slugify = (s: string) =>
   s
@@ -51,8 +57,8 @@ const blank = {
   description: "",
   long_description: "",
   version: "",
-  mc_version: "",
-  loader: "Forge",
+  mc_versions: [] as string[],
+  loaders: ["Forge"] as string[],
   author: "",
   icon_url: "",
   category: "",
@@ -69,6 +75,7 @@ const formatSize = (bytes: number | null) => {
   if (kb < 1024) return `${kb.toFixed(0)} KB`;
   return `${(kb / 1024).toFixed(1)} MB`;
 };
+
 
 const AdminMods = () => {
   const { user, isAdmin, loading } = useAuth();
@@ -104,8 +111,8 @@ const AdminMods = () => {
       description: m.description ?? "",
       long_description: m.long_description ?? "",
       version: m.version ?? "",
-      mc_version: m.mc_version ?? "",
-      loader: m.loader ?? "Forge",
+      mc_versions: (m.mc_versions && m.mc_versions.length ? m.mc_versions : (m.mc_version ? [m.mc_version] : [])),
+      loaders: (m.loaders && m.loaders.length ? m.loaders : (m.loader ? [m.loader] : ["Forge"])),
       author: m.author ?? "",
       icon_url: m.icon_url ?? "",
       category: m.category ?? "",
@@ -118,6 +125,7 @@ const AdminMods = () => {
     setJarFile(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
 
   const reset = () => {
     setEditing(null);
@@ -162,8 +170,10 @@ const AdminMods = () => {
       description: form.description.trim() || null,
       long_description: form.long_description.trim() || null,
       version: form.version.trim() || null,
-      mc_version: form.mc_version.trim() || null,
-      loader: form.loader.trim() || null,
+      mc_versions: form.mc_versions,
+      mc_version: form.mc_versions[0] ?? null,
+      loaders: form.loaders,
+      loader: form.loaders[0] ?? null,
       author: form.author.trim() || null,
       icon_url: form.icon_url.trim() || null,
       category: form.category.trim() || null,
@@ -176,6 +186,7 @@ const AdminMods = () => {
       published: form.published,
       sort_order: form.sort_order,
     };
+
 
     if (editing) {
       const upload = await uploadJar(editing.id);
@@ -292,22 +303,29 @@ const AdminMods = () => {
                 Leave blank to auto-generate from name. Lowercase letters, numbers, and dashes only.
               </p>
             </div>
-            <div>
-              <Label>Loader</Label>
-              <Input
-                value={form.loader}
-                onChange={(e) => setForm({ ...form, loader: e.target.value })}
-                placeholder="Forge / Fabric / Quilt"
+            <div className="sm:col-span-2">
+              <Label>Loaders</Label>
+              <MultiTagInput
+                values={form.loaders}
+                onChange={(v) => setForm({ ...form, loaders: v })}
+                placeholder="Add a loader (Forge, Fabric...)"
+                suggestions={LOADER_SUGGESTIONS}
               />
             </div>
-            <div>
-              <Label>Minecraft version</Label>
-              <Input value={form.mc_version} onChange={(e) => setForm({ ...form, mc_version: e.target.value })} placeholder="1.20.1" />
+            <div className="sm:col-span-2">
+              <Label>Minecraft versions</Label>
+              <MultiTagInput
+                values={form.mc_versions}
+                onChange={(v) => setForm({ ...form, mc_versions: v })}
+                placeholder="Add a MC version (1.21, 1.20.4...)"
+                suggestions={MC_VERSION_SUGGESTIONS}
+              />
             </div>
             <div>
               <Label>Mod version</Label>
               <Input value={form.version} onChange={(e) => setForm({ ...form, version: e.target.value })} placeholder="1.0.0" />
             </div>
+
             <div>
               <Label>Category</Label>
               <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Performance" />
@@ -423,9 +441,14 @@ const AdminMods = () => {
                       <span className="text-xs text-muted-foreground font-mono">#{m.short_id}</span>
                       {!m.published && <Badge variant="outline">Draft</Badge>}
                       {m.featured && <Badge>Featured</Badge>}
-                      {m.loader && <Badge variant="secondary">{m.loader}</Badge>}
-                      {m.mc_version && <Badge variant="outline">MC {m.mc_version}</Badge>}
+                      {((m.loaders && m.loaders.length ? m.loaders : (m.loader ? [m.loader] : [])) as string[]).map((l) => (
+                        <Badge key={`l-${l}`} variant="secondary">{l}</Badge>
+                      ))}
+                      {((m.mc_versions && m.mc_versions.length ? m.mc_versions : (m.mc_version ? [m.mc_version] : [])) as string[]).map((v) => (
+                        <Badge key={`v-${v}`} variant="outline">MC {v}</Badge>
+                      ))}
                       {m.version && <Badge variant="outline">v{m.version}</Badge>}
+
                     </div>
                     {m.description && (
                       <p className="text-sm text-muted-foreground line-clamp-2">{m.description}</p>

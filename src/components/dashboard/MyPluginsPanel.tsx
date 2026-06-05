@@ -37,6 +37,7 @@ import {
   History,
 } from "lucide-react";
 import PluginVersionsDialog from "./PluginVersionsDialog";
+import { MultiTagInput } from "@/components/ui/multi-tag-input";
 
 
 type Plugin = {
@@ -48,6 +49,8 @@ type Plugin = {
   long_description: string | null;
   version: string | null;
   platform: string | null;
+  platforms: string[] | null;
+  mc_versions: string[] | null;
   category: string | null;
   tags: string[];
   icon_url: string | null;
@@ -66,7 +69,8 @@ type FormState = {
   description: string;
   long_description: string;
   version: string;
-  platform: string;
+  platforms: string[];
+  mc_versions: string[];
   category: string;
   tags: string;
   icon_url: string;
@@ -85,7 +89,8 @@ const EMPTY: FormState = {
   description: "",
   long_description: "",
   version: "",
-  platform: "paper",
+  platforms: ["paper"],
+  mc_versions: [],
   category: "",
   tags: "",
   icon_url: "",
@@ -105,6 +110,11 @@ const slugify = (s: string) =>
     .replace(/^-+|-+$/g, "");
 
 const PLATFORMS = ["paper", "spigot", "bukkit", "folia", "purpur", "velocity", "bungeecord"];
+const MC_VERSIONS_SUGGEST = ["1.21.4", "1.21", "1.20.6", "1.20.4", "1.20.1", "1.19.4", "1.19.2", "1.18.2"];
+
+const pluginPlatforms = (p: Plugin): string[] =>
+  p.platforms && p.platforms.length ? p.platforms : p.platform ? [p.platform] : [];
+
 
 export default function MyPluginsPanel({ userId }: { userId: string }) {
   const [plugins, setPlugins] = useState<Plugin[]>([]);
@@ -156,7 +166,8 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       description: p.description ?? "",
       long_description: p.long_description ?? "",
       version: p.version ?? "",
-      platform: p.platform ?? "paper",
+      platforms: p.platforms && p.platforms.length ? p.platforms : p.platform ? [p.platform] : [],
+      mc_versions: p.mc_versions ?? [],
       category: p.category ?? "",
       tags: (p.tags ?? []).join(", "),
       icon_url: p.icon_url ?? "",
@@ -169,6 +180,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
     });
     setOpen(true);
   };
+
 
   const uploadJar = async (file: File) => {
     if (!file.name.toLowerCase().endsWith(".jar")) {
@@ -253,7 +265,9 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       description: form.description.trim() || null,
       long_description: form.long_description.trim() || null,
       version: form.version.trim() || null,
-      platform: form.platform || null,
+      platforms: form.platforms,
+      platform: form.platforms[0] ?? null,
+      mc_versions: form.mc_versions,
       category: form.category.trim() || null,
       tags: form.tags
         .split(",")
@@ -267,6 +281,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       screenshots: form.screenshots,
       published: form.published,
     };
+
     let error;
     if (form.id) {
       ({ error } = await supabase.from("plugins").update(payload).eq("id", form.id));
@@ -319,11 +334,12 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
             <SelectTrigger className="h-9 w-[140px]"><SelectValue placeholder="Platform" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All platforms</SelectItem>
-              {Array.from(new Set(plugins.map((p) => p.platform).filter(Boolean))).map((p) => (
-                <SelectItem key={p as string} value={p as string} className="capitalize">{p}</SelectItem>
+              {Array.from(new Set(plugins.flatMap((p) => pluginPlatforms(p)))).map((p) => (
+                <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>
               ))}
             </SelectContent>
           </Select>
+
           <Select value={versionFilter} onValueChange={setVersionFilter}>
             <SelectTrigger className="h-9 w-[140px]"><SelectValue placeholder="Version" /></SelectTrigger>
             <SelectContent>
@@ -356,7 +372,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
         const q = search.trim().toLowerCase();
         const filtered = plugins.filter((p) => {
           if (q && !p.name.toLowerCase().includes(q)) return false;
-          if (platformFilter !== "all" && p.platform !== platformFilter) return false;
+          if (platformFilter !== "all" && !pluginPlatforms(p).includes(platformFilter)) return false;
           if (versionFilter !== "all" && p.version !== versionFilter) return false;
           if (statusFilter === "published" && !p.published) return false;
           if (statusFilter === "draft" && p.published) return false;
@@ -392,11 +408,12 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
                     </Badge>
                   )}
                   {p.version && <span className="text-xs text-muted-foreground">v{p.version}</span>}
-                  {p.platform && (
-                    <Badge variant="secondary" className="capitalize">
-                      {p.platform}
+                  {pluginPlatforms(p).map((pl) => (
+                    <Badge key={pl} variant="secondary" className="capitalize">
+                      {pl}
                     </Badge>
-                  )}
+                  ))}
+
                 </div>
                 {p.description && (
                   <div className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
@@ -503,22 +520,28 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
               />
             </div>
 
-            <div className="grid sm:grid-cols-3 gap-3">
-              <div>
-                <Label>Platform</Label>
-                <Select value={form.platform} onValueChange={(v) => setForm({ ...form, platform: v })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PLATFORMS.map((p) => (
-                      <SelectItem key={p} value={p} className="capitalize">
-                        {p}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div>
+              <Label>Platforms</Label>
+              <MultiTagInput
+                values={form.platforms}
+                onChange={(v) => setForm({ ...form, platforms: v })}
+                placeholder="Add a platform (Paper, Folia...)"
+                suggestions={PLATFORMS}
+                capitalize
+              />
+            </div>
+
+            <div>
+              <Label>Minecraft versions</Label>
+              <MultiTagInput
+                values={form.mc_versions}
+                onChange={(v) => setForm({ ...form, mc_versions: v })}
+                placeholder="Add a MC version (1.21, 1.20.4...)"
+                suggestions={MC_VERSIONS_SUGGEST}
+              />
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="p-cat">Category</Label>
                 <Input
@@ -539,6 +562,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
                 />
               </div>
             </div>
+
 
             <div>
               <Label>Icon</Label>

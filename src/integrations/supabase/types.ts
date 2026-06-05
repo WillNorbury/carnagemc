@@ -505,8 +505,10 @@ export type Database = {
           jar_path: string | null
           jar_size: number | null
           loader: string | null
+          loaders: string[]
           long_description: string | null
           mc_version: string | null
+          mc_versions: string[]
           name: string
           org_id: string | null
           published: boolean
@@ -530,8 +532,10 @@ export type Database = {
           jar_path?: string | null
           jar_size?: number | null
           loader?: string | null
+          loaders?: string[]
           long_description?: string | null
           mc_version?: string | null
+          mc_versions?: string[]
           name: string
           org_id?: string | null
           published?: boolean
@@ -555,8 +559,10 @@ export type Database = {
           jar_path?: string | null
           jar_size?: number | null
           loader?: string | null
+          loaders?: string[]
           long_description?: string | null
           mc_version?: string | null
+          mc_versions?: string[]
           name?: string
           org_id?: string | null
           published?: boolean
@@ -742,9 +748,11 @@ export type Database = {
           jar_path: string | null
           jar_size: number | null
           long_description: string | null
+          mc_versions: string[]
           name: string
           org_id: string | null
           platform: string | null
+          platforms: string[]
           published: boolean
           screenshots: string[]
           short_id: string
@@ -767,9 +775,11 @@ export type Database = {
           jar_path?: string | null
           jar_size?: number | null
           long_description?: string | null
+          mc_versions?: string[]
           name: string
           org_id?: string | null
           platform?: string | null
+          platforms?: string[]
           published?: boolean
           screenshots?: string[]
           short_id?: string
@@ -792,9 +802,11 @@ export type Database = {
           jar_path?: string | null
           jar_size?: number | null
           long_description?: string | null
+          mc_versions?: string[]
           name?: string
           org_id?: string | null
           platform?: string | null
+          platforms?: string[]
           published?: boolean
           screenshots?: string[]
           short_id?: string
