@@ -200,9 +200,13 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  const openNew = (kind: DiscoverKind) => setForm(emptyForm(kind));
+  const openNew = (kind: DiscoverKind) => {
+    setZipFile(null);
+    setForm(emptyForm(kind));
+  };
 
-  const openEdit = (r: Row) =>
+  const openEdit = (r: Row) => {
+    setZipFile(null);
     setForm({
       id: r.id,
       kind: r.kind,
@@ -221,6 +225,7 @@ export default function MyDiscoverItemsPanel({ userId }: { userId: string }) {
       featured: r.featured,
       published: r.published,
     });
+  };
 
   const save = async () => {
     if (!form) return;
