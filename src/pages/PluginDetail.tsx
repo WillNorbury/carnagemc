@@ -82,9 +82,10 @@ const timeAgo = (iso: string | null) => {
   return `${Math.floor(d / 365)} years ago`;
 };
 
-const buildJarName = (plugin: Plugin) => {
+const buildJarName = (plugin: Plugin, platform?: string | null) => {
   const sanitize = (s: string | null) => (s ? s.replace(/\s+/g, "-") : "");
-  const parts = [sanitize(plugin.name), sanitize(plugin.platform), sanitize(plugin.version)].filter(Boolean);
+  const plat = platform ?? plugin.platform;
+  const parts = [sanitize(plugin.name), sanitize(plat), sanitize(plugin.version)].filter(Boolean);
   return parts.length > 0 ? `${parts.join("-")}.jar` : `${sanitize(plugin.name) || "plugin"}.jar`;
 };
 
