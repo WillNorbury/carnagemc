@@ -3678,6 +3678,14 @@ const AlertsTab = () => {
           <code className="text-xs bg-secondary px-1 rounded">timestamp</code>.
           Leave empty to use the default Discord embed format.
         </p>
+        <div className="rounded-lg border border-dashed border-muted-foreground/30 p-4 bg-secondary/20">
+          <p className="text-sm font-medium">Troubleshooting: Preview buttons not showing?</p>
+          <ul className="text-xs text-muted-foreground list-disc list-inside mt-1 space-y-0.5">
+            <li>Make sure you are viewing the latest version — hard refresh the page (Cmd/Ctrl+Shift+R).</li>
+            <li>Ensure at least one webhook URL is configured above so the test has a destination.</li>
+            <li>If the entire Alerts tab is blank, check that you are signed in as an admin.</li>
+          </ul>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
