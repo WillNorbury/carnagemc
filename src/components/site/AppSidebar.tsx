@@ -13,7 +13,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/auth";
-import logo from "@/assets/xylo-logo.png";
+import logo from "@/assets/havocsmp-logo.png";
 import {
   Home,
   Newspaper,
@@ -34,7 +34,6 @@ import {
   Trophy,
   HelpCircle,
   Calendar,
-  
   Boxes,
   Star,
 } from "lucide-react";

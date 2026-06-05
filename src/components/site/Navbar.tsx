@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/auth";
-import logo from "@/assets/xylo-logo.png";
+import logo from "@/assets/havocsmp-logo.png";
 import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
 import { ThemeToggle } from "./ThemeToggle";
@@ -30,7 +30,6 @@ const Navbar = () => {
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="flex items-center justify-between gap-2 h-14 px-3 md:px-6 pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))]">
-
         <div className="flex items-center gap-2 min-w-0">
           <SidebarTrigger />
           <Link to="/" className="flex items-center gap-2 group min-w-0">
@@ -67,7 +66,14 @@ const Navbar = () => {
             <span className="hidden md:inline">How to install</span>
           </Button>
           {user ? (
-            <Button variant="outline" size="sm" onClick={async () => { await signOut(); nav("/"); }}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                await signOut();
+                nav("/");
+              }}
+            >
               <LogOut className="h-4 w-4 sm:mr-1" />
               <span className="hidden sm:inline">Sign out</span>
             </Button>
