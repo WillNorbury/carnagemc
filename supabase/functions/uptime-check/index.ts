@@ -70,30 +70,25 @@ async function checkMinecraft(service_key: string, host: string): Promise<Check>
 }
 
 async function sendWebhook(name: string, error: string | null, kind: "down" | "up") {
-  const url = Deno.env.get("ALERT_WEBHOOK_URL");
-  if (!url) return;
+  const raw = Deno.env.get("ALERT_WEBHOOK_URL") || "";
+  const urls = raw.split(/[\s,;\n]+/).map((s) => s.trim()).filter((s) => /^https?:\/\//i.test(s));
+  if (urls.length === 0) return;
   const color = kind === "down" ? 0xef4444 : 0x22c55e;
   const title = kind === "down" ? `🔴 ${name} is DOWN` : `🟢 ${name} recovered`;
   const description = kind === "down"
     ? `Service has failed multiple consecutive checks.${error ? `\n**Error:** ${error}` : ""}`
     : `Service is responding successfully again.`;
-  try {
-    await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username: "Uptime Monitor",
-        embeds: [{
-          title,
-          description,
-          color,
-          timestamp: new Date().toISOString(),
-        }],
-      }),
-    });
-  } catch (e) {
-    console.error("webhook failed", e);
-  }
+  const body = JSON.stringify({
+    username: "Uptime Monitor",
+    embeds: [{ title, description, color, timestamp: new Date().toISOString() }],
+  });
+  await Promise.all(urls.map(async (url) => {
+    try {
+      await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body });
+    } catch (e) {
+      console.error("webhook failed", url, e);
+    }
+  }));
 }
 
 Deno.serve(async (req) => {
