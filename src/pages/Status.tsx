@@ -19,6 +19,7 @@ const SERVICES: { key: string; name: string; desc: string }[] = [
   { key: "website", name: "Website", desc: "Main site & dashboard" },
   { key: "minecraft", name: "Minecraft Server", desc: "play.havocsmp.net" },
   { key: "api", name: "API & Database", desc: "Backend services" },
+  { key: "panel", name: "Panel", desc: "panel.voxelnode.dev" },
 ];
 
 type DailyRow = { service_key: string; day: string; total_checks: number; up_checks: number; uptime_pct: number | null };
