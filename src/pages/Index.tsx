@@ -51,7 +51,6 @@ const formatUptime = (ms: number) => {
   return `${m}m`;
 };
 
-
 const Index = () => {
   const nav = useNavigate();
   const [news, setNews] = useState<News[]>([]);
@@ -60,7 +59,7 @@ const Index = () => {
   const [uptimeStart, setUptimeStart] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
   const [popupOpen, setPopupOpen] = useState(false);
-  
+
   const [discordMembers, setDiscordMembers] = useState<number | null>(null);
   const [discordInviteError, setDiscordInviteError] = useState<string | null>(null);
   const [voteCount, setVoteCount] = useState<number>(0);
@@ -232,7 +231,7 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <SEO
-        title="HavocSMP — Lifesteal & Economy Minecraft Server"
+        title="HavocSMP — DonutSMP Copy"
         description="Join HavocSMP for premium Lifesteal PvP, custom enchants, a player-driven economy, ranked seasons, and weekly events. Java & Bedrock supported."
         path="/"
       />
@@ -246,8 +245,8 @@ const Index = () => {
             <div className="flex-1 text-sm">
               <p className="font-semibold">Discord invite is expired or invalid</p>
               <p className="text-destructive/80 mt-1">
-                {discordInviteError}. Generate a new <strong>permanent</strong> invite in your Discord
-                server (Server Settings → Invites → set to Never expire), then paste it in{" "}
+                {discordInviteError}. Generate a new <strong>permanent</strong> invite in your Discord server (Server
+                Settings → Invites → set to Never expire), then paste it in{" "}
                 <strong>Admin → Site Content → Server → Discord URL</strong>.
               </p>
             </div>
@@ -486,7 +485,11 @@ const Index = () => {
             ))}
           </div>
           <div className="mt-8 text-center">
-            <Button variant="outline" onClick={() => nav("/features")} className="font-display uppercase tracking-wider border-primary/40 hover:border-primary hover:text-primary">
+            <Button
+              variant="outline"
+              onClick={() => nav("/features")}
+              className="font-display uppercase tracking-wider border-primary/40 hover:border-primary hover:text-primary"
+            >
               View all features <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
@@ -573,8 +576,6 @@ const Index = () => {
           </Card>
         </section>
       </main>
-
-
 
       <Footer />
     </div>
