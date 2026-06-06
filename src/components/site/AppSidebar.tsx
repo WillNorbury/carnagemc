@@ -149,6 +149,15 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        <SidebarGroup>
+          <SidebarGroupLabel>Discover</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>{discoverLinks.map(renderItem)}</SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+
+
         {user && (
           <SidebarGroup>
             <SidebarGroupLabel>Account</SidebarGroupLabel>
