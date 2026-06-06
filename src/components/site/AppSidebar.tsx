@@ -13,7 +13,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/auth";
-import logo from "@/assets/havocsmp-logo.png";
+import logoAsset from "@/assets/havocsmp-logo.png.asset.json";
+const logo = logoAsset.url;
 import {
   Home,
   Newspaper,
