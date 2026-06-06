@@ -56,22 +56,34 @@ const publicLinks = [
   { to: "/news", label: "News", icon: Newspaper },
   { to: "/events", label: "Events", icon: Calendar },
   { to: "/changelog", label: "Changelog", icon: ClipboardList },
-  { to: "/discover/mods", label: "Mods", icon: Boxes },
+  { to: "/features", label: "Features", icon: Sparkles },
   { to: "/mod-tiers", label: "Mod Tiers", icon: Star },
   { to: "/community", label: "Community", icon: UsersIcon },
   { to: "/staff", label: "Staff", icon: ShieldCheck },
   { to: "/vote", label: "Vote", icon: VoteIcon, soon: true },
   { to: "/rules", label: "Rules", icon: ScrollText },
-  { to: "/discover/plugins", label: "Plugins", icon: Puzzle },
   { to: "/apply", label: "Apply", icon: FileText },
   { to: "/faq", label: "FAQ", icon: HelpCircle },
   { to: "/support", label: "Support", icon: LifeBuoy },
+  { to: "/status", label: "Status", icon: Activity },
+  { to: "/install", label: "How to Install", icon: Download },
+];
+
+const discoverLinks = [
+  { to: "/discover/mods", label: "Mods", icon: Boxes },
+  { to: "/discover/plugins", label: "Plugins", icon: Puzzle },
+  { to: "/discover/modpacks", label: "Modpacks", icon: Package },
+  { to: "/discover/resource-packs", label: "Resource Packs", icon: Layers },
+  { to: "/discover/data-packs", label: "Data Packs", icon: Database },
+  { to: "/discover/shaders", label: "Shaders", icon: Sun },
+  { to: "/discover/servers", label: "Servers", icon: ServerIcon },
 ];
 
 const accountLinks = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/profile", label: "Profile", icon: UserIcon },
   { to: "/tickets", label: "Tickets", icon: Ticket },
+  { to: "/link-account", label: "Link Account", icon: Link2 },
 ];
 
 export function AppSidebar() {
