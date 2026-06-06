@@ -37,6 +37,15 @@ import {
   Calendar,
   Boxes,
   Star,
+  Sparkles,
+  Activity,
+  Download,
+  Package,
+  Database,
+  Sun,
+  Layers,
+  Server as ServerIcon,
+  Link2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
