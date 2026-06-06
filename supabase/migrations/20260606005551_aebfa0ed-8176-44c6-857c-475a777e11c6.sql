@@ -1,0 +1,1 @@
+CREATE POLICY "Admins delete alert settings" ON public.alert_settings FOR DELETE USING (private.has_role(auth.uid(), 'admin'::app_role) OR private.has_role(auth.uid(), 'owner'::app_role));
