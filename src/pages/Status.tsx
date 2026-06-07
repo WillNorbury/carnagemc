@@ -207,6 +207,15 @@ const Status = () => {
           </Card>
 
           <div className="flex items-center justify-end gap-2 mb-4">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleRefresh}
+              disabled={refreshing}
+            >
+              <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${refreshing ? "animate-spin" : ""}`} />
+              {refreshing ? "Running…" : "Refresh now"}
+            </Button>
             {RANGES.map((r) => (
               <Button
                 key={r.value}
