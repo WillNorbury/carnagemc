@@ -17,10 +17,10 @@ const RANGES: { label: string; value: Range }[] = [
 
 const SERVICES: { key: string; name: string; desc: string }[] = [
   { key: "website", name: "Website", desc: "Main site & dashboard" },
-  { key: "minecraft", name: "Minecraft Server", desc: "play.havocsmp.net" },
+  { key: "minecraft", name: "Minecraft Server", desc: "play.xylomc.net" },
   { key: "api", name: "API & Database", desc: "Backend services" },
   { key: "panel", name: "Panel", desc: "panel.voxelnode.dev" },
-  { key: "discord", name: "Discord Server", desc: "discord.havocsmp.net" },
+  { key: "discord", name: "Discord Server", desc: "https://discord.gg/V8xYY2DasZ" },
 ];
 
 type DailyRow = {
@@ -104,7 +104,9 @@ const Status = () => {
   useEffect(() => {
     document.title = "Status — HavocSMP";
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
       const { data } = await supabase
         .from("user_roles")
