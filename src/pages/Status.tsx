@@ -216,26 +216,41 @@ const Status = () => {
             )}
           </Card>
 
-          <div className="flex items-center justify-end gap-2 mb-4">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleRefresh}
-              disabled={refreshing}
-            >
-              <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${refreshing ? "animate-spin" : ""}`} />
-              {refreshing ? "Running…" : "Refresh now"}
-            </Button>
-            {RANGES.map((r) => (
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-2">
+              <Timer className="h-3.5 w-3.5 text-muted-foreground" />
+              {[0, 1, 5, 15].map((min) => (
+                <Button
+                  key={min}
+                  size="sm"
+                  variant={autoInterval === min ? "default" : "outline"}
+                  onClick={() => setAutoInterval(min)}
+                >
+                  {min === 0 ? "Off" : `${min}m`}
+                </Button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
               <Button
-                key={r.value}
                 size="sm"
-                variant={range === r.value ? "default" : "outline"}
-                onClick={() => setRange(r.value)}
+                variant="outline"
+                onClick={handleRefresh}
+                disabled={refreshing}
               >
-                {r.label}
+                <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${refreshing ? "animate-spin" : ""}`} />
+                {refreshing ? "Running…" : "Refresh now"}
               </Button>
-            ))}
+              {RANGES.map((r) => (
+                <Button
+                  key={r.value}
+                  size="sm"
+                  variant={range === r.value ? "default" : "outline"}
+                  onClick={() => setRange(r.value)}
+                >
+                  {r.label}
+                </Button>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-4">
