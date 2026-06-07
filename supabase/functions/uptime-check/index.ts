@@ -18,6 +18,7 @@ const SERVICE_NAMES: Record<string, string> = {
   minecraft: "Minecraft Server",
   api: "API",
   panel: "Panel",
+  discord: "Discord",
 };
 
 async function checkHttp(
@@ -138,7 +139,7 @@ Deno.serve(async (req) => {
     .filter((s) => /^https?:\/\//i.test(s));
   const allUrls = [...new Set([...webhookUrls, ...envUrls])];
 
-  let mcHost = "play.havocsmp.net";
+  let mcHost = "play.xylomc.net"; /* Changing this soon */
   try {
     const { data } = await supabase.from("site_content").select("value").eq("key", "server").maybeSingle();
     const v = data?.value as { ip?: string } | null;
