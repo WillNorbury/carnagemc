@@ -20,7 +20,12 @@ const SERVICE_NAMES: Record<string, string> = {
   panel: "Panel",
 };
 
-async function checkHttp(service_key: string, url: string, expectOk = true, headers: Record<string, string> = {}): Promise<Check> {
+async function checkHttp(
+  service_key: string,
+  url: string,
+  expectOk = true,
+  headers: Record<string, string> = {},
+): Promise<Check> {
   const start = Date.now();
   try {
     const ctrl = new AbortController();
@@ -97,22 +102,19 @@ function interpolateTemplate(template: unknown, vars: Record<string, string>): u
   return template;
 }
 
-async function sendWebhook(
-  urls: string[],
-  template: unknown,
-  vars: Record<string, string>,
-  fallbackBody: object,
-) {
+async function sendWebhook(urls: string[], template: unknown, vars: Record<string, string>, fallbackBody: object) {
   if (urls.length === 0) return;
   const payload = template ? interpolateTemplate(template, vars) : fallbackBody;
   const body = JSON.stringify(payload);
-  await Promise.all(urls.map(async (url) => {
-    try {
-      await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body });
-    } catch (e) {
-      console.error("webhook failed", url, e);
-    }
-  }));
+  await Promise.all(
+    urls.map(async (url) => {
+      try {
+        await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body });
+      } catch (e) {
+        console.error("webhook failed", url, e);
+      }
+    }),
+  );
 }
 
 Deno.serve(async (req) => {
@@ -141,7 +143,9 @@ Deno.serve(async (req) => {
     const { data } = await supabase.from("site_content").select("value").eq("key", "server").maybeSingle();
     const v = data?.value as { ip?: string } | null;
     if (v?.ip) mcHost = v.ip;
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
   const siteUrl = "https://www.havocsmp.net";
   const apiHealth = `${SUPABASE_URL}/rest/v1/`;
@@ -151,6 +155,7 @@ Deno.serve(async (req) => {
     checkMinecraft("minecraft", mcHost),
     checkHttp("api", apiHealth, false),
     checkHttp("panel", "https://panel.voxelnode.dev"),
+    checkHttp("discord", "https://discord.gg/V8xYY2DasZ"),
   ]);
 
   const { error: insertErr } = await supabase.from("uptime_checks").insert(checks);
@@ -169,7 +174,7 @@ Deno.serve(async (req) => {
     .gte("checked_at", since24h);
 
   const uptimeByService = new Map<string, { total: number; up: number }>();
-  for (const c of (recentChecks ?? [])) {
+  for (const c of recentChecks ?? []) {
     const s = uptimeByService.get(c.service_key) ?? { total: 0, up: 0 };
     s.total++;
     if (c.is_up) s.up++;
@@ -188,9 +193,8 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     const uptimeRec = uptimeByService.get(c.service_key);
-    const uptimePct = uptimeRec && uptimeRec.total > 0
-      ? `${(100 * uptimeRec.up / uptimeRec.total).toFixed(2)}%`
-      : "N/A";
+    const uptimePct =
+      uptimeRec && uptimeRec.total > 0 ? `${((100 * uptimeRec.up) / uptimeRec.total).toFixed(2)}%` : "N/A";
 
     if (!c.is_up) {
       // Check last 2 checks for this service to require 2+ consecutive failures
@@ -221,12 +225,14 @@ Deno.serve(async (req) => {
           };
           const fallback = {
             username: "Uptime Monitor",
-            embeds: [{
-              title: `🔴 ${name} is DOWN`,
-              description: `Service has failed multiple consecutive checks.\n**Uptime (24h):** ${uptimePct}\n**Error:** ${c.error || "Unknown error"}`,
-              color: 0xef4444,
-              timestamp: new Date().toISOString(),
-            }],
+            embeds: [
+              {
+                title: `🔴 ${name} is DOWN`,
+                description: `Service has failed multiple consecutive checks.\n**Uptime (24h):** ${uptimePct}\n**Error:** ${c.error || "Unknown error"}`,
+                color: 0xef4444,
+                timestamp: new Date().toISOString(),
+              },
+            ],
           };
           await sendWebhook(allUrls, alertSettings?.down_payload_template, vars, fallback);
           await supabase.from("uptime_incidents").update({ alerted: true }).eq("id", inc.id);
@@ -246,15 +252,20 @@ Deno.serve(async (req) => {
         };
         const fallback = {
           username: "Uptime Monitor",
-          embeds: [{
-            title: `🔴 ${name} is DOWN`,
-            description: `Service has failed multiple consecutive checks.\n**Uptime (24h):** ${uptimePct}\n**Incident duration:** ${duration}\n**Error:** ${c.error || "Unknown error"}`,
-            color: 0xef4444,
-            timestamp: new Date().toISOString(),
-          }],
+          embeds: [
+            {
+              title: `🔴 ${name} is DOWN`,
+              description: `Service has failed multiple consecutive checks.\n**Uptime (24h):** ${uptimePct}\n**Incident duration:** ${duration}\n**Error:** ${c.error || "Unknown error"}`,
+              color: 0xef4444,
+              timestamp: new Date().toISOString(),
+            },
+          ],
         };
         await sendWebhook(allUrls, alertSettings?.down_payload_template, vars, fallback);
-        await supabase.from("uptime_incidents").update({ alerted: true, last_error: c.error }).eq("id", openIncident.id);
+        await supabase
+          .from("uptime_incidents")
+          .update({ alerted: true, last_error: c.error })
+          .eq("id", openIncident.id);
         alerts.push({ service: c.service_key, kind: "down" });
       }
     } else if (openIncident) {
@@ -273,12 +284,14 @@ Deno.serve(async (req) => {
         };
         const fallback = {
           username: "Uptime Monitor",
-          embeds: [{
-            title: `🟢 ${name} recovered`,
-            description: `Service is responding successfully again.\n**Uptime (24h):** ${uptimePct}\n**Incident lasted:** ${duration}`,
-            color: 0x22c55e,
-            timestamp: new Date().toISOString(),
-          }],
+          embeds: [
+            {
+              title: `🟢 ${name} recovered`,
+              description: `Service is responding successfully again.\n**Uptime (24h):** ${uptimePct}\n**Incident lasted:** ${duration}`,
+              color: 0x22c55e,
+              timestamp: new Date().toISOString(),
+            },
+          ],
         };
         await sendWebhook(allUrls, alertSettings?.up_payload_template, vars, fallback);
         alerts.push({ service: c.service_key, kind: "up" });
