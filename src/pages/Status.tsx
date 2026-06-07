@@ -69,7 +69,13 @@ const DayGrid = ({ days, byDay }: { days: number; byDay: Map<string, { pct: numb
   });
 
   const sizeClass =
-    days === 7 ? "h-10 w-10 rounded-md" : days === 30 ? "h-6 w-3 rounded-sm" : "h-5 w-[5px] rounded-[2px]";
+    days === 1
+      ? "h-20 w-30 rounded-md"
+      : days === 7
+        ? "h-10 w-10 rounded-md"
+        : days === 30
+          ? "h-6 w-3 rounded-sm"
+          : "h-5 w-[5px] rounded-[2px]";
   const gapClass = days === 7 ? "gap-2" : days === 30 ? "gap-1" : "gap-[2px]";
 
   return (
@@ -231,12 +237,7 @@ const Status = () => {
               ))}
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleRefresh}
-                disabled={refreshing}
-              >
+              <Button size="sm" variant="outline" onClick={handleRefresh} disabled={refreshing}>
                 <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${refreshing ? "animate-spin" : ""}`} />
                 {refreshing ? "Running…" : "Refresh now"}
               </Button>
