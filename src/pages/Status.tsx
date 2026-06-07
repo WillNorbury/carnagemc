@@ -91,23 +91,33 @@ const Status = () => {
   const [range, setRange] = useState<Range>(30);
   const [rows, setRows] = useState<DailyRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     document.title = "Status — HavocSMP";
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadData = async (days: Range) => {
     setLoading(true);
-    supabase.rpc("get_uptime_daily", { _days: range }).then(({ data }) => {
-      if (cancelled) return;
-      setRows((data ?? []) as DailyRow[]);
-      setLoading(false);
-    });
-    return () => {
-      cancelled = true;
-    };
+    const { data } = await supabase.rpc("get_uptime_daily", { _days: days });
+    setRows((data ?? []) as DailyRow[]);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadData(range);
   }, [range]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await supabase.functions.invoke("uptime-check", { method: "POST" });
+    } catch {
+      /* ignore */
+    }
+    await loadData(range);
+    setRefreshing(false);
+  };
 
   const byService = useMemo(() => {
     const m = new Map<string, Map<string, { pct: number | null; total: number }>>();
