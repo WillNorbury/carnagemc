@@ -79,7 +79,7 @@ const DayGrid = ({ days, byDay }: { days: number; byDay: Map<string, { pct: numb
   const gapClass = days === 1 ? "gap-3" : days === 7 ? "gap-2" : days === 30 ? "gap-1" : "gap-[2px]";
 
   return (
-    <div className={`flex flex-wrap ${gapClass}`}>
+    <div className={`flex ${gapClass} w-full`}>
       {cells.map((c) => (
         <div
           key={c.key}
