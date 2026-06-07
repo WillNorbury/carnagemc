@@ -4,7 +4,7 @@ import Footer from "@/components/site/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Activity, CheckCircle2, AlertTriangle, XCircle, HelpCircle, RefreshCw } from "lucide-react";
+import { Activity, CheckCircle2, AlertTriangle, XCircle, HelpCircle, RefreshCw, Timer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type Range = 1 | 7 | 30;
@@ -92,6 +92,7 @@ const Status = () => {
   const [rows, setRows] = useState<DailyRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [autoInterval, setAutoInterval] = useState<number>(0); // 0 = off, 1/5/15 min
 
   useEffect(() => {
     document.title = "Status — HavocSMP";
@@ -118,6 +119,15 @@ const Status = () => {
     await loadData(range);
     setRefreshing(false);
   };
+
+  // auto-refresh interval
+  useEffect(() => {
+    if (autoInterval <= 0) return;
+    const id = setInterval(() => {
+      handleRefresh();
+    }, autoInterval * 60_000);
+    return () => clearInterval(id);
+  }, [autoInterval, range]);
 
   const byService = useMemo(() => {
     const m = new Map<string, Map<string, { pct: number | null; total: number }>>();
@@ -206,26 +216,41 @@ const Status = () => {
             )}
           </Card>
 
-          <div className="flex items-center justify-end gap-2 mb-4">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleRefresh}
-              disabled={refreshing}
-            >
-              <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${refreshing ? "animate-spin" : ""}`} />
-              {refreshing ? "Running…" : "Refresh now"}
-            </Button>
-            {RANGES.map((r) => (
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-2">
+              <Timer className="h-3.5 w-3.5 text-muted-foreground" />
+              {[0, 1, 5, 15].map((min) => (
+                <Button
+                  key={min}
+                  size="sm"
+                  variant={autoInterval === min ? "default" : "outline"}
+                  onClick={() => setAutoInterval(min)}
+                >
+                  {min === 0 ? "Off" : `${min}m`}
+                </Button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
               <Button
-                key={r.value}
                 size="sm"
-                variant={range === r.value ? "default" : "outline"}
-                onClick={() => setRange(r.value)}
+                variant="outline"
+                onClick={handleRefresh}
+                disabled={refreshing}
               >
-                {r.label}
+                <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${refreshing ? "animate-spin" : ""}`} />
+                {refreshing ? "Running…" : "Refresh now"}
               </Button>
-            ))}
+              {RANGES.map((r) => (
+                <Button
+                  key={r.value}
+                  size="sm"
+                  variant={range === r.value ? "default" : "outline"}
+                  onClick={() => setRange(r.value)}
+                >
+                  {r.label}
+                </Button>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-4">
