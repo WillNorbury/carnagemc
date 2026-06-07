@@ -70,12 +70,12 @@ const DayGrid = ({ days, byDay }: { days: number; byDay: Map<string, { pct: numb
 
   const sizeClass =
     days === 1
-      ? "h-20 w-30 rounded-md"
+      ? "h-20 flex-1 rounded-md"
       : days === 7
-        ? "h-10 w-10 rounded-md"
+        ? "h-10 flex-1 rounded-md"
         : days === 30
-          ? "h-6 w-3 rounded-sm"
-          : "h-5 w-[5px] rounded-[2px]";
+          ? "h-6 flex-1 rounded-sm"
+          : "h-5 flex-1 rounded-[2px]";
   const gapClass = days === 1 ? "gap-3" : days === 7 ? "gap-2" : days === 30 ? "gap-1" : "gap-[2px]";
 
   return (
