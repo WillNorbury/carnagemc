@@ -92,6 +92,7 @@ const Status = () => {
   const [rows, setRows] = useState<DailyRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [autoInterval, setAutoInterval] = useState<number>(0); // 0 = off, 1/5/15 min
 
   useEffect(() => {
     document.title = "Status — HavocSMP";
@@ -118,6 +119,15 @@ const Status = () => {
     await loadData(range);
     setRefreshing(false);
   };
+
+  // auto-refresh interval
+  useEffect(() => {
+    if (autoInterval <= 0) return;
+    const id = setInterval(() => {
+      handleRefresh();
+    }, autoInterval * 60_000);
+    return () => clearInterval(id);
+  }, [autoInterval, range]);
 
   const byService = useMemo(() => {
     const m = new Map<string, Map<string, { pct: number | null; total: number }>>();
