@@ -4,7 +4,7 @@ import Footer from "@/components/site/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Activity, CheckCircle2, AlertTriangle, XCircle, HelpCircle, RefreshCw } from "lucide-react";
+import { Activity, CheckCircle2, AlertTriangle, XCircle, HelpCircle, RefreshCw, Timer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type Range = 1 | 7 | 30;
