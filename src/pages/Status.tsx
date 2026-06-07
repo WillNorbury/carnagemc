@@ -70,16 +70,16 @@ const DayGrid = ({ days, byDay }: { days: number; byDay: Map<string, { pct: numb
 
   const sizeClass =
     days === 1
-      ? "h-20 w-30 rounded-md"
+      ? "h-20 flex-1 rounded-md"
       : days === 7
-        ? "h-10 w-10 rounded-md"
+        ? "h-10 flex-1 rounded-md"
         : days === 30
-          ? "h-6 w-3 rounded-sm"
-          : "h-5 w-[5px] rounded-[2px]";
+          ? "h-6 flex-1 rounded-sm"
+          : "h-5 flex-1 rounded-[2px]";
   const gapClass = days === 1 ? "gap-3" : days === 7 ? "gap-2" : days === 30 ? "gap-1" : "gap-[2px]";
 
   return (
-    <div className={`flex flex-wrap ${gapClass}`}>
+    <div className={`flex ${gapClass} w-full`}>
       {cells.map((c) => (
         <div
           key={c.key}
@@ -99,9 +99,21 @@ const Status = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [autoInterval, setAutoInterval] = useState<number>(0); // 0 = off, 1/5/15 min
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     document.title = "Status — HavocSMP";
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "owner")
+        .maybeSingle();
+      setIsOwner(!!data);
+    })();
   }, []);
 
   const loadData = async (days: Range) => {
@@ -224,17 +236,21 @@ const Status = () => {
 
           <div className="flex items-center justify-between gap-2 mb-4">
             <div className="flex items-center gap-2">
-              <Timer className="h-3.5 w-3.5 text-muted-foreground" />
-              {[0, 1, 5, 15].map((min) => (
-                <Button
-                  key={min}
-                  size="sm"
-                  variant={autoInterval === min ? "default" : "outline"}
-                  onClick={() => setAutoInterval(min)}
-                >
-                  {min === 0 ? "Off" : `${min}m`}
-                </Button>
-              ))}
+              {isOwner && (
+                <>
+                  <Timer className="h-3.5 w-3.5 text-muted-foreground" />
+                  {[0, 1, 5, 15].map((min) => (
+                    <Button
+                      key={min}
+                      size="sm"
+                      variant={autoInterval === min ? "default" : "outline"}
+                      onClick={() => setAutoInterval(min)}
+                    >
+                      {min === 0 ? "Off" : `${min}m`}
+                    </Button>
+                  ))}
+                </>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <Button size="sm" variant="outline" onClick={handleRefresh} disabled={refreshing}>
