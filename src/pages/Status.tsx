@@ -20,13 +20,19 @@ const SERVICES: { key: string; name: string; desc: string }[] = [
   { key: "minecraft", name: "Minecraft Server", desc: "play.havocsmp.net" },
   { key: "api", name: "API & Database", desc: "Backend services" },
   { key: "panel", name: "Panel", desc: "panel.voxelnode.dev" },
+  { key: "discord", name: "Discord Server", desc: "discord.havocsmp.net" },
 ];
 
-type DailyRow = { service_key: string; day: string; total_checks: number; up_checks: number; uptime_pct: number | null };
+type DailyRow = {
+  service_key: string;
+  day: string;
+  total_checks: number;
+  up_checks: number;
+  uptime_pct: number | null;
+};
 type DayStatus = "up" | "degraded" | "down" | "none";
 
-const formatDate = (d: Date) =>
-  d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+const formatDate = (d: Date) => d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 
 const toDayKey = (d: Date) => d.toISOString().slice(0, 10);
 
@@ -40,20 +46,18 @@ const statusFromPct = (pct: number | null, total: number): DayStatus => {
 
 const colorFor = (s: DayStatus) => {
   switch (s) {
-    case "up": return "bg-primary/80 hover:bg-primary";
-    case "degraded": return "bg-yellow-500/80 hover:bg-yellow-500";
-    case "down": return "bg-destructive/80 hover:bg-destructive";
-    default: return "bg-muted/40 hover:bg-muted/60";
+    case "up":
+      return "bg-primary/80 hover:bg-primary";
+    case "degraded":
+      return "bg-yellow-500/80 hover:bg-yellow-500";
+    case "down":
+      return "bg-destructive/80 hover:bg-destructive";
+    default:
+      return "bg-muted/40 hover:bg-muted/60";
   }
 };
 
-const DayGrid = ({
-  days,
-  byDay,
-}: {
-  days: number;
-  byDay: Map<string, { pct: number | null; total: number }>;
-}) => {
+const DayGrid = ({ days, byDay }: { days: number; byDay: Map<string, { pct: number | null; total: number }> }) => {
   const today = new Date();
   const cells = Array.from({ length: days }, (_, i) => {
     const d = new Date(today);
@@ -65,9 +69,7 @@ const DayGrid = ({
   });
 
   const sizeClass =
-    days === 7 ? "h-10 w-10 rounded-md"
-    : days === 30 ? "h-6 w-3 rounded-sm"
-    : "h-5 w-[5px] rounded-[2px]";
+    days === 7 ? "h-10 w-10 rounded-md" : days === 30 ? "h-6 w-3 rounded-sm" : "h-5 w-[5px] rounded-[2px]";
   const gapClass = days === 7 ? "gap-2" : days === 30 ? "gap-1" : "gap-[2px]";
 
   return (
@@ -77,9 +79,7 @@ const DayGrid = ({
           key={c.key}
           className={`${sizeClass} transition-colors cursor-pointer ${colorFor(c.status)}`}
           title={
-            c.total
-              ? `${formatDate(c.d)} — ${c.pct?.toFixed(1)}% (${c.total} checks)`
-              : `${formatDate(c.d)} — no data`
+            c.total ? `${formatDate(c.d)} — ${c.pct?.toFixed(1)}% (${c.total} checks)` : `${formatDate(c.d)} — no data`
           }
         />
       ))}
@@ -99,14 +99,14 @@ const Status = () => {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    supabase
-      .rpc("get_uptime_daily", { _days: range })
-      .then(({ data }) => {
-        if (cancelled) return;
-        setRows((data ?? []) as DailyRow[]);
-        setLoading(false);
-      });
-    return () => { cancelled = true; };
+    supabase.rpc("get_uptime_daily", { _days: range }).then(({ data }) => {
+      if (cancelled) return;
+      setRows((data ?? []) as DailyRow[]);
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [range]);
 
   const byService = useMemo(() => {
@@ -119,10 +119,14 @@ const Status = () => {
   }, [rows]);
 
   const overall = useMemo(() => {
-    let total = 0, up = 0;
-    for (const r of rows) { total += Number(r.total_checks); up += Number(r.up_checks); }
+    let total = 0,
+      up = 0;
+    for (const r of rows) {
+      total += Number(r.total_checks);
+      up += Number(r.up_checks);
+    }
     if (!total) return null;
-    return (100 * up / total);
+    return (100 * up) / total;
   }, [rows]);
 
   const serviceCurrent: Record<string, DayStatus> = useMemo(() => {
@@ -145,8 +149,16 @@ const Status = () => {
 
   const banner = {
     up: { icon: CheckCircle2, text: "All services operational", cls: "border-primary/30 bg-primary/5 text-primary" },
-    degraded: { icon: AlertTriangle, text: "Some services degraded", cls: "border-yellow-500/40 bg-yellow-500/5 text-yellow-500" },
-    down: { icon: XCircle, text: "Service outage detected", cls: "border-destructive/40 bg-destructive/5 text-destructive" },
+    degraded: {
+      icon: AlertTriangle,
+      text: "Some services degraded",
+      cls: "border-yellow-500/40 bg-yellow-500/5 text-yellow-500",
+    },
+    down: {
+      icon: XCircle,
+      text: "Service outage detected",
+      cls: "border-destructive/40 bg-destructive/5 text-destructive",
+    },
     none: { icon: HelpCircle, text: "Awaiting data…", cls: "border-border bg-muted/20 text-muted-foreground" },
   }[worstNow];
   const BannerIcon = banner.icon;
@@ -201,14 +213,25 @@ const Status = () => {
             {SERVICES.map((s) => {
               const current = serviceCurrent[s.key];
               const days = byService.get(s.key);
-              let total = 0, up = 0;
-              if (days) for (const v of days.values()) { total += v.total; up += Math.round((v.pct ?? 0) / 100 * v.total); }
-              const pct = total ? (100 * up / total) : null;
+              let total = 0,
+                up = 0;
+              if (days)
+                for (const v of days.values()) {
+                  total += v.total;
+                  up += Math.round(((v.pct ?? 0) / 100) * v.total);
+                }
+              const pct = total ? (100 * up) / total : null;
               const statusLabel = {
-                up: "Operational", degraded: "Degraded", down: "Outage", none: "No data",
+                up: "Operational",
+                degraded: "Degraded",
+                down: "Outage",
+                none: "No data",
               }[current];
               const statusDotCls = {
-                up: "bg-primary animate-pulse", degraded: "bg-yellow-500", down: "bg-destructive", none: "bg-muted-foreground",
+                up: "bg-primary animate-pulse",
+                degraded: "bg-yellow-500",
+                down: "bg-destructive",
+                none: "bg-muted-foreground",
               }[current];
               return (
                 <Card key={s.key} className="p-5 hover-glow">
@@ -225,7 +248,7 @@ const Status = () => {
                   <DayGrid days={range} byDay={days ?? new Map()} />
                   <div className="flex justify-between text-[10px] uppercase tracking-widest text-muted-foreground mt-2">
                     <span>{range} days ago</span>
-                    <span>{pct !== null ? `${pct.toFixed(2)}% uptime` : (loading ? "Loading…" : "No data yet")}</span>
+                    <span>{pct !== null ? `${pct.toFixed(2)}% uptime` : loading ? "Loading…" : "No data yet"}</span>
                     <span>Today</span>
                   </div>
                 </Card>
