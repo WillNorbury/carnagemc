@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Activity, CheckCircle2, AlertTriangle, XCircle, HelpCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-type Range = 7 | 30 | 365;
+type Range = 1 | 7 | 30;
 
 const RANGES: { label: string; value: Range }[] = [
   { label: "1 day", value: 1 },
