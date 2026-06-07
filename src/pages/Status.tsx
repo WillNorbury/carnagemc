@@ -99,9 +99,21 @@ const Status = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [autoInterval, setAutoInterval] = useState<number>(0); // 0 = off, 1/5/15 min
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     document.title = "Status — HavocSMP";
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "owner")
+        .maybeSingle();
+      setIsOwner(!!data);
+    })();
   }, []);
 
   const loadData = async (days: Range) => {
