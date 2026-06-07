@@ -4,7 +4,7 @@ import Footer from "@/components/site/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Activity, CheckCircle2, AlertTriangle, XCircle, HelpCircle } from "lucide-react";
+import { Activity, CheckCircle2, AlertTriangle, XCircle, HelpCircle, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type Range = 1 | 7 | 30;
@@ -91,23 +91,33 @@ const Status = () => {
   const [range, setRange] = useState<Range>(30);
   const [rows, setRows] = useState<DailyRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     document.title = "Status — HavocSMP";
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadData = async (days: Range) => {
     setLoading(true);
-    supabase.rpc("get_uptime_daily", { _days: range }).then(({ data }) => {
-      if (cancelled) return;
-      setRows((data ?? []) as DailyRow[]);
-      setLoading(false);
-    });
-    return () => {
-      cancelled = true;
-    };
+    const { data } = await supabase.rpc("get_uptime_daily", { _days: days });
+    setRows((data ?? []) as DailyRow[]);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadData(range);
   }, [range]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await supabase.functions.invoke("uptime-check", { method: "POST" });
+    } catch {
+      /* ignore */
+    }
+    await loadData(range);
+    setRefreshing(false);
+  };
 
   const byService = useMemo(() => {
     const m = new Map<string, Map<string, { pct: number | null; total: number }>>();
@@ -197,6 +207,15 @@ const Status = () => {
           </Card>
 
           <div className="flex items-center justify-end gap-2 mb-4">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleRefresh}
+              disabled={refreshing}
+            >
+              <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${refreshing ? "animate-spin" : ""}`} />
+              {refreshing ? "Running…" : "Refresh now"}
+            </Button>
             {RANGES.map((r) => (
               <Button
                 key={r.value}
