@@ -10,9 +10,9 @@ import { supabase } from "@/integrations/supabase/client";
 type Range = 7 | 30 | 365;
 
 const RANGES: { label: string; value: Range }[] = [
+  { label: "1 day", value: 1 },
   { label: "7 days", value: 7 },
   { label: "30 days", value: 30 },
-  { label: "365 days", value: 365 },
 ];
 
 const SERVICES: { key: string; name: string; desc: string }[] = [
