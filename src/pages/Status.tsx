@@ -76,7 +76,7 @@ const DayGrid = ({ days, byDay }: { days: number; byDay: Map<string, { pct: numb
         : days === 30
           ? "h-6 w-3 rounded-sm"
           : "h-5 w-[5px] rounded-[2px]";
-  const gapClass = days === 7 ? "gap-2" : days === 30 ? "gap-1" : "gap-[2px]";
+  const gapClass = days === 1 ? "gap-3" : days === 7 ? "gap-2" : days === 30 ? "gap-1" : "gap-[2px]";
 
   return (
     <div className={`flex flex-wrap ${gapClass}`}>
