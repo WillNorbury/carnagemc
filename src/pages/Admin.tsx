@@ -161,6 +161,7 @@ const Admin = () => {
       {section === "features" && <FeaturesTab />}
       {section === "rules" && <RulesTab />}
       {section === "alerts" && <AlertsTab />}
+      {section === "maintenance" && <MaintenanceTab />}
       {section === "resource-packs" && <DiscoverItemsAdminTab kind="resource_pack" />}
       {section === "data-packs" && <DiscoverItemsAdminTab kind="data_pack" />}
       {section === "shaders" && <DiscoverItemsAdminTab kind="shader" />}
