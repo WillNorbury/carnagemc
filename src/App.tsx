@@ -77,7 +77,6 @@ const Shell = () => {
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/admin" element={<Admin />} />
-                  <Route path="/admin" element={<Admin />} />
                   <Route path="/admin/announcements" element={<Navigate to="/admin?tab=news" replace />} />
                   <Route path="/admin/:tab" element={<AdminTabRedirect />} />
                   <Route path="/discover/mods" element={<Mods />} />
