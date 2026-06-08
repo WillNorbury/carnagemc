@@ -16,7 +16,7 @@ const RANGES: { label: string; value: Range }[] = [
   { label: "30 days", value: 30 },
 ];
 
-const SERVICES: { key: string; name: string; desc: string }[] = [
+const DEFAULT_SERVICES: { key: string; name: string; desc: string }[] = [
   { key: "website", name: "Website", desc: "Main site & dashboard" },
   { key: "minecraft", name: "Minecraft Server", desc: "play.xylomc.net" },
   { key: "api", name: "API & Database", desc: "Backend services" },
@@ -101,6 +101,10 @@ const Status = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [autoInterval, setAutoInterval] = useState<number>(0); // 0 = off, 1/5/15 min
   const [isOwner, setIsOwner] = useState(false);
+  const [pageTitle, setPageTitle] = useState("HavocSMP Status");
+  const [pageSubtitle, setPageSubtitle] = useState("Live uptime — automated checks every 5 minutes.");
+  const [pageFootnote, setPageFootnote] = useState("");
+  const [services, setServices] = useState(DEFAULT_SERVICES);
 
   useEffect(() => {
     document.title = "Status — HavocSMP";
@@ -117,6 +121,18 @@ const Status = () => {
         .maybeSingle();
       setIsOwner(!!data);
     })();
+    supabase
+      .from("site_content")
+      .select("value")
+      .eq("key", "status_page")
+      .maybeSingle()
+      .then(({ data }) => {
+        const v = (data?.value as any) ?? {};
+        if (v.title) setPageTitle(v.title);
+        if (v.subtitle) setPageSubtitle(v.subtitle);
+        if (typeof v.footnote === "string") setPageFootnote(v.footnote);
+        if (Array.isArray(v.services) && v.services.length) setServices(v.services);
+      });
   }, []);
 
   const loadData = async (days: Range) => {
@@ -173,12 +189,12 @@ const Status = () => {
   const serviceCurrent: Record<string, DayStatus> = useMemo(() => {
     const today = toDayKey(new Date());
     const out: Record<string, DayStatus> = {};
-    for (const s of SERVICES) {
+    for (const s of services) {
       const rec = byService.get(s.key)?.get(today);
       out[s.key] = statusFromPct(rec?.pct ?? null, rec?.total ?? 0);
     }
     return out;
-  }, [byService]);
+  }, [byService, services]);
 
   const worstNow: DayStatus = useMemo(() => {
     const vals = Object.values(serviceCurrent);
@@ -214,9 +230,18 @@ const Status = () => {
               <Activity className="h-3 w-3 mr-1" /> System Status
             </Badge>
             <h1 className="font-display text-4xl md:text-5xl font-black mb-3">
-              HavocSMP <span className="text-gradient">Status</span>
+              {(() => {
+                const parts = pageTitle.trim().split(/\s+/);
+                if (parts.length <= 1) return <span className="text-gradient">{pageTitle}</span>;
+                const last = parts.pop();
+                return (
+                  <>
+                    {parts.join(" ")} <span className="text-gradient">{last}</span>
+                  </>
+                );
+              })()}
             </h1>
-            <p className="text-muted-foreground">Live uptime — automated checks every 5 minutes.</p>
+            <p className="text-muted-foreground">{pageSubtitle}</p>
           </div>
 
           <Card className={`p-6 mb-8 flex items-center gap-4 ${banner.cls}`}>
@@ -284,7 +309,7 @@ const Status = () => {
           </div>
 
           <div className="space-y-4">
-            {SERVICES.map((s) => {
+            {services.map((s) => {
               const current = serviceCurrent[s.key];
               const days = byService.get(s.key);
               let total = 0,
@@ -337,6 +362,9 @@ const Status = () => {
             <span className="inline-block h-3 w-3 rounded-sm bg-destructive mx-1 align-middle" /> Outage
             <span className="inline-block h-3 w-3 rounded-sm bg-muted mx-1 align-middle" /> No data
           </p>
+          {pageFootnote && (
+            <p className="text-center text-xs text-muted-foreground mt-4 whitespace-pre-wrap">{pageFootnote}</p>
+          )}
         </div>
       </main>
       <Footer />
