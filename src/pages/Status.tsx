@@ -230,9 +230,18 @@ const Status = () => {
               <Activity className="h-3 w-3 mr-1" /> System Status
             </Badge>
             <h1 className="font-display text-4xl md:text-5xl font-black mb-3">
-              HavocSMP <span className="text-gradient">Status</span>
+              {(() => {
+                const parts = pageTitle.trim().split(/\s+/);
+                if (parts.length <= 1) return <span className="text-gradient">{pageTitle}</span>;
+                const last = parts.pop();
+                return (
+                  <>
+                    {parts.join(" ")} <span className="text-gradient">{last}</span>
+                  </>
+                );
+              })()}
             </h1>
-            <p className="text-muted-foreground">Live uptime — automated checks every 5 minutes.</p>
+            <p className="text-muted-foreground">{pageSubtitle}</p>
           </div>
 
           <Card className={`p-6 mb-8 flex items-center gap-4 ${banner.cls}`}>
