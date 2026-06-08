@@ -32,8 +32,6 @@ import FeatureDetail from "./pages/FeatureDetail.tsx";
 import Leaderboard from "./pages/Leaderboard.tsx";
 import Faq from "./pages/Faq.tsx";
 import Events from "./pages/Events.tsx";
-import AdminMaintenance from "./pages/AdminMaintenance.tsx";
-import AdminMods from "./pages/AdminMods.tsx";
 import Mods from "./pages/Mods.tsx";
 import ModDetail from "./pages/ModDetail.tsx";
 import ModTiers from "./pages/ModTiers.tsx";
