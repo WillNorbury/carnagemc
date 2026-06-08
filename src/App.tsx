@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -49,10 +49,13 @@ import Status from "./pages/Status.tsx";
 
 const queryClient = new QueryClient();
 
-// Generic fallback: any unmatched /admin/<seg> URL becomes /admin?tab=<seg>.
+// Generic fallback: any unmatched /admin/<seg>[/...] URL becomes /admin?tab=<seg>.
 const AdminTabRedirect = () => {
-  const { tab } = useParams();
-  return <Navigate to={`/admin?tab=${tab ?? ""}`} replace />;
+  const { pathname, search, hash } = useLocation();
+  const rest = pathname.replace(/^\/admin\/?/, "");
+  const firstSeg = rest.split("/")[0] ?? "";
+  if (!firstSeg) return <Navigate to={`/admin${search}${hash}`} replace />;
+  return <Navigate to={`/admin?tab=${encodeURIComponent(firstSeg)}`} replace />;
 };
 
 const Shell = () => {
@@ -69,7 +72,7 @@ const Shell = () => {
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/admin/announcements" element={<Navigate to="/admin?tab=news" replace />} />
-                  <Route path="/admin/:tab" element={<AdminTabRedirect />} />
+                  <Route path="/admin/*" element={<AdminTabRedirect />} />
                   <Route path="/discover/mods" element={<Mods />} />
                   <Route path="/mod/:slug" element={<ModDetail />} />
                   <Route path="/mod-tiers" element={<ModTiers />} />
