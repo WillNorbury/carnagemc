@@ -238,23 +238,31 @@ const Status = () => {
           </Card>
 
           <div className="flex items-center justify-between gap-2 mb-4">
-            <div className="flex items-center gap-2">
-              {isOwner && (
-                <>
-                  <Timer className="h-3.5 w-3.5 text-muted-foreground" />
-                  {[0, 1, 5, 15].map((min) => (
-                    <Button
-                      key={min}
-                      size="sm"
-                      variant={autoInterval === min ? "default" : "outline"}
-                      onClick={() => setAutoInterval(min)}
-                    >
-                      {min === 0 ? "Off" : `${min}m`}
-                    </Button>
-                  ))}
-                </>
-              )}
-            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-2">
+                    <Timer className="h-3.5 w-3.5 text-muted-foreground" />
+                    {[0, 1, 5, 15].map((min) => (
+                      <Button
+                        key={min}
+                        size="sm"
+                        variant={autoInterval === min ? "default" : "outline"}
+                        onClick={() => isOwner && setAutoInterval(min)}
+                        disabled={!isOwner}
+                      >
+                        {min === 0 ? "Off" : `${min}m`}
+                      </Button>
+                    ))}
+                  </div>
+                </TooltipTrigger>
+                {!isOwner && (
+                  <TooltipContent side="bottom">
+                    <p>Only owners can change auto-refresh settings.</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
             <div className="flex items-center gap-2">
               <Button size="sm" variant="outline" onClick={handleRefresh} disabled={refreshing}>
                 <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${refreshing ? "animate-spin" : ""}`} />
