@@ -101,6 +101,10 @@ const Status = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [autoInterval, setAutoInterval] = useState<number>(0); // 0 = off, 1/5/15 min
   const [isOwner, setIsOwner] = useState(false);
+  const [pageTitle, setPageTitle] = useState("HavocSMP Status");
+  const [pageSubtitle, setPageSubtitle] = useState("Live uptime — automated checks every 5 minutes.");
+  const [pageFootnote, setPageFootnote] = useState("");
+  const [services, setServices] = useState(DEFAULT_SERVICES);
 
   useEffect(() => {
     document.title = "Status — HavocSMP";
