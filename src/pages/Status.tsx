@@ -16,7 +16,7 @@ const RANGES: { label: string; value: Range }[] = [
   { label: "30 days", value: 30 },
 ];
 
-const SERVICES: { key: string; name: string; desc: string }[] = [
+const DEFAULT_SERVICES: { key: string; name: string; desc: string }[] = [
   { key: "website", name: "Website", desc: "Main site & dashboard" },
   { key: "minecraft", name: "Minecraft Server", desc: "play.xylomc.net" },
   { key: "api", name: "API & Database", desc: "Backend services" },
