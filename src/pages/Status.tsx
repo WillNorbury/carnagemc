@@ -362,6 +362,9 @@ const Status = () => {
             <span className="inline-block h-3 w-3 rounded-sm bg-destructive mx-1 align-middle" /> Outage
             <span className="inline-block h-3 w-3 rounded-sm bg-muted mx-1 align-middle" /> No data
           </p>
+          {pageFootnote && (
+            <p className="text-center text-xs text-muted-foreground mt-4 whitespace-pre-wrap">{pageFootnote}</p>
+          )}
         </div>
       </main>
       <Footer />
