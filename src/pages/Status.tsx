@@ -4,6 +4,7 @@ import Footer from "@/components/site/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Activity, CheckCircle2, AlertTriangle, XCircle, HelpCircle, RefreshCw, Timer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
