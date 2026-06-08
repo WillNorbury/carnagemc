@@ -13,7 +13,7 @@ type Config = {
   allowed_user_ids?: string[];
 };
 
-const ALLOW = ["/auth", "/admin"];
+const ALLOW = ["/auth", "/admin", "/status"];
 
 export function MaintenanceGate({ children }: { children: React.ReactNode }) {
   const [cfg, setCfg] = useState<Config>({ enabled: false });

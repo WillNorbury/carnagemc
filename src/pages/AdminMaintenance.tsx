@@ -111,11 +111,34 @@ const AdminMaintenance = () => {
 
   const save = async () => {
     setSaving(true);
+    // Read previous state to detect transitions
+    const { data: prev } = await supabase
+      .from("site_content")
+      .select("value")
+      .eq("key", "maintenance")
+      .maybeSingle();
+    const wasEnabled = !!(prev?.value as any)?.enabled;
+
     const { error } = await supabase
       .from("site_content")
       .upsert({ key: "maintenance", value: cfg as any });
-    if (error) toast.error(error.message);
-    else toast.success(cfg.enabled ? "Maintenance mode ON" : "Maintenance mode OFF");
+    if (error) {
+      toast.error(error.message);
+      setSaving(false);
+      return;
+    }
+    toast.success(cfg.enabled ? "Maintenance mode ON" : "Maintenance mode OFF");
+
+    // Fire webhook notification on state transition
+    if (wasEnabled !== cfg.enabled) {
+      try {
+        await supabase.functions.invoke("maintenance-notify", {
+          body: { enabled: cfg.enabled, title: cfg.title, message: cfg.message },
+        });
+      } catch (e) {
+        console.error("maintenance-notify failed", e);
+      }
+    }
     setSaving(false);
   };
 
