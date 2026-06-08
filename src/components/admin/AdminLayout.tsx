@@ -52,7 +52,7 @@ const items: NavItem[] = [
   { kind: "route", to: "/admin/faqs", icon: HelpCircle, label: "FAQs" },
   { kind: "route", to: "/admin/events", icon: Calendar, label: "Events" },
   { kind: "route", to: "/admin/mods", icon: Boxes, label: "Mods" },
-  { kind: "route", to: "/admin/maintenance", icon: Wrench, label: "Maintenance" },
+  { kind: "link", id: "maintenance", icon: Wrench, label: "Maintenance" },
   { kind: "section", title: "Discord Bot", icon: Bot },
   { kind: "link", id: "bot-dashboard", icon: LayoutDashboard, label: "Bot Dashboard" },
   { kind: "link", id: "bot-management", icon: Code, label: "Management" },
