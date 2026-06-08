@@ -10,8 +10,6 @@ import { AuthProvider } from "@/lib/auth";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import Admin from "./pages/Admin.tsx";
-import AdminRoles from "./pages/AdminRoles.tsx";
-import AdminPermissions from "./pages/AdminPermissions.tsx";
 import News from "./pages/News.tsx";
 import NewsArticle from "./pages/NewsArticle.tsx";
 import Staff from "./pages/Staff.tsx";
