@@ -79,8 +79,9 @@ const Shell = () => {
                   <Route path="/admin/announcements" element={<AdminNews />} />
                   <Route path="/admin/faqs" element={<AdminFaqs />} />
                   <Route path="/admin/events" element={<AdminEvents />} />
-                  <Route path="/admin/maintenance" element={<AdminMaintenance />} />
+                  <Route path="/admin/maintenance" element={<Navigate to="/admin?tab=maintenance" replace />} />
                   <Route path="/admin/mods" element={<AdminMods />} />
+                  <Route path="/admin/:tab" element={<AdminTabRedirect />} />
                   <Route path="/discover/mods" element={<Mods />} />
                   <Route path="/mod/:slug" element={<ModDetail />} />
                   <Route path="/mod-tiers" element={<ModTiers />} />
