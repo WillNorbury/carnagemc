@@ -237,11 +237,11 @@ const Status = () => {
             )}
           </Card>
 
-          <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 flex-wrap">
                     <Timer className="h-3.5 w-3.5 text-muted-foreground" />
                     {[0, 1, 5, 15].map((min) => (
                       <Button
@@ -250,6 +250,7 @@ const Status = () => {
                         variant={autoInterval === min ? "default" : "outline"}
                         onClick={() => isOwner && setAutoInterval(min)}
                         disabled={!isOwner}
+                        className="px-2.5"
                       >
                         {min === 0 ? "Off" : `${min}m`}
                       </Button>
@@ -263,10 +264,10 @@ const Status = () => {
                 )}
               </Tooltip>
             </TooltipProvider>
-            <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" onClick={handleRefresh} disabled={refreshing}>
-                <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${refreshing ? "animate-spin" : ""}`} />
-                {refreshing ? "Running…" : "Refresh now"}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <Button size="sm" variant="outline" onClick={handleRefresh} disabled={refreshing} className="px-2.5">
+                <RefreshCw className={`h-3.5 w-3.5 sm:mr-1.5 ${refreshing ? "animate-spin" : ""}`} />
+                <span className="hidden sm:inline">{refreshing ? "Running…" : "Refresh now"}</span>
               </Button>
               {RANGES.map((r) => (
                 <Button
@@ -274,6 +275,7 @@ const Status = () => {
                   size="sm"
                   variant={range === r.value ? "default" : "outline"}
                   onClick={() => setRange(r.value)}
+                  className="px-2.5"
                 >
                   {r.label}
                 </Button>
