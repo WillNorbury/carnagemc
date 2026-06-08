@@ -58,6 +58,9 @@ import { RulesTab } from "@/components/admin/RulesTab";
 import { NewsAnnouncementsTab } from "@/pages/AdminNews";
 import { PermissionsTab } from "@/components/admin/PermissionsTab";
 import { MaintenanceTab } from "@/pages/AdminMaintenance";
+import AdminFaqsPage from "@/pages/AdminFaqs";
+import AdminEventsPage from "@/pages/AdminEvents";
+import AdminModsPage from "@/pages/AdminMods";
 
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
