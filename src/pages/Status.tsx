@@ -121,6 +121,18 @@ const Status = () => {
         .maybeSingle();
       setIsOwner(!!data);
     })();
+    supabase
+      .from("site_content")
+      .select("value")
+      .eq("key", "status_page")
+      .maybeSingle()
+      .then(({ data }) => {
+        const v = (data?.value as any) ?? {};
+        if (v.title) setPageTitle(v.title);
+        if (v.subtitle) setPageSubtitle(v.subtitle);
+        if (typeof v.footnote === "string") setPageFootnote(v.footnote);
+        if (Array.isArray(v.services) && v.services.length) setServices(v.services);
+      });
   }, []);
 
   const loadData = async (days: Range) => {
