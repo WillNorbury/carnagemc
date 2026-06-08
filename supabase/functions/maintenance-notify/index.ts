@@ -29,9 +29,12 @@ Deno.serve(async (req) => {
     const allUrls = [...new Set([...webhookUrls, ...envUrls])];
 
     const isOn = enabled !== false;
-    const headline = isOn ? "🛠️ Website Maintenance" : "✅ Website back online";
+    const headline = isOn
+      ? "🛠️ [Website](https://www.havocsmp.net) Maintenance"
+      : "✅ [Website](https://www.havocsmp.net) back online";
     const desc = isOn
-      ? (message || "HavocSMP is entering maintenance mode. The site is temporarily unavailable to visitors. Status page remains accessible at /status.")
+      ? message ||
+        "HavocSMP is entering maintenance mode. The site is temporarily unavailable to visitors. Status page remains accessible at /status."
       : "Maintenance mode has been disabled. The site is fully accessible again.";
 
     const payload = {
