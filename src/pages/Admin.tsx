@@ -58,6 +58,9 @@ import { RulesTab } from "@/components/admin/RulesTab";
 import { NewsAnnouncementsTab } from "@/pages/AdminNews";
 import { PermissionsTab } from "@/components/admin/PermissionsTab";
 import { MaintenanceTab } from "@/pages/AdminMaintenance";
+import AdminFaqsPage from "@/pages/AdminFaqs";
+import AdminEventsPage from "@/pages/AdminEvents";
+import AdminModsPage from "@/pages/AdminMods";
 
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
@@ -89,6 +92,9 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   rules: { title: "Rules", description: "Edit the sections shown on the public Rules page." },
   alerts: { title: "Alert Settings", description: "Configure webhook payload templates and alert recipients." },
   maintenance: { title: "Maintenance", description: "Update the maintenance page content, branding, and allowlist." },
+  faqs: { title: "FAQs", description: "Manage frequently asked questions." },
+  events: { title: "Events", description: "Schedule and manage server events." },
+  mods: { title: "Mods", description: "Add, edit, and remove mods." },
   "resource-packs": { title: "Resource Packs", description: "Manage discoverable resource packs." },
   "data-packs": { title: "Data Packs", description: "Manage discoverable data packs." },
   shaders: { title: "Shaders", description: "Manage discoverable shaders." },
@@ -162,6 +168,9 @@ const Admin = () => {
       {section === "rules" && <RulesTab />}
       {section === "alerts" && <AlertsTab />}
       {section === "maintenance" && <MaintenanceTab />}
+      {section === "faqs" && <AdminFaqsPage />}
+      {section === "events" && <AdminEventsPage />}
+      {section === "mods" && <AdminModsPage />}
       {section === "resource-packs" && <DiscoverItemsAdminTab kind="resource_pack" />}
       {section === "data-packs" && <DiscoverItemsAdminTab kind="data_pack" />}
       {section === "shaders" && <DiscoverItemsAdminTab kind="shader" />}

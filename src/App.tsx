@@ -10,8 +10,6 @@ import { AuthProvider } from "@/lib/auth";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import Admin from "./pages/Admin.tsx";
-import AdminRoles from "./pages/AdminRoles.tsx";
-import AdminPermissions from "./pages/AdminPermissions.tsx";
 import News from "./pages/News.tsx";
 import NewsArticle from "./pages/NewsArticle.tsx";
 import Staff from "./pages/Staff.tsx";
@@ -29,18 +27,11 @@ import Changelog from "./pages/Changelog.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import LinkAccount from "./pages/LinkAccount.tsx";
 import Apply from "./pages/Apply.tsx";
-import AdminChangelog from "./pages/AdminChangelog.tsx";
-import AdminNews from "./pages/AdminNews.tsx";
-import AdminApplications from "./pages/AdminApplications.tsx";
 import Features from "./pages/Features.tsx";
 import FeatureDetail from "./pages/FeatureDetail.tsx";
 import Leaderboard from "./pages/Leaderboard.tsx";
 import Faq from "./pages/Faq.tsx";
 import Events from "./pages/Events.tsx";
-import AdminFaqs from "./pages/AdminFaqs.tsx";
-import AdminEvents from "./pages/AdminEvents.tsx";
-import AdminMaintenance from "./pages/AdminMaintenance.tsx";
-import AdminMods from "./pages/AdminMods.tsx";
 import Mods from "./pages/Mods.tsx";
 import ModDetail from "./pages/ModDetail.tsx";
 import ModTiers from "./pages/ModTiers.tsx";
@@ -77,16 +68,7 @@ const Shell = () => {
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/admin" element={<Admin />} />
-                  <Route path="/admin/roles" element={<AdminRoles />} />
-                  <Route path="/admin/permissions" element={<AdminPermissions />} />
-                  <Route path="/admin/changelog" element={<AdminChangelog />} />
-                  <Route path="/admin/applications" element={<AdminApplications />} />
-                  <Route path="/admin/news" element={<AdminNews />} />
-                  <Route path="/admin/announcements" element={<AdminNews />} />
-                  <Route path="/admin/faqs" element={<AdminFaqs />} />
-                  <Route path="/admin/events" element={<AdminEvents />} />
-                  <Route path="/admin/maintenance" element={<Navigate to="/admin?tab=maintenance" replace />} />
-                  <Route path="/admin/mods" element={<AdminMods />} />
+                  <Route path="/admin/announcements" element={<Navigate to="/admin?tab=news" replace />} />
                   <Route path="/admin/:tab" element={<AdminTabRedirect />} />
                   <Route path="/discover/mods" element={<Mods />} />
                   <Route path="/mod/:slug" element={<ModDetail />} />
