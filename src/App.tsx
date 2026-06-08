@@ -58,6 +58,12 @@ import Status from "./pages/Status.tsx";
 
 const queryClient = new QueryClient();
 
+// Generic fallback: any unmatched /admin/<seg> URL becomes /admin?tab=<seg>.
+const AdminTabRedirect = () => {
+  const { tab } = useParams();
+  return <Navigate to={`/admin?tab=${tab ?? ""}`} replace />;
+};
+
 const Shell = () => {
   const { pathname } = useLocation();
   const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
