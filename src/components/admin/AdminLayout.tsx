@@ -19,6 +19,7 @@ import {
 export type AdminSection =
   | "dashboard" | "users" | "roles" | "permissions" | "news" | "content" | "status" | "logs" | "tickets" | "plugins"
   | "changelog" | "applications" | "features" | "rules" | "alerts" | "maintenance"
+  | "faqs" | "events" | "mods"
   | "resource-packs" | "data-packs" | "shaders" | "modpacks" | "servers"
   | "bot-dashboard" | "bot-management";
 
