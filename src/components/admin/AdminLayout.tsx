@@ -50,9 +50,9 @@ const items: NavItem[] = [
   { kind: "link", id: "features", icon: Sparkles, label: "Features" },
   { kind: "link", id: "rules", icon: Gavel, label: "Rules" },
   
-  { kind: "route", to: "/admin/faqs", icon: HelpCircle, label: "FAQs" },
-  { kind: "route", to: "/admin/events", icon: Calendar, label: "Events" },
-  { kind: "route", to: "/admin/mods", icon: Boxes, label: "Mods" },
+  { kind: "link", id: "faqs", icon: HelpCircle, label: "FAQs" },
+  { kind: "link", id: "events", icon: Calendar, label: "Events" },
+  { kind: "link", id: "mods", icon: Boxes, label: "Mods" },
   { kind: "link", id: "maintenance", icon: Wrench, label: "Maintenance" },
   { kind: "section", title: "Discord Bot", icon: Bot },
   { kind: "link", id: "bot-dashboard", icon: LayoutDashboard, label: "Bot Dashboard" },
