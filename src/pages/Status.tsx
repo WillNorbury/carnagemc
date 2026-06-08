@@ -208,7 +208,7 @@ const Status = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <main className="flex-1 pt-24 pb-16">
-        <div className="container max-w-5xl">
+        <div className="container max-w-5xl px-4">
           <div className="text-center mb-10">
             <Badge variant="secondary" className="mb-4 text-primary border-primary/40">
               <Activity className="h-3 w-3 mr-1" /> System Status
