@@ -189,7 +189,7 @@ const Status = () => {
   const serviceCurrent: Record<string, DayStatus> = useMemo(() => {
     const today = toDayKey(new Date());
     const out: Record<string, DayStatus> = {};
-    for (const s of SERVICES) {
+    for (const s of services) {
       const rec = byService.get(s.key)?.get(today);
       out[s.key] = statusFromPct(rec?.pct ?? null, rec?.total ?? 0);
     }
@@ -300,7 +300,7 @@ const Status = () => {
           </div>
 
           <div className="space-y-4">
-            {SERVICES.map((s) => {
+            {services.map((s) => {
               const current = serviceCurrent[s.key];
               const days = byService.get(s.key);
               let total = 0,
