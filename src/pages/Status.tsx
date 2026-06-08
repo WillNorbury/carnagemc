@@ -194,7 +194,7 @@ const Status = () => {
       out[s.key] = statusFromPct(rec?.pct ?? null, rec?.total ?? 0);
     }
     return out;
-  }, [byService]);
+  }, [byService, services]);
 
   const worstNow: DayStatus = useMemo(() => {
     const vals = Object.values(serviceCurrent);
