@@ -88,6 +88,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   features: { title: "Features", description: "Add, edit, reorder, and remove features shown on the website." },
   rules: { title: "Rules", description: "Edit the sections shown on the public Rules page." },
   alerts: { title: "Alert Settings", description: "Configure webhook payload templates and alert recipients." },
+  maintenance: { title: "Maintenance", description: "Update the maintenance page content, branding, and allowlist." },
   "resource-packs": { title: "Resource Packs", description: "Manage discoverable resource packs." },
   "data-packs": { title: "Data Packs", description: "Manage discoverable data packs." },
   shaders: { title: "Shaders", description: "Manage discoverable shaders." },
