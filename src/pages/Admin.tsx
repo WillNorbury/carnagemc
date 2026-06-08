@@ -1402,6 +1402,19 @@ const ContentTab = () => {
 
 const StatusTab = () => {
   const [s, setS] = useState({ online: true, players_online: 0, players_max: 500, motd: "" });
+  const [page, setPage] = useState<{
+    title: string;
+    subtitle: string;
+    footnote: string;
+    services: { key: string; name: string; desc: string }[];
+  }>({
+    title: "HavocSMP Status",
+    subtitle: "Live uptime — automated checks every 5 minutes.",
+    footnote: "",
+    services: [],
+  });
+  const [savingPage, setSavingPage] = useState(false);
+
   useEffect(() => {
     supabase
       .from("server_status")
@@ -1418,38 +1431,172 @@ const StatusTab = () => {
             motd: data.motd ?? "",
           }),
       );
+    supabase
+      .from("site_content")
+      .select("value")
+      .eq("key", "status_page")
+      .maybeSingle()
+      .then(({ data }) => {
+        const v = (data?.value as any) ?? {};
+        setPage((p) => ({
+          title: v.title ?? p.title,
+          subtitle: v.subtitle ?? p.subtitle,
+          footnote: v.footnote ?? "",
+          services: Array.isArray(v.services) && v.services.length ? v.services : [
+            { key: "website", name: "Website", desc: "Main site & dashboard" },
+            { key: "minecraft", name: "Minecraft Server", desc: "play.xylomc.net" },
+            { key: "api", name: "API & Database", desc: "Backend services" },
+            { key: "panel", name: "Panel", desc: "panel.voxelnode.dev" },
+            { key: "discord", name: "Discord Server", desc: "https://discord.gg/V8xYY2DasZ" },
+          ],
+        }));
+      });
   }, []);
+
   const save = async () => {
     const { error } = await supabase.from("server_status").update(s).eq("id", 1);
     if (error) return toast.error(error.message);
     toast.success("Status updated");
   };
+
+  const savePage = async () => {
+    setSavingPage(true);
+    const cleanedServices = page.services
+      .map((svc) => ({
+        key: svc.key.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-"),
+        name: svc.name.trim(),
+        desc: svc.desc.trim(),
+      }))
+      .filter((svc) => svc.key && svc.name);
+    const { error } = await supabase
+      .from("site_content")
+      .upsert({ key: "status_page", value: { ...page, services: cleanedServices } as any }, { onConflict: "key" });
+    setSavingPage(false);
+    if (error) return toast.error(error.message);
+    toast.success("Status page updated");
+    setPage((p) => ({ ...p, services: cleanedServices }));
+  };
+
+  const updateService = (idx: number, patch: Partial<{ key: string; name: string; desc: string }>) => {
+    setPage((p) => ({
+      ...p,
+      services: p.services.map((svc, i) => (i === idx ? { ...svc, ...patch } : svc)),
+    }));
+  };
+
+  const addService = () => {
+    setPage((p) => ({ ...p, services: [...p.services, { key: "", name: "", desc: "" }] }));
+  };
+
+  const removeService = (idx: number) => {
+    setPage((p) => ({ ...p, services: p.services.filter((_, i) => i !== idx) }));
+  };
+
   return (
-    <Card className="p-6 space-y-4 max-w-xl">
-      <div className="flex items-center gap-2">
-        <Switch checked={s.online} onCheckedChange={(c) => setS({ ...s, online: c })} />
-        <Label>Server online</Label>
-      </div>
-      <div>
-        <Label>Players online</Label>
-        <Input
-          type="number"
-          value={s.players_online}
-          onChange={(e) => setS({ ...s, players_online: +e.target.value })}
-        />
-      </div>
-      <div>
-        <Label>Max players</Label>
-        <Input type="number" value={s.players_max} onChange={(e) => setS({ ...s, players_max: +e.target.value })} />
-      </div>
-      <div>
-        <Label>MOTD</Label>
-        <Input value={s.motd} onChange={(e) => setS({ ...s, motd: e.target.value })} />
-      </div>
-      <Button onClick={save}>Save</Button>
-    </Card>
+    <div className="space-y-6">
+      <Card className="p-6 space-y-4 max-w-2xl">
+        <div>
+          <h2 className="font-bold text-lg">Status page content</h2>
+          <p className="text-xs text-muted-foreground">Edit the public /status page heading and tracked services.</p>
+        </div>
+        <div>
+          <Label>Page title</Label>
+          <Input value={page.title} onChange={(e) => setPage({ ...page, title: e.target.value })} />
+        </div>
+        <div>
+          <Label>Subtitle</Label>
+          <Input value={page.subtitle} onChange={(e) => setPage({ ...page, subtitle: e.target.value })} />
+        </div>
+        <div>
+          <Label>Footnote (optional)</Label>
+          <Textarea
+            value={page.footnote}
+            onChange={(e) => setPage({ ...page, footnote: e.target.value })}
+            placeholder="Optional message shown below the services list."
+          />
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label>Tracked services</Label>
+            <Button size="sm" variant="outline" onClick={addService}>
+              <Plus className="h-3.5 w-3.5 mr-1" /> Add service
+            </Button>
+          </div>
+          {page.services.length === 0 && (
+            <p className="text-xs text-muted-foreground">No services yet. Add one to display it on /status.</p>
+          )}
+          {page.services.map((svc, i) => (
+            <div key={i} className="grid grid-cols-12 gap-2 items-start p-3 rounded-md border border-border bg-secondary/30">
+              <div className="col-span-12 sm:col-span-3">
+                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Key</Label>
+                <Input
+                  value={svc.key}
+                  onChange={(e) => updateService(i, { key: e.target.value })}
+                  placeholder="website"
+                />
+              </div>
+              <div className="col-span-12 sm:col-span-3">
+                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Name</Label>
+                <Input
+                  value={svc.name}
+                  onChange={(e) => updateService(i, { name: e.target.value })}
+                  placeholder="Website"
+                />
+              </div>
+              <div className="col-span-11 sm:col-span-5">
+                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Description</Label>
+                <Input
+                  value={svc.desc}
+                  onChange={(e) => updateService(i, { desc: e.target.value })}
+                  placeholder="Main site & dashboard"
+                />
+              </div>
+              <div className="col-span-1 flex justify-end pt-5">
+                <Button size="icon" variant="ghost" onClick={() => removeService(i)}>
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <Button onClick={savePage} disabled={savingPage}>
+          {savingPage ? "Saving…" : "Save page content"}
+        </Button>
+      </Card>
+
+      <Card className="p-6 space-y-4 max-w-xl">
+        <div>
+          <h2 className="font-bold text-lg">Manual status override</h2>
+          <p className="text-xs text-muted-foreground">Used by the legacy server_status display.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Switch checked={s.online} onCheckedChange={(c) => setS({ ...s, online: c })} />
+          <Label>Server online</Label>
+        </div>
+        <div>
+          <Label>Players online</Label>
+          <Input
+            type="number"
+            value={s.players_online}
+            onChange={(e) => setS({ ...s, players_online: +e.target.value })}
+          />
+        </div>
+        <div>
+          <Label>Max players</Label>
+          <Input type="number" value={s.players_max} onChange={(e) => setS({ ...s, players_max: +e.target.value })} />
+        </div>
+        <div>
+          <Label>MOTD</Label>
+          <Input value={s.motd} onChange={(e) => setS({ ...s, motd: e.target.value })} />
+        </div>
+        <Button onClick={save}>Save</Button>
+      </Card>
+    </div>
   );
 };
+
 
 const LogsTab = () => {
   const [logs, setLogs] = useState<any[]>([]);
