@@ -56,27 +56,28 @@ export const usePermissionMatrix = () => {
 export const usePermissions = () => {
   const { user, isAdmin } = useAuth();
   const { matrix, loading: matrixLoading } = usePermissionMatrix();
-  const [roles, setRoles] = useState<AppRole[]>([]);
+  const [roles, setRoles] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
     if (!user) { setRoles([]); setLoading(false); return; }
-    supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .then(({ data }) => {
-        if (!active) return;
-        setRoles(((data ?? []) as { role: AppRole }[]).map((r) => r.role));
-        setLoading(false);
-      });
+    Promise.all([
+      supabase.from("user_roles").select("role").eq("user_id", user.id),
+      supabase.from("user_custom_roles").select("role_key").eq("user_id", user.id),
+    ]).then(([builtIn, custom]) => {
+      if (!active) return;
+      const a = ((builtIn.data ?? []) as { role: string }[]).map((r) => r.role);
+      const b = ((custom.data ?? []) as { role_key: string }[]).map((r) => r.role_key);
+      setRoles([...a, ...b]);
+      setLoading(false);
+    });
     return () => { active = false; };
   }, [user]);
 
   const allowedSet = new Set<string>();
   for (const r of roles) {
-    const list = matrix[r] ?? [];
+    const list = (matrix as any)[r] ?? [];
     list.forEach((p) => allowedSet.add(p));
   }
 

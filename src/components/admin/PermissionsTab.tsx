@@ -16,9 +16,35 @@ import {
   type PermissionMatrix,
 } from "@/lib/permissions";
 import { usePermissionMatrix, savePermissionMatrix } from "@/lib/usePermissions";
+import { supabase } from "@/integrations/supabase/client";
+
+type RoleOption = { value: string; label: string; emoji: string; isCustom?: boolean };
 
 export const PermissionsTab = () => {
   const { matrix: stored, loading: matrixLoading } = usePermissionMatrix();
+  const [customRoles, setCustomRoles] = useState<RoleOption[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("custom_roles")
+      .select("key,label,emoji")
+      .order("rank", { ascending: true })
+      .then(({ data }) => {
+        setCustomRoles(
+          ((data ?? []) as { key: string; label: string; emoji: string }[]).map((r) => ({
+            value: r.key,
+            label: r.label,
+            emoji: r.emoji || "⭐",
+            isCustom: true,
+          }))
+        );
+      });
+  }, []);
+
+  const allRoles: RoleOption[] = useMemo(
+    () => [...ALL_ROLES.map((r) => ({ value: r.value, label: r.label, emoji: r.emoji })), ...customRoles],
+    [customRoles]
+  );
   const [matrix, setMatrix] = useState<PermissionMatrix>({});
   const [search, setSearch] = useState("");
   const [saving, setSaving] = useState(false);
@@ -27,36 +53,36 @@ export const PermissionsTab = () => {
   useEffect(() => {
     if (!matrixLoading) {
       const next: PermissionMatrix = {};
-      for (const r of ALL_ROLES) next[r.value as AppRole] = [...(stored[r.value as AppRole] ?? [])];
+      for (const r of allRoles) next[r.value as AppRole] = [...((stored as any)[r.value] ?? [])];
       setMatrix(next);
     }
-  }, [matrixLoading, stored]);
+  }, [matrixLoading, stored, allRoles]);
 
-  const has = (role: AppRole, key: string) => (matrix[role] ?? []).includes(key);
+  const has = (role: string, key: string) => ((matrix as any)[role] ?? []).includes(key);
 
-  const toggle = (role: AppRole, key: string) => {
+  const toggle = (role: string, key: string) => {
     setMatrix((m) => {
-      const list = new Set(m[role] ?? []);
+      const list = new Set((m as any)[role] ?? []);
       if (list.has(key)) list.delete(key); else list.add(key);
-      return { ...m, [role]: Array.from(list) };
+      return { ...m, [role]: Array.from(list) } as PermissionMatrix;
     });
     setDirty(true);
   };
 
-  const setAllForRole = (role: AppRole, on: boolean) => {
-    setMatrix((m) => ({ ...m, [role]: on ? [...ALL_PERMISSION_KEYS] : [] }));
+  const setAllForRole = (role: string, on: boolean) => {
+    setMatrix((m) => ({ ...m, [role]: on ? [...ALL_PERMISSION_KEYS] : [] } as PermissionMatrix));
     setDirty(true);
   };
 
   const setAllForPerm = (key: string, on: boolean) => {
     setMatrix((m) => {
-      const next: PermissionMatrix = { ...m };
-      for (const r of ALL_ROLES) {
-        const list = new Set(next[r.value as AppRole] ?? []);
+      const next: any = { ...m };
+      for (const r of allRoles) {
+        const list = new Set(next[r.value] ?? []);
         if (on) list.add(key); else list.delete(key);
-        next[r.value as AppRole] = Array.from(list);
+        next[r.value] = Array.from(list);
       }
-      return next;
+      return next as PermissionMatrix;
     });
     setDirty(true);
   };
@@ -64,7 +90,7 @@ export const PermissionsTab = () => {
   const resetDefaults = async () => {
     if (!(await confirm({ title: "Reset permissions?", description: "All permissions will be reset to defaults. Unsaved changes will be lost.", confirmText: "Reset", destructive: true }))) return;
     const next: PermissionMatrix = {};
-    for (const r of ALL_ROLES) next[r.value as AppRole] = [...(DEFAULT_PERMISSIONS[r.value as AppRole] ?? [])];
+    for (const r of allRoles) (next as any)[r.value] = [...((DEFAULT_PERMISSIONS as any)[r.value] ?? [])];
     setMatrix(next);
     setDirty(true);
   };
@@ -139,11 +165,15 @@ export const PermissionsTab = () => {
               <thead className="bg-secondary/40 sticky top-0 z-10">
                 <tr>
                   <th className="text-left p-3 font-medium w-[280px] border-b">Permission</th>
-                  {ALL_ROLES.map((r) => (
+                  {allRoles.map((r) => (
                     <th key={r.value} className="p-2 font-medium text-center border-b min-w-[80px]">
                       <div className="text-xs flex flex-col items-center gap-1">
-                        <span>{r.label}</span>
-                        {isStaffRole(r.value) && (
+                        <span>{r.emoji} {r.label}</span>
+                        {r.isCustom ? (
+                          <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent/40 text-foreground/70 border border-border">
+                            Custom
+                          </span>
+                        ) : isStaffRole(r.value) && (
                           <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/15 text-primary border border-primary/30">
                             Staff
                           </span>
@@ -157,12 +187,12 @@ export const PermissionsTab = () => {
                 {filteredGroups.map((g) => (
                   <>
                     <tr key={`g-${g.group}`} className="bg-secondary/20">
-                      <td colSpan={ALL_ROLES.length + 1} className="p-2 px-3 text-xs uppercase tracking-wider text-muted-foreground font-semibold border-b">
+                      <td colSpan={allRoles.length + 1} className="p-2 px-3 text-xs uppercase tracking-wider text-muted-foreground font-semibold border-b">
                         {g.group}
                       </td>
                     </tr>
                     {g.permissions.map((p) => {
-                      const allOn = ALL_ROLES.every((r) => has(r.value as AppRole, p.key));
+                      const allOn = allRoles.every((r) => has(r.value, p.key));
                       return (
                         <tr key={p.key} className="hover:bg-secondary/20 border-b border-border/50">
                           <td className="p-3">
@@ -175,11 +205,11 @@ export const PermissionsTab = () => {
                               {allOn ? "Clear all" : "Grant to all"}
                             </button>
                           </td>
-                          {ALL_ROLES.map((r) => (
+                          {allRoles.map((r) => (
                             <td key={r.value} className="text-center p-2">
                               <Checkbox
-                                checked={has(r.value as AppRole, p.key)}
-                                onCheckedChange={() => toggle(r.value as AppRole, p.key)}
+                                checked={has(r.value, p.key)}
+                                onCheckedChange={() => toggle(r.value, p.key)}
                               />
                             </td>
                           ))}
@@ -190,13 +220,13 @@ export const PermissionsTab = () => {
                 ))}
                 <tr className="bg-secondary/30">
                   <td className="p-3 text-xs text-muted-foreground">Bulk actions per role</td>
-                  {ALL_ROLES.map((r) => {
-                    const list = matrix[r.value as AppRole] ?? [];
+                  {allRoles.map((r) => {
+                    const list = (matrix as any)[r.value] ?? [];
                     const allOn = list.length === ALL_PERMISSION_KEYS.length;
                     return (
                       <td key={r.value} className="text-center p-2">
                         <button
-                          onClick={() => setAllForRole(r.value as AppRole, !allOn)}
+                          onClick={() => setAllForRole(r.value, !allOn)}
                           className="text-[10px] text-primary/80 hover:text-primary"
                         >
                           {allOn ? "None" : "All"}
@@ -214,13 +244,17 @@ export const PermissionsTab = () => {
       <Card className="p-4">
         <div className="text-sm font-semibold mb-2">Summary</div>
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {ALL_ROLES.map((r) => {
-            const count = (matrix[r.value as AppRole] ?? []).length;
+          {allRoles.map((r) => {
+            const count = ((matrix as any)[r.value] ?? []).length;
             return (
               <div key={r.value} className="flex items-center justify-between p-2 rounded bg-secondary/30">
                 <span className="text-sm flex items-center gap-2">
-                  {roleLabel(r.value)}
-                  {isStaffRole(r.value) && (
+                  {r.emoji} {r.label}
+                  {r.isCustom ? (
+                    <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent/40 text-foreground/70 border border-border">
+                      Custom
+                    </span>
+                  ) : isStaffRole(r.value) && (
                     <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/15 text-primary border border-primary/30">
                       Staff
                     </span>
