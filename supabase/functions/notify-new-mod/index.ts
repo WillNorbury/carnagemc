@@ -68,10 +68,10 @@ Deno.serve(async (req) => {
     const embed: any = {
       title: `🧩 New Mod: ${name}`,
       url,
-      description: description || "A new mod has just been published on XyloMC.",
+      description: description || "A new mod has just been published on HavocSMP.",
       color: 0xff7a1a,
       fields,
-      footer: { text: "XyloMC · Mods" },
+      footer: { text: "HavocSMP · Mods" },
       timestamp: new Date().toISOString(),
     };
     if (icon_url) embed.thumbnail = { url: icon_url };
