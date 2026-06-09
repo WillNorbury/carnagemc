@@ -157,7 +157,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-      <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Explore</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -189,14 +188,8 @@ export function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         )}
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Websites</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>{websites.map(renderItem)}</SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
+
 
       <SidebarFooter>
         {user ? (
