@@ -100,11 +100,12 @@ export function AppSidebar() {
   };
 
   const isActive = (path: string) => pathname === path;
+  const isExternal = (path: string) => /^https?:\/\//.test(path);
   const renderItem = (l: { to: string; label: string; icon: typeof Home; soon?: boolean }) => (
     <SidebarMenuItem key={l.to}>
       <SidebarMenuButton
         asChild={!l.soon}
-        isActive={isActive(l.to)}
+        isActive={!isExternal(l.to) && isActive(l.to)}
         tooltip={l.soon ? `${l.label} (Soon)` : l.label}
         disabled={l.soon}
         aria-disabled={l.soon}
@@ -120,6 +121,11 @@ export function AppSidebar() {
               </span>
             )}
           </div>
+        ) : isExternal(l.to) ? (
+          <a href={l.to} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+            <l.icon className="h-4 w-4 shrink-0" />
+            {!collapsed && <span className="uppercase tracking-wider text-xs">{l.label}</span>}
+          </a>
         ) : (
           <Link to={l.to} onClick={closeMobile} className="flex items-center gap-2">
             <l.icon className="h-4 w-4 shrink-0" />
@@ -175,6 +181,13 @@ export function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         )}
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Websites</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>{websites.map(renderItem)}</SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter>
