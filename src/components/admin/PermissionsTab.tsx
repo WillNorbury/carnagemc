@@ -53,36 +53,36 @@ export const PermissionsTab = () => {
   useEffect(() => {
     if (!matrixLoading) {
       const next: PermissionMatrix = {};
-      for (const r of ALL_ROLES) next[r.value as AppRole] = [...(stored[r.value as AppRole] ?? [])];
+      for (const r of allRoles) next[r.value as AppRole] = [...((stored as any)[r.value] ?? [])];
       setMatrix(next);
     }
-  }, [matrixLoading, stored]);
+  }, [matrixLoading, stored, allRoles]);
 
-  const has = (role: AppRole, key: string) => (matrix[role] ?? []).includes(key);
+  const has = (role: string, key: string) => ((matrix as any)[role] ?? []).includes(key);
 
-  const toggle = (role: AppRole, key: string) => {
+  const toggle = (role: string, key: string) => {
     setMatrix((m) => {
-      const list = new Set(m[role] ?? []);
+      const list = new Set((m as any)[role] ?? []);
       if (list.has(key)) list.delete(key); else list.add(key);
-      return { ...m, [role]: Array.from(list) };
+      return { ...m, [role]: Array.from(list) } as PermissionMatrix;
     });
     setDirty(true);
   };
 
-  const setAllForRole = (role: AppRole, on: boolean) => {
-    setMatrix((m) => ({ ...m, [role]: on ? [...ALL_PERMISSION_KEYS] : [] }));
+  const setAllForRole = (role: string, on: boolean) => {
+    setMatrix((m) => ({ ...m, [role]: on ? [...ALL_PERMISSION_KEYS] : [] } as PermissionMatrix));
     setDirty(true);
   };
 
   const setAllForPerm = (key: string, on: boolean) => {
     setMatrix((m) => {
-      const next: PermissionMatrix = { ...m };
-      for (const r of ALL_ROLES) {
-        const list = new Set(next[r.value as AppRole] ?? []);
+      const next: any = { ...m };
+      for (const r of allRoles) {
+        const list = new Set(next[r.value] ?? []);
         if (on) list.add(key); else list.delete(key);
-        next[r.value as AppRole] = Array.from(list);
+        next[r.value] = Array.from(list);
       }
-      return next;
+      return next as PermissionMatrix;
     });
     setDirty(true);
   };
@@ -90,7 +90,7 @@ export const PermissionsTab = () => {
   const resetDefaults = async () => {
     if (!(await confirm({ title: "Reset permissions?", description: "All permissions will be reset to defaults. Unsaved changes will be lost.", confirmText: "Reset", destructive: true }))) return;
     const next: PermissionMatrix = {};
-    for (const r of ALL_ROLES) next[r.value as AppRole] = [...(DEFAULT_PERMISSIONS[r.value as AppRole] ?? [])];
+    for (const r of allRoles) (next as any)[r.value] = [...((DEFAULT_PERMISSIONS as any)[r.value] ?? [])];
     setMatrix(next);
     setDirty(true);
   };
