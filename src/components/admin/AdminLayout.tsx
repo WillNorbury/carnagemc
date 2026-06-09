@@ -7,21 +7,67 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import logo from "@/assets/xylo-logo.png";
+import logo from "@/assets/havocsmp-logo.png";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
 import {
-  LayoutDashboard, Users, Newspaper, FileText, Server, ScrollText, Activity,
-  PanelLeft, LogOut, Shield, Bot, Code, Ticket, KeyRound, Puzzle, ClipboardList, Zap, Sparkles, Gavel,
-  HelpCircle, Calendar, Wrench, Menu, Boxes, Package, Database, Sun, Layers, Globe,
+  LayoutDashboard,
+  Users,
+  Newspaper,
+  FileText,
+  Server,
+  ScrollText,
+  Activity,
+  PanelLeft,
+  LogOut,
+  Shield,
+  Bot,
+  Code,
+  Ticket,
+  KeyRound,
+  Puzzle,
+  ClipboardList,
+  Zap,
+  Sparkles,
+  Gavel,
+  HelpCircle,
+  Calendar,
+  Wrench,
+  Menu,
+  Boxes,
+  Package,
+  Database,
+  Sun,
+  Layers,
+  Globe,
 } from "lucide-react";
 
-
 export type AdminSection =
-  | "dashboard" | "users" | "roles" | "permissions" | "news" | "content" | "status" | "logs" | "tickets" | "plugins"
-  | "changelog" | "applications" | "features" | "rules" | "alerts" | "maintenance"
-  | "faqs" | "events" | "mods"
-  | "resource-packs" | "data-packs" | "shaders" | "modpacks" | "servers"
-  | "bot-dashboard" | "bot-management";
+  | "dashboard"
+  | "users"
+  | "roles"
+  | "permissions"
+  | "news"
+  | "content"
+  | "status"
+  | "logs"
+  | "tickets"
+  | "plugins"
+  | "changelog"
+  | "applications"
+  | "features"
+  | "rules"
+  | "alerts"
+  | "maintenance"
+  | "faqs"
+  | "events"
+  | "mods"
+  | "resource-packs"
+  | "data-packs"
+  | "shaders"
+  | "modpacks"
+  | "servers"
+  | "bot-dashboard"
+  | "bot-management";
 
 type NavItem =
   | { kind: "link"; id: AdminSection; icon: any; label: string }
@@ -49,7 +95,7 @@ const items: NavItem[] = [
   { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
   { kind: "link", id: "features", icon: Sparkles, label: "Features" },
   { kind: "link", id: "rules", icon: Gavel, label: "Rules" },
-  
+
   { kind: "link", id: "faqs", icon: HelpCircle, label: "FAQs" },
   { kind: "link", id: "events", icon: Calendar, label: "Events" },
   { kind: "link", id: "mods", icon: Boxes, label: "Mods" },
@@ -60,7 +106,13 @@ const items: NavItem[] = [
 ];
 
 export const AdminLayout = ({
-  current, onNavigate, title, description, actions, children, isOwner,
+  current,
+  onNavigate,
+  title,
+  description,
+  actions,
+  children,
+  isOwner,
 }: {
   current: AdminSection;
   onNavigate: (s: AdminSection) => void;
@@ -77,7 +129,8 @@ export const AdminLayout = ({
 
   const visibleItems = items.filter((it) => {
     if (it.kind === "section" && it.title === "Discord Bot") return isOwner ?? false;
-    if (it.kind === "link" && (it.id === "bot-dashboard" || it.id === "bot-management" || it.id === "permissions")) return isOwner ?? false;
+    if (it.kind === "link" && (it.id === "bot-dashboard" || it.id === "bot-management" || it.id === "permissions"))
+      return isOwner ?? false;
     return true;
   });
 
@@ -90,15 +143,27 @@ export const AdminLayout = ({
     const isCollapsed = forceExpanded ? false : collapsed;
     return (
       <>
-        <div className={cn("flex h-[60px] items-center border-b px-4 shrink-0", isCollapsed ? "justify-center" : "justify-between")}>
+        <div
+          className={cn(
+            "flex h-[60px] items-center border-b px-4 shrink-0",
+            isCollapsed ? "justify-center" : "justify-between",
+          )}
+        >
           {!isCollapsed && (
             <Link to="/" className="flex items-center gap-2 font-semibold" onClick={() => setMobileOpen(false)}>
               <img src={logo} alt="HavocSMP" className="h-7 w-7" />
-              <span className="text-lg">XYLO<span className="text-gradient">MC</span></span>
+              <span className="text-lg">
+                XYLO<span className="text-gradient">MC</span>
+              </span>
             </Link>
           )}
           {!forceExpanded && (
-            <Button variant="ghost" size="icon" className="h-8 w-8 hidden md:inline-flex" onClick={() => setCollapsed(!collapsed)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hidden md:inline-flex"
+              onClick={() => setCollapsed(!collapsed)}
+            >
               <PanelLeft className="h-5 w-5" />
             </Button>
           )}
@@ -110,7 +175,10 @@ export const AdminLayout = ({
               const SIcon = it.icon;
               if (isCollapsed) return <div key={`s-${idx}`} className="my-2 border-t border-border/60" />;
               return (
-                <div key={`s-${idx}`} className="px-3 pt-4 pb-1 flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground/80">
+                <div
+                  key={`s-${idx}`}
+                  className="px-3 pt-4 pb-1 flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground/80"
+                >
                   <SIcon className="h-3 w-3" />
                   {it.title}
                 </div>
@@ -124,7 +192,7 @@ export const AdminLayout = ({
                   onClick={() => setMobileOpen(false)}
                   className={cn(
                     "relative flex items-center gap-3 rounded-lg w-full transition-all hover:bg-accent hover:text-foreground text-muted-foreground",
-                    isCollapsed ? "h-9 w-9 justify-center mx-auto" : "px-3 py-2"
+                    isCollapsed ? "h-9 w-9 justify-center mx-auto" : "px-3 py-2",
                   )}
                 >
                   <Icon className="h-4 w-4" />
@@ -136,7 +204,9 @@ export const AdminLayout = ({
                   <TooltipTrigger asChild>{routeBtn}</TooltipTrigger>
                   <TooltipContent side="right">{it.label}</TooltipContent>
                 </Tooltip>
-              ) : <div key={it.to}>{routeBtn}</div>;
+              ) : (
+                <div key={it.to}>{routeBtn}</div>
+              );
             }
             const active = it.id === current;
             const btn = (
@@ -145,7 +215,7 @@ export const AdminLayout = ({
                 className={cn(
                   "relative flex items-center gap-3 rounded-lg w-full transition-all hover:bg-accent hover:text-foreground text-muted-foreground",
                   isCollapsed ? "h-9 w-9 justify-center mx-auto" : "px-3 py-2",
-                  active && "bg-accent text-foreground"
+                  active && "bg-accent text-foreground",
                 )}
               >
                 {active && <span className="absolute left-0 h-6 w-1 rounded-r-full bg-primary" />}
@@ -158,19 +228,20 @@ export const AdminLayout = ({
                 <TooltipTrigger asChild>{btn}</TooltipTrigger>
                 <TooltipContent side="right">{it.label}</TooltipContent>
               </Tooltip>
-            ) : <div key={it.id}>{btn}</div>;
+            ) : (
+              <div key={it.id}>{btn}</div>
+            );
           })}
         </nav>
 
         <div className="mt-auto border-t p-2 shrink-0">
-          {!isCollapsed && user && (
-            <div className="px-3 py-2 text-xs text-muted-foreground truncate">
-              {user.email}
-            </div>
-          )}
+          {!isCollapsed && user && <div className="px-3 py-2 text-xs text-muted-foreground truncate">{user.email}</div>}
           <Button
             variant="ghost"
-            className={cn("w-full text-muted-foreground", isCollapsed ? "h-9 w-9 justify-center p-0" : "justify-start gap-3 px-3")}
+            className={cn(
+              "w-full text-muted-foreground",
+              isCollapsed ? "h-9 w-9 justify-center p-0" : "justify-start gap-3 px-3",
+            )}
             onClick={() => signOut()}
           >
             <LogOut className="h-4 w-4" />
@@ -188,7 +259,7 @@ export const AdminLayout = ({
         <aside
           className={cn(
             "relative hidden md:flex flex-col h-screen sticky top-0 border-r bg-card transition-all duration-300 ease-in-out",
-            collapsed ? "w-20" : "w-64"
+            collapsed ? "w-20" : "w-64",
           )}
         >
           {navContent()}
@@ -210,7 +281,9 @@ export const AdminLayout = ({
               </Button>
               <Link to="/" className="flex items-center gap-2 font-semibold">
                 <img src={logo} alt="HavocSMP" className="h-6 w-6" />
-                <span className="text-sm">XYLO<span className="text-gradient">MC</span></span>
+                <span className="text-sm">
+                  XYLO<span className="text-gradient">MC</span>
+                </span>
               </Link>
               <ThemeToggle />
             </div>
@@ -225,9 +298,7 @@ export const AdminLayout = ({
                 <ThemeToggle className="hidden md:inline-flex" />
               </div>
             </div>
-            <div className="min-w-0 overflow-x-auto">
-              {children}
-            </div>
+            <div className="min-w-0 overflow-x-auto">{children}</div>
           </main>
         </ScrollArea>
       </div>
