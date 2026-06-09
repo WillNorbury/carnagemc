@@ -1443,11 +1443,11 @@ const StatusTab = () => {
           subtitle: v.subtitle ?? p.subtitle,
           footnote: v.footnote ?? "",
           services: Array.isArray(v.services) && v.services.length ? v.services : [
-            { key: "website", name: "Website", desc: "Main site & dashboard" },
-            { key: "minecraft", name: "Minecraft Server", desc: "play.xylomc.net" },
-            { key: "api", name: "API & Database", desc: "Backend services" },
-            { key: "panel", name: "Panel", desc: "panel.voxelnode.dev" },
-            { key: "discord", name: "Discord Server", desc: "https://discord.gg/V8xYY2DasZ" },
+            { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
+            { key: "minecraft", name: "Minecraft Server", desc: "play.xylomc.net", url: "" },
+            { key: "api", name: "API & Database", desc: "Backend services", url: "" },
+            { key: "panel", name: "Panel", desc: "panel.voxelnode.dev", url: "" },
+            { key: "discord", name: "Discord Server", desc: "https://discord.gg/V8xYY2DasZ", url: "" },
           ],
         }));
       });
@@ -1466,6 +1466,7 @@ const StatusTab = () => {
         key: svc.key.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-"),
         name: svc.name.trim(),
         desc: svc.desc.trim(),
+        url: svc.url.trim(),
       }))
       .filter((svc) => svc.key && svc.name);
     const { error } = await supabase
@@ -1477,7 +1478,7 @@ const StatusTab = () => {
     setPage((p) => ({ ...p, services: cleanedServices }));
   };
 
-  const updateService = (idx: number, patch: Partial<{ key: string; name: string; desc: string }>) => {
+  const updateService = (idx: number, patch: Partial<{ key: string; name: string; desc: string; url: string }>) => {
     setPage((p) => ({
       ...p,
       services: p.services.map((svc, i) => (i === idx ? { ...svc, ...patch } : svc)),
@@ -1485,7 +1486,7 @@ const StatusTab = () => {
   };
 
   const addService = () => {
-    setPage((p) => ({ ...p, services: [...p.services, { key: "", name: "", desc: "" }] }));
+    setPage((p) => ({ ...p, services: [...p.services, { key: "", name: "", desc: "", url: "" }] }));
   };
 
   const removeService = (idx: number) => {
