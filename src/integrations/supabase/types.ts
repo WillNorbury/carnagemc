@@ -170,6 +170,36 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_roles: {
+        Row: {
+          color: string
+          created_at: string
+          emoji: string
+          key: string
+          label: string
+          rank: number
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          emoji?: string
+          key: string
+          label: string
+          rank?: number
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          emoji?: string
+          key?: string
+          label?: string
+          rank?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       discord_bot_action_logs: {
         Row: {
           action: string
@@ -1225,6 +1255,35 @@ export type Database = {
           service_key?: string
         }
         Relationships: []
+      }
+      user_custom_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role_key: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role_key: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role_key?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_custom_roles_role_key_fkey"
+            columns: ["role_key"]
+            isOneToOne: false
+            referencedRelation: "custom_roles"
+            referencedColumns: ["key"]
+          },
+        ]
       }
       user_follows: {
         Row: {

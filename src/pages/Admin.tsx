@@ -51,6 +51,7 @@ import {
 import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
 import { DiscoverItemsAdminTab } from "@/components/admin/DiscoverItemsAdminTab";
 import { StatCard } from "@/components/admin/StatCard";
+import { CustomRolesManager, type CustomRole } from "@/components/admin/CustomRolesManager";
 import { ALL_ROLES, roleLabel, isStaffRole, type AppRole } from "@/lib/roles";
 import { usePermissions } from "@/lib/usePermissions";
 import { FeaturesTab } from "@/components/admin/FeaturesTab";
@@ -677,37 +678,72 @@ const UsersTab = () => {
 const RolesSection = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [roles, setRoles] = useState<RoleRow[]>([]);
+  const [customRoles, setCustomRoles] = useState<CustomRole[]>([]);
+  const [customAssignments, setCustomAssignments] = useState<
+    { user_id: string; role_key: string }[]
+  >([]);
   const [search, setSearch] = useState("");
-  const [drafts, setDrafts] = useState<Record<string, Set<AppRole>>>({});
+  const [drafts, setDrafts] = useState<Record<string, Set<string>>>({});
   const [savingUid, setSavingUid] = useState<string | null>(null);
 
   // Bulk-across-users state
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
-  const [bulkAdd, setBulkAdd] = useState<Set<AppRole>>(new Set());
-  const [bulkRemove, setBulkRemove] = useState<Set<AppRole>>(new Set());
+  const [bulkAdd, setBulkAdd] = useState<Set<string>>(new Set());
+  const [bulkRemove, setBulkRemove] = useState<Set<string>>(new Set());
   const [bulkSaving, setBulkSaving] = useState(false);
 
+  const builtinKeys = useMemo(() => new Set(ALL_ROLES.map((r) => r.value as string)), []);
+  const customKeySet = useMemo(() => new Set(customRoles.map((r) => r.key)), [customRoles]);
+
+  const allRoleOptions = useMemo(
+    () => [
+      ...ALL_ROLES.map((r) => ({ value: r.value as string, label: r.label, custom: false })),
+      ...customRoles.map((r) => ({
+        value: r.key,
+        label: `${r.emoji} ${r.label}`,
+        custom: true,
+      })),
+    ],
+    [customRoles],
+  );
+
+  const labelFor = (key: string) => {
+    if (builtinKeys.has(key)) return roleLabel(key);
+    const c = customRoles.find((r) => r.key === key);
+    return c ? `${c.emoji} ${c.label}` : key;
+  };
+
   const load = async () => {
-    const [{ data: p }, { data: r }] = await Promise.all([
+    const [{ data: p }, { data: r }, { data: cr }, { data: uc }] = await Promise.all([
       supabase
         .from("profiles")
         .select("id, display_name, mc_username, created_at")
         .order("created_at", { ascending: false }),
       supabase.from("user_roles").select("id, user_id, role"),
+      supabase
+        .from("custom_roles")
+        .select("key,label,emoji,color,rank")
+        .order("rank", { ascending: true }),
+      supabase.from("user_custom_roles").select("user_id, role_key"),
     ]);
     setProfiles((p ?? []) as Profile[]);
     setRoles((r ?? []) as RoleRow[]);
+    setCustomRoles((cr ?? []) as CustomRole[]);
+    setCustomAssignments((uc ?? []) as { user_id: string; role_key: string }[]);
     setDrafts({});
   };
   useEffect(() => {
     load();
   }, []);
 
-  const rolesFor = (uid: string) => roles.filter((r) => r.user_id === uid);
-  const currentSetFor = (uid: string) => new Set(rolesFor(uid).map((r) => r.role));
+  const rolesFor = (uid: string): string[] => [
+    ...roles.filter((r) => r.user_id === uid).map((r) => r.role as string),
+    ...customAssignments.filter((c) => c.user_id === uid).map((c) => c.role_key),
+  ];
+  const currentSetFor = (uid: string) => new Set(rolesFor(uid));
   const draftFor = (uid: string) => drafts[uid] ?? currentSetFor(uid);
 
-  const toggleDraftRole = (uid: string, role: AppRole) => {
+  const toggleDraftRole = (uid: string, role: string) => {
     setDrafts((d) => {
       const base = new Set(d[uid] ?? currentSetFor(uid));
       if (base.has(role)) base.delete(role);
@@ -733,6 +769,42 @@ const RolesSection = () => {
     return false;
   };
 
+  const applyDiffForUser = async (uid: string, toAdd: string[], toRemove: string[]) => {
+    const addBuiltin = toAdd.filter((k) => builtinKeys.has(k)) as AppRole[];
+    const addCustom = toAdd.filter((k) => customKeySet.has(k));
+    const removeBuiltin = toRemove.filter((k) => builtinKeys.has(k)) as AppRole[];
+    const removeCustom = toRemove.filter((k) => customKeySet.has(k));
+
+    if (addBuiltin.length) {
+      const { error } = await supabase
+        .from("user_roles")
+        .insert(addBuiltin.map((role) => ({ user_id: uid, role })));
+      if (error) throw error;
+    }
+    if (addCustom.length) {
+      const { error } = await supabase
+        .from("user_custom_roles")
+        .insert(addCustom.map((role_key) => ({ user_id: uid, role_key })));
+      if (error) throw error;
+    }
+    if (removeBuiltin.length) {
+      const { error } = await supabase
+        .from("user_roles")
+        .delete()
+        .eq("user_id", uid)
+        .in("role", removeBuiltin);
+      if (error) throw error;
+    }
+    if (removeCustom.length) {
+      const { error } = await supabase
+        .from("user_custom_roles")
+        .delete()
+        .eq("user_id", uid)
+        .in("role_key", removeCustom);
+      if (error) throw error;
+    }
+  };
+
   const saveUser = async (uid: string) => {
     const draft = drafts[uid];
     if (!draft) return;
@@ -743,15 +815,10 @@ const RolesSection = () => {
 
     setSavingUid(uid);
     try {
-      if (toAdd.length) {
-        const { error } = await supabase.from("user_roles").insert(toAdd.map((role) => ({ user_id: uid, role })));
-        if (error) throw error;
-      }
-      if (toRemove.length) {
-        const { error } = await supabase.from("user_roles").delete().eq("user_id", uid).in("role", toRemove);
-        if (error) throw error;
-      }
-      toast.success(`Updated ${toAdd.length + toRemove.length} role${toAdd.length + toRemove.length === 1 ? "" : "s"}`);
+      await applyDiffForUser(uid, toAdd, toRemove);
+      toast.success(
+        `Updated ${toAdd.length + toRemove.length} role${toAdd.length + toRemove.length === 1 ? "" : "s"}`,
+      );
       await load();
     } catch (e: any) {
       toast.error(e.message ?? "Failed to update roles");
@@ -779,7 +846,7 @@ const RolesSection = () => {
   const selectAllVisible = () => setSelectedUsers(new Set(filtered.map((p) => p.id)));
   const clearSelection = () => setSelectedUsers(new Set());
 
-  const toggleBulk = (set: Set<AppRole>, setFn: (s: Set<AppRole>) => void, role: AppRole) => {
+  const toggleBulk = (set: Set<string>, setFn: (s: Set<string>) => void, role: string) => {
     const next = new Set(set);
     if (next.has(role)) next.delete(role);
     else next.add(role);
@@ -797,16 +864,9 @@ const RolesSection = () => {
         const cur = currentSetFor(uid);
         const toAdd = [...bulkAdd].filter((r) => !cur.has(r));
         const toRemove = [...bulkRemove].filter((r) => cur.has(r));
-        if (toAdd.length) {
-          const { error } = await supabase.from("user_roles").insert(toAdd.map((role) => ({ user_id: uid, role })));
-          if (error) throw error;
-          added += toAdd.length;
-        }
-        if (toRemove.length) {
-          const { error } = await supabase.from("user_roles").delete().eq("user_id", uid).in("role", toRemove);
-          if (error) throw error;
-          removed += toRemove.length;
-        }
+        await applyDiffForUser(uid, toAdd, toRemove);
+        added += toAdd.length;
+        removed += toRemove.length;
       }
       toast.success(
         `Bulk update: +${added} / −${removed} across ${selectedUsers.size} user${selectedUsers.size === 1 ? "" : "s"}`,
@@ -829,9 +889,9 @@ const RolesSection = () => {
     exclude,
   }: {
     label: string;
-    selected: Set<AppRole>;
-    onToggle: (r: AppRole) => void;
-    exclude?: Set<AppRole>;
+    selected: Set<string>;
+    onToggle: (r: string) => void;
+    exclude?: Set<string>;
   }) => (
     <Popover>
       <PopoverTrigger asChild>
@@ -847,20 +907,25 @@ const RolesSection = () => {
       </PopoverTrigger>
       <PopoverContent className="w-64 p-2" align="start">
         <div className="max-h-64 overflow-y-auto space-y-0.5">
-          {ALL_ROLES.map((r) => {
-            const disabled = exclude?.has(r.value as AppRole);
-            const checked = selected.has(r.value as AppRole);
+          {allRoleOptions.map((r) => {
+            const disabled = exclude?.has(r.value);
+            const checked = selected.has(r.value);
             return (
               <button
                 key={r.value}
                 disabled={disabled}
-                onClick={() => onToggle(r.value as AppRole)}
+                onClick={() => onToggle(r.value)}
                 className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-accent ${checked ? "bg-accent/50" : ""} ${disabled ? "opacity-40 cursor-not-allowed" : ""}`}
               >
                 <span className="flex h-4 w-4 items-center justify-center rounded border border-border bg-background">
                   {checked && <Check className="h-3 w-3 text-primary" />}
                 </span>
                 <span className="text-sm">{r.label}</span>
+                {r.custom && (
+                  <Badge variant="outline" className="ml-auto text-[10px]">
+                    custom
+                  </Badge>
+                )}
               </button>
             );
           })}
@@ -871,10 +936,12 @@ const RolesSection = () => {
 
   return (
     <div className="space-y-4">
+      <CustomRolesManager onChanged={load} />
+
       <Card className="p-4">
         <div className="text-sm text-muted-foreground mb-2">Available roles</div>
         <div className="flex flex-wrap gap-2">
-          {ALL_ROLES.map((r) => (
+          {allRoleOptions.map((r) => (
             <Badge key={r.value} variant="secondary">
               {r.label}
             </Badge>
@@ -966,18 +1033,23 @@ const RolesSection = () => {
                       </PopoverTrigger>
                       <PopoverContent className="w-64 p-2" align="end">
                         <div className="max-h-72 overflow-y-auto space-y-0.5">
-                          {ALL_ROLES.map((r) => {
-                            const checked = draft.has(r.value as AppRole);
+                          {allRoleOptions.map((r) => {
+                            const checked = draft.has(r.value);
                             return (
                               <button
                                 key={r.value}
-                                onClick={() => toggleDraftRole(p.id, r.value as AppRole)}
+                                onClick={() => toggleDraftRole(p.id, r.value)}
                                 className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-accent ${checked ? "bg-accent/50" : ""}`}
                               >
                                 <span className="flex h-4 w-4 items-center justify-center rounded border border-border bg-background">
                                   {checked && <Check className="h-3 w-3 text-primary" />}
                                 </span>
                                 <span className="text-sm">{r.label}</span>
+                                {r.custom && (
+                                  <Badge variant="outline" className="ml-auto text-[10px]">
+                                    custom
+                                  </Badge>
+                                )}
                               </button>
                             );
                           })}
@@ -1006,12 +1078,12 @@ const RolesSection = () => {
                         variant="outline"
                         className={`gap-1 ${isNew ? "border-primary/60 text-primary" : ""}`}
                       >
-                        {roleLabel(role)}
+                        {labelFor(role)}
                         {isNew && <span className="text-[10px] opacity-70">new</span>}
                         <button
                           onClick={() => toggleDraftRole(p.id, role)}
                           className="ml-1 hover:text-destructive"
-                          aria-label={`Remove ${roleLabel(role)}`}
+                          aria-label={`Remove ${labelFor(role)}`}
                         >
                           <X className="h-3 w-3" />
                         </button>
@@ -1026,11 +1098,11 @@ const RolesSection = () => {
                         variant="outline"
                         className="gap-1 border-destructive/40 text-destructive line-through opacity-70"
                       >
-                        {roleLabel(role)}
+                        {labelFor(role)}
                         <button
                           onClick={() => toggleDraftRole(p.id, role)}
                           className="ml-1 no-underline"
-                          aria-label={`Restore ${roleLabel(role)}`}
+                          aria-label={`Restore ${labelFor(role)}`}
                         >
                           <Plus className="h-3 w-3" />
                         </button>
