@@ -244,13 +244,17 @@ export const PermissionsTab = () => {
       <Card className="p-4">
         <div className="text-sm font-semibold mb-2">Summary</div>
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {ALL_ROLES.map((r) => {
-            const count = (matrix[r.value as AppRole] ?? []).length;
+          {allRoles.map((r) => {
+            const count = ((matrix as any)[r.value] ?? []).length;
             return (
               <div key={r.value} className="flex items-center justify-between p-2 rounded bg-secondary/30">
                 <span className="text-sm flex items-center gap-2">
-                  {roleLabel(r.value)}
-                  {isStaffRole(r.value) && (
+                  {r.emoji} {r.label}
+                  {r.isCustom ? (
+                    <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent/40 text-foreground/70 border border-border">
+                      Custom
+                    </span>
+                  ) : isStaffRole(r.value) && (
                     <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/15 text-primary border border-primary/30">
                       Staff
                     </span>
