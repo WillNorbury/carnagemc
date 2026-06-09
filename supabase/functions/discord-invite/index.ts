@@ -42,11 +42,12 @@ async function extractCode(input: string): Promise<string | null> {
     try {
       const parsed = new URL(trimmed);
       if (parsed.protocol !== "https:") return null;
-      // Prevent SSRF: only fetch URLs that already point at a Discord-owned host.
-      if (!ALLOWED_FETCH_HOSTS.has(parsed.hostname)) return null;
+      // Follow redirects from arbitrary HTTPS hosts (vanity domains like
+      // discord.havocsmp.net), but only accept the code if the FINAL resolved
+      // URL lands on a Discord-owned host.
       const r = await fetch(parsed.toString(), {
         redirect: "follow",
-        headers: { "User-Agent": "XyloMC-Site/1.0" },
+        headers: { "User-Agent": "HavocSMP-Site/1.0" },
       });
       const finalUrl = new URL(r.url);
       await r.body?.cancel();
@@ -67,7 +68,7 @@ Deno.serve(async (req) => {
   try {
     const url = new URL(req.url);
     const raw = url.searchParams.get("invite") ?? url.searchParams.get("code") ?? "";
-    const fallbacks = ["qAEs87VeXM", "xylomc", "xylo"];
+    const fallbacks: string[] = [];
     const resolved = await extractCode(raw);
     const candidates = [resolved, ...fallbacks].filter(Boolean) as string[];
 
