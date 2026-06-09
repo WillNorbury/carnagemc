@@ -1447,7 +1447,7 @@ const StatusTab = () => {
             { key: "minecraft", name: "Minecraft Server", desc: "havocsmp.net", url: "" },
             { key: "api", name: "API & Database", desc: "Backend services", url: "" },
             { key: "panel", name: "Panel", desc: "panel.voxelnode.dev", url: "" },
-            { key: "discord", name: "Discord Server", desc: "https://discord.gg/V8xYY2DasZ", url: "" },
+            { key: "discord", name: "Discord Server", desc: "https://discord.gg/wD6K3nr2MG", url: "" },
           ],
         }));
       });
