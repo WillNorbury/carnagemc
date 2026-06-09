@@ -49,6 +49,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const websites = [{ to: "https://portfolio.havocsmp.net", label: "Portfolio", icon: Link2 }];
+
 const publicLinks = [
   { to: "/", label: "Home", icon: Home },
   { to: "/users", label: "Users", icon: UsersIcon },
@@ -155,8 +157,6 @@ export function AppSidebar() {
             <SidebarMenu>{discoverLinks.map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-
 
         {user && (
           <SidebarGroup>
