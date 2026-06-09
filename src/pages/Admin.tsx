@@ -1406,7 +1406,7 @@ const StatusTab = () => {
     title: string;
     subtitle: string;
     footnote: string;
-    services: { key: string; name: string; desc: string }[];
+    services: { key: string; name: string; desc: string; url: string }[];
   }>({
     title: "HavocSMP Status",
     subtitle: "Live uptime — automated checks every 5 minutes.",
