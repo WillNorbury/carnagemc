@@ -18,7 +18,7 @@ const RANGES: { label: string; value: Range }[] = [
 
 const DEFAULT_SERVICES: { key: string; name: string; desc: string; url: string }[] = [
   { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
-  { key: "minecraft", name: "Minecraft Server", desc: "play.xylomc.net", url: "" },
+  { key: "minecraft", name: "Minecraft Server", desc: "havocsmp.net", url: "" },
   { key: "api", name: "API & Database", desc: "Backend services", url: "" },
   { key: "panel", name: "Panel", desc: "panel.voxelnode.dev", url: "" },
   { key: "discord", name: "Discord Server", desc: "https://discord.gg/V8xYY2DasZ", url: "" },
