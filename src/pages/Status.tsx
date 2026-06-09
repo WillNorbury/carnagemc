@@ -16,12 +16,12 @@ const RANGES: { label: string; value: Range }[] = [
   { label: "30 days", value: 30 },
 ];
 
-const DEFAULT_SERVICES: { key: string; name: string; desc: string }[] = [
-  { key: "website", name: "Website", desc: "Main site & dashboard" },
-  { key: "minecraft", name: "Minecraft Server", desc: "play.xylomc.net" },
-  { key: "api", name: "API & Database", desc: "Backend services" },
-  { key: "panel", name: "Panel", desc: "panel.voxelnode.dev" },
-  { key: "discord", name: "Discord Server", desc: "https://discord.gg/V8xYY2DasZ" },
+const DEFAULT_SERVICES: { key: string; name: string; desc: string; url: string }[] = [
+  { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
+  { key: "minecraft", name: "Minecraft Server", desc: "play.xylomc.net", url: "" },
+  { key: "api", name: "API & Database", desc: "Backend services", url: "" },
+  { key: "panel", name: "Panel", desc: "panel.voxelnode.dev", url: "" },
+  { key: "discord", name: "Discord Server", desc: "https://discord.gg/V8xYY2DasZ", url: "" },
 ];
 
 type DailyRow = {
