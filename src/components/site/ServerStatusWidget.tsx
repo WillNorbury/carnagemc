@@ -20,15 +20,20 @@ interface Props {
 }
 
 const ServerStatusWidget = ({ className = "", compact = false }: Props) => {
-  const [ip, setIp] = useState("play.havocsmp.net");
+  const [ip, setIp] = useState("havocsmp.net");
   const [status, setStatus] = useState<Status | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from("site_content").select("value").eq("key", "server").maybeSingle().then(({ data }) => {
-      const v = data?.value as any;
-      if (v?.ip) setIp(v.ip);
-    });
+    supabase
+      .from("site_content")
+      .select("value")
+      .eq("key", "server")
+      .maybeSingle()
+      .then(({ data }) => {
+        const v = data?.value as any;
+        if (v?.ip) setIp(v.ip);
+      });
   }, []);
 
   useEffect(() => {
@@ -54,10 +59,16 @@ const ServerStatusWidget = ({ className = "", compact = false }: Props) => {
     };
     fetchStatus();
     const t = setInterval(fetchStatus, 60_000);
-    return () => { cancelled = true; clearInterval(t); };
+    return () => {
+      cancelled = true;
+      clearInterval(t);
+    };
   }, [ip]);
 
-  const copyIp = () => { navigator.clipboard.writeText(ip); toast.success("Server IP copied"); };
+  const copyIp = () => {
+    navigator.clipboard.writeText(ip);
+    toast.success("Server IP copied");
+  };
 
   return (
     <Card className={`relative overflow-hidden border-primary/30 ${className}`}>
@@ -77,21 +88,31 @@ const ServerStatusWidget = ({ className = "", compact = false }: Props) => {
               <div className="font-display font-bold">HavocSMP</div>
             </div>
           </div>
-          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider border ${
-            loading
-              ? "border-border text-muted-foreground"
-              : status?.online
-              ? "border-primary/50 text-primary bg-primary/10 animate-pulse-glow"
-              : "border-destructive/50 text-destructive bg-destructive/10"
-          }`}>
-            {loading ? <span className="h-2 w-2 rounded-full bg-muted-foreground" />
-              : status?.online ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+          <div
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider border ${
+              loading
+                ? "border-border text-muted-foreground"
+                : status?.online
+                  ? "border-primary/50 text-primary bg-primary/10 animate-pulse-glow"
+                  : "border-destructive/50 text-destructive bg-destructive/10"
+            }`}
+          >
+            {loading ? (
+              <span className="h-2 w-2 rounded-full bg-muted-foreground" />
+            ) : status?.online ? (
+              <Wifi className="h-3 w-3" />
+            ) : (
+              <WifiOff className="h-3 w-3" />
+            )}
             {loading ? "Checking…" : status?.online ? "Online" : "Offline"}
           </div>
         </div>
 
         {/* IP copy bar */}
-        <button onClick={copyIp} className="group w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg bg-secondary/60 border border-border hover:border-primary/60 transition mb-4">
+        <button
+          onClick={copyIp}
+          className="group w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg bg-secondary/60 border border-border hover:border-primary/60 transition mb-4"
+        >
           <div className="text-left min-w-0">
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Server IP</div>
             <div className="font-mono font-bold truncate">{ip}</div>
@@ -108,14 +129,14 @@ const ServerStatusWidget = ({ className = "", compact = false }: Props) => {
             label="Players"
             value={status ? `${status.players_online} / ${status.players_max}` : "—"}
           />
-          <Stat
-            icon={<Server className="h-4 w-4" />}
-            label="Version"
-            value={status?.version ?? "—"}
-          />
+          <Stat icon={<Server className="h-4 w-4" />} label="Version" value={status?.version ?? "—"} />
           {!compact && (
             <Stat
-              icon={<span className={`h-2 w-2 rounded-full ${status?.online ? "bg-primary animate-pulse" : "bg-destructive"}`} />}
+              icon={
+                <span
+                  className={`h-2 w-2 rounded-full ${status?.online ? "bg-primary animate-pulse" : "bg-destructive"}`}
+                />
+              }
               label="Status"
               value={status?.online ? "Live" : "Down"}
             />
