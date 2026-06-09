@@ -68,7 +68,7 @@ Deno.serve(async (req) => {
   try {
     const url = new URL(req.url);
     const raw = url.searchParams.get("invite") ?? url.searchParams.get("code") ?? "";
-    const fallbacks = ["qAEs87VeXM", "xylomc", "xylo"];
+    const fallbacks: string[] = [];
     const resolved = await extractCode(raw);
     const candidates = [resolved, ...fallbacks].filter(Boolean) as string[];
 
