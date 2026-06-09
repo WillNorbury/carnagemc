@@ -336,7 +336,18 @@ const Status = () => {
                 <Card key={s.key} className="p-5 hover-glow">
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div>
-                      <div className="font-display font-bold">{s.name}</div>
+                      {s.url ? (
+                        <a
+                          href={s.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-display font-bold hover:text-primary hover:underline"
+                        >
+                          {s.name}
+                        </a>
+                      ) : (
+                        <div className="font-display font-bold">{s.name}</div>
+                      )}
                       <div className="text-xs text-muted-foreground">{s.desc}</div>
                     </div>
                     <Badge variant="secondary" className="border-border shrink-0">
