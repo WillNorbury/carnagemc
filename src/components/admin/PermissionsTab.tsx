@@ -165,11 +165,15 @@ export const PermissionsTab = () => {
               <thead className="bg-secondary/40 sticky top-0 z-10">
                 <tr>
                   <th className="text-left p-3 font-medium w-[280px] border-b">Permission</th>
-                  {ALL_ROLES.map((r) => (
+                  {allRoles.map((r) => (
                     <th key={r.value} className="p-2 font-medium text-center border-b min-w-[80px]">
                       <div className="text-xs flex flex-col items-center gap-1">
-                        <span>{r.label}</span>
-                        {isStaffRole(r.value) && (
+                        <span>{r.emoji} {r.label}</span>
+                        {r.isCustom ? (
+                          <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent/40 text-foreground/70 border border-border">
+                            Custom
+                          </span>
+                        ) : isStaffRole(r.value) && (
                           <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/15 text-primary border border-primary/30">
                             Staff
                           </span>
@@ -183,12 +187,12 @@ export const PermissionsTab = () => {
                 {filteredGroups.map((g) => (
                   <>
                     <tr key={`g-${g.group}`} className="bg-secondary/20">
-                      <td colSpan={ALL_ROLES.length + 1} className="p-2 px-3 text-xs uppercase tracking-wider text-muted-foreground font-semibold border-b">
+                      <td colSpan={allRoles.length + 1} className="p-2 px-3 text-xs uppercase tracking-wider text-muted-foreground font-semibold border-b">
                         {g.group}
                       </td>
                     </tr>
                     {g.permissions.map((p) => {
-                      const allOn = ALL_ROLES.every((r) => has(r.value as AppRole, p.key));
+                      const allOn = allRoles.every((r) => has(r.value, p.key));
                       return (
                         <tr key={p.key} className="hover:bg-secondary/20 border-b border-border/50">
                           <td className="p-3">
@@ -201,11 +205,11 @@ export const PermissionsTab = () => {
                               {allOn ? "Clear all" : "Grant to all"}
                             </button>
                           </td>
-                          {ALL_ROLES.map((r) => (
+                          {allRoles.map((r) => (
                             <td key={r.value} className="text-center p-2">
                               <Checkbox
-                                checked={has(r.value as AppRole, p.key)}
-                                onCheckedChange={() => toggle(r.value as AppRole, p.key)}
+                                checked={has(r.value, p.key)}
+                                onCheckedChange={() => toggle(r.value, p.key)}
                               />
                             </td>
                           ))}
@@ -216,13 +220,13 @@ export const PermissionsTab = () => {
                 ))}
                 <tr className="bg-secondary/30">
                   <td className="p-3 text-xs text-muted-foreground">Bulk actions per role</td>
-                  {ALL_ROLES.map((r) => {
-                    const list = matrix[r.value as AppRole] ?? [];
+                  {allRoles.map((r) => {
+                    const list = (matrix as any)[r.value] ?? [];
                     const allOn = list.length === ALL_PERMISSION_KEYS.length;
                     return (
                       <td key={r.value} className="text-center p-2">
                         <button
-                          onClick={() => setAllForRole(r.value as AppRole, !allOn)}
+                          onClick={() => setAllForRole(r.value, !allOn)}
                           className="text-[10px] text-primary/80 hover:text-primary"
                         >
                           {allOn ? "None" : "All"}
