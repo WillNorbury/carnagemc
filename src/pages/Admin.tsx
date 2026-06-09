@@ -51,6 +51,7 @@ import {
 import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
 import { DiscoverItemsAdminTab } from "@/components/admin/DiscoverItemsAdminTab";
 import { StatCard } from "@/components/admin/StatCard";
+import { CustomRolesManager, type CustomRole } from "@/components/admin/CustomRolesManager";
 import { ALL_ROLES, roleLabel, isStaffRole, type AppRole } from "@/lib/roles";
 import { usePermissions } from "@/lib/usePermissions";
 import { FeaturesTab } from "@/components/admin/FeaturesTab";
