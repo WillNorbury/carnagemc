@@ -77,7 +77,7 @@ export const usePermissions = () => {
 
   const allowedSet = new Set<string>();
   for (const r of roles) {
-    const list = matrix[r] ?? [];
+    const list = (matrix as any)[r] ?? [];
     list.forEach((p) => allowedSet.add(p));
   }
 
