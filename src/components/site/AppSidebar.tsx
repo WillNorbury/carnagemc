@@ -151,6 +151,14 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel>Websites</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>{websites.map(renderItem)}</SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+      <SidebarContent>
+        <SidebarGroup>
           <SidebarGroupLabel>Explore</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{publicLinks.map(renderItem)}</SidebarMenu>
