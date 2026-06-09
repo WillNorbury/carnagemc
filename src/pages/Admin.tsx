@@ -1529,7 +1529,7 @@ const StatusTab = () => {
           )}
           {page.services.map((svc, i) => (
             <div key={i} className="grid grid-cols-12 gap-2 items-start p-3 rounded-md border border-border bg-secondary/30">
-              <div className="col-span-12 sm:col-span-3">
+              <div className="col-span-6 sm:col-span-2">
                 <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Key</Label>
                 <Input
                   value={svc.key}
@@ -1537,7 +1537,7 @@ const StatusTab = () => {
                   placeholder="website"
                 />
               </div>
-              <div className="col-span-12 sm:col-span-3">
+              <div className="col-span-6 sm:col-span-2">
                 <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Name</Label>
                 <Input
                   value={svc.name}
@@ -1545,7 +1545,7 @@ const StatusTab = () => {
                   placeholder="Website"
                 />
               </div>
-              <div className="col-span-11 sm:col-span-5">
+              <div className="col-span-10 sm:col-span-4">
                 <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Description</Label>
                 <Input
                   value={svc.desc}
@@ -1553,7 +1553,15 @@ const StatusTab = () => {
                   placeholder="Main site & dashboard"
                 />
               </div>
-              <div className="col-span-1 flex justify-end pt-5">
+              <div className="col-span-10 sm:col-span-3">
+                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Link URL</Label>
+                <Input
+                  value={svc.url}
+                  onChange={(e) => updateService(i, { url: e.target.value })}
+                  placeholder="https://..."
+                />
+              </div>
+              <div className="col-span-2 sm:col-span-1 flex justify-end pt-5">
                 <Button size="icon" variant="ghost" onClick={() => removeService(i)}>
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
