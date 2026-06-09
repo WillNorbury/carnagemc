@@ -103,7 +103,7 @@ const Support = () => {
               </div>
               <p className="text-sm text-muted-foreground mb-4">Open a ticket in our #support channel for instant help from staff and the community.</p>
               <Button asChild className="w-full glow">
-                <a href="https://discord.havocsmp.net" target="_blank" rel="noreferrer">Join Discord</a>
+                <a href="https://discord.gg/wD6K3nr2MG" target="_blank" rel="noreferrer">Join Discord</a>
               </Button>
             </Card>
             <Card className="p-7 border-border hover-lift hover-glow">

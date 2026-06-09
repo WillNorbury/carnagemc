@@ -106,7 +106,7 @@ const Index = () => {
 
   // Fetch live Discord member count via server-side proxy (reliable, no CORS/rate-limit issues)
   useEffect(() => {
-    const inviteRaw: string = content.server?.discord ?? "https://discord.gg/qAEs87VeXM";
+    const inviteRaw: string = content.server?.discord ?? "https://discord.gg/wD6K3nr2MG";
     let cancelled = false;
 
     const load = async () => {
@@ -367,7 +367,7 @@ const Index = () => {
                 asChild
                 className="font-display uppercase tracking-wider px-7 border-primary/40 hover:border-primary hover:text-primary"
               >
-                <a href={content.server?.discord ?? "https://discord.havocsmp.net"} target="_blank" rel="noreferrer">
+                <a href={content.server?.discord ?? "https://discord.gg/wD6K3nr2MG"} target="_blank" rel="noreferrer">
                   <MessageCircle className="h-4 w-4 mr-2" /> Discord
                 </a>
               </Button>
