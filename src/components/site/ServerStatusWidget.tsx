@@ -35,15 +35,15 @@ const ServerStatusWidget = ({ className = "", compact = false }: Props) => {
     let cancelled = false;
     const fetchStatus = async () => {
       try {
-        const r = await fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(ip)}`);
+        const r = await fetch(`https://api.mcstatus.io/v2/status/java/${encodeURIComponent(ip)}?query=false`);
         const j = await r.json();
         if (cancelled) return;
         setStatus({
           online: !!j.online,
           players_online: j.players?.online ?? 0,
           players_max: j.players?.max ?? 0,
-          motd: Array.isArray(j.motd?.clean) ? j.motd.clean.join(" ").trim() : null,
-          version: j.version ?? null,
+          motd: j.motd?.clean?.trim() || null,
+          version: j.version?.name_clean ?? null,
           icon: j.icon ?? null,
         });
       } catch {
