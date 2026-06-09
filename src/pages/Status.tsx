@@ -16,12 +16,12 @@ const RANGES: { label: string; value: Range }[] = [
   { label: "30 days", value: 30 },
 ];
 
-const DEFAULT_SERVICES: { key: string; name: string; desc: string }[] = [
-  { key: "website", name: "Website", desc: "Main site & dashboard" },
-  { key: "minecraft", name: "Minecraft Server", desc: "play.xylomc.net" },
-  { key: "api", name: "API & Database", desc: "Backend services" },
-  { key: "panel", name: "Panel", desc: "panel.voxelnode.dev" },
-  { key: "discord", name: "Discord Server", desc: "https://discord.gg/V8xYY2DasZ" },
+const DEFAULT_SERVICES: { key: string; name: string; desc: string; url: string }[] = [
+  { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
+  { key: "minecraft", name: "Minecraft Server", desc: "play.xylomc.net", url: "" },
+  { key: "api", name: "API & Database", desc: "Backend services", url: "" },
+  { key: "panel", name: "Panel", desc: "panel.voxelnode.dev", url: "" },
+  { key: "discord", name: "Discord Server", desc: "https://discord.gg/V8xYY2DasZ", url: "" },
 ];
 
 type DailyRow = {
@@ -336,7 +336,18 @@ const Status = () => {
                 <Card key={s.key} className="p-5 hover-glow">
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div>
-                      <div className="font-display font-bold">{s.name}</div>
+                      {s.url ? (
+                        <a
+                          href={s.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-display font-bold hover:text-primary hover:underline"
+                        >
+                          {s.name}
+                        </a>
+                      ) : (
+                        <div className="font-display font-bold">{s.name}</div>
+                      )}
                       <div className="text-xs text-muted-foreground">{s.desc}</div>
                     </div>
                     <Badge variant="secondary" className="border-border shrink-0">

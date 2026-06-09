@@ -1406,7 +1406,7 @@ const StatusTab = () => {
     title: string;
     subtitle: string;
     footnote: string;
-    services: { key: string; name: string; desc: string }[];
+    services: { key: string; name: string; desc: string; url: string }[];
   }>({
     title: "HavocSMP Status",
     subtitle: "Live uptime — automated checks every 5 minutes.",
@@ -1443,11 +1443,11 @@ const StatusTab = () => {
           subtitle: v.subtitle ?? p.subtitle,
           footnote: v.footnote ?? "",
           services: Array.isArray(v.services) && v.services.length ? v.services : [
-            { key: "website", name: "Website", desc: "Main site & dashboard" },
-            { key: "minecraft", name: "Minecraft Server", desc: "play.xylomc.net" },
-            { key: "api", name: "API & Database", desc: "Backend services" },
-            { key: "panel", name: "Panel", desc: "panel.voxelnode.dev" },
-            { key: "discord", name: "Discord Server", desc: "https://discord.gg/V8xYY2DasZ" },
+            { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
+            { key: "minecraft", name: "Minecraft Server", desc: "play.xylomc.net", url: "" },
+            { key: "api", name: "API & Database", desc: "Backend services", url: "" },
+            { key: "panel", name: "Panel", desc: "panel.voxelnode.dev", url: "" },
+            { key: "discord", name: "Discord Server", desc: "https://discord.gg/V8xYY2DasZ", url: "" },
           ],
         }));
       });
@@ -1466,6 +1466,7 @@ const StatusTab = () => {
         key: svc.key.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-"),
         name: svc.name.trim(),
         desc: svc.desc.trim(),
+        url: svc.url.trim(),
       }))
       .filter((svc) => svc.key && svc.name);
     const { error } = await supabase
@@ -1477,7 +1478,7 @@ const StatusTab = () => {
     setPage((p) => ({ ...p, services: cleanedServices }));
   };
 
-  const updateService = (idx: number, patch: Partial<{ key: string; name: string; desc: string }>) => {
+  const updateService = (idx: number, patch: Partial<{ key: string; name: string; desc: string; url: string }>) => {
     setPage((p) => ({
       ...p,
       services: p.services.map((svc, i) => (i === idx ? { ...svc, ...patch } : svc)),
@@ -1485,7 +1486,7 @@ const StatusTab = () => {
   };
 
   const addService = () => {
-    setPage((p) => ({ ...p, services: [...p.services, { key: "", name: "", desc: "" }] }));
+    setPage((p) => ({ ...p, services: [...p.services, { key: "", name: "", desc: "", url: "" }] }));
   };
 
   const removeService = (idx: number) => {
@@ -1528,7 +1529,7 @@ const StatusTab = () => {
           )}
           {page.services.map((svc, i) => (
             <div key={i} className="grid grid-cols-12 gap-2 items-start p-3 rounded-md border border-border bg-secondary/30">
-              <div className="col-span-12 sm:col-span-3">
+              <div className="col-span-6 sm:col-span-2">
                 <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Key</Label>
                 <Input
                   value={svc.key}
@@ -1536,7 +1537,7 @@ const StatusTab = () => {
                   placeholder="website"
                 />
               </div>
-              <div className="col-span-12 sm:col-span-3">
+              <div className="col-span-6 sm:col-span-2">
                 <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Name</Label>
                 <Input
                   value={svc.name}
@@ -1544,7 +1545,7 @@ const StatusTab = () => {
                   placeholder="Website"
                 />
               </div>
-              <div className="col-span-11 sm:col-span-5">
+              <div className="col-span-10 sm:col-span-4">
                 <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Description</Label>
                 <Input
                   value={svc.desc}
@@ -1552,7 +1553,15 @@ const StatusTab = () => {
                   placeholder="Main site & dashboard"
                 />
               </div>
-              <div className="col-span-1 flex justify-end pt-5">
+              <div className="col-span-10 sm:col-span-3">
+                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Link URL</Label>
+                <Input
+                  value={svc.url}
+                  onChange={(e) => updateService(i, { url: e.target.value })}
+                  placeholder="https://..."
+                />
+              </div>
+              <div className="col-span-2 sm:col-span-1 flex justify-end pt-5">
                 <Button size="icon" variant="ghost" onClick={() => removeService(i)}>
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
