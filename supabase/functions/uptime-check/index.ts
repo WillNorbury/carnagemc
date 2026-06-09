@@ -55,7 +55,7 @@ async function checkHttp(
 async function checkMinecraft(service_key: string, host: string): Promise<Check> {
   const start = Date.now();
   try {
-    const r = await fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(host)}`);
+    const r = await fetch(`https://api.mcstatus.io/v2/status/java/${encodeURIComponent(host)}?query=false`);
     const j = await r.json();
     return {
       service_key,
