@@ -139,7 +139,7 @@ Deno.serve(async (req) => {
     .filter((s) => /^https?:\/\//i.test(s));
   const allUrls = [...new Set([...webhookUrls, ...envUrls])];
 
-  let mcHost = "play.xylomc.net"; /* Changing this soon */
+  let mcHost = "havocsmp.net";
   try {
     const { data } = await supabase.from("site_content").select("value").eq("key", "server").maybeSingle();
     const v = data?.value as { ip?: string } | null;
