@@ -16,9 +16,35 @@ import {
   type PermissionMatrix,
 } from "@/lib/permissions";
 import { usePermissionMatrix, savePermissionMatrix } from "@/lib/usePermissions";
+import { supabase } from "@/integrations/supabase/client";
+
+type RoleOption = { value: string; label: string; emoji: string; isCustom?: boolean };
 
 export const PermissionsTab = () => {
   const { matrix: stored, loading: matrixLoading } = usePermissionMatrix();
+  const [customRoles, setCustomRoles] = useState<RoleOption[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("custom_roles")
+      .select("key,label,emoji")
+      .order("rank", { ascending: true })
+      .then(({ data }) => {
+        setCustomRoles(
+          ((data ?? []) as { key: string; label: string; emoji: string }[]).map((r) => ({
+            value: r.key,
+            label: r.label,
+            emoji: r.emoji || "⭐",
+            isCustom: true,
+          }))
+        );
+      });
+  }, []);
+
+  const allRoles: RoleOption[] = useMemo(
+    () => [...ALL_ROLES.map((r) => ({ value: r.value, label: r.label, emoji: r.emoji })), ...customRoles],
+    [customRoles]
+  );
   const [matrix, setMatrix] = useState<PermissionMatrix>({});
   const [search, setSearch] = useState("");
   const [saving, setSaving] = useState(false);
