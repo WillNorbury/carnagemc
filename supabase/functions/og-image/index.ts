@@ -1,5 +1,5 @@
 // Dynamic Open Graph image generator.
-// Renders a 1200x630 PNG with a title, optional subtitle/eyebrow and the XyloMC brand.
+// Renders a 1200x630 PNG with a title, optional subtitle/eyebrow and the HavocSMP brand.
 // Query params: ?title=...&subtitle=...&eyebrow=...
 //
 // Uses resvg_wasm to rasterize an SVG to PNG. Cached at the edge for 24h.
@@ -156,7 +156,7 @@ Deno.serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    const title = (url.searchParams.get("title") || "XyloMC").slice(0, 200);
+    const title = (url.searchParams.get("title") || "HavocSMP").slice(0, 200);
     const subtitle = (url.searchParams.get("subtitle") || "").slice(0, 240) || undefined;
     const eyebrow = (url.searchParams.get("eyebrow") || "").slice(0, 40) || undefined;
 

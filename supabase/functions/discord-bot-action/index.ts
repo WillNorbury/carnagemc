@@ -59,7 +59,7 @@ function buildStatusEmbed(mc: any, serverIp: string) {
   const version = mc?.version ?? "—";
   const players = `${mc?.players?.online ?? 0} / ${mc?.players?.max ?? 0}`;
   return {
-    title: online ? "🟢 XyloMC — Online" : "🔴 XyloMC — Offline",
+    title: online ? "🟢 HavocSMP — Online" : "🔴 HavocSMP — Offline",
     description: motd ? `*${motd}*` : undefined,
     color: online ? 0x22c55e : 0xef4444,
     fields: [
@@ -68,7 +68,7 @@ function buildStatusEmbed(mc: any, serverIp: string) {
       { name: "Version", value: String(version), inline: true },
       { name: "IP", value: `\`${serverIp}\``, inline: false },
     ],
-    footer: { text: "XyloMC · Live status (auto-updated)" },
+    footer: { text: "HavocSMP · Live status (auto-updated)" },
     timestamp: new Date().toISOString(),
   };
 }
@@ -151,7 +151,7 @@ Deno.serve(async (req) => {
 
     if (action === "announce") {
       const channelId = body.channelId || cfg.announceChannelId;
-      const message = body.message || "📢 **Test announcement** from the XyloMC admin panel.";
+      const message = body.message || "📢 **Test announcement** from the HavocSMP admin panel.";
       if (!channelId) return json({ ok: false, error: "No announcements channel configured" });
       const r = await discordPost(channelId, token, {
         embeds: [
@@ -159,7 +159,7 @@ Deno.serve(async (req) => {
             title: "Announcement",
             description: message,
             color: 0x5865f2,
-            footer: { text: "XyloMC · Test" },
+            footer: { text: "HavocSMP · Test" },
             timestamp: new Date().toISOString(),
           },
         ],
@@ -223,7 +223,7 @@ Deno.serve(async (req) => {
     if (action === "welcome") {
       const channelId = body.channelId || cfg.welcomeChannelId || cfg.announceChannelId;
       if (!channelId) return json({ ok: false, error: "No welcome channel configured" });
-      const template = body.message || cfg.welcomeMessage || "Welcome to XyloMC, {user}!";
+      const template = body.message || cfg.welcomeMessage || "Welcome to HavocSMP, {user}!";
       const target = body.username || callerName;
       const rendered = template.replace(/\{user\}/g, `**${target}**`);
       const r = await discordPost(channelId, token, {
@@ -242,10 +242,10 @@ Deno.serve(async (req) => {
 
       const lines = SITE_ROLES.map((r) => `**${r.label}** — ${r.description}`).join("\n");
       const embed = applyOverride({
-        title: "XyloMC — Server Roles",
+        title: "HavocSMP — Server Roles",
         description: lines,
         color: 0x5865f2,
-        footer: { text: "XyloMC · Roles overview" },
+        footer: { text: "HavocSMP · Roles overview" },
         timestamp: new Date().toISOString(),
       }, "roles");
 
@@ -334,9 +334,9 @@ Deno.serve(async (req) => {
 
       if (action === "info") {
         embed = applyOverride({
-          title: "🍸 XyloMC — Server Info",
+          title: "🍸 HavocSMP — Server Info",
           description:
-            "Welcome to **XyloMC** — your home for premium survival, minigames, and community events.\n\nConnect using the details below and join the adventure!",
+            "Welcome to **HavocSMP** — your home for premium survival, minigames, and community events.\n\nConnect using the details below and join the adventure!",
           color: 0xff7a1a,
           thumbnail: { url: "https://api.mcsrvstat.us/icon/" + encodeURIComponent(serverIp) },
           fields: [
@@ -350,7 +350,7 @@ Deno.serve(async (req) => {
               inline: false,
             },
           ],
-          footer: { text: "XyloMC · See you in-game!" },
+          footer: { text: "HavocSMP · See you in-game!" },
           timestamp: new Date().toISOString(),
         }, "info");
         content = body.mention === false ? undefined : "@everyone";
@@ -368,12 +368,12 @@ Deno.serve(async (req) => {
         }));
 
         embed = applyOverride({
-          title: "📜 XyloMC Rules",
+          title: "📜 HavocSMP Rules",
           description:
             "Please read and follow these rules. Violations may result in mutes, kicks, or bans at staff discretion.",
           color: 0xef4444,
           fields: fields.length > 0 ? fields : [{ name: "No rules", value: "No rules configured." }],
-          footer: { text: "XyloMC · Updated regularly" },
+          footer: { text: "HavocSMP · Updated regularly" },
           timestamp: new Date().toISOString(),
         }, "rules");
       }
