@@ -148,7 +148,7 @@ Deno.serve(async (req) => {
     /* ignore */
   }
 
-  const siteUrl = "https://www.havocsmp.net";
+  const siteUrl = "https://havocsmp.net";
   const apiHealth = `${SUPABASE_URL}/rest/v1/`;
 
   const checks = await Promise.all([
