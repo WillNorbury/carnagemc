@@ -270,7 +270,8 @@ Deno.serve(async (req) => {
               },
             ],
           };
-          await sendWebhook(c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls, alertSettings?.down_payload_template, vars, fallback);
+          const results = await sendWebhook(c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls, alertSettings?.down_payload_template, vars, fallback);
+          if (c.service_key === "website" && websiteWebhookUrl) await logWebsiteDelivery(supabase, "down", websiteWebhookUrl, results);
           await supabase.from("uptime_incidents").update({ alerted: true }).eq("id", inc.id);
           alerts.push({ service: c.service_key, kind: "down" });
         }
