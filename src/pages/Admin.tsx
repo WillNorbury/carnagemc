@@ -1590,7 +1590,19 @@ const StatusTab = () => {
             onChange={(e) => setPage({ ...page, footnote: e.target.value })}
             placeholder="Optional message shown below the services list."
           />
-        </div>
+         </div>
+         <div>
+           <Label>Website status webhook URL</Label>
+           <Input
+             value={page.website_webhook_url}
+             onChange={(e) => setPage({ ...page, website_webhook_url: e.target.value })}
+             placeholder="https://discord.com/api/webhooks/..."
+           />
+           <p className="text-[11px] text-muted-foreground mt-1">
+             Receives down/up alerts specifically for the Website service, in addition to the global Alert webhooks.
+           </p>
+         </div>
+
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
