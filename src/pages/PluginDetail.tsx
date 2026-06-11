@@ -128,6 +128,7 @@ type PluginVersion = {
 const PluginDetail = () => {
   const { slug, shortId } = useParams<{ slug?: string; shortId?: string }>();
   const key = slug ?? shortId;
+  const { user, isAdmin } = useAuth();
   const [plugin, setPlugin] = useState<Plugin | null>(null);
   const [versions, setVersions] = useState<PluginVersion[]>([]);
   const [loading, setLoading] = useState(true);
