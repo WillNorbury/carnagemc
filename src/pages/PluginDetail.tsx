@@ -55,6 +55,8 @@ type Plugin = {
   jar_filename: string | null;
   jar_size: number | null;
   screenshots: string[];
+  user_id: string | null;
+
 };
 
 
