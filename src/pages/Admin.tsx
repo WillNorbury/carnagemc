@@ -1488,6 +1488,37 @@ const StatusTab = () => {
      services: [],
    });
   const [savingPage, setSavingPage] = useState(false);
+  const [deliveries, setDeliveries] = useState<any[]>([]);
+  const [loadingDeliveries, setLoadingDeliveries] = useState(false);
+  const [testing, setTesting] = useState<"up" | "down" | null>(null);
+
+  const loadDeliveries = async () => {
+    setLoadingDeliveries(true);
+    const { data } = await supabase
+      .from("website_webhook_deliveries")
+      .select("*")
+      .order("attempted_at", { ascending: false })
+      .limit(20);
+    setDeliveries(data ?? []);
+    setLoadingDeliveries(false);
+  };
+
+  useEffect(() => { loadDeliveries(); }, []);
+
+  const sendTest = async (kind: "up" | "down") => {
+    setTesting(kind);
+    try {
+      const { data, error } = await supabase.functions.invoke("website-webhook-test", { body: { kind } });
+      if (error) throw error;
+      if ((data as any)?.ok) toast.success(`Test ${kind} payload delivered (HTTP ${(data as any).status})`);
+      else toast.error(`Test failed: ${(data as any)?.error ?? "unknown error"}`);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Test failed");
+    } finally {
+      setTesting(null);
+      loadDeliveries();
+    }
+  };
 
   useEffect(() => {
     supabase
@@ -1601,6 +1632,52 @@ const StatusTab = () => {
            <p className="text-[11px] text-muted-foreground mt-1">
              Receives down/up alerts specifically for the Website service, in addition to the global Alert webhooks.
            </p>
+           <div className="flex flex-wrap gap-2 mt-3">
+             <Button size="sm" variant="outline" onClick={() => sendTest("down")} disabled={testing !== null || !page.website_webhook_url}>
+               {testing === "down" ? "Sending…" : "Test website webhook (down)"}
+             </Button>
+             <Button size="sm" variant="outline" onClick={() => sendTest("up")} disabled={testing !== null || !page.website_webhook_url}>
+               {testing === "up" ? "Sending…" : "Test website webhook (up)"}
+             </Button>
+           </div>
+         </div>
+
+         <div className="space-y-2">
+           <div className="flex items-center justify-between">
+             <Label>Recent website webhook deliveries</Label>
+             <Button size="sm" variant="ghost" onClick={loadDeliveries} disabled={loadingDeliveries}>
+               <RefreshCw className={`h-3.5 w-3.5 mr-1 ${loadingDeliveries ? "animate-spin" : ""}`} /> Refresh
+             </Button>
+           </div>
+           <div className="rounded-md border border-border overflow-hidden">
+             <table className="w-full text-xs">
+               <thead className="bg-secondary/40 text-muted-foreground">
+                 <tr>
+                   <th className="text-left px-3 py-2 font-medium">Time</th>
+                   <th className="text-left px-3 py-2 font-medium">Kind</th>
+                   <th className="text-left px-3 py-2 font-medium">HTTP</th>
+                   <th className="text-left px-3 py-2 font-medium">Latency</th>
+                   <th className="text-left px-3 py-2 font-medium">Error</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 {deliveries.length === 0 && (
+                   <tr><td colSpan={5} className="px-3 py-4 text-center text-muted-foreground">
+                     {loadingDeliveries ? "Loading…" : "No deliveries logged yet."}
+                   </td></tr>
+                 )}
+                 {deliveries.map((d) => (
+                   <tr key={d.id} className="border-t border-border">
+                     <td className="px-3 py-2 whitespace-nowrap">{new Date(d.attempted_at).toLocaleString()}</td>
+                     <td className="px-3 py-2"><Badge variant="secondary" className="capitalize">{d.kind?.replace("_", " ")}</Badge></td>
+                     <td className={`px-3 py-2 font-mono ${d.ok ? "text-primary" : "text-destructive"}`}>{d.status_code ?? "—"}</td>
+                     <td className="px-3 py-2 font-mono">{d.latency_ms != null ? `${d.latency_ms}ms` : "—"}</td>
+                     <td className="px-3 py-2 text-destructive max-w-[280px] truncate" title={d.error ?? ""}>{d.error ?? "—"}</td>
+                   </tr>
+                 ))}
+               </tbody>
+             </table>
+           </div>
          </div>
 
 
