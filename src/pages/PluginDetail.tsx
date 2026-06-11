@@ -502,16 +502,36 @@ const PluginDetail = () => {
                       </div>
                     </>
                   )}
-                  {mcVersions.length > 0 && (
-                    <>
-                      <div className="text-sm font-semibold mb-1">Minecraft versions</div>
-                      <div className="flex flex-wrap gap-1.5 mb-3">
-                        {mcVersions.map((v) => (
-                          <Badge key={v} variant="secondary" className="rounded-full">{v}</Badge>
-                        ))}
-                      </div>
-                    </>
-                  )}
+                  {mcVersions.length > 0 && (() => {
+                    const groups = new Map<string, string[]>();
+                    const singles: string[] = [];
+                    for (const v of mcVersions) {
+                      const m = v.match(/^(\d+\.\d+)(?:\.\d+)?$/);
+                      if (m) {
+                        const arr = groups.get(m[1]) ?? [];
+                        arr.push(v);
+                        groups.set(m[1], arr);
+                      } else {
+                        singles.push(v);
+                      }
+                    }
+                    const display: string[] = [];
+                    for (const [base, arr] of groups) {
+                      if (arr.length >= 3) display.push(`${base}.x`);
+                      else display.push(...arr);
+                    }
+                    display.push(...singles);
+                    return (
+                      <>
+                        <div className="text-sm font-semibold mb-1">Minecraft versions</div>
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          {display.map((v) => (
+                            <Badge key={v} variant="secondary" className="rounded-full">{v}</Badge>
+                          ))}
+                        </div>
+                      </>
+                    );
+                  })()}
                   <div className="text-sm font-semibold mb-1">Supported environments</div>
                   <Badge variant="secondary" className="rounded-full">
                     <Monitor className="h-3 w-3 mr-1" />
