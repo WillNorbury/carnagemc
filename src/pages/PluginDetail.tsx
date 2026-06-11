@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useAuth } from "@/lib/auth";
+import { Pencil } from "lucide-react";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import PageLoader from "@/components/site/PageLoader";
@@ -55,6 +57,8 @@ type Plugin = {
   jar_filename: string | null;
   jar_size: number | null;
   screenshots: string[];
+  user_id: string | null;
+
 };
 
 
@@ -124,6 +128,7 @@ type PluginVersion = {
 const PluginDetail = () => {
   const { slug, shortId } = useParams<{ slug?: string; shortId?: string }>();
   const key = slug ?? shortId;
+  const { user, isAdmin } = useAuth();
   const [plugin, setPlugin] = useState<Plugin | null>(null);
   const [versions, setVersions] = useState<PluginVersion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -324,6 +329,16 @@ const PluginDetail = () => {
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
+                {plugin && user && (plugin.user_id === user.id || isAdmin) && (
+                  <Button
+                    asChild
+                    className="bg-emerald-600 hover:bg-emerald-600/90 text-white rounded-full px-5"
+                  >
+                    <Link to={`/plugins/${plugin.slug ?? plugin.short_id}/settings`}>
+                      <Pencil className="h-4 w-4 mr-1.5" /> Edit project
+                    </Link>
+                  </Button>
+                )}
                 {latestDownloadUrl ? (
                   <Button onClick={handleDownload} className="bg-primary hover:bg-primary/90 rounded-full px-5">
                     <Download className="h-4 w-4 mr-1.5" /> Download
@@ -331,6 +346,7 @@ const PluginDetail = () => {
                 ) : (
                   <Button disabled className="rounded-full px-5">Unavailable</Button>
                 )}
+
 
                 <Button
                   variant={liked ? "default" : "outline"}
