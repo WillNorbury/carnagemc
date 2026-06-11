@@ -1512,10 +1512,11 @@ const StatusTab = () => {
       .maybeSingle()
       .then(({ data }) => {
         const v = (data?.value as any) ?? {};
-        setPage((p) => ({
-          title: v.title ?? p.title,
-          subtitle: v.subtitle ?? p.subtitle,
-          footnote: v.footnote ?? "",
+         setPage((p) => ({
+           title: v.title ?? p.title,
+           subtitle: v.subtitle ?? p.subtitle,
+           footnote: v.footnote ?? "",
+           website_webhook_url: v.website_webhook_url ?? "",
           services: Array.isArray(v.services) && v.services.length ? v.services : [
             { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
             { key: "minecraft", name: "Minecraft Server", desc: "havocsmp.net", url: "" },
