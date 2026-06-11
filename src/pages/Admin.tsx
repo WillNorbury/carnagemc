@@ -1477,14 +1477,16 @@ const StatusTab = () => {
   const [page, setPage] = useState<{
     title: string;
     subtitle: string;
-    footnote: string;
-    services: { key: string; name: string; desc: string; url: string }[];
-  }>({
-    title: "HavocSMP Status",
-    subtitle: "Live uptime — automated checks every 5 minutes.",
-    footnote: "",
-    services: [],
-  });
+     footnote: string;
+     website_webhook_url: string;
+     services: { key: string; name: string; desc: string; url: string }[];
+   }>({
+     title: "HavocSMP Status",
+     subtitle: "Live uptime — automated checks every 5 minutes.",
+     footnote: "",
+     website_webhook_url: "",
+     services: [],
+   });
   const [savingPage, setSavingPage] = useState(false);
 
   useEffect(() => {
