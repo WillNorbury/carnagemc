@@ -246,7 +246,7 @@ Deno.serve(async (req) => {
               },
             ],
           };
-          await sendWebhook(allUrls, alertSettings?.down_payload_template, vars, fallback);
+          await sendWebhook(c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls, alertSettings?.down_payload_template, vars, fallback);
           await supabase.from("uptime_incidents").update({ alerted: true }).eq("id", inc.id);
           alerts.push({ service: c.service_key, kind: "down" });
         }
@@ -273,7 +273,7 @@ Deno.serve(async (req) => {
             },
           ],
         };
-        await sendWebhook(allUrls, alertSettings?.down_payload_template, vars, fallback);
+        await sendWebhook(c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls, alertSettings?.down_payload_template, vars, fallback);
         await supabase
           .from("uptime_incidents")
           .update({ alerted: true, last_error: c.error })
@@ -305,7 +305,7 @@ Deno.serve(async (req) => {
             },
           ],
         };
-        await sendWebhook(allUrls, alertSettings?.up_payload_template, vars, fallback);
+        await sendWebhook(c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls, alertSettings?.up_payload_template, vars, fallback);
         alerts.push({ service: c.service_key, kind: "up" });
       }
     }
