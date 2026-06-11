@@ -1632,10 +1632,6 @@ const StatusTab = () => {
            <p className="text-[11px] text-muted-foreground mt-1">
              Receives down/up alerts specifically for the Website service, in addition to the global Alert webhooks.
            </p>
-         </div>
-           <p className="text-[11px] text-muted-foreground mt-1">
-             Receives down/up alerts specifically for the Website service, in addition to the global Alert webhooks.
-           </p>
            <div className="flex flex-wrap gap-2 mt-3">
              <Button size="sm" variant="outline" onClick={() => sendTest("down")} disabled={testing !== null || !page.website_webhook_url}>
                {testing === "down" ? "Sending…" : "Test website webhook (down)"}
