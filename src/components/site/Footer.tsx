@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import logo from "@/assets/havocsmp-logo.png";
+import logoAsset from "@/assets/havocsmp-logo.png.asset.json";
+const logo = logoAsset.url;
 import { Twitter, Youtube, MessageCircle, Twitch } from "lucide-react";
 
 const Footer = () => (
