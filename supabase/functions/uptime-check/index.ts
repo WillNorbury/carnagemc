@@ -103,19 +103,43 @@ function interpolateTemplate(template: unknown, vars: Record<string, string>): u
   return template;
 }
 
-async function sendWebhook(urls: string[], template: unknown, vars: Record<string, string>, fallbackBody: object) {
-  if (urls.length === 0) return;
+async function sendWebhook(urls: string[], template: unknown, vars: Record<string, string>, fallbackBody: object): Promise<{ url: string; ok: boolean; status: number | null; error: string | null; latency_ms: number }[]> {
+  if (urls.length === 0) return [];
   const payload = template ? interpolateTemplate(template, vars) : fallbackBody;
   const body = JSON.stringify(payload);
-  await Promise.all(
+  return await Promise.all(
     urls.map(async (url) => {
+      const start = Date.now();
       try {
-        await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body });
+        const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body });
+        await r.arrayBuffer().catch(() => {});
+        return { url, ok: r.ok, status: r.status, error: r.ok ? null : `HTTP ${r.status}`, latency_ms: Date.now() - start };
       } catch (e) {
         console.error("webhook failed", url, e);
+        return { url, ok: false, status: null, error: String((e as Error).message || e).slice(0, 300), latency_ms: Date.now() - start };
       }
     }),
   );
+}
+
+async function logWebsiteDelivery(
+  supabase: ReturnType<typeof createClient>,
+  kind: string,
+  websiteUrl: string,
+  results: { url: string; ok: boolean; status: number | null; error: string | null; latency_ms: number }[],
+) {
+  const r = results.find((x) => x.url === websiteUrl);
+  if (!r) return;
+  let host: string | null = null;
+  try { host = new URL(websiteUrl).host; } catch { /* ignore */ }
+  await supabase.from("website_webhook_deliveries").insert({
+    kind,
+    url_host: host,
+    status_code: r.status,
+    ok: r.ok,
+    error: r.error,
+    latency_ms: r.latency_ms,
+  });
 }
 
 Deno.serve(async (req) => {
