@@ -23,6 +23,7 @@ import UserProfile from "./pages/UserProfile.tsx";
 import Users from "./pages/Users.tsx";
 import Plugins from "./pages/Plugins.tsx";
 import PluginDetail from "./pages/PluginDetail.tsx";
+import PluginSettings from "./pages/PluginSettings.tsx";
 import Changelog from "./pages/Changelog.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import LinkAccount from "./pages/LinkAccount.tsx";
