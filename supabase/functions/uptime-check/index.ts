@@ -148,6 +148,17 @@ Deno.serve(async (req) => {
     /* ignore */
   }
 
+  let websiteWebhookUrl: string | null = null;
+  try {
+    const { data } = await supabase.from("site_content").select("value").eq("key", "status_page").maybeSingle();
+    const v = data?.value as { website_webhook_url?: string } | null;
+    if (v?.website_webhook_url && /^https?:\/\//i.test(v.website_webhook_url)) {
+      websiteWebhookUrl = v.website_webhook_url;
+    }
+  } catch {
+    /* ignore */
+  }
+
   const siteUrl = "https://havocsmp.net";
   const apiHealth = `${SUPABASE_URL}/rest/v1/`;
 
