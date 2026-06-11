@@ -1366,6 +1366,39 @@ export type Database = {
         }
         Relationships: []
       }
+      website_webhook_deliveries: {
+        Row: {
+          attempted_at: string
+          error: string | null
+          id: string
+          kind: string
+          latency_ms: number | null
+          ok: boolean
+          status_code: number | null
+          url_host: string | null
+        }
+        Insert: {
+          attempted_at?: string
+          error?: string | null
+          id?: string
+          kind: string
+          latency_ms?: number | null
+          ok?: boolean
+          status_code?: number | null
+          url_host?: string | null
+        }
+        Update: {
+          attempted_at?: string
+          error?: string | null
+          id?: string
+          kind?: string
+          latency_ms?: number | null
+          ok?: boolean
+          status_code?: number | null
+          url_host?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
