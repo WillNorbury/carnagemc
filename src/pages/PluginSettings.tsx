@@ -118,7 +118,7 @@ const PluginSettings = () => {
     })();
   }, [key]);
 
-  if (authLoading || loading) return <PageLoader />;
+  if (authLoading || loading) return <PageLoader loading={true} />;
 
   if (!plugin) {
     return (
