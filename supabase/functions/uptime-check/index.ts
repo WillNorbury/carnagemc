@@ -148,6 +148,17 @@ Deno.serve(async (req) => {
     /* ignore */
   }
 
+  let websiteWebhookUrl: string | null = null;
+  try {
+    const { data } = await supabase.from("site_content").select("value").eq("key", "status_page").maybeSingle();
+    const v = data?.value as { website_webhook_url?: string } | null;
+    if (v?.website_webhook_url && /^https?:\/\//i.test(v.website_webhook_url)) {
+      websiteWebhookUrl = v.website_webhook_url;
+    }
+  } catch {
+    /* ignore */
+  }
+
   const siteUrl = "https://havocsmp.net";
   const apiHealth = `${SUPABASE_URL}/rest/v1/`;
 
@@ -235,7 +246,7 @@ Deno.serve(async (req) => {
               },
             ],
           };
-          await sendWebhook(allUrls, alertSettings?.down_payload_template, vars, fallback);
+          await sendWebhook(c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls, alertSettings?.down_payload_template, vars, fallback);
           await supabase.from("uptime_incidents").update({ alerted: true }).eq("id", inc.id);
           alerts.push({ service: c.service_key, kind: "down" });
         }
@@ -262,7 +273,7 @@ Deno.serve(async (req) => {
             },
           ],
         };
-        await sendWebhook(allUrls, alertSettings?.down_payload_template, vars, fallback);
+        await sendWebhook(c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls, alertSettings?.down_payload_template, vars, fallback);
         await supabase
           .from("uptime_incidents")
           .update({ alerted: true, last_error: c.error })
@@ -294,7 +305,7 @@ Deno.serve(async (req) => {
             },
           ],
         };
-        await sendWebhook(allUrls, alertSettings?.up_payload_template, vars, fallback);
+        await sendWebhook(c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls, alertSettings?.up_payload_template, vars, fallback);
         alerts.push({ service: c.service_key, kind: "up" });
       }
     }

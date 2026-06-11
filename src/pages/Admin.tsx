@@ -1477,14 +1477,16 @@ const StatusTab = () => {
   const [page, setPage] = useState<{
     title: string;
     subtitle: string;
-    footnote: string;
-    services: { key: string; name: string; desc: string; url: string }[];
-  }>({
-    title: "HavocSMP Status",
-    subtitle: "Live uptime — automated checks every 5 minutes.",
-    footnote: "",
-    services: [],
-  });
+     footnote: string;
+     website_webhook_url: string;
+     services: { key: string; name: string; desc: string; url: string }[];
+   }>({
+     title: "HavocSMP Status",
+     subtitle: "Live uptime — automated checks every 5 minutes.",
+     footnote: "",
+     website_webhook_url: "",
+     services: [],
+   });
   const [savingPage, setSavingPage] = useState(false);
 
   useEffect(() => {
@@ -1510,10 +1512,11 @@ const StatusTab = () => {
       .maybeSingle()
       .then(({ data }) => {
         const v = (data?.value as any) ?? {};
-        setPage((p) => ({
-          title: v.title ?? p.title,
-          subtitle: v.subtitle ?? p.subtitle,
-          footnote: v.footnote ?? "",
+         setPage((p) => ({
+           title: v.title ?? p.title,
+           subtitle: v.subtitle ?? p.subtitle,
+           footnote: v.footnote ?? "",
+           website_webhook_url: v.website_webhook_url ?? "",
           services: Array.isArray(v.services) && v.services.length ? v.services : [
             { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
             { key: "minecraft", name: "Minecraft Server", desc: "havocsmp.net", url: "" },
@@ -1587,7 +1590,19 @@ const StatusTab = () => {
             onChange={(e) => setPage({ ...page, footnote: e.target.value })}
             placeholder="Optional message shown below the services list."
           />
-        </div>
+         </div>
+         <div>
+           <Label>Website status webhook URL</Label>
+           <Input
+             value={page.website_webhook_url}
+             onChange={(e) => setPage({ ...page, website_webhook_url: e.target.value })}
+             placeholder="https://discord.com/api/webhooks/..."
+           />
+           <p className="text-[11px] text-muted-foreground mt-1">
+             Receives down/up alerts specifically for the Website service, in addition to the global Alert webhooks.
+           </p>
+         </div>
+
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
