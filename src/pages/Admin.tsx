@@ -1488,6 +1488,37 @@ const StatusTab = () => {
      services: [],
    });
   const [savingPage, setSavingPage] = useState(false);
+  const [deliveries, setDeliveries] = useState<any[]>([]);
+  const [loadingDeliveries, setLoadingDeliveries] = useState(false);
+  const [testing, setTesting] = useState<"up" | "down" | null>(null);
+
+  const loadDeliveries = async () => {
+    setLoadingDeliveries(true);
+    const { data } = await supabase
+      .from("website_webhook_deliveries")
+      .select("*")
+      .order("attempted_at", { ascending: false })
+      .limit(20);
+    setDeliveries(data ?? []);
+    setLoadingDeliveries(false);
+  };
+
+  useEffect(() => { loadDeliveries(); }, []);
+
+  const sendTest = async (kind: "up" | "down") => {
+    setTesting(kind);
+    try {
+      const { data, error } = await supabase.functions.invoke("website-webhook-test", { body: { kind } });
+      if (error) throw error;
+      if ((data as any)?.ok) toast.success(`Test ${kind} payload delivered (HTTP ${(data as any).status})`);
+      else toast.error(`Test failed: ${(data as any)?.error ?? "unknown error"}`);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Test failed");
+    } finally {
+      setTesting(null);
+      loadDeliveries();
+    }
+  };
 
   useEffect(() => {
     supabase
