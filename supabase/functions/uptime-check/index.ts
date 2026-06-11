@@ -331,7 +331,8 @@ Deno.serve(async (req) => {
             },
           ],
         };
-        await sendWebhook(c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls, alertSettings?.up_payload_template, vars, fallback);
+        const results = await sendWebhook(c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls, alertSettings?.up_payload_template, vars, fallback);
+        if (c.service_key === "website" && websiteWebhookUrl) await logWebsiteDelivery(supabase, "up", websiteWebhookUrl, results);
         alerts.push({ service: c.service_key, kind: "up" });
       }
     }
