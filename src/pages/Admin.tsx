@@ -106,6 +106,10 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
     description: "Status and overview of the HavocSMP Discord bot.",
   },
   "bot-management": { title: "Discord Bot — Management", description: "Configure commands and bot integration." },
+  "ban-appeals": { title: "Ban Appeals", description: "Review and respond to user ban appeals." },
+  wiki: { title: "Wiki", description: "Manage wiki articles." },
+  gallery: { title: "Gallery", description: "Manage gallery images." },
+  contact: { title: "Contact", description: "Manage contact methods and inbox." },
 };
 
 const Admin = () => {
