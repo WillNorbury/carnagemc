@@ -56,10 +56,11 @@ export default function Contact() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("contact_messages").insert({
+    const { error } = await supabase.from("contact_messages").insert([{
       ...parsed.data,
+      subject: parsed.data.subject || null,
       user_id: user?.id ?? null,
-    });
+    }]);
     setSubmitting(false);
     if (error) return toast.error(error.message);
     toast.success("Message sent! We'll get back to you.");

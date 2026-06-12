@@ -63,7 +63,7 @@ export default function BanAppeals() {
       email: parsed.data.email || null,
       user_id: user?.id ?? null,
     };
-    const { error } = await supabase.from("ban_appeals").insert(payload);
+    const { error } = await supabase.from("ban_appeals").insert([payload]);
     setSubmitting(false);
     if (error) {
       toast.error(error.message);
