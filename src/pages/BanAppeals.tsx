@@ -58,9 +58,13 @@ export default function BanAppeals() {
       return;
     }
     setSubmitting(true);
+    const d = parsed.data;
     const payload = {
-      ...parsed.data,
-      email: parsed.data.email || null,
+      minecraft_username: d.minecraft_username,
+      appeal_text: d.appeal_text,
+      discord_tag: d.discord_tag || null,
+      ban_reason: d.ban_reason || null,
+      email: d.email || null,
       user_id: user?.id ?? null,
     };
     const { error } = await supabase.from("ban_appeals").insert([payload]);

@@ -56,9 +56,12 @@ export default function Contact() {
       return;
     }
     setSubmitting(true);
+    const d = parsed.data;
     const { error } = await supabase.from("contact_messages").insert([{
-      ...parsed.data,
-      subject: parsed.data.subject || null,
+      name: d.name,
+      email: d.email,
+      message: d.message,
+      subject: d.subject || null,
       user_id: user?.id ?? null,
     }]);
     setSubmitting(false);
