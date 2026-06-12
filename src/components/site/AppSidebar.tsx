@@ -46,6 +46,10 @@ import {
   Layers,
   Server as ServerIcon,
   Link2,
+  BookOpen,
+  Image as ImageIcon,
+  Mail,
+  Gavel,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -69,6 +73,10 @@ const publicLinks = [
   { to: "/support", label: "Support", icon: LifeBuoy },
   { to: "/status", label: "Status", icon: Activity },
   { to: "/install", label: "How to Install", icon: Download },
+  { to: "/wiki", label: "Wiki", icon: BookOpen },
+  { to: "/gallery", label: "Gallery", icon: ImageIcon },
+  { to: "/contact", label: "Contact", icon: Mail },
+  { to: "/ban-appeals", label: "Ban Appeals", icon: Gavel },
 ];
 
 const discoverLinks = [

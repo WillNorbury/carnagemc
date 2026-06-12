@@ -49,6 +49,10 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
+import { BanAppealsAdminSection } from "@/components/admin/BanAppealsAdminSection";
+import { WikiAdminSection } from "@/components/admin/WikiAdminSection";
+import { GalleryAdminSection } from "@/components/admin/GalleryAdminSection";
+import { ContactAdminSection } from "@/components/admin/ContactAdminSection";
 import { DiscoverItemsAdminTab } from "@/components/admin/DiscoverItemsAdminTab";
 import { StatCard } from "@/components/admin/StatCard";
 import { CustomRolesManager, type CustomRole } from "@/components/admin/CustomRolesManager";
@@ -106,6 +110,10 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
     description: "Status and overview of the HavocSMP Discord bot.",
   },
   "bot-management": { title: "Discord Bot — Management", description: "Configure commands and bot integration." },
+  "ban-appeals": { title: "Ban Appeals", description: "Review and respond to user ban appeals." },
+  wiki: { title: "Wiki", description: "Manage wiki articles." },
+  gallery: { title: "Gallery", description: "Manage gallery images." },
+  contact: { title: "Contact", description: "Manage contact methods and inbox." },
 };
 
 const Admin = () => {
@@ -177,6 +185,10 @@ const Admin = () => {
       {section === "shaders" && <DiscoverItemsAdminTab kind="shader" />}
       {section === "modpacks" && <DiscoverItemsAdminTab kind="modpack" />}
       {section === "servers" && <DiscoverItemsAdminTab kind="server" />}
+      {section === "ban-appeals" && <BanAppealsAdminSection />}
+      {section === "wiki" && <WikiAdminSection />}
+      {section === "gallery" && <GalleryAdminSection />}
+      {section === "contact" && <ContactAdminSection />}
       
       {section === "permissions" && (isOwner ? <PermissionsTab /> : (
         <div className="flex flex-col items-center justify-center gap-4 py-20">

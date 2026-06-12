@@ -67,6 +67,10 @@ export type AdminSection =
   | "shaders"
   | "modpacks"
   | "servers"
+  | "ban-appeals"
+  | "wiki"
+  | "gallery"
+  | "contact"
   | "bot-dashboard"
   | "bot-management";
 
@@ -101,6 +105,10 @@ const items: NavItem[] = [
   { kind: "link", id: "events", icon: Calendar, label: "Events" },
   { kind: "link", id: "mods", icon: Boxes, label: "Mods" },
   { kind: "link", id: "maintenance", icon: Wrench, label: "Maintenance" },
+  { kind: "link", id: "ban-appeals", icon: Gavel, label: "Ban Appeals" },
+  { kind: "link", id: "wiki", icon: FileText, label: "Wiki" },
+  { kind: "link", id: "gallery", icon: Package, label: "Gallery" },
+  { kind: "link", id: "contact", icon: HelpCircle, label: "Contact" },
   { kind: "section", title: "Discord Bot", icon: Bot },
   { kind: "link", id: "bot-dashboard", icon: LayoutDashboard, label: "Bot Dashboard" },
   { kind: "link", id: "bot-management", icon: Code, label: "Management" },

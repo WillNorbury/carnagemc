@@ -46,6 +46,11 @@ import Shaders from "./pages/Shaders.tsx";
 import Modpacks from "./pages/Modpacks.tsx";
 import Servers from "./pages/Servers.tsx";
 import Status from "./pages/Status.tsx";
+import BanAppeals from "./pages/BanAppeals.tsx";
+import Wiki from "./pages/Wiki.tsx";
+import WikiArticle from "./pages/WikiArticle.tsx";
+import Gallery from "./pages/Gallery.tsx";
+import Contact from "./pages/Contact.tsx";
 
 
 const queryClient = new QueryClient();
@@ -112,6 +117,11 @@ const Shell = () => {
                   <Route path="/events" element={<Events />} />
                   <Route path="/install" element={<Install />} />
                   <Route path="/status" element={<Status />} />
+                  <Route path="/ban-appeals" element={<BanAppeals />} />
+                  <Route path="/wiki" element={<Wiki />} />
+                  <Route path="/wiki/:slug" element={<WikiArticle />} />
+                  <Route path="/gallery" element={<Gallery />} />
+                  <Route path="/contact" element={<Contact />} />
                   
                   <Route path="*" element={<NotFound />} />
           </Routes>
