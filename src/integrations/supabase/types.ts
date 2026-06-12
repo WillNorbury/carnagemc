@@ -134,6 +134,54 @@ export type Database = {
         }
         Relationships: []
       }
+      ban_appeals: {
+        Row: {
+          admin_response: string | null
+          appeal_text: string
+          ban_reason: string | null
+          created_at: string
+          discord_tag: string | null
+          email: string | null
+          id: string
+          minecraft_username: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_response?: string | null
+          appeal_text: string
+          ban_reason?: string | null
+          created_at?: string
+          discord_tag?: string | null
+          email?: string | null
+          id?: string
+          minecraft_username: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_response?: string | null
+          appeal_text?: string
+          ban_reason?: string | null
+          created_at?: string
+          discord_tag?: string | null
+          email?: string | null
+          id?: string
+          minecraft_username?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       changelog_entries: {
         Row: {
           category: string
@@ -167,6 +215,84 @@ export type Database = {
           title?: string
           updated_at?: string
           version?: string | null
+        }
+        Relationships: []
+      }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          handled: boolean
+          handled_at: string | null
+          handled_by: string | null
+          id: string
+          message: string
+          name: string
+          subject: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          handled?: boolean
+          handled_at?: string | null
+          handled_by?: string | null
+          id?: string
+          message: string
+          name: string
+          subject?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          handled?: boolean
+          handled_at?: string | null
+          handled_by?: string | null
+          id?: string
+          message?: string
+          name?: string
+          subject?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      contact_methods: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          label: string
+          published: boolean
+          sort_order: number
+          type: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          label: string
+          published?: boolean
+          sort_order?: number
+          type?: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          label?: string
+          published?: boolean
+          sort_order?: number
+          type?: string
+          updated_at?: string
+          value?: string
         }
         Relationships: []
       }
@@ -454,6 +580,42 @@ export type Database = {
           slug?: string
           sort_order?: number
           title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gallery_items: {
+        Row: {
+          caption: string | null
+          category: string | null
+          created_at: string
+          id: string
+          image_url: string
+          published: boolean
+          sort_order: number
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          caption?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          image_url: string
+          published?: boolean
+          sort_order?: number
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          caption?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string
+          published?: boolean
+          sort_order?: number
+          title?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -1396,6 +1558,48 @@ export type Database = {
           ok?: boolean
           status_code?: number | null
           url_host?: string | null
+        }
+        Relationships: []
+      }
+      wiki_articles: {
+        Row: {
+          author_id: string | null
+          category: string | null
+          content: string
+          created_at: string
+          excerpt: string | null
+          id: string
+          published: boolean
+          slug: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          category?: string | null
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          published?: boolean
+          slug: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          category?: string | null
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          published?: boolean
+          slug?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
