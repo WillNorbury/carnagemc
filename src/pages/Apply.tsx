@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { Card } from "@/components/ui/card";
@@ -12,28 +12,34 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import { z } from "zod";
+import * as Icons from "lucide-react";
 import {
-  ShieldCheck,
-  Hammer,
-  Youtube,
   Loader2,
   ClipboardList,
   ArrowLeft,
   ArrowRight,
   Check,
+  ChevronRight,
 } from "lucide-react";
 import { SEO } from "@/components/site/SEO";
 import { cn } from "@/lib/utils";
 
-type AppType = "staff" | "builder" | "youtuber";
+export type ApplicationType = {
+  id: string;
+  slug: string;
+  label: string;
+  description: string;
+  icon: string;
+  color: string;
+  sort_order: number;
+  enabled: boolean;
+  accepting: boolean;
+  requires_portfolio: boolean;
+  portfolio_label: string | null;
+  intro: string | null;
+};
 
-const TYPES: { key: AppType; label: string; desc: string; icon: any }[] = [
-  { key: "staff", label: "Staff", desc: "Help moderate, support players, and keep the server safe.", icon: ShieldCheck },
-  { key: "builder", label: "Builder", desc: "Design and build spawns, hubs, and event arenas.", icon: Hammer },
-  { key: "youtuber", label: "Content Creator", desc: "Stream or create videos featuring HavocSMP.", icon: Youtube },
-];
-
-const STEPS = ["Role", "About you", "Your story", "Review"] as const;
+const STEPS = ["About you", "Your story", "Review"] as const;
 
 const mcUsernameSchema = z.string().trim().regex(/^[A-Za-z0-9_]{3,16}$/, "Invalid Minecraft username");
 const aboutSchema = z.object({
@@ -48,11 +54,119 @@ const storySchema = z.object({
   portfolio_url: z.string().trim().url("Must be a valid URL").max(500).optional().or(z.literal("")),
 });
 
+const getIcon = (name: string) => {
+  const I = (Icons as any)[name];
+  return (I as any) ?? ClipboardList;
+};
+
+const Shell = ({ children }: { children: React.ReactNode }) => (
+  <div className="min-h-screen flex flex-col bg-background">
+    <Navbar />
+    <main className="flex-1 container pt-28 pb-16 max-w-4xl">{children}</main>
+    <Footer />
+  </div>
+);
+
 const Apply = () => {
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const [types, setTypes] = useState<ApplicationType[] | null>(null);
+
+  useEffect(() => {
+    supabase
+      .from("application_types" as any)
+      .select("*")
+      .eq("enabled", true)
+      .order("sort_order", { ascending: true })
+      .then(({ data }) => setTypes(((data ?? []) as unknown) as ApplicationType[]));
+  }, []);
+
+  if (slug) {
+    return <ApplyForm slug={slug} types={types} onBack={() => navigate("/apply")} />;
+  }
+
+  return (
+    <Shell>
+      <SEO
+        title="Apply — Join the Team"
+        description="Apply to join the team. Pick a role and tell us about yourself."
+        path="/apply"
+      />
+      <header className="mb-8 text-center">
+        <Badge variant="secondary" className="mb-3 text-primary border-primary/40">
+          <ClipboardList className="h-3 w-3 mr-1" /> Applications
+        </Badge>
+        <h1 className="font-display text-4xl md:text-5xl font-black mb-2">
+          Join the <span className="text-gradient">Team</span>
+        </h1>
+        <p className="text-muted-foreground">Pick the role that fits you best.</p>
+      </header>
+
+      {!types && (
+        <div className="flex justify-center py-16">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
+      )}
+
+      {types && types.length === 0 && (
+        <Card className="p-10 text-center text-muted-foreground">
+          No application types are currently available. Check back soon.
+        </Card>
+      )}
+
+      {types && types.length > 0 && (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {types.map((t) => {
+            const Icon = getIcon(t.icon);
+            return (
+              <Link
+                key={t.id}
+                to={t.accepting ? `/apply/${t.slug}` : "#"}
+                onClick={(e) => {
+                  if (!t.accepting) {
+                    e.preventDefault();
+                    toast.info(`${t.label} applications are currently closed.`);
+                  }
+                }}
+                className={cn(
+                  "group relative p-6 rounded-xl border bg-card transition",
+                  t.accepting
+                    ? "hover:border-primary/60 hover:shadow-elegant"
+                    : "opacity-60 cursor-not-allowed"
+                )}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <Icon className="h-7 w-7 text-primary" />
+                  {!t.accepting && <Badge variant="outline">Closed</Badge>}
+                </div>
+                <div className="font-display font-bold text-lg">{t.label}</div>
+                <p className="text-sm text-muted-foreground mt-1 line-clamp-3">{t.description}</p>
+                {t.accepting && (
+                  <div className="mt-4 flex items-center text-sm text-primary font-medium">
+                    Apply now <ChevronRight className="h-4 w-4 ml-1 transition group-hover:translate-x-1" />
+                  </div>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </Shell>
+  );
+};
+
+const ApplyForm = ({
+  slug,
+  types,
+  onBack,
+}: {
+  slug: string;
+  types: ApplicationType[] | null;
+  onBack: () => void;
+}) => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const [type, setType] = useState<AppType>("staff");
   const [form, setForm] = useState({
     mc_username: "",
     discord: "",
@@ -63,11 +177,34 @@ const Apply = () => {
     portfolio_url: "",
   });
   const [submitting, setSubmitting] = useState(false);
+  const [type, setType] = useState<ApplicationType | null>(null);
+  const [typeError, setTypeError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (types) {
+      const found = types.find((t) => t.slug === slug) ?? null;
+      if (!found) {
+        // Try DB fetch directly in case it's enabled but list hasn't loaded
+        supabase
+          .from("application_types" as any)
+          .select("*")
+          .eq("slug", slug)
+          .eq("enabled", true)
+          .maybeSingle()
+          .then(({ data }) => {
+            if (!data) setTypeError("This application type doesn't exist.");
+            else setType((data as unknown) as ApplicationType);
+          });
+      } else {
+        setType(found);
+      }
+    }
+  }, [slug, types]);
 
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
-      navigate("/auth");
+      navigate(`/auth?redirect=${encodeURIComponent(`/apply/${slug}`)}`);
       return;
     }
     supabase
@@ -78,39 +215,40 @@ const Apply = () => {
       .then(({ data }) => {
         if (data?.mc_username) setForm((f) => ({ ...f, mc_username: data.mc_username! }));
       });
-  }, [user, authLoading, navigate]);
-
-  const selected = useMemo(() => TYPES.find((t) => t.key === type)!, [type]);
+  }, [user, authLoading, navigate, slug]);
 
   const next = () => {
-    if (step === 1) {
+    if (step === 0) {
       const r = aboutSchema.safeParse(form);
       if (!r.success) return toast.error(r.error.issues[0].message);
     }
-    if (step === 2) {
+    if (step === 1) {
       const r = storySchema.safeParse(form);
       if (!r.success) return toast.error(r.error.issues[0].message);
+      if (type?.requires_portfolio && !form.portfolio_url) {
+        return toast.error("Portfolio link is required.");
+      }
     }
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
   };
   const back = () => setStep((s) => Math.max(s - 1, 0));
 
   const submit = async () => {
-    if (!user) return;
+    if (!user || !type) return;
     const a = aboutSchema.safeParse(form);
     if (!a.success) {
-      setStep(1);
+      setStep(0);
       return toast.error(a.error.issues[0].message);
     }
     const s = storySchema.safeParse(form);
     if (!s.success) {
-      setStep(2);
+      setStep(1);
       return toast.error(s.error.issues[0].message);
     }
     setSubmitting(true);
     const { error } = await supabase.from("applications").insert({
       user_id: user.id,
-      type,
+      type: type.slug as any,
       mc_username: a.data.mc_username,
       discord: a.data.discord || null,
       age: a.data.age ? parseInt(a.data.age, 10) : null,
@@ -125,255 +263,247 @@ const Apply = () => {
     navigate("/dashboard");
   };
 
-  if (authLoading) {
+  if (authLoading || (!type && !typeError)) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <div className="flex-1 flex items-center justify-center">
+      <Shell>
+        <div className="flex justify-center py-20">
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
         </div>
-        <Footer />
-      </div>
+      </Shell>
+    );
+  }
+
+  if (typeError) {
+    return (
+      <Shell>
+        <Card className="p-10 text-center space-y-4">
+          <h1 className="font-display text-2xl font-bold">Not found</h1>
+          <p className="text-muted-foreground">{typeError}</p>
+          <Button onClick={onBack}>Back to applications</Button>
+        </Card>
+      </Shell>
+    );
+  }
+
+  if (!type) return null;
+  const Icon = getIcon(type.icon);
+
+  if (!type.accepting) {
+    return (
+      <Shell>
+        <Card className="p-10 text-center space-y-4">
+          <Icon className="h-10 w-10 mx-auto text-primary" />
+          <h1 className="font-display text-2xl font-bold">{type.label} applications are closed</h1>
+          <p className="text-muted-foreground">Check back later — we'll reopen soon.</p>
+          <Button onClick={onBack}>Back to applications</Button>
+        </Card>
+      </Shell>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <Shell>
       <SEO
-        title="Apply — Join the HavocSMP Team"
-        description="Apply to join the HavocSMP team as Staff, Builder, or Content Creator. Help shape the server and earn exclusive perks."
-        path="/apply"
+        title={`Apply as ${type.label}`}
+        description={type.description}
+        path={`/apply/${type.slug}`}
       />
-      <Navbar />
-      <main className="flex-1 container pt-28 pb-16 max-w-3xl">
-        <header className="mb-8 text-center">
-          <Badge variant="secondary" className="mb-3 text-primary border-primary/40">
-            <ClipboardList className="h-3 w-3 mr-1" /> Applications Open
-          </Badge>
-          <h1 className="font-display text-4xl md:text-5xl font-black mb-2">
-            Join the <span className="text-gradient">Team</span>
-          </h1>
-          <p className="text-muted-foreground">
-            Help shape HavocSMP. Pick a role and tell us about yourself.
-          </p>
-        </header>
+      <button
+        onClick={onBack}
+        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
+      >
+        <ArrowLeft className="h-4 w-4" /> All applications
+      </button>
+      <header className="mb-8">
+        <Badge variant="secondary" className="mb-3 text-primary border-primary/40">
+          <Icon className="h-3 w-3 mr-1" /> {type.label} Application
+        </Badge>
+        <h1 className="font-display text-3xl md:text-4xl font-black mb-2">
+          Apply as <span className="text-gradient">{type.label}</span>
+        </h1>
+        <p className="text-muted-foreground">{type.intro || type.description}</p>
+      </header>
 
-        {/* Stepper */}
-        <ol className="flex items-center justify-between mb-8 gap-2">
-          {STEPS.map((label, i) => {
-            const done = i < step;
-            const active = i === step;
-            return (
-              <li key={label} className="flex-1 flex items-center gap-2 min-w-0">
-                <div
-                  className={cn(
-                    "h-8 w-8 shrink-0 rounded-full grid place-items-center text-xs font-bold border transition",
-                    done && "bg-primary border-primary text-primary-foreground",
-                    active && "border-primary text-primary",
-                    !done && !active && "border-border text-muted-foreground"
-                  )}
-                >
-                  {done ? <Check className="h-4 w-4" /> : i + 1}
-                </div>
-                <span
-                  className={cn(
-                    "text-xs sm:text-sm truncate",
-                    active ? "text-foreground font-medium" : "text-muted-foreground"
-                  )}
-                >
-                  {label}
-                </span>
-                {i < STEPS.length - 1 && (
-                  <div className={cn("h-px flex-1 mx-1", done ? "bg-primary" : "bg-border")} />
+      <ol className="flex items-center justify-between mb-8 gap-2">
+        {STEPS.map((label, i) => {
+          const done = i < step;
+          const active = i === step;
+          return (
+            <li key={label} className="flex-1 flex items-center gap-2 min-w-0">
+              <div
+                className={cn(
+                  "h-8 w-8 shrink-0 rounded-full grid place-items-center text-xs font-bold border transition",
+                  done && "bg-primary border-primary text-primary-foreground",
+                  active && "border-primary text-primary",
+                  !done && !active && "border-border text-muted-foreground"
                 )}
-              </li>
-            );
-          })}
-        </ol>
+              >
+                {done ? <Check className="h-4 w-4" /> : i + 1}
+              </div>
+              <span
+                className={cn(
+                  "text-xs sm:text-sm truncate",
+                  active ? "text-foreground font-medium" : "text-muted-foreground"
+                )}
+              >
+                {label}
+              </span>
+              {i < STEPS.length - 1 && (
+                <div className={cn("h-px flex-1 mx-1", done ? "bg-primary" : "bg-border")} />
+              )}
+            </li>
+          );
+        })}
+      </ol>
 
-        <Card className="p-6 space-y-5">
-          {step === 0 && (
-            <div className="space-y-4">
-              <div>
-                <h2 className="font-display font-bold text-lg">Choose a role</h2>
-                <p className="text-sm text-muted-foreground">Pick the application that fits you best.</p>
-              </div>
-              <div className="grid sm:grid-cols-3 gap-3">
-                {TYPES.map((t) => {
-                  const Icon = t.icon;
-                  const active = type === t.key;
-                  return (
-                    <button
-                      key={t.key}
-                      onClick={() => setType(t.key)}
-                      className={cn(
-                        "text-left p-4 rounded-xl border transition",
-                        active
-                          ? "border-primary bg-primary/10 shadow-elegant"
-                          : "border-border hover:border-primary/40"
-                      )}
-                    >
-                      <Icon className={cn("h-5 w-5 mb-2", active ? "text-primary" : "text-muted-foreground")} />
-                      <div className="font-display font-bold">{t.label}</div>
-                      <div className="text-xs text-muted-foreground mt-1">{t.desc}</div>
-                    </button>
-                  );
-                })}
-              </div>
+      <Card className="p-6 space-y-5">
+        {step === 0 && (
+          <div className="space-y-4">
+            <div>
+              <h2 className="font-display font-bold text-lg">About you</h2>
+              <p className="text-sm text-muted-foreground">Basic details so we can reach out.</p>
             </div>
-          )}
-
-          {step === 1 && (
-            <div className="space-y-4">
+            <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <h2 className="font-display font-bold text-lg">About you</h2>
-                <p className="text-sm text-muted-foreground">Basic details so we can reach out.</p>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="mc">Minecraft username *</Label>
-                  <Input
-                    id="mc"
-                    value={form.mc_username}
-                    onChange={(e) => setForm({ ...form, mc_username: e.target.value })}
-                    placeholder="Notch"
-                    maxLength={16}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="discord">Discord username</Label>
-                  <Input
-                    id="discord"
-                    value={form.discord}
-                    onChange={(e) => setForm({ ...form, discord: e.target.value })}
-                    placeholder="user#0000"
-                    maxLength={64}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="age">Age</Label>
-                  <Input
-                    id="age"
-                    type="number"
-                    min={10}
-                    max={99}
-                    value={form.age}
-                    onChange={(e) => setForm({ ...form, age: e.target.value })}
-                    placeholder="18"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="tz">Timezone</Label>
-                  <Input
-                    id="tz"
-                    value={form.timezone}
-                    onChange={(e) => setForm({ ...form, timezone: e.target.value })}
-                    placeholder="UTC, EST, PST..."
-                    maxLength={64}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-4">
-              <div>
-                <h2 className="font-display font-bold text-lg">Your story</h2>
-                <p className="text-sm text-muted-foreground">Tell us why you'd be a great fit.</p>
-              </div>
-              <div>
-                <Label htmlFor="exp">Relevant experience</Label>
-                <Textarea
-                  id="exp"
-                  value={form.experience}
-                  onChange={(e) => setForm({ ...form, experience: e.target.value })}
-                  placeholder="Past servers, communities, projects..."
-                  rows={4}
-                  maxLength={2000}
+                <Label htmlFor="mc">Minecraft username *</Label>
+                <Input
+                  id="mc"
+                  value={form.mc_username}
+                  onChange={(e) => setForm({ ...form, mc_username: e.target.value })}
+                  placeholder="Notch"
+                  maxLength={16}
                 />
               </div>
               <div>
-                <Label htmlFor="why">Why do you want to join? *</Label>
-                <Textarea
-                  id="why"
-                  value={form.why}
-                  onChange={(e) => setForm({ ...form, why: e.target.value })}
-                  placeholder="Tell us what motivates you..."
-                  rows={5}
-                  maxLength={2000}
+                <Label htmlFor="discord">Discord username</Label>
+                <Input
+                  id="discord"
+                  value={form.discord}
+                  onChange={(e) => setForm({ ...form, discord: e.target.value })}
+                  placeholder="user#0000"
+                  maxLength={64}
                 />
-                <p className="text-xs text-muted-foreground mt-1">{form.why.length}/2000</p>
               </div>
-              {(type === "builder" || type === "youtuber") && (
-                <div>
-                  <Label htmlFor="portfolio">
-                    {type === "builder"
-                      ? "Portfolio URL (Imgur, Planet Minecraft, etc.)"
-                      : "Channel URL (YouTube, Twitch, TikTok)"}
-                  </Label>
-                  <Input
-                    id="portfolio"
-                    value={form.portfolio_url}
-                    onChange={(e) => setForm({ ...form, portfolio_url: e.target.value })}
-                    placeholder="https://..."
-                    maxLength={500}
-                  />
-                </div>
-              )}
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="space-y-4">
               <div>
-                <h2 className="font-display font-bold text-lg">Review & submit</h2>
-                <p className="text-sm text-muted-foreground">Make sure everything looks right.</p>
+                <Label htmlFor="age">Age</Label>
+                <Input
+                  id="age"
+                  type="number"
+                  min={10}
+                  max={99}
+                  value={form.age}
+                  onChange={(e) => setForm({ ...form, age: e.target.value })}
+                  placeholder="18"
+                />
               </div>
-              <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                <Row label="Role" value={selected.label} />
-                <Row label="Minecraft" value={form.mc_username} />
-                <Row label="Discord" value={form.discord || "—"} />
-                <Row label="Age" value={form.age || "—"} />
-                <Row label="Timezone" value={form.timezone || "—"} />
-                {form.portfolio_url && <Row label="Portfolio" value={form.portfolio_url} />}
-              </dl>
               <div>
-                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Why</div>
-                <p className="text-sm whitespace-pre-wrap rounded-md border border-border p-3 bg-muted/30">
-                  {form.why || "—"}
-                </p>
+                <Label htmlFor="tz">Timezone</Label>
+                <Input
+                  id="tz"
+                  value={form.timezone}
+                  onChange={(e) => setForm({ ...form, timezone: e.target.value })}
+                  placeholder="UTC, EST, PST..."
+                  maxLength={64}
+                />
               </div>
-              {form.experience && (
-                <div>
-                  <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Experience</div>
-                  <p className="text-sm whitespace-pre-wrap rounded-md border border-border p-3 bg-muted/30">
-                    {form.experience}
-                  </p>
-                </div>
-              )}
             </div>
-          )}
+          </div>
+        )}
 
-          <div className="flex justify-between pt-2">
-            <Button variant="ghost" onClick={back} disabled={step === 0 || submitting}>
-              <ArrowLeft className="h-4 w-4 mr-1" /> Back
-            </Button>
-            {step < STEPS.length - 1 ? (
-              <Button onClick={next} size="lg">
-                Next <ArrowRight className="h-4 w-4 ml-1" />
-              </Button>
-            ) : (
-              <Button onClick={submit} disabled={submitting} size="lg" className="glow">
-                {submitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                Submit application
-              </Button>
+        {step === 1 && (
+          <div className="space-y-4">
+            <div>
+              <h2 className="font-display font-bold text-lg">Your story</h2>
+              <p className="text-sm text-muted-foreground">Tell us why you'd be a great fit.</p>
+            </div>
+            <div>
+              <Label htmlFor="exp">Relevant experience</Label>
+              <Textarea
+                id="exp"
+                value={form.experience}
+                onChange={(e) => setForm({ ...form, experience: e.target.value })}
+                placeholder="Past servers, communities, projects..."
+                rows={4}
+                maxLength={2000}
+              />
+            </div>
+            <div>
+              <Label htmlFor="why">Why do you want to join? *</Label>
+              <Textarea
+                id="why"
+                value={form.why}
+                onChange={(e) => setForm({ ...form, why: e.target.value })}
+                placeholder="Tell us what motivates you..."
+                rows={5}
+                maxLength={2000}
+              />
+              <p className="text-xs text-muted-foreground mt-1">{form.why.length}/2000</p>
+            </div>
+            {type.requires_portfolio && (
+              <div>
+                <Label htmlFor="portfolio">
+                  {type.portfolio_label || "Portfolio URL"} *
+                </Label>
+                <Input
+                  id="portfolio"
+                  value={form.portfolio_url}
+                  onChange={(e) => setForm({ ...form, portfolio_url: e.target.value })}
+                  placeholder="https://..."
+                  maxLength={500}
+                />
+              </div>
             )}
           </div>
-        </Card>
-      </main>
-      <Footer />
-    </div>
+        )}
+
+        {step === 2 && (
+          <div className="space-y-4">
+            <div>
+              <h2 className="font-display font-bold text-lg">Review & submit</h2>
+              <p className="text-sm text-muted-foreground">Make sure everything looks right.</p>
+            </div>
+            <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+              <Row label="Role" value={type.label} />
+              <Row label="Minecraft" value={form.mc_username} />
+              <Row label="Discord" value={form.discord || "—"} />
+              <Row label="Age" value={form.age || "—"} />
+              <Row label="Timezone" value={form.timezone || "—"} />
+              {form.portfolio_url && <Row label="Portfolio" value={form.portfolio_url} />}
+            </dl>
+            <div>
+              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Why</div>
+              <p className="text-sm whitespace-pre-wrap rounded-md border border-border p-3 bg-muted/30">
+                {form.why || "—"}
+              </p>
+            </div>
+            {form.experience && (
+              <div>
+                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Experience</div>
+                <p className="text-sm whitespace-pre-wrap rounded-md border border-border p-3 bg-muted/30">
+                  {form.experience}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="flex justify-between pt-2">
+          <Button variant="ghost" onClick={back} disabled={step === 0 || submitting}>
+            <ArrowLeft className="h-4 w-4 mr-1" /> Back
+          </Button>
+          {step < STEPS.length - 1 ? (
+            <Button onClick={next} size="lg">
+              Next <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          ) : (
+            <Button onClick={submit} disabled={submitting} size="lg" className="glow">
+              {submitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              Submit application
+            </Button>
+          )}
+        </div>
+      </Card>
+    </Shell>
   );
 };
 
