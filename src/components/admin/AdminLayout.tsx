@@ -55,6 +55,7 @@ export type AdminSection =
   | "plugins"
   | "changelog"
   | "applications"
+  | "apply"
   | "features"
   | "rules"
   | "alerts"
@@ -98,6 +99,7 @@ const items: NavItem[] = [
   { kind: "link", id: "servers", icon: Globe, label: "Servers" },
   { kind: "link", id: "changelog", icon: Zap, label: "Changelog" },
   { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
+  { kind: "link", id: "apply", icon: ClipboardList, label: "Apply (types)" },
   { kind: "link", id: "features", icon: Sparkles, label: "Features" },
   { kind: "link", id: "rules", icon: Gavel, label: "Rules" },
 

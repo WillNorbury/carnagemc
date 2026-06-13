@@ -86,6 +86,7 @@ const Shell = () => {
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/link-account" element={<LinkAccount />} />
                   <Route path="/apply" element={<Apply />} />
+                  <Route path="/apply/:slug" element={<Apply />} />
                   <Route path="/news" element={<News />} />
                   <Route path="/announcements" element={<News />} />
                   <Route path="/news/:slug" element={<NewsArticle />} />

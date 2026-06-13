@@ -53,6 +53,7 @@ import { BanAppealsAdminSection } from "@/components/admin/BanAppealsAdminSectio
 import { WikiAdminSection } from "@/components/admin/WikiAdminSection";
 import { GalleryAdminSection } from "@/components/admin/GalleryAdminSection";
 import { ContactAdminSection } from "@/components/admin/ContactAdminSection";
+import { ApplyTypesAdminSection } from "@/components/admin/ApplyTypesAdminSection";
 import { DiscoverItemsAdminTab } from "@/components/admin/DiscoverItemsAdminTab";
 import { StatCard } from "@/components/admin/StatCard";
 import { CustomRolesManager, type CustomRole } from "@/components/admin/CustomRolesManager";
@@ -93,6 +94,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   plugins: { title: "Plugins", description: "Add, edit, and remove server plugins." },
   changelog: { title: "Changelog", description: "Publish server updates by date and category." },
   applications: { title: "Applications", description: "Review staff, builder, and content creator applications." },
+  apply: { title: "Apply — Types", description: "Add, edit, or remove the categories shown on /apply." },
   features: { title: "Features", description: "Add, edit, reorder, and remove features shown on the website." },
   rules: { title: "Rules", description: "Edit the sections shown on the public Rules page." },
   alerts: { title: "Alert Settings", description: "Configure webhook payload templates and alert recipients." },
@@ -173,6 +175,7 @@ const Admin = () => {
       {section === "plugins" && <PluginsTab />}
       {section === "changelog" && <ChangelogTab />}
       {section === "applications" && <ApplicationsTab />}
+      {section === "apply" && <ApplyTypesAdminSection />}
       {section === "features" && <FeaturesTab />}
       {section === "rules" && <RulesTab />}
       {section === "alerts" && <AlertsTab />}
