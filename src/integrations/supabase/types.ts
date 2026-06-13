@@ -74,6 +74,57 @@ export type Database = {
         }
         Relationships: []
       }
+      application_types: {
+        Row: {
+          accepting: boolean
+          color: string
+          created_at: string
+          description: string
+          enabled: boolean
+          icon: string
+          id: string
+          intro: string | null
+          label: string
+          portfolio_label: string | null
+          requires_portfolio: boolean
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          accepting?: boolean
+          color?: string
+          created_at?: string
+          description?: string
+          enabled?: boolean
+          icon?: string
+          id?: string
+          intro?: string | null
+          label: string
+          portfolio_label?: string | null
+          requires_portfolio?: boolean
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          accepting?: boolean
+          color?: string
+          created_at?: string
+          description?: string
+          enabled?: boolean
+          icon?: string
+          id?: string
+          intro?: string | null
+          label?: string
+          portfolio_label?: string | null
+          requires_portfolio?: boolean
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       applications: {
         Row: {
           age: number | null
@@ -89,7 +140,7 @@ export type Database = {
           reviewer_notes: string | null
           status: Database["public"]["Enums"]["application_status"]
           timezone: string | null
-          type: Database["public"]["Enums"]["application_type"]
+          type: string
           updated_at: string
           user_id: string
           why: string
@@ -108,7 +159,7 @@ export type Database = {
           reviewer_notes?: string | null
           status?: Database["public"]["Enums"]["application_status"]
           timezone?: string | null
-          type: Database["public"]["Enums"]["application_type"]
+          type: string
           updated_at?: string
           user_id: string
           why: string
@@ -127,7 +178,7 @@ export type Database = {
           reviewer_notes?: string | null
           status?: Database["public"]["Enums"]["application_status"]
           timezone?: string | null
-          type?: Database["public"]["Enums"]["application_type"]
+          type?: string
           updated_at?: string
           user_id?: string
           why?: string
