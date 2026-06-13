@@ -92,7 +92,7 @@ export const ApplyTypesAdminSection = () => {
     toast.success(isNew ? "Application type created" : "Application type updated");
     logWebsiteEvent({ kind: "apply_type", 
       title: isNew ? "Application type created" : "Application type updated",
-      description: `${payload.label} (${payload.slug})`,
+      detail: `${payload.label} (${payload.slug})`,
       color: 0x4f46e5,
     }).catch(() => {});
     setEditing(null);
@@ -115,7 +115,7 @@ export const ApplyTypesAdminSection = () => {
     toast.success("Deleted");
     logWebsiteEvent({ kind: "apply_type", 
       title: "Application type deleted",
-      description: `${t.label} (${t.slug})`,
+      detail: `${t.label} (${t.slug})`,
       color: 0xdc2626,
     }).catch(() => {});
     load();
