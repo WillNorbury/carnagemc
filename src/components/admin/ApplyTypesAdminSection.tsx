@@ -18,7 +18,7 @@ import {
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import { confirm } from "@/lib/confirm";
-import { logEvent } from "@/lib/logEvent";
+import { logWebsiteEvent } from "@/lib/logEvent";
 import type { ApplicationType } from "@/pages/Apply";
 
 const slugify = (s: string) =>
