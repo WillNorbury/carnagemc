@@ -480,280 +480,118 @@ const UsersTab = () => {
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="space-y-6">
-        {/* Header with breadcrumb */}
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <div className="flex items-baseline gap-3">
-              <h1 className="text-3xl font-bold text-foreground tracking-tight">Users</h1>
-              <p className="text-muted-foreground text-sm">All registered users on the system.</p>
-            </div>
-          </div>
-          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <span>Admin</span>
-            <ChevronRight className="h-3.5 w-3.5 opacity-60" />
-            <span className="text-foreground">Users</span>
-          </nav>
-        </div>
-
-        {/* Create User */}
-        <Card className="p-6 bg-card/80 border-border/60">
-          <h2 className="font-bold mb-4 text-sm uppercase tracking-wider text-muted-foreground">Create User</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <Label>Email</Label>
-              <Input
-                type="email"
-                value={newUser.email}
-                onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                placeholder="user@example.com"
-              />
-            </div>
-            <div>
-              <Label>Password</Label>
-              <Input
-                type="password"
-                value={newUser.password}
-                onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                placeholder="At least 6 characters"
-              />
-            </div>
-            <div>
-              <Label>Display Name (optional)</Label>
-              <Input
-                value={newUser.display_name}
-                onChange={(e) => setNewUser({ ...newUser, display_name: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label>MC Username (optional)</Label>
-              <Input
-                value={newUser.mc_username}
-                onChange={(e) => setNewUser({ ...newUser, mc_username: e.target.value })}
-              />
-            </div>
-          </div>
-          <div className="mt-4">
-            <Label className="mb-2 block">Roles</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-between font-normal">
-                  <span className="truncate text-left">
-                    {newRoles.size === 0
-                      ? "Select roles..."
-                      : [...newRoles].map((r) => roleLabel(r)).join(", ")}
-                  </span>
-                  <ChevronDown className="h-4 w-4 opacity-60 shrink-0 ml-2" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-64 p-2" align="start">
-                <Input
-                  autoFocus
-                  value={roleSearch}
-                  onChange={(e) => setRoleSearch(e.target.value)}
-                  placeholder="Search roles..."
-                  className="h-8 mb-2"
-                />
-                <div className="max-h-72 overflow-y-auto space-y-1">
-                  {ALL_ROLES.filter(
-                    (r) =>
-                      r.value !== "default" &&
-                      r.label.toLowerCase().includes(roleSearch.toLowerCase()),
-                  ).map((r) => {
-                    const active = newRoles.has(r.value);
-                    return (
-                      <button
-                        type="button"
-                        key={r.value}
-                        onClick={() => toggleNewRole(r.value)}
-                        className="w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent text-sm text-left"
-                      >
-                        <Checkbox checked={active} />
-                        <span className="flex-1">{r.label}</span>
-                        {active && <Check className="h-3.5 w-3.5 opacity-70" />}
-                      </button>
-                    );
-                  })}
-                  {ALL_ROLES.filter(
-                    (r) =>
-                      r.value !== "default" &&
-                      r.label.toLowerCase().includes(roleSearch.toLowerCase()),
-                  ).length === 0 && (
-                    <div className="text-xs text-muted-foreground text-center py-3">No roles match</div>
-                  )}
-                </div>
-              </PopoverContent>
-            </Popover>
-            <p className="text-xs text-muted-foreground mt-2">
-              "Default" is always granted automatically.
-            </p>
-          </div>
-          <div className="flex items-center justify-end mt-4">
-            <Button onClick={createUser} disabled={creating}>
-              <Plus className="h-4 w-4 mr-1" />
-              {creating ? "Creating..." : "Create User"}
-            </Button>
-          </div>
-        </Card>
-
-        {/* User List panel */}
-        <div className="rounded-lg border border-border/60 overflow-hidden bg-[#151a25]/80">
-          {/* Panel header bar */}
-          <div className="flex items-center justify-between gap-3 px-4 py-3 border-b-2 border-primary flex-wrap">
-            <h2 className="text-base font-semibold text-foreground">User List</h2>
-            <div className="flex items-center gap-2 flex-wrap">
+      <div className="space-y-4">
+        {/* User List Card */}
+        <Card className="bg-[#1a1410] border-[#2a2018] overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between gap-3 px-5 py-4 flex-wrap">
+            <h2 className="text-lg font-bold text-foreground">
+              Users ({filteredProfiles.length})
+            </h2>
+            <div className="flex items-center gap-3 flex-wrap">
               <div className="relative">
+                <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search"
-                  className="h-9 w-64 bg-secondary/60 pr-9"
+                  placeholder="Search name, MC username, ID..."
+                  className="h-9 w-64 pl-9 bg-[#241c16] border-[#3a2e24] text-foreground placeholder:text-muted-foreground/60"
                 />
-                <div className="absolute right-0 top-0 h-9 w-9 flex items-center justify-center bg-primary rounded-r-md">
-                  <Search className="h-4 w-4 text-primary-foreground" />
-                </div>
               </div>
-              <label className="flex items-center gap-2 text-sm cursor-pointer select-none text-muted-foreground px-2">
-                <Checkbox
-                  checked={staffOnly}
-                  onCheckedChange={(v) => setStaffOnly(v === true)}
-                />
+              <label className="flex items-center gap-2 text-sm cursor-pointer select-none text-muted-foreground">
+                <span className={`h-3 w-3 rounded-full border ${staffOnly ? 'bg-primary border-primary' : 'border-muted-foreground/40'}`} />
                 Staff only
+                <input
+                  type="checkbox"
+                  checked={staffOnly}
+                  onChange={(e) => setStaffOnly(e.target.checked)}
+                  className="sr-only"
+                />
               </label>
-              <Button className="h-9 bg-primary hover:bg-primary/90 text-primary-foreground" onClick={() => {
-                const el = document.querySelector<HTMLInputElement>('input[placeholder="user@example.com"]');
-                el?.focus();
-                el?.scrollIntoView({ behavior: "smooth", block: "center" });
-              }}>
-                Create New
-              </Button>
             </div>
           </div>
 
-          {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/40">
-                  <th className="px-4 py-3">ID</th>
-                  <th className="px-4 py-3">Email</th>
-                  <th className="px-4 py-3">Client Name</th>
-                  <th className="px-4 py-3">Username</th>
-                  <th className="px-4 py-3 text-center">2FA</th>
-                  <th className="px-4 py-3 text-center">Roles</th>
-                  <th className="px-4 py-3 text-center">Can Access</th>
-                  <th className="px-4 py-3 text-right"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/30">
-                {filteredProfiles.map((p, idx) => {
-                  const staffRolesForUser = roles
-                    .filter((r) => r.user_id === p.id && isStaffRole(r.role))
-                    .map((r) => roleLabel(r.role));
-                  const admin = isAdminFor(p.id);
-                  const numericId = idx + 1;
-                  return (
-                    <tr key={p.id} className="hover:bg-secondary/20 transition-colors">
-                      <td className="px-4 py-3">
-                        <span className="inline-flex items-center justify-center min-w-[28px] px-2 py-0.5 rounded text-xs font-mono bg-secondary/70 text-muted-foreground border border-border/40">
-                          {numericId}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => openEdit(p)}
-                            className="text-primary hover:underline font-medium"
-                          >
-                            {p.display_name ?? p.id.slice(0, 8)}
-                          </button>
-                          {admin && <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-foreground/90">
-                        {p.display_name ?? "—"}
-                      </td>
-                      <td className="px-4 py-3 text-foreground/90 font-mono text-xs">
-                        {p.mc_username ?? "—"}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <Unlock className="h-4 w-4 text-destructive inline" />
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <div className="flex items-center justify-center gap-1.5 flex-wrap">
-                          {staffRolesForUser.length > 0 && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Badge
-                                  variant="outline"
-                                  className="border-primary/40 text-primary bg-primary/10 cursor-help text-xs"
-                                >
-                                  Staff
-                                </Badge>
-                              </TooltipTrigger>
-                              <TooltipContent>{staffRolesForUser.join(", ")}</TooltipContent>
-                            </Tooltip>
-                          )}
-                          {admin && (
-                            <Badge className="bg-primary text-primary-foreground text-xs">Admin</Badge>
-                          )}
-                          {staffRolesForUser.length === 0 && !admin && (
-                            <span className="text-muted-foreground">0</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-center text-muted-foreground">
-                        {admin ? 1 : 0}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => openEdit(p)}>
-                                <Pencil className="h-3.5 w-3.5" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Edit</TooltipContent>
-                          </Tooltip>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => toggleAdmin(p.id)}>
-                                {admin ? (
-                                  <ShieldOff className="h-3.5 w-3.5 text-muted-foreground" />
-                                ) : (
-                                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                                )}
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>{admin ? "Demote" : "Promote to admin"}</TooltipContent>
-                          </Tooltip>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-8 w-8 p-0 text-primary hover:text-primary hover:bg-primary/10"
-                                onClick={() => deleteUser(p)}
-                              >
-                                <Power className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Delete user</TooltipContent>
-                          </Tooltip>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          {/* User rows */}
+          <div className="px-5 pb-5 space-y-2">
+            {filteredProfiles.map((p) => {
+              const userRoles = roles.filter((r) => r.user_id === p.id);
+              const hasStaff = userRoles.some((r) => isStaffRole(r.role));
+              const admin = isAdminFor(p.id);
+              return (
+                <div
+                  key={p.id}
+                  className="flex items-center justify-between gap-3 px-4 py-3 rounded-lg bg-[#241c16] border border-[#2a2018] hover:border-[#3a2e24] transition-colors"
+                >
+                  <div className="min-w-0">
+                    <div className="font-semibold text-foreground truncate">
+                      {p.display_name ?? p.mc_username ?? p.id.slice(0, 8)}
+                    </div>
+                    <div className="text-xs text-muted-foreground font-mono">
+                      {p.id.slice(0, 8)}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {hasStaff && (
+                      <Badge
+                        variant="outline"
+                        className="border-primary/50 text-primary bg-primary/10 text-xs px-2 py-0.5 rounded-full"
+                      >
+                        Staff
+                      </Badge>
+                    )}
+                    {admin && (
+                      <Badge className="bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full border-0">
+                        Admin
+                      </Badge>
+                    )}
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 gap-1.5 text-xs bg-[#1a1410] border-[#3a2e24] text-foreground hover:bg-[#2a2018] hover:text-foreground"
+                      onClick={() => openEdit(p)}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 gap-1.5 text-xs bg-[#1a1410] border-[#3a2e24] text-foreground hover:bg-[#2a2018] hover:text-foreground"
+                      onClick={() => toggleAdmin(p.id)}
+                    >
+                      {admin ? (
+                        <>
+                          <ShieldOff className="h-3.5 w-3.5" />
+                          Demote
+                        </>
+                      ) : (
+                        <>
+                          <ShieldCheck className="h-3.5 w-3.5" />
+                          Promote
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 gap-1.5 text-xs bg-[#1a1410] border-[#3a2e24] text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      onClick={() => deleteUser(p)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
             {filteredProfiles.length === 0 && (
               <div className="text-center py-12 text-muted-foreground text-sm">No users found.</div>
             )}
           </div>
-        </div>
+        </Card>
       </div>
-
 
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <DialogContent>
