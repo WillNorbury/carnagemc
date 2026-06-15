@@ -3801,6 +3801,10 @@ const ApplicationsTab = () => {
         </div>
       </Card>
 
+      <ApplicationEmailLog />
+
+
+
       <div className="flex flex-wrap gap-2">
         {(["all", "pending", "approved", "rejected"] as const).map((f) => (
           <Button
