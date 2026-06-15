@@ -44,6 +44,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-1">
           <GlobalSearch />
+          <NotificationsBell />
           <ThemeToggle />
           {user && (
             <Button variant="ghost" size="sm" onClick={() => nav("/dashboard")} className="hidden sm:inline-flex">
