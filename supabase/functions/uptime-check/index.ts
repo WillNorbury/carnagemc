@@ -103,7 +103,12 @@ function interpolateTemplate(template: unknown, vars: Record<string, string>): u
   return template;
 }
 
-async function sendWebhook(urls: string[], template: unknown, vars: Record<string, string>, fallbackBody: object): Promise<{ url: string; ok: boolean; status: number | null; error: string | null; latency_ms: number }[]> {
+async function sendWebhook(
+  urls: string[],
+  template: unknown,
+  vars: Record<string, string>,
+  fallbackBody: object,
+): Promise<{ url: string; ok: boolean; status: number | null; error: string | null; latency_ms: number }[]> {
   if (urls.length === 0) return [];
   const payload = template ? interpolateTemplate(template, vars) : fallbackBody;
   const body = JSON.stringify(payload);
@@ -113,10 +118,22 @@ async function sendWebhook(urls: string[], template: unknown, vars: Record<strin
       try {
         const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body });
         await r.arrayBuffer().catch(() => {});
-        return { url, ok: r.ok, status: r.status, error: r.ok ? null : `HTTP ${r.status}`, latency_ms: Date.now() - start };
+        return {
+          url,
+          ok: r.ok,
+          status: r.status,
+          error: r.ok ? null : `HTTP ${r.status}`,
+          latency_ms: Date.now() - start,
+        };
       } catch (e) {
         console.error("webhook failed", url, e);
-        return { url, ok: false, status: null, error: String((e as Error).message || e).slice(0, 300), latency_ms: Date.now() - start };
+        return {
+          url,
+          ok: false,
+          status: null,
+          error: String((e as Error).message || e).slice(0, 300),
+          latency_ms: Date.now() - start,
+        };
       }
     }),
   );
@@ -131,7 +148,11 @@ async function logWebsiteDelivery(
   const r = results.find((x) => x.url === websiteUrl);
   if (!r) return;
   let host: string | null = null;
-  try { host = new URL(websiteUrl).host; } catch { /* ignore */ }
+  try {
+    host = new URL(websiteUrl).host;
+  } catch {
+    /* ignore */
+  }
   await supabase.from("website_webhook_deliveries").insert({
     kind,
     url_host: host,
@@ -192,6 +213,7 @@ Deno.serve(async (req) => {
     checkHttp("api", apiHealth, false),
     checkHttp("panel", "https://panel.voxelnode.dev"),
     checkHttp("discord", "https://discord.gg/V8xYY2DasZ"),
+    checkHttp("portfolio", "https://portfolio.havocsmp.net"),
   ]);
 
   const { error: insertErr } = await supabase.from("uptime_checks").insert(checks);
@@ -270,8 +292,14 @@ Deno.serve(async (req) => {
               },
             ],
           };
-          const results = await sendWebhook(c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls, alertSettings?.down_payload_template, vars, fallback);
-          if (c.service_key === "website" && websiteWebhookUrl) await logWebsiteDelivery(supabase, "down", websiteWebhookUrl, results);
+          const results = await sendWebhook(
+            c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls,
+            alertSettings?.down_payload_template,
+            vars,
+            fallback,
+          );
+          if (c.service_key === "website" && websiteWebhookUrl)
+            await logWebsiteDelivery(supabase, "down", websiteWebhookUrl, results);
           await supabase.from("uptime_incidents").update({ alerted: true }).eq("id", inc.id);
           alerts.push({ service: c.service_key, kind: "down" });
         }
@@ -298,8 +326,14 @@ Deno.serve(async (req) => {
             },
           ],
         };
-        const results = await sendWebhook(c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls, alertSettings?.down_payload_template, vars, fallback);
-        if (c.service_key === "website" && websiteWebhookUrl) await logWebsiteDelivery(supabase, "down", websiteWebhookUrl, results);
+        const results = await sendWebhook(
+          c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls,
+          alertSettings?.down_payload_template,
+          vars,
+          fallback,
+        );
+        if (c.service_key === "website" && websiteWebhookUrl)
+          await logWebsiteDelivery(supabase, "down", websiteWebhookUrl, results);
         await supabase
           .from("uptime_incidents")
           .update({ alerted: true, last_error: c.error })
@@ -331,8 +365,14 @@ Deno.serve(async (req) => {
             },
           ],
         };
-        const results = await sendWebhook(c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls, alertSettings?.up_payload_template, vars, fallback);
-        if (c.service_key === "website" && websiteWebhookUrl) await logWebsiteDelivery(supabase, "up", websiteWebhookUrl, results);
+        const results = await sendWebhook(
+          c.service_key === "website" && websiteWebhookUrl ? [...new Set([...allUrls, websiteWebhookUrl])] : allUrls,
+          alertSettings?.up_payload_template,
+          vars,
+          fallback,
+        );
+        if (c.service_key === "website" && websiteWebhookUrl)
+          await logWebsiteDelivery(supabase, "up", websiteWebhookUrl, results);
         alerts.push({ service: c.service_key, kind: "up" });
       }
     }
