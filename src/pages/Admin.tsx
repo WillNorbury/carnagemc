@@ -36,6 +36,8 @@ import {
   Play,
   AlertTriangle,
   RefreshCw,
+  Loader2,
+  Mail,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
@@ -3649,11 +3651,66 @@ type ApplicationRow = {
 };
 
 const ApplicationsTab = () => {
+  const { user } = useAuth();
   const [items, setItems] = useState<ApplicationRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
   const [open, setOpen] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
+  const [testEmail, setTestEmail] = useState<string>("");
+  const [testing, setTesting] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.email && !testEmail) setTestEmail(user.email);
+  }, [user, testEmail]);
+
+  const sendTest = async (kind: "received" | "status" | "admin") => {
+    const recipient = testEmail.trim();
+    if (!recipient) return toast.error("Enter a recipient email");
+    setTesting(kind);
+    const stamp = Date.now();
+    const common = {
+      mcUsername: "TestPlayer",
+      applicationType: "builder",
+      discord: "tester#0001",
+      age: 18,
+      timezone: "UTC",
+      experience: "Test experience entry to verify the template renders correctly.",
+      why: "This is a test application body to verify the email template renders correctly.",
+      portfolioUrl: "https://example.com/portfolio",
+    };
+    let templateName: string;
+    let templateData: Record<string, unknown>;
+    if (kind === "received") {
+      templateName = "application-received";
+      templateData = common;
+    } else if (kind === "status") {
+      templateName = "application-status";
+      templateData = {
+        ...common,
+        status: "approved",
+        reviewerNotes: "Thanks for applying — this is a test status update.",
+        dashboardUrl: `${window.location.origin}/dashboard`,
+      };
+    } else {
+      templateName = "application-admin";
+      templateData = {
+        ...common,
+        adminUrl: `${window.location.origin}/admin?tab=applications`,
+      };
+    }
+    const { error } = await supabase.functions.invoke("send-transactional-email", {
+      body: {
+        templateName,
+        recipientEmail: recipient,
+        idempotencyKey: `test-${templateName}-${stamp}`,
+        templateData,
+      },
+    });
+    setTesting(null);
+    if (error) return toast.error(error.message ?? "Failed to send test email");
+    toast.success(`Test "${templateName}" queued to ${recipient}`);
+  };
 
   const load = async () => {
     setLoading(true);
@@ -3706,6 +3763,36 @@ const ApplicationsTab = () => {
 
   return (
     <div className="space-y-6">
+      <Card className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Mail className="h-4 w-4" />
+          <div className="font-display font-bold">Test application email hooks</div>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Sends a sample of each application email template to the address below. Uses the live email queue — check your inbox (and spam) to confirm delivery.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Input
+            type="email"
+            placeholder="recipient@example.com"
+            value={testEmail}
+            onChange={(e) => setTestEmail(e.target.value)}
+            className="flex-1"
+          />
+          <div className="flex gap-2 flex-wrap">
+            <Button size="sm" variant="outline" disabled={!!testing} onClick={() => sendTest("received")}>
+              {testing === "received" ? <Loader2 className="h-3 w-3 animate-spin" /> : "New application"}
+            </Button>
+            <Button size="sm" variant="outline" disabled={!!testing} onClick={() => sendTest("status")}>
+              {testing === "status" ? <Loader2 className="h-3 w-3 animate-spin" /> : "Status change"}
+            </Button>
+            <Button size="sm" variant="outline" disabled={!!testing} onClick={() => sendTest("admin")}>
+              {testing === "admin" ? <Loader2 className="h-3 w-3 animate-spin" /> : "Admin alert"}
+            </Button>
+          </div>
+        </div>
+      </Card>
+
       <div className="flex flex-wrap gap-2">
         {(["all", "pending", "approved", "rejected"] as const).map((f) => (
           <Button

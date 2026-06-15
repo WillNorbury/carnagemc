@@ -20,7 +20,7 @@ const Email = ({
   email = '',
   banReason = '',
   appealText = '',
-  adminUrl = 'https://havocsmp.net/admin?tab=appeals',
+  adminUrl = 'https://havocsmp.net/admin?tab=ban-appeals',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
