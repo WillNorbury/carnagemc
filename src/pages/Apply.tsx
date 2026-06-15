@@ -246,7 +246,7 @@ const ApplyForm = ({
       return toast.error(s.error.issues[0].message);
     }
     setSubmitting(true);
-    const { error } = await supabase.from("applications").insert({
+    const { data: inserted, error } = await supabase.from("applications").insert({
       user_id: user.id,
       type: type.slug as any,
       mc_username: a.data.mc_username,
@@ -256,9 +256,42 @@ const ApplyForm = ({
       experience: s.data.experience || null,
       why: s.data.why,
       portfolio_url: s.data.portfolio_url || null,
-    });
+    }).select("id").single();
     setSubmitting(false);
     if (error) return toast.error(error.message);
+
+    const appId = inserted?.id;
+    const common = {
+      mcUsername: a.data.mc_username,
+      applicationType: type.slug,
+      discord: a.data.discord || "",
+      age: a.data.age || "",
+      timezone: a.data.timezone || "",
+      experience: s.data.experience || "",
+      why: s.data.why,
+      portfolioUrl: s.data.portfolio_url || "",
+    };
+    if (user.email) {
+      supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "application-received",
+          recipientEmail: user.email,
+          idempotencyKey: `application-received-${appId}`,
+          templateData: common,
+        },
+      }).catch(() => {});
+    }
+    supabase.functions.invoke("send-transactional-email", {
+      body: {
+        templateName: "application-admin",
+        idempotencyKey: `application-admin-${appId}`,
+        templateData: {
+          ...common,
+          adminUrl: `${window.location.origin}/admin?tab=applications`,
+        },
+      },
+    }).catch(() => {});
+
     toast.success("Application submitted! We'll review it soon.");
     navigate("/dashboard");
   };
