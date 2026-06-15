@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.notify_ban_appeal_event() FROM PUBLIC, anon, authenticated;
