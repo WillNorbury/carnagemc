@@ -25,10 +25,63 @@ type Appeal = {
 };
 
 export function BanAppealsAdminSection() {
+  const { user } = useAuth();
   const [items, setItems] = useState<Appeal[]>([]);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("pending");
+  const [testEmail, setTestEmail] = useState<string>("");
+  const [testing, setTesting] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.email && !testEmail) setTestEmail(user.email);
+  }, [user, testEmail]);
+
+  async function sendTest(kind: "received" | "status" | "admin") {
+    const recipient = testEmail.trim();
+    if (!recipient) return toast.error("Enter a recipient email");
+    setTesting(kind);
+    const stamp = Date.now();
+    const common = {
+      minecraftUsername: "TestPlayer",
+      discordTag: "tester#0001",
+      banReason: "Test ban reason",
+      appealText: "This is a test appeal body to verify the email template renders correctly.",
+      appealUrl: `${window.location.origin}/appeal`,
+    };
+    let templateName: string;
+    let templateData: Record<string, unknown>;
+    if (kind === "received") {
+      templateName = "ban-appeal-received";
+      templateData = common;
+    } else if (kind === "status") {
+      templateName = "ban-appeal-status";
+      templateData = {
+        ...common,
+        status: "approved",
+        adminResponse: "Thanks for your patience — this is a test status update.",
+      };
+    } else {
+      templateName = "ban-appeal-admin";
+      templateData = {
+        ...common,
+        email: recipient,
+        adminUrl: `${window.location.origin}/admin?tab=appeals`,
+      };
+    }
+    const { error } = await supabase.functions.invoke("send-transactional-email", {
+      body: {
+        templateName,
+        recipientEmail: recipient,
+        idempotencyKey: `test-${templateName}-${stamp}`,
+        templateData,
+      },
+    });
+    setTesting(null);
+    if (error) return toast.error(error.message ?? "Failed to send test email");
+    toast.success(`Test "${templateName}" queued to ${recipient}`);
+  }
+
 
   async function load() {
     setLoading(true);
