@@ -126,6 +126,37 @@ export function BanAppealsAdminSection() {
   }
 
   return (
+    <div className="space-y-4">
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><Mail className="h-4 w-4" /> Test appeal email hooks</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-xs text-muted-foreground">
+          Sends a sample of each ban-appeal email template to the address below. Uses the live email queue — check your inbox (and spam) to confirm delivery.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Input
+            type="email"
+            placeholder="recipient@example.com"
+            value={testEmail}
+            onChange={(e) => setTestEmail(e.target.value)}
+            className="flex-1"
+          />
+          <div className="flex gap-2 flex-wrap">
+            <Button size="sm" variant="outline" disabled={!!testing} onClick={() => sendTest("received")}>
+              {testing === "received" ? <Loader2 className="h-3 w-3 animate-spin" /> : "New appeal"}
+            </Button>
+            <Button size="sm" variant="outline" disabled={!!testing} onClick={() => sendTest("status")}>
+              {testing === "status" ? <Loader2 className="h-3 w-3 animate-spin" /> : "Status change"}
+            </Button>
+            <Button size="sm" variant="outline" disabled={!!testing} onClick={() => sendTest("admin")}>
+              {testing === "admin" ? <Loader2 className="h-3 w-3 animate-spin" /> : "Admin alert"}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Ban Appeals</CardTitle>
