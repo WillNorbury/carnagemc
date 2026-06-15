@@ -3741,6 +3741,14 @@ const ApplicationsTab = () => {
       .eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(`Application ${status}`);
+    supabase.functions.invoke("send-application-status-email", {
+      body: {
+        applicationId: id,
+        status,
+        reviewerNotes: notes || null,
+        dashboardUrl: `${window.location.origin}/dashboard`,
+      },
+    }).catch(() => {});
     setOpen(null);
     setNotes("");
     load();
