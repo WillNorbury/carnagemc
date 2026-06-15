@@ -38,6 +38,7 @@ import {
   RefreshCw,
   Loader2,
   Mail,
+  Star,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
