@@ -3651,11 +3651,66 @@ type ApplicationRow = {
 };
 
 const ApplicationsTab = () => {
+  const { user } = useAuth();
   const [items, setItems] = useState<ApplicationRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
   const [open, setOpen] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
+  const [testEmail, setTestEmail] = useState<string>("");
+  const [testing, setTesting] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.email && !testEmail) setTestEmail(user.email);
+  }, [user, testEmail]);
+
+  const sendTest = async (kind: "received" | "status" | "admin") => {
+    const recipient = testEmail.trim();
+    if (!recipient) return toast.error("Enter a recipient email");
+    setTesting(kind);
+    const stamp = Date.now();
+    const common = {
+      mcUsername: "TestPlayer",
+      applicationType: "builder",
+      discord: "tester#0001",
+      age: 18,
+      timezone: "UTC",
+      experience: "Test experience entry to verify the template renders correctly.",
+      why: "This is a test application body to verify the email template renders correctly.",
+      portfolioUrl: "https://example.com/portfolio",
+    };
+    let templateName: string;
+    let templateData: Record<string, unknown>;
+    if (kind === "received") {
+      templateName = "application-received";
+      templateData = common;
+    } else if (kind === "status") {
+      templateName = "application-status";
+      templateData = {
+        ...common,
+        status: "approved",
+        reviewerNotes: "Thanks for applying — this is a test status update.",
+        dashboardUrl: `${window.location.origin}/dashboard`,
+      };
+    } else {
+      templateName = "application-admin";
+      templateData = {
+        ...common,
+        adminUrl: `${window.location.origin}/admin?tab=applications`,
+      };
+    }
+    const { error } = await supabase.functions.invoke("send-transactional-email", {
+      body: {
+        templateName,
+        recipientEmail: recipient,
+        idempotencyKey: `test-${templateName}-${stamp}`,
+        templateData,
+      },
+    });
+    setTesting(null);
+    if (error) return toast.error(error.message ?? "Failed to send test email");
+    toast.success(`Test "${templateName}" queued to ${recipient}`);
+  };
 
   const load = async () => {
     setLoading(true);
