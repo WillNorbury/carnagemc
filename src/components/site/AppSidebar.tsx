@@ -118,7 +118,7 @@ const actionsGroup: NavGroup = {
   icon: FileText,
   items: [
     { to: "/apply", label: "Apply", icon: FileText },
-    { to: "/ban-appeals", label: "Ban Appeals", icon: Gavel },
+    { to: "/appeal", label: "Appeal", icon: Gavel },
   ],
 };
 
