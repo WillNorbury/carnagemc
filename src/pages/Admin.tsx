@@ -39,6 +39,12 @@ import {
   Loader2,
   Mail,
   Star,
+  Search,
+  Lock,
+  Unlock,
+  Power,
+  ChevronRight,
+
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
