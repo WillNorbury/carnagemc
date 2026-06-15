@@ -203,5 +203,6 @@ export function BanAppealsAdminSection() {
         ))}
       </CardContent>
     </Card>
+    </div>
   );
 }
