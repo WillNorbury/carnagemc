@@ -3763,6 +3763,36 @@ const ApplicationsTab = () => {
 
   return (
     <div className="space-y-6">
+      <Card className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Mail className="h-4 w-4" />
+          <div className="font-display font-bold">Test application email hooks</div>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Sends a sample of each application email template to the address below. Uses the live email queue — check your inbox (and spam) to confirm delivery.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Input
+            type="email"
+            placeholder="recipient@example.com"
+            value={testEmail}
+            onChange={(e) => setTestEmail(e.target.value)}
+            className="flex-1"
+          />
+          <div className="flex gap-2 flex-wrap">
+            <Button size="sm" variant="outline" disabled={!!testing} onClick={() => sendTest("received")}>
+              {testing === "received" ? <Loader2 className="h-3 w-3 animate-spin" /> : "New application"}
+            </Button>
+            <Button size="sm" variant="outline" disabled={!!testing} onClick={() => sendTest("status")}>
+              {testing === "status" ? <Loader2 className="h-3 w-3 animate-spin" /> : "Status change"}
+            </Button>
+            <Button size="sm" variant="outline" disabled={!!testing} onClick={() => sendTest("admin")}>
+              {testing === "admin" ? <Loader2 className="h-3 w-3 animate-spin" /> : "Admin alert"}
+            </Button>
+          </div>
+        </div>
+      </Card>
+
       <div className="flex flex-wrap gap-2">
         {(["all", "pending", "approved", "rejected"] as const).map((f) => (
           <Button
