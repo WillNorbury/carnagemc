@@ -8,6 +8,7 @@ const logo = logoAsset.url;
 import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
 import { ThemeToggle } from "./ThemeToggle";
+import { NotificationsBell } from "./NotificationsBell";
 
 const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
