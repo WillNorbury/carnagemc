@@ -1,16 +1,15 @@
 project_id = "xedqdxjorneezfnpyogg"
 
-[functions.discord-invite]
-verify_jwt = false
-
-[functions.discord-interactions]
-verify_jwt = false
-
-[functions.discord-link-callback]
-verify_jwt = false
-
-[functions.og-image]
-verify_jwt = false
-
-[functions.process-email-queue]
-verify_jwt = true
+[functions]
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.discord-interactions]
+    verify_jwt = false
+  [functions.discord-invite]
+    verify_jwt = false
+  [functions.discord-link-callback]
+    verify_jwt = false
+  [functions.og-image]
+    verify_jwt = false
+  [functions.process-email-queue]
+    verify_jwt = true
