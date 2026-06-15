@@ -66,7 +66,7 @@ export function BanAppealsAdminSection() {
       templateData = {
         ...common,
         email: recipient,
-        adminUrl: `${window.location.origin}/admin?tab=appeals`,
+        adminUrl: `${window.location.origin}/admin?tab=ban-appeals`,
       };
     }
     const { error } = await supabase.functions.invoke("send-transactional-email", {
