@@ -90,6 +90,32 @@ export default function BanAppeals() {
       detail: `${d.minecraft_username} submitted an appeal`,
       color: 0xf59e0b,
     });
+    // Notify admins via email
+    supabase.functions.invoke("send-transactional-email", {
+      body: {
+        templateName: "ban-appeal-admin",
+        templateData: {
+          minecraftUsername: d.minecraft_username,
+          discordTag: d.discord_tag,
+          email: d.email,
+          banReason: d.ban_reason,
+          appealText: d.appeal_text,
+        },
+      },
+    }).catch(() => {});
+    // Confirmation email to the appellant (if provided)
+    if (d.email) {
+      supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "ban-appeal-received",
+          recipientEmail: d.email,
+          templateData: {
+            minecraftUsername: d.minecraft_username,
+            appealText: d.appeal_text,
+          },
+        },
+      }).catch(() => {});
+    }
     setForm({ minecraft_username: "", discord_tag: "", email: "", ban_reason: "", appeal_text: "" });
     setOpen(false);
     refresh();
