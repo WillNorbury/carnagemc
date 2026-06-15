@@ -66,7 +66,10 @@ const websiteGroup: NavGroup = {
   id: "websites",
   label: "Websites",
   icon: Globe,
-  items: [{ to: "https://portfolio.havocsmp.net", label: "Portfolio", icon: Link2 }],
+  items: [
+    { to: "https://portfolio.havocsmp.net", label: "Portfolio", icon: Link2 },
+    { to: "https://panel.voxelnode.dev", label: "VoxelNode", icon: Link2 },
+  ],
 };
 
 const mainGroup: NavGroup = {
@@ -118,7 +121,7 @@ const actionsGroup: NavGroup = {
   icon: FileText,
   items: [
     { to: "/apply", label: "Apply", icon: FileText },
-    { to: "/appeal", label: "Appeal", icon: Gavel },
+    { to: "/ban-appeals", label: "Ban Appeals", icon: Gavel },
   ],
 };
 
@@ -141,9 +144,7 @@ const soonGroup: NavGroup = {
   id: "soon",
   label: "Coming Soon",
   icon: Clock,
-  items: [
-    { to: "/vote", label: "Vote", icon: VoteIcon, soon: true },
-  ],
+  items: [{ to: "/vote", label: "Vote", icon: VoteIcon, soon: true }],
 };
 
 const accountGroup: NavGroup = {
@@ -276,9 +277,7 @@ export function AppSidebar() {
           <SidebarGroup>
             <SidebarGroupLabel>Admin</SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu>
-                {renderItem({ to: "/admin", label: "Admin", icon: Shield })}
-              </SidebarMenu>
+              <SidebarMenu>{renderItem({ to: "/admin", label: "Admin", icon: Shield })}</SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         )}
