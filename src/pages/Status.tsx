@@ -22,6 +22,7 @@ const DEFAULT_SERVICES: { key: string; name: string; desc: string; url: string }
   { key: "api", name: "API & Database", desc: "Backend services", url: "" },
   { key: "panel", name: "Panel", desc: "panel.voxelnode.dev", url: "" },
   { key: "discord", name: "Discord Server", desc: "https://discord.gg/wD6K3nr2MG", url: "" },
+  { key: "portfolio", name: "Portfolio", desc: "portfolio.havocsmp.net", url: "https://portfolio.havocsmp.net" },
 ];
 
 type DailyRow = {
