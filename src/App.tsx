@@ -120,6 +120,7 @@ const Shell = () => {
                   <Route path="/events" element={<Events />} />
                   <Route path="/install" element={<Install />} />
                   <Route path="/status" element={<Status />} />
+                  <Route path="/status/:number" element={<StatusIncident />} />
                   <Route path="/appeal" element={<BanAppeals />} />
                   <Route path="/unsubscribe" element={<Unsubscribe />} />
                   <Route path="/ban-appeals" element={<Navigate to="/appeal" replace />} />
