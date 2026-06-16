@@ -46,6 +46,7 @@ import Shaders from "./pages/Shaders.tsx";
 import Modpacks from "./pages/Modpacks.tsx";
 import Servers from "./pages/Servers.tsx";
 import Status from "./pages/Status.tsx";
+import StatusIncident from "./pages/StatusIncident.tsx";
 import BanAppeals from "./pages/BanAppeals.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
 import Wiki from "./pages/Wiki.tsx";
