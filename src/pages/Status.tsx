@@ -375,6 +375,54 @@ const Status = () => {
             })}
           </div>
 
+          {incidents.length > 0 && (
+            <div className="mt-10">
+              <h2 className="font-display text-xl font-bold mb-3">Recent Incidents</h2>
+              <Card className="divide-y divide-border">
+                {incidents.map((i) => {
+                  const svc = services.find((s) => s.key === i.service_key);
+                  const ongoing = !i.closed_at;
+                  const durMin = Math.max(
+                    1,
+                    Math.round(
+                      ((i.closed_at ? new Date(i.closed_at).getTime() : Date.now()) -
+                        new Date(i.opened_at).getTime()) /
+                        60000,
+                    ),
+                  );
+                  return (
+                    <Link
+                      key={i.id}
+                      to={`/status/${i.incident_number}`}
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors"
+                    >
+                      <span
+                        className={`h-2.5 w-2.5 rounded-full shrink-0 ${ongoing ? "bg-destructive animate-pulse" : "bg-muted-foreground"}`}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-display font-semibold text-sm truncate">
+                          #{i.incident_number} · {svc?.name ?? i.service_key}
+                          {ongoing && (
+                            <Badge variant="destructive" className="ml-2 text-[10px]">
+                              Ongoing
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate">
+                          {new Date(i.opened_at).toLocaleString()} ·{" "}
+                          {durMin < 60 ? `${durMin}m` : `${Math.floor(durMin / 60)}h ${durMin % 60}m`}
+                          {i.last_error ? ` · ${i.last_error}` : ""}
+                        </div>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                    </Link>
+                  );
+                })}
+              </Card>
+            </div>
+          )}
+
+
           <p className="text-center text-xs text-muted-foreground mt-8">
             Legend:
             <span className="inline-block h-3 w-3 rounded-sm bg-primary mx-1 align-middle" /> Up
