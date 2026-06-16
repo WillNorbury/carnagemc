@@ -46,6 +46,7 @@ import Shaders from "./pages/Shaders.tsx";
 import Modpacks from "./pages/Modpacks.tsx";
 import Servers from "./pages/Servers.tsx";
 import Status from "./pages/Status.tsx";
+import StatusIncident from "./pages/StatusIncident.tsx";
 import BanAppeals from "./pages/BanAppeals.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
 import Wiki from "./pages/Wiki.tsx";
@@ -119,6 +120,7 @@ const Shell = () => {
                   <Route path="/events" element={<Events />} />
                   <Route path="/install" element={<Install />} />
                   <Route path="/status" element={<Status />} />
+                  <Route path="/status/:number" element={<StatusIncident />} />
                   <Route path="/appeal" element={<BanAppeals />} />
                   <Route path="/unsubscribe" element={<Unsubscribe />} />
                   <Route path="/ban-appeals" element={<Navigate to="/appeal" replace />} />

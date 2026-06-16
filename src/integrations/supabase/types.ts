@@ -1589,6 +1589,7 @@ export type Database = {
           closed_at: string | null
           created_at: string
           id: string
+          incident_number: number
           last_error: string | null
           opened_at: string
           service_key: string
@@ -1598,6 +1599,7 @@ export type Database = {
           closed_at?: string | null
           created_at?: string
           id?: string
+          incident_number?: number
           last_error?: string | null
           opened_at?: string
           service_key: string
@@ -1607,6 +1609,7 @@ export type Database = {
           closed_at?: string | null
           created_at?: string
           id?: string
+          incident_number?: number
           last_error?: string | null
           opened_at?: string
           service_key?: string

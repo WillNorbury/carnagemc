@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Activity, CheckCircle2, AlertTriangle, XCircle, HelpCircle, RefreshCw, Timer } from "lucide-react";
+import { Activity, CheckCircle2, AlertTriangle, XCircle, HelpCircle, RefreshCw, Timer, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 type Range = 1 | 7 | 30;
@@ -22,6 +23,7 @@ const DEFAULT_SERVICES: { key: string; name: string; desc: string; url: string }
   { key: "api", name: "API & Database", desc: "Backend services", url: "" },
   { key: "panel", name: "Panel", desc: "panel.voxelnode.dev", url: "" },
   { key: "discord", name: "Discord Server", desc: "https://discord.gg/wD6K3nr2MG", url: "" },
+  { key: "portfolio", name: "Portfolio", desc: "portfolio.havocsmp.net", url: "https://portfolio.havocsmp.net" },
 ];
 
 type DailyRow = {
@@ -105,6 +107,7 @@ const Status = () => {
   const [pageSubtitle, setPageSubtitle] = useState("Live uptime — automated checks every 5 minutes.");
   const [pageFootnote, setPageFootnote] = useState("");
   const [services, setServices] = useState(DEFAULT_SERVICES);
+  const [incidents, setIncidents] = useState<Array<{ id: string; incident_number: number; service_key: string; opened_at: string; closed_at: string | null; last_error: string | null }>>([]);
 
   useEffect(() => {
     document.title = "Status — HavocSMP";
@@ -139,6 +142,12 @@ const Status = () => {
     setLoading(true);
     const { data } = await supabase.rpc("get_uptime_daily", { _days: days });
     setRows((data ?? []) as DailyRow[]);
+    const { data: inc } = await supabase
+      .from("uptime_incidents")
+      .select("id, incident_number, service_key, opened_at, closed_at, last_error")
+      .order("opened_at", { ascending: false })
+      .limit(20);
+    setIncidents((inc ?? []) as any);
     setLoading(false);
   };
 
@@ -365,6 +374,54 @@ const Status = () => {
               );
             })}
           </div>
+
+          {incidents.length > 0 && (
+            <div className="mt-10">
+              <h2 className="font-display text-xl font-bold mb-3">Recent Incidents</h2>
+              <Card className="divide-y divide-border">
+                {incidents.map((i) => {
+                  const svc = services.find((s) => s.key === i.service_key);
+                  const ongoing = !i.closed_at;
+                  const durMin = Math.max(
+                    1,
+                    Math.round(
+                      ((i.closed_at ? new Date(i.closed_at).getTime() : Date.now()) -
+                        new Date(i.opened_at).getTime()) /
+                        60000,
+                    ),
+                  );
+                  return (
+                    <Link
+                      key={i.id}
+                      to={`/status/${i.incident_number}`}
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors"
+                    >
+                      <span
+                        className={`h-2.5 w-2.5 rounded-full shrink-0 ${ongoing ? "bg-destructive animate-pulse" : "bg-muted-foreground"}`}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-display font-semibold text-sm truncate">
+                          #{i.incident_number} · {svc?.name ?? i.service_key}
+                          {ongoing && (
+                            <Badge variant="destructive" className="ml-2 text-[10px]">
+                              Ongoing
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate">
+                          {new Date(i.opened_at).toLocaleString()} ·{" "}
+                          {durMin < 60 ? `${durMin}m` : `${Math.floor(durMin / 60)}h ${durMin % 60}m`}
+                          {i.last_error ? ` · ${i.last_error}` : ""}
+                        </div>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                    </Link>
+                  );
+                })}
+              </Card>
+            </div>
+          )}
+
 
           <p className="text-center text-xs text-muted-foreground mt-8">
             Legend:

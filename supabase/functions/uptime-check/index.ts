@@ -19,6 +19,7 @@ const SERVICE_NAMES: Record<string, string> = {
   api: "API",
   panel: "Panel",
   discord: "Discord",
+  portfolio: "Portfolio",
 };
 
 async function checkHttp(
