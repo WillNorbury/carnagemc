@@ -107,6 +107,7 @@ const Status = () => {
   const [pageSubtitle, setPageSubtitle] = useState("Live uptime — automated checks every 5 minutes.");
   const [pageFootnote, setPageFootnote] = useState("");
   const [services, setServices] = useState(DEFAULT_SERVICES);
+  const [incidents, setIncidents] = useState<Array<{ id: string; incident_number: number; service_key: string; opened_at: string; closed_at: string | null; last_error: string | null }>>([]);
 
   useEffect(() => {
     document.title = "Status — HavocSMP";
