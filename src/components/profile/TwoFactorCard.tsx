@@ -2,10 +2,18 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, ShieldCheck, ShieldOff, Smartphone } from "lucide-react";
+
+type FactorInfo = {
+  id: string;
+  status: string;
+  friendly_name?: string;
+  created_at: string;
+};
 
 type EnrollState =
   | { status: "idle" }
