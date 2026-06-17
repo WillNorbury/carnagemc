@@ -456,6 +456,8 @@ const Profile = () => {
             </Button>
           </div>
         </Card>
+
+        <TwoFactorCard />
       </main>
       <Footer />
     </div>
