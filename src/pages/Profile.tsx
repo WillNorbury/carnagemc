@@ -30,6 +30,7 @@ import { applyTheme, DEFAULT_PREFS, type UserPreferences } from "@/lib/preferenc
 import { toast } from "sonner";
 import { Bell, ExternalLink, Loader2, Lock, MessageCircle, Palette, Unlink } from "lucide-react";
 import OrganizationsCard from "@/components/site/OrganizationsCard";
+import TwoFactorCard from "@/components/profile/TwoFactorCard";
 
 const Profile = () => {
   const { user, loading: authLoading, signOut } = useAuth();
