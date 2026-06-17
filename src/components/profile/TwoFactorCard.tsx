@@ -21,22 +21,36 @@ type EnrollState =
 
 const TwoFactorCard = () => {
   const [loading, setLoading] = useState(true);
-  const [verifiedFactorId, setVerifiedFactorId] = useState<string | null>(null);
+  const [factor, setFactor] = useState<FactorInfo | null>(null);
+  const [aal, setAal] = useState<{ currentLevel: string | null; nextLevel: string | null } | null>(null);
   const [enroll, setEnroll] = useState<EnrollState>({ status: "idle" });
   const [working, setWorking] = useState(false);
 
   const refresh = async () => {
     setLoading(true);
-    const { data, error } = await supabase.auth.mfa.listFactors();
-    if (error) {
-      toast.error(error.message);
+    const [{ data: factorData, error: factorErr }, { data: aalData, error: aalErr }] = await Promise.all([
+      supabase.auth.mfa.listFactors(),
+      supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
+    ]);
+    if (factorErr) {
+      toast.error(factorErr.message);
       setLoading(false);
       return;
     }
-    const verified = data?.totp?.find((f) => f.status === "verified");
-    setVerifiedFactorId(verified?.id ?? null);
+    const verified = factorData?.totp?.find((f) => f.status === "verified");
+    if (verified) {
+      setFactor({
+        id: verified.id,
+        status: verified.status,
+        friendly_name: verified.friendly_name,
+        created_at: verified.created_at,
+      });
+    } else {
+      setFactor(null);
+    }
+    setAal(aalData ?? null);
     // Clean up any stale unverified factors so re-enrolling doesn't conflict
-    const unverified = data?.totp?.filter((f) => f.status !== "verified") ?? [];
+    const unverified = factorData?.totp?.filter((f) => f.status !== "verified") ?? [];
     for (const f of unverified) {
       await supabase.auth.mfa.unenroll({ factorId: f.id });
     }
