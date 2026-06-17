@@ -110,15 +110,23 @@ const TwoFactorCard = () => {
   };
 
   const disable = async () => {
-    if (!verifiedFactorId) return;
+    if (!factor?.id) return;
     if (!confirm("Remove your authenticator app? You'll only need email + password to sign in.")) return;
     setWorking(true);
-    const { error } = await supabase.auth.mfa.unenroll({ factorId: verifiedFactorId });
+    const { error } = await supabase.auth.mfa.unenroll({ factorId: factor.id });
     setWorking(false);
     if (error) return toast.error(error.message);
     toast.success("Authenticator app removed");
     refresh();
   };
+
+  const enabledDate = factor ? new Date(factor.created_at).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }) : null;
+
+  const aalLabel = aal?.currentLevel === "aal2" ? "AAL2 (MFA verified)" : "AAL1 (password only)";
 
   return (
     <Card className="p-6 mt-6 space-y-4">
@@ -130,11 +138,29 @@ const TwoFactorCard = () => {
         Add a 6-digit code from an authenticator app (Google Authenticator, Authy, 1Password, etc.) on top of your password.
       </p>
 
+      {!loading && (
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant={factor ? "default" : "outline"} className={factor ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/30" : undefined}>
+            {factor ? "TOTP Enabled" : "TOTP Not Enabled"}
+          </Badge>
+          {factor && enabledDate && (
+            <span className="text-xs text-muted-foreground">
+              Enabled on {enabledDate}
+            </span>
+          )}
+          {factor && (
+            <Badge variant="outline" className="text-xs">
+              {aalLabel}
+            </Badge>
+          )}
+        </div>
+      )}
+
       {loading ? (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" /> Checking status…
         </div>
-      ) : verifiedFactorId ? (
+      ) : factor ? (
         <div className="flex items-center justify-between gap-3 rounded-md border border-primary/30 bg-primary/5 p-3">
           <div className="flex items-center gap-2 text-sm">
             <ShieldCheck className="h-4 w-4 text-primary" />
