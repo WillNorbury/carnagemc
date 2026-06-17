@@ -2,10 +2,18 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, ShieldCheck, ShieldOff, Smartphone } from "lucide-react";
+
+type FactorInfo = {
+  id: string;
+  status: string;
+  friendly_name?: string;
+  created_at: string;
+};
 
 type EnrollState =
   | { status: "idle" }
@@ -13,22 +21,36 @@ type EnrollState =
 
 const TwoFactorCard = () => {
   const [loading, setLoading] = useState(true);
-  const [verifiedFactorId, setVerifiedFactorId] = useState<string | null>(null);
+  const [factor, setFactor] = useState<FactorInfo | null>(null);
+  const [aal, setAal] = useState<{ currentLevel: string | null; nextLevel: string | null } | null>(null);
   const [enroll, setEnroll] = useState<EnrollState>({ status: "idle" });
   const [working, setWorking] = useState(false);
 
   const refresh = async () => {
     setLoading(true);
-    const { data, error } = await supabase.auth.mfa.listFactors();
-    if (error) {
-      toast.error(error.message);
+    const [{ data: factorData, error: factorErr }, { data: aalData, error: aalErr }] = await Promise.all([
+      supabase.auth.mfa.listFactors(),
+      supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
+    ]);
+    if (factorErr) {
+      toast.error(factorErr.message);
       setLoading(false);
       return;
     }
-    const verified = data?.totp?.find((f) => f.status === "verified");
-    setVerifiedFactorId(verified?.id ?? null);
+    const verified = factorData?.totp?.find((f) => f.status === "verified");
+    if (verified) {
+      setFactor({
+        id: verified.id,
+        status: verified.status,
+        friendly_name: verified.friendly_name,
+        created_at: verified.created_at,
+      });
+    } else {
+      setFactor(null);
+    }
+    setAal(aalData ?? null);
     // Clean up any stale unverified factors so re-enrolling doesn't conflict
-    const unverified = data?.totp?.filter((f) => f.status !== "verified") ?? [];
+    const unverified = factorData?.totp?.filter((f) => f.status !== "verified") ?? [];
     for (const f of unverified) {
       await supabase.auth.mfa.unenroll({ factorId: f.id });
     }
@@ -88,15 +110,23 @@ const TwoFactorCard = () => {
   };
 
   const disable = async () => {
-    if (!verifiedFactorId) return;
+    if (!factor?.id) return;
     if (!confirm("Remove your authenticator app? You'll only need email + password to sign in.")) return;
     setWorking(true);
-    const { error } = await supabase.auth.mfa.unenroll({ factorId: verifiedFactorId });
+    const { error } = await supabase.auth.mfa.unenroll({ factorId: factor.id });
     setWorking(false);
     if (error) return toast.error(error.message);
     toast.success("Authenticator app removed");
     refresh();
   };
+
+  const enabledDate = factor ? new Date(factor.created_at).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }) : null;
+
+  const aalLabel = aal?.currentLevel === "aal2" ? "AAL2 (MFA verified)" : "AAL1 (password only)";
 
   return (
     <Card className="p-6 mt-6 space-y-4">
@@ -108,11 +138,29 @@ const TwoFactorCard = () => {
         Add a 6-digit code from an authenticator app (Google Authenticator, Authy, 1Password, etc.) on top of your password.
       </p>
 
+      {!loading && (
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant={factor ? "default" : "outline"} className={factor ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/30" : undefined}>
+            {factor ? "TOTP Enabled" : "TOTP Not Enabled"}
+          </Badge>
+          {factor && enabledDate && (
+            <span className="text-xs text-muted-foreground">
+              Enabled on {enabledDate}
+            </span>
+          )}
+          {factor && (
+            <Badge variant="outline" className="text-xs">
+              {aalLabel}
+            </Badge>
+          )}
+        </div>
+      )}
+
       {loading ? (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" /> Checking status…
         </div>
-      ) : verifiedFactorId ? (
+      ) : factor ? (
         <div className="flex items-center justify-between gap-3 rounded-md border border-primary/30 bg-primary/5 p-3">
           <div className="flex items-center gap-2 text-sm">
             <ShieldCheck className="h-4 w-4 text-primary" />
