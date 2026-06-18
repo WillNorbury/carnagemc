@@ -53,6 +53,7 @@ import Wiki from "./pages/Wiki.tsx";
 import WikiArticle from "./pages/WikiArticle.tsx";
 import Gallery from "./pages/Gallery.tsx";
 import Contact from "./pages/Contact.tsx";
+import Trust from "./pages/Trust.tsx";
 
 
 const queryClient = new QueryClient();
