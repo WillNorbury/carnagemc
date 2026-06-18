@@ -67,7 +67,7 @@ const websiteGroup: NavGroup = {
   label: "Websites",
   icon: Globe,
   items: [
-    { to: "https://portfolio.havocsmp.net", label: "Portfolio", icon: Link2 },
+    { to: "https://portfolio.carnagemc.net", label: "Portfolio", icon: Link2 },
     { to: "https://panel.voxelnode.dev", label: "VoxelNode", icon: Link2 },
   ],
 };
@@ -259,7 +259,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <Link to="/" className="flex items-center gap-2 px-2 py-1 group">
-          <img src={logo} alt="HavocSMP" className="h-8 w-8 transition-transform group-hover:scale-110" />
+          <img src={logo} alt="CarnageMC" className="h-8 w-8 transition-transform group-hover:scale-110" />
           {!collapsed && (
             <span className="font-display font-bold text-base tracking-wider">
               HAVOC<span className="text-gradient">SMP</span>

@@ -47,7 +47,7 @@ const NewsArticle = () => {
       .then(({ data }) => {
         setArticle(data as Article | null);
         setLoading(false);
-        if (data) document.title = `${data.title} — HavocSMP`;
+        if (data) document.title = `${data.title} — CarnageMC`;
       });
   }, [slug]);
 
@@ -69,8 +69,8 @@ const NewsArticle = () => {
     <div className="min-h-screen bg-background">
       {article && (
         <SEO
-          title={`${article.title} — HavocSMP`}
-          description={(article.content || "").slice(0, 155).replace(/\s+/g, " ").trim() || "HavocSMP announcement"}
+          title={`${article.title} — CarnageMC`}
+          description={(article.content || "").slice(0, 155).replace(/\s+/g, " ").trim() || "CarnageMC announcement"}
           path={`/announcements/${slug}`}
           image={article.cover_url || ogImageFor(article.title)}
           type="article"

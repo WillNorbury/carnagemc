@@ -112,7 +112,7 @@ const PluginSettings = () => {
         setDescription(p.description ?? "");
         setIconUrl(p.icon_url);
         setPublished(p.published);
-        document.title = `${p.name} — Settings — HavocSMP`;
+        document.title = `${p.name} — Settings — CarnageMC`;
       }
       setLoading(false);
     })();
@@ -399,7 +399,7 @@ const PluginSettings = () => {
                     <div>
                       <Label className="text-sm font-medium">Monetization</Label>
                       <p className="text-xs text-muted-foreground mt-1 max-w-prose">
-                        When enabled, this project can earn revenue through the HavocSMP Rewards
+                        When enabled, this project can earn revenue through the CarnageMC Rewards
                         Program. If you don't want to (or can't for legal reasons) earn revenue
                         from this project, you can turn it off here.
                       </p>
@@ -418,7 +418,7 @@ const PluginSettings = () => {
                 <Card className="p-6 border-destructive/40">
                   <h2 className="font-display font-bold text-xl mb-2">Delete project</h2>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Removes your project from HavocSMP's servers and search. Clicking on this will
+                    Removes your project from CarnageMC's servers and search. Clicking on this will
                     delete your project, so be extra careful!
                   </p>
                   <Button variant="destructive" onClick={deletePlugin} disabled={deleting}>

@@ -89,7 +89,7 @@ type News = {
 };
 
 const sectionMeta: Record<AdminSection, { title: string; description: string }> = {
-  dashboard: { title: "Dashboard", description: "Overview of HavocSMP activity." },
+  dashboard: { title: "Dashboard", description: "Overview of CarnageMC activity." },
   users: { title: "Users", description: "Promote or demote admin access." },
   roles: { title: "Roles", description: "Assign and manage roles for members." },
   permissions: { title: "Permissions", description: "Define what each role can do." },
@@ -116,7 +116,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   servers: { title: "Servers", description: "Manage discoverable servers." },
   "bot-dashboard": {
     title: "Discord Bot — Dashboard",
-    description: "Status and overview of the HavocSMP Discord bot.",
+    description: "Status and overview of the CarnageMC Discord bot.",
   },
   "bot-management": { title: "Discord Bot — Management", description: "Configure commands and bot integration." },
   "ban-appeals": { title: "Ban Appeals", description: "Review and respond to user ban appeals." },
@@ -1445,7 +1445,7 @@ const StatusTab = () => {
      website_webhook_url: string;
      services: { key: string; name: string; desc: string; url: string }[];
    }>({
-     title: "HavocSMP Status",
+     title: "CarnageMC Status",
      subtitle: "Live uptime — automated checks every 5 minutes.",
      footnote: "",
      website_webhook_url: "",
@@ -1514,7 +1514,7 @@ const StatusTab = () => {
            website_webhook_url: v.website_webhook_url ?? "",
           services: Array.isArray(v.services) && v.services.length ? v.services : [
             { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
-            { key: "minecraft", name: "Minecraft Server", desc: "havocsmp.net", url: "" },
+            { key: "minecraft", name: "Minecraft Server", desc: "carnagemc.net", url: "" },
             { key: "api", name: "API & Database", desc: "Backend services", url: "" },
             { key: "panel", name: "Panel", desc: "panel.voxelnode.dev", url: "" },
             { key: "discord", name: "Discord Server", desc: "https://discord.gg/wD6K3nr2MG", url: "" },
@@ -1985,14 +1985,14 @@ const BotDashboardSection = () => {
       {
         key: "rules",
         label: "Send server rules",
-        desc: "Posts (or updates) the full HavocSMP rules embed in the rules channel.",
+        desc: "Posts (or updates) the full CarnageMC rules embed in the rules channel.",
         channel: cfg.rulesChannelId,
         canPreview: true,
       },
       {
         key: "roles",
         label: "Send Discord roles",
-        desc: "Posts (or updates) the full HavocSMP roles overview embed in the server-roles channel.",
+        desc: "Posts (or updates) the full CarnageMC roles overview embed in the server-roles channel.",
         channel: cfg.rolesChannelId || "1498961753457954847",
         canPreview: true,
       },
@@ -2113,7 +2113,7 @@ const BotDashboardSection = () => {
       <Card className="p-6 space-y-3">
         <h2 className="font-bold">About the Discord Bot</h2>
         <p className="text-sm text-muted-foreground">
-          Configure your bot in the Management section. When enabled, it can sync with your HavocSMP server to deliver
+          Configure your bot in the Management section. When enabled, it can sync with your CarnageMC server to deliver
           announcements, role assignments, and live server status to your Discord guild.
         </p>
         {cfg.inviteUrl && (
@@ -2420,7 +2420,7 @@ const BotManagementSection = () => {
     rolesChannelId: "1498961753457954847",
     infoChannelId: "",
     rulesChannelId: "",
-    welcomeMessage: "Welcome to HavocSMP, {user}!",
+    welcomeMessage: "Welcome to CarnageMC, {user}!",
   });
   const [loading, setLoading] = useState(true);
 

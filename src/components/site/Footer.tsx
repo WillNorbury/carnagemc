@@ -9,7 +9,7 @@ const Footer = () => (
     <div className="container py-14 grid md:grid-cols-4 gap-10">
       <div className="md:col-span-2">
         <div className="flex items-center gap-2 mb-4">
-          <img src={logo} alt="HavocSMP" className="h-9 w-9" />
+          <img src={logo} alt="CarnageMC" className="h-9 w-9" />
           <span className="font-display font-bold text-lg tracking-wider">
             HAVOC<span className="text-gradient">SMP</span>
           </span>
@@ -20,7 +20,7 @@ const Footer = () => (
         <div className="flex items-center gap-3 mt-5">
           {[
             { icon: MessageCircle, href: "https://discord.gg/wD6K3nr2MG", label: "Discord" },
-            { icon: Twitter, href: "https://x.com/HavocSMP", label: "Twitter" },
+            { icon: Twitter, href: "https://x.com/CarnageMC", label: "Twitter" },
             { icon: Youtube, href: "https://youtube.com/@WillNorbury", label: "YouTube" },
             { icon: Twitch, href: "https://twitch.tv/Will_Norbury", label: "Twitch" },
           ].map((s) => (
@@ -66,7 +66,7 @@ const Footer = () => (
         <h4 className="font-display font-semibold mb-3 uppercase tracking-wider text-sm">Server</h4>
         <ul className="space-y-2 text-sm text-muted-foreground">
           <li>
-            IP: <span className="text-foreground font-mono">play.havocsmp.net</span>
+            IP: <span className="text-foreground font-mono">play.carnagemc.net</span>
           </li>
           <li>Version: 1.21.x Velocity</li>
           <li>
@@ -78,7 +78,7 @@ const Footer = () => (
       </div>
     </div>
     <div className="border-t border-border/50 py-5 text-center text-xs text-muted-foreground tracking-wider">
-      © {new Date().getFullYear()} HavocSMP — All rights reserved. Not affiliated with Mojang or Microsoft.
+      © {new Date().getFullYear()} CarnageMC — All rights reserved. Not affiliated with Mojang or Microsoft.
     </div>
   </footer>
 );

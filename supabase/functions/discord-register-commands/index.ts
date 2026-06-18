@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
     const token = Deno.env.get("DISCORD_BOT_TOKEN");
     if (!appId || !token) return json({ ok: false, error: "Missing DISCORD_APPLICATION_ID or DISCORD_BOT_TOKEN" }, 400);
 
-    const cmds = [{ name: "rules", description: "Show the HavocSMP server rules", type: 1 }];
+    const cmds = [{ name: "rules", description: "Show the CarnageMC server rules", type: 1 }];
     const r = await fetch(`https://discord.com/api/v10/applications/${appId}/commands`, {
       method: "PUT",
       headers: { Authorization: `Bot ${token}`, "Content-Type": "application/json" },

@@ -88,7 +88,7 @@ const AdminMods = () => {
   const jarInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    document.title = "Mods — Admin · HavocSMP";
+    document.title = "Mods — Admin · CarnageMC";
     load();
   }, []);
 

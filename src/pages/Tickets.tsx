@@ -70,7 +70,7 @@ const Tickets = () => {
   const [creating, setCreating] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  useEffect(() => { document.title = "My Tickets — HavocSMP"; }, []);
+  useEffect(() => { document.title = "My Tickets — CarnageMC"; }, []);
 
   useEffect(() => {
     if (authLoading) return;

@@ -19,11 +19,11 @@ const RANGES: { label: string; value: Range }[] = [
 
 const DEFAULT_SERVICES: { key: string; name: string; desc: string; url: string }[] = [
   { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
-  { key: "minecraft", name: "Minecraft Server", desc: "havocsmp.net", url: "" },
+  { key: "minecraft", name: "Minecraft Server", desc: "carnagemc.net", url: "" },
   { key: "api", name: "API & Database", desc: "Backend services", url: "" },
   { key: "panel", name: "Panel", desc: "panel.voxelnode.dev", url: "" },
   { key: "discord", name: "Discord Server", desc: "https://discord.gg/wD6K3nr2MG", url: "" },
-  { key: "portfolio", name: "Portfolio", desc: "portfolio.havocsmp.net", url: "https://portfolio.havocsmp.net" },
+  { key: "portfolio", name: "Portfolio", desc: "portfolio.carnagemc.net", url: "https://portfolio.carnagemc.net" },
 ];
 
 type DailyRow = {
@@ -103,14 +103,14 @@ const Status = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [autoInterval, setAutoInterval] = useState<number>(0); // 0 = off, 1/5/15 min
   const [isOwner, setIsOwner] = useState(false);
-  const [pageTitle, setPageTitle] = useState("HavocSMP Status");
+  const [pageTitle, setPageTitle] = useState("CarnageMC Status");
   const [pageSubtitle, setPageSubtitle] = useState("Live uptime — automated checks every 5 minutes.");
   const [pageFootnote, setPageFootnote] = useState("");
   const [services, setServices] = useState(DEFAULT_SERVICES);
   const [incidents, setIncidents] = useState<Array<{ id: string; incident_number: number; service_key: string; opened_at: string; closed_at: string | null; last_error: string | null }>>([]);
 
   useEffect(() => {
-    document.title = "Status — HavocSMP";
+    document.title = "Status — CarnageMC";
     (async () => {
       const {
         data: { user },

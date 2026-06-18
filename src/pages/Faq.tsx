@@ -22,7 +22,7 @@ const Faq = () => {
   const [cat, setCat] = useState<string>("all");
 
   useEffect(() => {
-    document.title = "FAQ — HavocSMP";
+    document.title = "FAQ — CarnageMC";
     (supabase.from("faqs" as any) as any)
       .select("id,question,answer,category,sort_order")
       .eq("published", true)
@@ -62,7 +62,7 @@ const Faq = () => {
               Frequently Asked <span className="text-gradient">Questions</span>
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Answers to the most common questions about HavocSMP.
+              Answers to the most common questions about CarnageMC.
             </p>
           </div>
         </section>

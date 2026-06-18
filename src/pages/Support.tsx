@@ -34,7 +34,7 @@ const Support = () => {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [sending, setSending] = useState(false);
 
-  useEffect(() => { document.title = "Support — HavocSMP"; }, []);
+  useEffect(() => { document.title = "Support — CarnageMC"; }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,7 +118,7 @@ const Support = () => {
               </div>
               <p className="text-sm text-muted-foreground mb-4">For billing, privacy, or formal requests — reach us directly by email.</p>
               <Button asChild variant="outline" className="w-full">
-                <a href="mailto:support@havocsmp.net">support@havocsmp.net</a>
+                <a href="mailto:support@carnagemc.net">support@carnagemc.net</a>
               </Button>
             </Card>
           </section>

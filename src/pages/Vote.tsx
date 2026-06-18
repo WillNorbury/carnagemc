@@ -33,7 +33,7 @@ const Vote = () => {
   const [streak, setStreak] = useState<{ vote_streak: number; vote_best: number; total_votes: number } | null>(null);
 
   useEffect(() => {
-    document.title = "Vote — HavocSMP";
+    document.title = "Vote — CarnageMC";
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setVoted(JSON.parse(raw));
@@ -85,7 +85,7 @@ const Vote = () => {
           <div className="absolute inset-0 bg-grid opacity-[0.08]" />
           <div className="container relative text-center">
             <Badge variant="secondary" className="mb-4 text-primary border-primary/40"><Gift className="h-3 w-3 mr-1" /> Daily Rewards</Badge>
-            <h1 className="font-display text-4xl md:text-6xl font-black mb-3">Vote for <span className="text-gradient">HavocSMP</span></h1>
+            <h1 className="font-display text-4xl md:text-6xl font-black mb-3">Vote for <span className="text-gradient">CarnageMC</span></h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Vote daily on each site to earn crate keys, coins, and exclusive rewards. Run <code className="text-foreground font-mono px-1.5 py-0.5 rounded bg-secondary">/vote</code> in-game to claim.
             </p>
