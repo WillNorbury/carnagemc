@@ -20,7 +20,7 @@ interface Props {
 }
 
 const ServerStatusWidget = ({ className = "", compact = false }: Props) => {
-  const [ip, setIp] = useState("havocsmp.net");
+  const [ip, setIp] = useState("carnagemc.net");
   const [status, setStatus] = useState<Status | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -85,7 +85,7 @@ const ServerStatusWidget = ({ className = "", compact = false }: Props) => {
             )}
             <div>
               <div className="text-[10px] uppercase tracking-[0.25em] text-primary font-semibold">Live Server</div>
-              <div className="font-display font-bold">HavocSMP</div>
+              <div className="font-display font-bold">CarnageMC</div>
             </div>
           </div>
           <div

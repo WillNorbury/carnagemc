@@ -18,7 +18,7 @@ const Community = () => {
   const [staff, setStaff] = useState<Profile[]>([]);
 
   useEffect(() => {
-    document.title = "Community — HavocSMP";
+    document.title = "Community — CarnageMC";
     supabase.from("news").select("id,title,excerpt,slug,created_at").eq("published", true).order("created_at", { ascending: false }).limit(4).then(({ data }) => setNews(data ?? []));
     supabase.from("profiles").select("id,display_name,avatar_url,mc_username").limit(8).then(({ data }) => setStaff(data ?? []));
   }, []);
@@ -34,7 +34,7 @@ const Community = () => {
           <div className="container relative text-center">
             <Badge variant="secondary" className="mb-4 text-primary border-primary/40">The Crew</Badge>
             <h1 className="font-display text-4xl md:text-6xl font-black mb-3">Welcome to the <span className="text-gradient">Community</span></h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Join thousands of legends building, fighting, and forging history on HavocSMP.</p>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Join thousands of legends building, fighting, and forging history on CarnageMC.</p>
           </div>
         </section>
 

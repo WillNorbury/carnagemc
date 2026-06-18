@@ -1,7 +1,7 @@
 {
-  "name": "HavocSMP",
-  "short_name": "HavocSMP",
-  "description": "HavocSMP — Premium Minecraft Survival Server",
+  "name": "CarnageMC",
+  "short_name": "CarnageMC",
+  "description": "CarnageMC — Premium Minecraft Survival Server",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

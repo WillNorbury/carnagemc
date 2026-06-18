@@ -55,7 +55,7 @@ const AdminEvents = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    document.title = "Events — Admin · HavocSMP";
+    document.title = "Events — Admin · CarnageMC";
     load();
   }, []);
 

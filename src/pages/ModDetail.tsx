@@ -115,7 +115,7 @@ const ModDetail = () => {
       if (!data) setNotFound(true);
       else {
         setMod(data as Mod);
-        document.title = `${(data as Mod).name} — HavocSMP Mod`;
+        document.title = `${(data as Mod).name} — CarnageMC Mod`;
       }
       setLoading(false);
     })();

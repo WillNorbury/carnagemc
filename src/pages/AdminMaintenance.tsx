@@ -24,7 +24,7 @@ type Config = {
 const DEFAULT: Config = {
   enabled: false,
   title: "We'll be right back",
-  message: "HavocSMP is undergoing scheduled maintenance. Check back soon!",
+  message: "CarnageMC is undergoing scheduled maintenance. Check back soon!",
   allowed_roles: [],
   allowed_user_ids: [],
 };

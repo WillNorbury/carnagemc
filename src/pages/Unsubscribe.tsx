@@ -51,7 +51,7 @@ export default function Unsubscribe() {
 
   return (
     <main className="container mx-auto p-6 max-w-md">
-      <Helmet><title>Unsubscribe — HavocSMP</title></Helmet>
+      <Helmet><title>Unsubscribe — CarnageMC</title></Helmet>
       <Card>
         <CardHeader><CardTitle>Email preferences</CardTitle></CardHeader>
         <CardContent className="space-y-4">
@@ -60,7 +60,7 @@ export default function Unsubscribe() {
           )}
           {state === "ready" && (
             <>
-              <p>Unsubscribe <strong>{email}</strong> from HavocSMP emails?</p>
+              <p>Unsubscribe <strong>{email}</strong> from CarnageMC emails?</p>
               <Button onClick={confirm}>Confirm unsubscribe</Button>
             </>
           )}

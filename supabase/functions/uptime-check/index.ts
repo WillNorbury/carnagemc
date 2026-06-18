@@ -185,7 +185,7 @@ Deno.serve(async (req) => {
     .filter((s) => /^https?:\/\//i.test(s));
   const allUrls = [...new Set([...webhookUrls, ...envUrls])];
 
-  let mcHost = "havocsmp.net";
+  let mcHost = "carnagemc.net";
   try {
     const { data } = await supabase.from("site_content").select("value").eq("key", "server").maybeSingle();
     const v = data?.value as { ip?: string } | null;
@@ -205,7 +205,7 @@ Deno.serve(async (req) => {
     /* ignore */
   }
 
-  const siteUrl = "https://havocsmp.net";
+  const siteUrl = "https://carnagemc.net";
   const apiHealth = `${SUPABASE_URL}/rest/v1/`;
 
   const checks = await Promise.all([
@@ -214,7 +214,7 @@ Deno.serve(async (req) => {
     checkHttp("api", apiHealth, false),
     checkHttp("panel", "https://panel.voxelnode.dev"),
     checkHttp("discord", "https://discord.gg/V8xYY2DasZ"),
-    checkHttp("portfolio", "https://portfolio.havocsmp.net"),
+    checkHttp("portfolio", "https://portfolio.carnagemc.net"),
   ]);
 
   const { error: insertErr } = await supabase.from("uptime_checks").insert(checks);

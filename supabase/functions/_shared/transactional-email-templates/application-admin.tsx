@@ -26,7 +26,7 @@ const Email = ({
   experience = '',
   why = '',
   portfolioUrl = '',
-  adminUrl = 'https://havocsmp.net/admin?tab=applications',
+  adminUrl = 'https://carnagemc.net/admin?tab=applications',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />

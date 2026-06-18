@@ -5,7 +5,7 @@ The official website for **XyloMC** — a Minecraft Lifesteal & Economy server.
 **Live URLs:**
 - [xylomc.lovable.app](https://xylomc.lovable.app)
 - [xylomc.net](https://xylomc.net)
-- [havocsmp.net](https://havocsmp.net)
+- [carnagemc.net](https://carnagemc.net)
 - [alsnetwork.fun](https://alsnetwork.fun)
 - [zyphoramc.net](https://zyphoramc.net)
 
@@ -206,7 +206,7 @@ src/
 
 The project is deployed with multiple custom domains pointing to the same build:
 - `xylomc.net`
-- `havocsmp.net`
+- `carnagemc.net`
 - `alsnetwork.fun`
 - `zyphoramc.net`
 

@@ -31,7 +31,7 @@ const AdminPermissions = () => {
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
 
-  useEffect(() => { document.title = "Permissions — HavocSMP Admin"; }, []);
+  useEffect(() => { document.title = "Permissions — CarnageMC Admin"; }, []);
 
   useEffect(() => {
     if (!matrixLoading) {

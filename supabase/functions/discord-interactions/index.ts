@@ -47,11 +47,11 @@ async function buildRulesEmbed() {
   }));
 
   return {
-    title: "📜 HavocSMP Rules",
+    title: "📜 CarnageMC Rules",
     description: "Please read and follow these rules.",
     color: 0xef4444,
     fields: fields.length > 0 ? fields : [{ name: "No rules", value: "No rules configured." }],
-    footer: { text: "HavocSMP · Updated regularly" },
+    footer: { text: "CarnageMC · Updated regularly" },
     timestamp: new Date().toISOString(),
   };
 }

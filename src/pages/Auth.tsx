@@ -175,15 +175,15 @@ const Auth = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-grid">
       <SEO
-        title="Sign in — HavocSMP"
-        description="Sign in or create your HavocSMP account to apply for staff, vote, manage your profile, and access the dashboard."
+        title="Sign in — CarnageMC"
+        description="Sign in or create your CarnageMC account to apply for staff, vote, manage your profile, and access the dashboard."
         path="/auth"
       />
       <div className="absolute inset-0 -z-10" style={{ background: "var(--gradient-hero)" }} />
       <Card className="w-full max-w-md p-8 backdrop-blur-xl bg-card/90 border-primary/20 shadow-elegant">
         <Link to="/" className="flex items-center justify-center gap-2 mb-6">
-          <img src={logoAsset.url} alt="HavocSMP" className="h-12 w-12 object-contain" />
-          <span className="font-bold text-xl">Havoc<span className="text-primary">SMP</span></span>
+          <img src={logoAsset.url} alt="CarnageMC" className="h-12 w-12 object-contain" />
+          <span className="font-bold text-xl">Carnage<span className="text-primary">MC</span></span>
         </Link>
 
         {mode === "verify" ? (

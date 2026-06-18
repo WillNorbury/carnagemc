@@ -162,9 +162,9 @@ export const AdminLayout = ({
         >
           {!isCollapsed && (
             <Link to="/" className="flex items-center gap-2 font-semibold" onClick={() => setMobileOpen(false)}>
-              <img src={logo} alt="HavocSMP" className="h-7 w-7" />
+              <img src={logo} alt="CarnageMC" className="h-7 w-7" />
               <span className="text-lg">
-                HAVOC<span className="text-gradient">SMP</span>
+                CARNAGE<span className="text-gradient">MC</span>
               </span>
             </Link>
           )}
@@ -291,7 +291,7 @@ export const AdminLayout = ({
                 <Menu className="h-5 w-5" />
               </Button>
               <Link to="/" className="flex items-center gap-2 font-semibold">
-                <img src={logo} alt="HavocSMP" className="h-6 w-6" />
+                <img src={logo} alt="CarnageMC" className="h-6 w-6" />
                 <span className="text-sm">
                   XYLO<span className="text-gradient">MC</span>
                 </span>

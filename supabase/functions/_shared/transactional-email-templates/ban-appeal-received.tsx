@@ -13,7 +13,7 @@ interface Props {
 const Email = ({ minecraftUsername = 'there', appealText = '' }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>We received your HavocSMP punishment appeal</Preview>
+    <Preview>We received your CarnageMC punishment appeal</Preview>
     <Body style={main}>
       <Container style={container}>
         <Heading style={h1}>Appeal received</Heading>
@@ -26,7 +26,7 @@ const Email = ({ minecraftUsername = 'there', appealText = '' }: Props) => (
             <Text style={quoteText}>{appealText}</Text>
           </Section>
         )}
-        <Text style={footer}>— HavocSMP Staff</Text>
+        <Text style={footer}>— CarnageMC Staff</Text>
       </Container>
     </Body>
   </Html>
@@ -34,7 +34,7 @@ const Email = ({ minecraftUsername = 'there', appealText = '' }: Props) => (
 
 export const template = {
   component: Email,
-  subject: 'We received your HavocSMP appeal',
+  subject: 'We received your CarnageMC appeal',
   displayName: 'Ban appeal received',
   previewData: { minecraftUsername: 'Notch', appealText: 'Please unban me, I will follow the rules.' },
 } satisfies TemplateEntry

@@ -99,7 +99,7 @@ const ModTiers = () => {
   };
 
   useEffect(() => {
-    document.title = "Mod Tier List — HavocSMP";
+    document.title = "Mod Tier List — CarnageMC";
     loadAll();
   }, []);
 

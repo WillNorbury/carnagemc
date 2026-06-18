@@ -3,8 +3,8 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const ALLOWED_ORIGINS = new Set([
   "https://xylomc.net",
   "https://www.xylomc.net",
-  "https://havocsmp.net",
-  "https://www.havocsmp.net",
+  "https://carnagemc.net",
+  "https://www.carnagemc.net",
   "https://alsnetwork.fun",
   "https://www.alsnetwork.fun",
   "https://xylomc.lovable.app",

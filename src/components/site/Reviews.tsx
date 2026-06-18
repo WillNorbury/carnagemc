@@ -198,7 +198,7 @@ const Reviews = () => {
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
               <div className="font-display font-bold text-lg">Share your experience</div>
-              <p className="text-sm text-muted-foreground">Sign in to leave a review for HavocSMP.</p>
+              <p className="text-sm text-muted-foreground">Sign in to leave a review for CarnageMC.</p>
             </div>
             <Link to="/auth">
               <Button>Sign in to review</Button>
@@ -220,7 +220,7 @@ const Reviews = () => {
               onChange={(e) => setBody(e.target.value)}
               maxLength={1000}
               rows={4}
-              placeholder="What do you love about HavocSMP?"
+              placeholder="What do you love about CarnageMC?"
             />
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>{body.length}/1000</span>

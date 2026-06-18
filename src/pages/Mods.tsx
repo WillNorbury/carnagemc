@@ -125,7 +125,7 @@ const Mods = () => {
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    document.title = "Mods — HavocSMP";
+    document.title = "Mods — CarnageMC";
     (async () => {
       const { data } = await (supabase.from("mods" as any) as any)
         .select(
