@@ -164,7 +164,7 @@ export const AdminLayout = ({
             <Link to="/" className="flex items-center gap-2 font-semibold" onClick={() => setMobileOpen(false)}>
               <img src={logo} alt="CarnageMC" className="h-7 w-7" />
               <span className="text-lg">
-                HAVOC<span className="text-gradient">SMP</span>
+                CARNAGE<span className="text-gradient">MC</span>
               </span>
             </Link>
           )}

@@ -262,7 +262,7 @@ export function AppSidebar() {
           <img src={logo} alt="CarnageMC" className="h-8 w-8 transition-transform group-hover:scale-110" />
           {!collapsed && (
             <span className="font-display font-bold text-base tracking-wider">
-              HAVOC<span className="text-gradient">SMP</span>
+              CARNAGE<span className="text-gradient">MC</span>
             </span>
           )}
         </Link>
