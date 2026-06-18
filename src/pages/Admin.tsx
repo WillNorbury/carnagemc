@@ -60,6 +60,7 @@ import { BanAppealsAdminSection } from "@/components/admin/BanAppealsAdminSectio
 import { WikiAdminSection } from "@/components/admin/WikiAdminSection";
 import { GalleryAdminSection } from "@/components/admin/GalleryAdminSection";
 import { ContactAdminSection } from "@/components/admin/ContactAdminSection";
+import { EmailTestSection } from "@/components/admin/EmailTestSection";
 import { ApplyTypesAdminSection } from "@/components/admin/ApplyTypesAdminSection";
 import { DiscoverItemsAdminTab } from "@/components/admin/DiscoverItemsAdminTab";
 import { StatCard } from "@/components/admin/StatCard";
@@ -123,6 +124,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   wiki: { title: "Wiki", description: "Manage wiki articles." },
   gallery: { title: "Gallery", description: "Manage gallery images." },
   contact: { title: "Contact", description: "Manage contact methods and inbox." },
+  "email-test": { title: "Email Test", description: "Trigger signup or password reset test emails and watch delivery status." },
 };
 
 const Admin = () => {
@@ -199,6 +201,8 @@ const Admin = () => {
       {section === "wiki" && <WikiAdminSection />}
       {section === "gallery" && <GalleryAdminSection />}
       {section === "contact" && <ContactAdminSection />}
+      {section === "email-test" && <EmailTestSection />}
+      
       
       {section === "permissions" && (isOwner ? <PermissionsTab /> : (
         <div className="flex flex-col items-center justify-center gap-4 py-20">
