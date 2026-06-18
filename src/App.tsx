@@ -129,6 +129,7 @@ const Shell = () => {
                   <Route path="/wiki/:slug" element={<WikiArticle />} />
                   <Route path="/gallery" element={<Gallery />} />
                   <Route path="/contact" element={<Contact />} />
+                  <Route path="/trust" element={<Trust />} />
                   
                   <Route path="*" element={<NotFound />} />
           </Routes>
