@@ -4,6 +4,7 @@ import * as React from 'npm:react@18.3.1'
 
 import {
   Body,
+  Button,
   Container,
   Head,
   Heading,
@@ -26,10 +27,11 @@ export const SignupEmail = ({
   siteUrl,
   recipient,
   token,
+  confirmationUrl,
 }: SignupEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your {siteName} verification code{token ? `: ${token}` : ''}</Preview>
+    <Preview>Confirm your email for {siteName}{token ? ` — code ${token}` : ''}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Heading style={h1}>Confirm your email</Heading>
@@ -38,12 +40,22 @@ export const SignupEmail = ({
           <Link href={siteUrl} style={link}>
             <strong>{siteName}</strong>
           </Link>
-          ! Enter the 6-digit code below in the app to verify{' '}
+          ! Click the button below to verify{' '}
           <Link href={`mailto:${recipient}`} style={link}>{recipient}</Link>.
         </Text>
-        <Text style={codeStyle}>{token ?? '------'}</Text>
+        {confirmationUrl && (
+          <Button style={button} href={confirmationUrl}>
+            Confirm email
+          </Button>
+        )}
+        {token && (
+          <>
+            <Text style={altText}>Or enter this 6-digit code in the app:</Text>
+            <Text style={codeStyle}>{token}</Text>
+          </>
+        )}
         <Text style={footer}>
-          This code will expire shortly. If you didn't create an account, you
+          This link and code expire shortly. If you didn't create an account, you
           can safely ignore this email.
         </Text>
       </Container>
@@ -68,6 +80,17 @@ const text = {
   margin: '0 0 25px',
 }
 const link = { color: 'inherit', textDecoration: 'underline' }
+const button = {
+  backgroundColor: 'hsl(22, 100%, 55%)',
+  color: '#ffffff',
+  fontSize: '14px',
+  borderRadius: '12px',
+  padding: '12px 20px',
+  textDecoration: 'none',
+  display: 'inline-block',
+  marginBottom: '24px',
+}
+const altText = { fontSize: '13px', color: 'hsl(20, 15%, 40%)', margin: '0 0 8px' }
 const codeStyle = {
   fontFamily: 'Courier, monospace',
   fontSize: '32px',
