@@ -74,8 +74,9 @@ Deno.serve(async (req) => {
 
   try {
     if (type === 'signup') {
-      // Generate signup link — triggers signup confirmation email via auth-email-hook.
-      // Will fail if the user already exists; in that case caller should use a fresh address.
+      // Try signup confirmation first. If the user already exists, fall back
+      // to a magic-link email — both route through auth-email-hook so branding
+      // verification still works.
       const randomPw =
         crypto.randomUUID() + crypto.randomUUID().replace(/-/g, '').toUpperCase()
       const { error } = await admin.auth.admin.generateLink({
@@ -84,9 +85,34 @@ Deno.serve(async (req) => {
         password: randomPw,
       })
       if (error) {
+        const msg = error.message?.toLowerCase() ?? ''
+        const alreadyExists =
+          msg.includes('already been registered') || msg.includes('already registered') || msg.includes('already exists')
+        if (!alreadyExists) {
+          return new Response(JSON.stringify({ error: error.message }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          })
+        }
+        const { error: mlErr } = await admin.auth.admin.generateLink({
+          type: 'magiclink',
+          email,
+        })
+        if (mlErr) {
+          return new Response(
+            JSON.stringify({ error: mlErr.message, hint: 'User exists; magic-link fallback also failed.' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+          )
+        }
         return new Response(
-          JSON.stringify({ error: error.message, hint: 'If user already exists, try a fresh address.' }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+          JSON.stringify({
+            ok: true,
+            type: 'magiclink',
+            email,
+            triggered_at: startedAt,
+            note: 'User already existed — sent a magic-link email instead (same branding/hook).',
+          }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
         )
       }
     } else {

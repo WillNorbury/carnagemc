@@ -17,7 +17,7 @@ type LogRow = {
   created_at: string;
 };
 
-const TEMPLATES = ["signup", "recovery"] as const;
+const TEMPLATES = ["signup", "recovery", "magiclink"] as const;
 
 const statusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
   if (status === "sent") return "default";
