@@ -53,6 +53,7 @@ import Wiki from "./pages/Wiki.tsx";
 import WikiArticle from "./pages/WikiArticle.tsx";
 import Gallery from "./pages/Gallery.tsx";
 import Contact from "./pages/Contact.tsx";
+import Trust from "./pages/Trust.tsx";
 
 
 const queryClient = new QueryClient();
@@ -128,6 +129,7 @@ const Shell = () => {
                   <Route path="/wiki/:slug" element={<WikiArticle />} />
                   <Route path="/gallery" element={<Gallery />} />
                   <Route path="/contact" element={<Contact />} />
+                  <Route path="/trust" element={<Trust />} />
                   
                   <Route path="*" element={<NotFound />} />
           </Routes>
