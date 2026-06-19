@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/auth";
-import logoAsset from "@/assets/havocsmp-logo.png.asset.json";
+import logoAsset from "@/assets/carnagemc-logo.png.asset.json";
 const logo = logoAsset.url;
 import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
