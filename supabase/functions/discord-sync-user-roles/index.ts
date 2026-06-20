@@ -31,17 +31,14 @@ Deno.serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization") ?? "";
+    const token = authHeader.replace(/^Bearer\s+/i, "");
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    const userClient = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } },
-    );
-
-    const { data: ud } = await userClient.auth.getUser();
-    if (!ud?.user) return json({ ok: false, error: "Unauthorized" }, 401);
-    const { data: roleRows } = await userClient
-      .from("user_roles").select("role").eq("user_id", ud.user.id).in("role", ["admin", "owner"]).limit(1);
+    if (!token) return json({ ok: false, error: "Unauthorized" }, 401);
+    const { data: claimsData, error: claimsErr } = await admin.auth.getClaims(token);
+    const callerId = claimsData?.claims?.sub as string | undefined;
+    if (claimsErr || !callerId) return json({ ok: false, error: "Unauthorized" }, 401);
+    const { data: roleRows } = await admin
+      .from("user_roles").select("role").eq("user_id", callerId).in("role", ["admin", "owner"]).limit(1);
     if (!roleRows || roleRows.length === 0) return json({ ok: false, error: "Forbidden — admin only" }, 403);
 
 
