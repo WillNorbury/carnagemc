@@ -56,7 +56,8 @@ import {
   Compass,
   Globe,
   Info,
-, Brain } from "lucide-react";
+  Brain,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type NavItem = { to: string; label: string; icon: typeof Home; soon?: boolean };
