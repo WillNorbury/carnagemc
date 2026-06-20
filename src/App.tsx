@@ -49,6 +49,7 @@ import Status from "./pages/Status.tsx";
 import StatusIncident from "./pages/StatusIncident.tsx";
 import BanAppeals from "./pages/BanAppeals.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
+import Subscribe from "./pages/Subscribe.tsx";
 import Wiki from "./pages/Wiki.tsx";
 import WikiArticle from "./pages/WikiArticle.tsx";
 import Gallery from "./pages/Gallery.tsx";
@@ -128,6 +129,7 @@ const Shell = () => {
                   <Route path="/status/:number" element={<StatusIncident />} />
                   <Route path="/appeal" element={<BanAppeals />} />
                   <Route path="/unsubscribe" element={<Unsubscribe />} />
+                  <Route path="/subscribe" element={<Subscribe />} />
                   <Route path="/ban-appeals" element={<Navigate to="/appeal" replace />} />
                   <Route path="/wiki" element={<Wiki />} />
                   <Route path="/wiki/:slug" element={<WikiArticle />} />
