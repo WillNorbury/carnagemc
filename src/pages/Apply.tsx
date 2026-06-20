@@ -292,6 +292,12 @@ const ApplyForm = ({
       },
     }).catch(() => {});
 
+    if (appId) {
+      supabase.functions.invoke("notify-application-discord", {
+        body: { applicationId: appId },
+      }).catch(() => {});
+    }
+
     toast.success("Application submitted! We'll review it soon.");
     navigate("/dashboard");
   };
