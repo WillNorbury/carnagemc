@@ -31,10 +31,10 @@ Deno.serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization") ?? "";
-    const token = authHeader.replace(/^Bearer\s+/i, "");
+    const accessToken = authHeader.replace(/^Bearer\s+/i, "");
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    if (!token) return json({ ok: false, error: "Unauthorized" }, 401);
-    const { data: claimsData, error: claimsErr } = await admin.auth.getClaims(token);
+    if (!accessToken) return json({ ok: false, error: "Unauthorized" }, 401);
+    const { data: claimsData, error: claimsErr } = await admin.auth.getClaims(accessToken);
     const callerId = claimsData?.claims?.sub as string | undefined;
     if (claimsErr || !callerId) return json({ ok: false, error: "Unauthorized" }, 401);
     const { data: roleRows } = await admin
@@ -42,8 +42,8 @@ Deno.serve(async (req) => {
     if (!roleRows || roleRows.length === 0) return json({ ok: false, error: "Forbidden — admin only" }, 403);
 
 
-    const token = Deno.env.get("DISCORD_BOT_TOKEN");
-    if (!token) return json({ ok: false, error: "DISCORD_BOT_TOKEN not configured" }, 500);
+    const discordBotToken = Deno.env.get("DISCORD_BOT_TOKEN");
+    if (!discordBotToken) return json({ ok: false, error: "DISCORD_BOT_TOKEN not configured" }, 500);
 
     const { user_id } = await req.json().catch(() => ({}));
     if (!user_id || typeof user_id !== "string") return json({ ok: false, error: "user_id required" }, 400);
@@ -77,11 +77,11 @@ Deno.serve(async (req) => {
     for (const [siteRole, discordRoleId] of Object.entries(mapping)) {
       if (!discordRoleId) continue;
       if (userRoleKeys.has(siteRole)) {
-        const r = await discordPut(guildId, profile.discord_id, discordRoleId, token);
+        const r = await discordPut(guildId, profile.discord_id, discordRoleId, discordBotToken);
         if (r.ok) added.push(siteRole);
         else errors.push({ role: siteRole, status: r.status, body: r.body });
       } else {
-        const r = await discordDelete(guildId, profile.discord_id, discordRoleId, token);
+        const r = await discordDelete(guildId, profile.discord_id, discordRoleId, discordBotToken);
         if (r.ok) removed.push(siteRole);
         else errors.push({ role: siteRole, status: r.status, body: r.body });
       }
