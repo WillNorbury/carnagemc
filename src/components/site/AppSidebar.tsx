@@ -56,7 +56,6 @@ import {
   Compass,
   Globe,
   Info,
-  Brain,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -99,7 +98,6 @@ const communityGroup: NavGroup = {
     { to: "/staff", label: "Staff", icon: ShieldCheck },
     { to: "/mod-tiers", label: "Mod Tiers", icon: Star },
     { to: "/gallery", label: "Gallery", icon: ImageIcon },
-    { to: "/quiz", label: "Quiz", icon: Brain },
   ],
 };
 
@@ -280,6 +278,12 @@ export function AppSidebar() {
             <SidebarGroupLabel>Admin</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>{renderItem({ to: "/admin", label: "Admin", icon: Shield })}</SidebarMenu>
+            </SidebarGroupContent>
+            ,
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {renderItem({ to: "https://staffchat.carnagemc.net", label: "StaffChat", icon: Link2 })}
+              </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         )}
