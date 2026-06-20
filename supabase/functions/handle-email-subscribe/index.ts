@@ -40,6 +40,12 @@ Deno.serve(async (req) => {
     return json({ error: "Failed to subscribe" }, 500);
   }
 
+  // Reset any used unsubscribe token so future sends aren't blocked
+  await admin
+    .from("email_unsubscribe_tokens")
+    .update({ used_at: null })
+    .eq("email", email);
+
   // Re-enable notification preferences on profile
   const { data: profile } = await admin
     .from("profiles")

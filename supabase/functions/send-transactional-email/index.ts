@@ -255,26 +255,34 @@ Deno.serve(async (req) => {
     }
     unsubscribeToken = storedToken.token
   } else {
-    // Token exists but is already used — email should have been caught by suppression check above.
-    // This is a safety fallback; log and skip sending.
-    console.warn('Unsubscribe token already used but email not suppressed', {
+    // Token exists but is already used, and the email is NOT suppressed.
+    // This happens when a user re-subscribes. Reset the token so sends resume.
+    console.warn('Resetting used unsubscribe token for re-subscribed email', {
       email: normalizedEmail,
     })
-    await supabase.from('email_send_log').insert({
-      message_id: messageId,
-      template_name: templateName,
-      recipient_email: effectiveRecipient,
-      status: 'suppressed',
-      error_message:
-        'Unsubscribe token used but email missing from suppressed list',
-    })
-    return new Response(
-      JSON.stringify({ success: false, reason: 'email_suppressed' }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    )
+    const { error: resetError } = await supabase
+      .from('email_unsubscribe_tokens')
+      .update({ used_at: null })
+      .eq('email', normalizedEmail)
+
+    if (resetError) {
+      console.error('Failed to reset unsubscribe token', { error: resetError })
+      await supabase.from('email_send_log').insert({
+        message_id: messageId,
+        template_name: templateName,
+        recipient_email: effectiveRecipient,
+        status: 'failed',
+        error_message: 'Failed to reset unsubscribe token',
+      })
+      return new Response(
+        JSON.stringify({ error: 'Failed to prepare email' }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+    unsubscribeToken = existingToken.token
   }
 
   // 4. Render React Email template to HTML and plain text
