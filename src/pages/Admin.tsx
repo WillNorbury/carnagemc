@@ -411,8 +411,10 @@ const UsersTab = () => {
       await supabase.from("user_roles").insert({ user_id: uid, role: "admin" });
       toast.success("Promoted to admin");
     }
+    supabase.functions.invoke("discord-sync-user-roles", { body: { user_id: uid } }).catch(() => {});
     load();
   };
+
 
   const deleteUser = async (p: Profile) => {
     const ok = await confirm({
