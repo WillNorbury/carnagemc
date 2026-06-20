@@ -52,6 +52,10 @@ export default function Subscribe() {
       }
       setSubscribedEmail(data.email ?? user?.email ?? "");
       setState("done");
+      // Send a reauthentication email so the user gets a security confirmation in their inbox
+      const reauth = await sendReauthEmail();
+      setReauthSent(reauth.ok);
+      setReauthError(reauth.ok ? "" : reauth.error ?? "");
     } catch (e: any) {
       setState("error");
       setMessage(e?.message ?? "Network error");
