@@ -425,7 +425,7 @@ const UsersTab = () => {
     });
     if (!ok) return;
     try {
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      const { data: sessionData, error: sessionError } = await supabase.auth.refreshSession();
       if (sessionError || !sessionData.session?.access_token) throw new Error("Please sign in again before deleting users.");
       const { data, error } = await supabase.functions.invoke("admin-delete-user", {
         body: { user_id: p.id },
