@@ -98,6 +98,7 @@ const communityGroup: NavGroup = {
     { to: "/staff", label: "Staff", icon: ShieldCheck },
     { to: "/mod-tiers", label: "Mod Tiers", icon: Star },
     { to: "/gallery", label: "Gallery", icon: ImageIcon },
+    { to: "/quiz", label: "Quiz", icon: Brain },
   ],
 };
 

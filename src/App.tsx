@@ -54,6 +54,10 @@ import WikiArticle from "./pages/WikiArticle.tsx";
 import Gallery from "./pages/Gallery.tsx";
 import Contact from "./pages/Contact.tsx";
 import Trust from "./pages/Trust.tsx";
+import QuizListPage from "./pages/Quiz.tsx";
+import QuizTake from "./pages/QuizTake.tsx";
+import QuizResult from "./pages/QuizResult.tsx";
+import QuizLeaderboard from "./pages/QuizLeaderboard.tsx";
 
 
 const queryClient = new QueryClient();
@@ -130,6 +134,10 @@ const Shell = () => {
                   <Route path="/gallery" element={<Gallery />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/trust" element={<Trust />} />
+                  <Route path="/quiz" element={<QuizListPage />} />
+                  <Route path="/quiz/:slug" element={<QuizTake />} />
+                  <Route path="/quiz/:slug/leaderboard" element={<QuizLeaderboard />} />
+                  <Route path="/quiz/:slug/result/:attemptId" element={<QuizResult />} />
                   
                   <Route path="*" element={<NotFound />} />
           </Routes>
