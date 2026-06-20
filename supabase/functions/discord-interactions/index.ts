@@ -80,6 +80,43 @@ Deno.serve(async (req) => {
         { headers: { "Content-Type": "application/json" } },
       );
     }
+    if (name === "subscribe" || name === "unsubscribe") {
+      const subscribed = name === "subscribe";
+      const discordId = body.member?.user?.id ?? body.user?.id;
+      const reply = (content: string) => new Response(
+        JSON.stringify({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: { content, flags: 64 },
+        }),
+        { headers: { "Content-Type": "application/json" } },
+      );
+      if (!discordId) return reply("Could not determine your Discord account.");
+
+      const supabase = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      );
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("id, preferences")
+        .eq("discord_id", discordId)
+        .maybeSingle();
+
+      if (!profile) {
+        return reply("⚠️ Your Discord account isn't linked to a CarnageMC account yet. Sign in on the website and link Discord first.");
+      }
+
+      const prefs = { ...(profile.preferences ?? {}), email_subscribed: subscribed };
+      const { error } = await supabase
+        .from("profiles")
+        .update({ preferences: prefs })
+        .eq("id", profile.id);
+
+      if (error) return reply(`❌ Failed to update: ${error.message}`);
+      return reply(subscribed
+        ? "✅ You're subscribed to email notifications from CarnageMC."
+        : "✅ You've been unsubscribed from email notifications.");
+    }
     return new Response(
       JSON.stringify({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
