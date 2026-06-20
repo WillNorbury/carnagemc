@@ -40,9 +40,10 @@ Deno.serve(async (req) => {
 
     const { data: ud } = await userClient.auth.getUser();
     if (!ud?.user) return json({ ok: false, error: "Unauthorized" }, 401);
-    const { data: roleRow } = await userClient
-      .from("user_roles").select("role").eq("user_id", ud.user.id).in("role", ["admin", "owner"]).maybeSingle();
-    if (!roleRow) return json({ ok: false, error: "Forbidden — admin only" }, 403);
+    const { data: roleRows } = await userClient
+      .from("user_roles").select("role").eq("user_id", ud.user.id).in("role", ["admin", "owner"]).limit(1);
+    if (!roleRows || roleRows.length === 0) return json({ ok: false, error: "Forbidden — admin only" }, 403);
+
 
     const token = Deno.env.get("DISCORD_BOT_TOKEN");
     if (!token) return json({ ok: false, error: "DISCORD_BOT_TOKEN not configured" }, 500);
