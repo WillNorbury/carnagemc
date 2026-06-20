@@ -41,6 +41,7 @@ import {
   Layers,
   Globe,
   Mail,
+  Brain,
 } from "lucide-react";
 
 export type AdminSection =
@@ -74,6 +75,7 @@ export type AdminSection =
   | "gallery"
   | "contact"
   | "email-test"
+  | "quizzes"
   | "bot-dashboard"
   | "bot-management";
 
@@ -114,6 +116,7 @@ const items: NavItem[] = [
   { kind: "link", id: "gallery", icon: Package, label: "Gallery" },
   { kind: "link", id: "contact", icon: HelpCircle, label: "Contact" },
   { kind: "link", id: "email-test", icon: Mail, label: "Email Test" },
+  { kind: "link", id: "quizzes", icon: Brain, label: "Quizzes" },
   { kind: "section", title: "Discord Bot", icon: Bot },
   { kind: "link", id: "bot-dashboard", icon: LayoutDashboard, label: "Bot Dashboard" },
   { kind: "link", id: "bot-management", icon: Code, label: "Management" },
