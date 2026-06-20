@@ -1819,6 +1819,103 @@ const LogsTab = () => {
 
 const BOT_KEY = "discord_bot";
 
+const DiscordRoleMapCard = ({ guildId }: { guildId?: string }) => {
+  const [map, setMap] = useState<Record<string, string>>({});
+  const [customRoles, setCustomRoles] = useState<{ key: string; label: string; emoji: string }[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [testUid, setTestUid] = useState("");
+  const [testing, setTesting] = useState(false);
+
+  useEffect(() => {
+    supabase
+      .from("site_content").select("value").eq("key", "discord_role_map").maybeSingle()
+      .then(({ data }) => {
+        const m = (data?.value as any)?.map;
+        if (m && typeof m === "object") setMap(m);
+      });
+    supabase
+      .from("custom_roles").select("key,label,emoji").order("rank", { ascending: true })
+      .then(({ data }) => setCustomRoles((data ?? []) as any));
+  }, []);
+
+  const allRoles = useMemo(
+    () => [
+      ...ALL_ROLES.map((r) => ({ key: r.value, label: `${r.emoji} ${r.label}` })),
+      ...customRoles.map((r) => ({ key: r.key, label: `${r.emoji || "⭐"} ${r.label}` })),
+    ],
+    [customRoles],
+  );
+
+  const save = async () => {
+    setSaving(true);
+    const clean: Record<string, string> = {};
+    for (const [k, v] of Object.entries(map)) if (v && v.trim()) clean[k] = v.trim();
+    const { error } = await supabase
+      .from("site_content").upsert({ key: "discord_role_map", value: { map: clean } });
+    setSaving(false);
+    if (error) toast.error(error.message);
+    else toast.success("Role mapping saved");
+  };
+
+  const runTestSync = async () => {
+    if (!testUid.trim()) return;
+    setTesting(true);
+    const { data, error } = await supabase.functions.invoke("discord-sync-user-roles", {
+      body: { user_id: testUid.trim() },
+    });
+    setTesting(false);
+    if (error) return toast.error(error.message);
+    if (data?.skipped) return toast.message(data.reason || "Skipped");
+    if (data?.ok) toast.success(`Synced — added ${(data.added ?? []).length}, removed ${(data.removed ?? []).length}`);
+    else toast.error(data?.error || `Errors: ${JSON.stringify(data?.errors ?? [])}`);
+  };
+
+  return (
+    <Card className="p-6 mt-6">
+      <h3 className="font-display font-bold text-lg mb-1">Discord Role Sync</h3>
+      <p className="text-sm text-muted-foreground mb-4">
+        Map each website role to a Discord role ID. When admins assign or remove a role on the website, the bot will
+        automatically add/remove the matching Discord role for users who have linked their Discord account.
+        {!guildId && (
+          <span className="block text-destructive mt-1">Set a guildId in the Discord settings above first.</span>
+        )}
+      </p>
+      <div className="grid sm:grid-cols-2 gap-3 max-h-96 overflow-y-auto pr-1">
+        {allRoles.map((r) => (
+          <div key={r.key} className="flex items-center gap-2">
+            <div className="w-40 text-sm truncate">{r.label}</div>
+            <Input
+              placeholder="Discord role ID"
+              value={map[r.key] ?? ""}
+              onChange={(e) => setMap((m) => ({ ...m, [r.key]: e.target.value }))}
+              className="font-mono text-xs"
+            />
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-2 mt-4">
+        <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save mapping"}</Button>
+      </div>
+      <div className="mt-6 pt-4 border-t border-border">
+        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Test sync</div>
+        <div className="flex gap-2">
+          <Input
+            placeholder="User ID (UUID)"
+            value={testUid}
+            onChange={(e) => setTestUid(e.target.value)}
+            className="font-mono text-xs"
+          />
+          <Button variant="outline" onClick={runTestSync} disabled={testing || !testUid.trim()}>
+            {testing ? "Syncing…" : "Sync now"}
+          </Button>
+        </div>
+      </div>
+    </Card>
+  );
+};
+
+
+
 const BotDashboardSection = () => {
   const [cfg, setCfg] = useState<any>({
     enabled: false,
