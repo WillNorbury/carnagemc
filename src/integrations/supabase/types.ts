@@ -647,6 +647,41 @@ export type Database = {
         }
         Relationships: []
       }
+      faq_votes: {
+        Row: {
+          created_at: string
+          faq_id: string
+          id: string
+          user_id: string | null
+          vote: string
+          voter_key: string | null
+        }
+        Insert: {
+          created_at?: string
+          faq_id: string
+          id?: string
+          user_id?: string | null
+          vote: string
+          voter_key?: string | null
+        }
+        Update: {
+          created_at?: string
+          faq_id?: string
+          id?: string
+          user_id?: string | null
+          vote?: string
+          voter_key?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faq_votes_faq_id_fkey"
+            columns: ["faq_id"]
+            isOneToOne: false
+            referencedRelation: "faqs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       faqs: {
         Row: {
           answer: string
@@ -1258,6 +1293,171 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_attempts: {
+        Row: {
+          answers: Json
+          created_at: string
+          duration_seconds: number
+          id: string
+          max_score: number
+          passed: boolean
+          percent: number
+          quiz_id: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          duration_seconds?: number
+          id?: string
+          max_score: number
+          passed?: boolean
+          percent: number
+          quiz_id: string
+          score: number
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          duration_seconds?: number
+          id?: string
+          max_score?: number
+          passed?: boolean
+          percent?: number
+          quiz_id?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempts_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_options: {
+        Row: {
+          created_at: string
+          id: string
+          is_correct: boolean
+          label: string
+          question_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          label: string
+          question_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          label?: string
+          question_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_options_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions: {
+        Row: {
+          created_at: string
+          explanation: string | null
+          id: string
+          points: number
+          prompt: string
+          quiz_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          points?: number
+          prompt: string
+          quiz_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          points?: number
+          prompt?: string
+          quiz_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quizzes: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          passing_score: number
+          published: boolean
+          randomize: boolean
+          slug: string
+          time_limit_seconds: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          passing_score?: number
+          published?: boolean
+          randomize?: boolean
+          slug: string
+          time_limit_seconds?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          passing_score?: number
+          published?: boolean
+          randomize?: boolean
+          slug?: string
+          time_limit_seconds?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           body: string
@@ -1803,7 +2003,22 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      faq_vote_counts: {
+        Row: {
+          faq_id: string | null
+          helpful: number | null
+          not_helpful: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faq_votes_faq_id_fkey"
+            columns: ["faq_id"]
+            isOneToOne: false
+            referencedRelation: "faqs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       can_access_ticket: { Args: { _ticket_id: string }; Returns: boolean }
@@ -1829,6 +2044,21 @@ export type Database = {
           preferences: Json
         }[]
       }
+      get_quiz_leaderboard: {
+        Args: { _limit?: number; _slug: string }
+        Returns: {
+          avatar_url: string
+          created_at: string
+          display_name: string
+          duration_seconds: number
+          max_score: number
+          percent: number
+          rank: number
+          score: number
+          user_id: string
+        }[]
+      }
+      get_quiz_with_questions: { Args: { _slug: string }; Returns: Json }
       get_uptime_daily: {
         Args: { _days?: number }
         Returns: {
@@ -1902,6 +2132,10 @@ export type Database = {
         }
       }
       slugify: { Args: { _input: string }; Returns: string }
+      submit_quiz_attempt: {
+        Args: { _answers: Json; _duration_seconds: number; _quiz_id: string }
+        Returns: string
+      }
     }
     Enums: {
       app_role:
