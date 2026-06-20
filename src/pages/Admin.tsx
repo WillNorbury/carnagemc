@@ -2306,9 +2306,12 @@ const BotDashboardSection = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <DiscordRoleMapCard guildId={cfg.guildId} />
     </div>
   );
 };
+
 
 const BotActionLogsPanel = () => {
   const [logs, setLogs] = useState<any[]>([]);
