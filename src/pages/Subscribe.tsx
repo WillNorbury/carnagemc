@@ -10,6 +10,16 @@ import { useAuth } from "@/lib/auth";
 
 type State = "idle" | "submitting" | "done" | "error" | "signed-out";
 
+async function sendReauthEmail(): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const { error } = await supabase.auth.reauthenticate();
+    if (error) return { ok: false, error: error.message };
+    return { ok: true };
+  } catch (e: any) {
+    return { ok: false, error: e?.message ?? "Failed to send confirmation email" };
+  }
+}
+
 export default function Subscribe() {
   const { user, loading } = useAuth();
   const nav = useNavigate();
