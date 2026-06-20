@@ -34,14 +34,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Verify caller is admin
-    const { data: roleRow } = await admin
+    // Verify caller is admin or owner
+    const { data: roleRows } = await admin
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)
-      .eq("role", "admin")
-      .maybeSingle();
-    if (!roleRow) {
+      .in("role", ["admin", "owner"])
+      .limit(1);
+    if (!roleRows || roleRows.length === 0) {
       return new Response(JSON.stringify({ error: "Forbidden" }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
