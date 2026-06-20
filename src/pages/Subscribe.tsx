@@ -10,12 +10,24 @@ import { useAuth } from "@/lib/auth";
 
 type State = "idle" | "submitting" | "done" | "error" | "signed-out";
 
+async function sendReauthEmail(): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const { error } = await supabase.auth.reauthenticate();
+    if (error) return { ok: false, error: error.message };
+    return { ok: true };
+  } catch (e: any) {
+    return { ok: false, error: e?.message ?? "Failed to send confirmation email" };
+  }
+}
+
 export default function Subscribe() {
   const { user, loading } = useAuth();
   const nav = useNavigate();
   const [state, setState] = useState<State>("idle");
   const [message, setMessage] = useState("");
   const [subscribedEmail, setSubscribedEmail] = useState<string>("");
+  const [reauthSent, setReauthSent] = useState(false);
+  const [reauthError, setReauthError] = useState<string>("");
 
   useEffect(() => {
     if (!loading && !user) setState("signed-out");
@@ -40,6 +52,10 @@ export default function Subscribe() {
       }
       setSubscribedEmail(data.email ?? user?.email ?? "");
       setState("done");
+      // Send a reauthentication email so the user gets a security confirmation in their inbox
+      const reauth = await sendReauthEmail();
+      setReauthSent(reauth.ok);
+      setReauthError(reauth.ok ? "" : reauth.error ?? "");
     } catch (e: any) {
       setState("error");
       setMessage(e?.message ?? "Network error");
@@ -96,6 +112,16 @@ export default function Subscribe() {
               <AlertDescription className="text-emerald-700/80 mt-1">
                 <span className="block">{subscribedEmail} is now re-subscribed to CarnageMC emails.</span>
                 <span className="block mt-1">You'll receive notifications for news, updates, applications and ticket replies.</span>
+                {reauthSent && (
+                  <span className="block mt-2 text-xs">
+                    🔐 For security, we sent a re-authentication code to {subscribedEmail}. Check your inbox to confirm this change.
+                  </span>
+                )}
+                {!reauthSent && reauthError && (
+                  <span className="block mt-2 text-xs text-amber-700">
+                    Note: couldn't send security confirmation email ({reauthError}).
+                  </span>
+                )}
               </AlertDescription>
             </Alert>
           )}
