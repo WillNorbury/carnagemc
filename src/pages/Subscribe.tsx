@@ -112,6 +112,16 @@ export default function Subscribe() {
               <AlertDescription className="text-emerald-700/80 mt-1">
                 <span className="block">{subscribedEmail} is now re-subscribed to CarnageMC emails.</span>
                 <span className="block mt-1">You'll receive notifications for news, updates, applications and ticket replies.</span>
+                {reauthSent && (
+                  <span className="block mt-2 text-xs">
+                    🔐 For security, we sent a re-authentication code to {subscribedEmail}. Check your inbox to confirm this change.
+                  </span>
+                )}
+                {!reauthSent && reauthError && (
+                  <span className="block mt-2 text-xs text-amber-700">
+                    Note: couldn't send security confirmation email ({reauthError}).
+                  </span>
+                )}
               </AlertDescription>
             </Alert>
           )}
