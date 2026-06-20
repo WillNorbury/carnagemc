@@ -792,6 +792,20 @@ const RolesSection = () => {
       toast.success(
         `Updated ${toAdd.length + toRemove.length} role${toAdd.length + toRemove.length === 1 ? "" : "s"}`,
       );
+      // Fire-and-forget Discord role sync
+      supabase.functions
+        .invoke("discord-sync-user-roles", { body: { user_id: uid } })
+        .then(({ data }) => {
+          if (data?.skipped) return;
+          if (data?.ok) {
+            const a = (data.added ?? []).length;
+            const r = (data.removed ?? []).length;
+            if (a || r) toast.message(`Discord synced: +${a} / -${r}`);
+          } else if (data?.error) {
+            toast.error(`Discord sync: ${data.error}`);
+          }
+        })
+        .catch(() => {});
       await load();
     } catch (e: any) {
       toast.error(e.message ?? "Failed to update roles");
@@ -799,6 +813,7 @@ const RolesSection = () => {
       setSavingUid(null);
     }
   };
+
 
   const filtered = useMemo(
     () =>
