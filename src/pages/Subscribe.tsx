@@ -26,6 +26,8 @@ export default function Subscribe() {
   const [state, setState] = useState<State>("idle");
   const [message, setMessage] = useState("");
   const [subscribedEmail, setSubscribedEmail] = useState<string>("");
+  const [reauthSent, setReauthSent] = useState(false);
+  const [reauthError, setReauthError] = useState<string>("");
 
   useEffect(() => {
     if (!loading && !user) setState("signed-out");
