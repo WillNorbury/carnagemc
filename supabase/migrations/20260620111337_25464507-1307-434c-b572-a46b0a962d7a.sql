@@ -1,0 +1,1 @@
+ALTER VIEW public.faq_vote_counts SET (security_invoker = on);

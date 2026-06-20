@@ -75,6 +75,7 @@ import { MaintenanceTab } from "@/pages/AdminMaintenance";
 import AdminFaqsPage from "@/pages/AdminFaqs";
 import AdminEventsPage from "@/pages/AdminEvents";
 import AdminModsPage from "@/pages/AdminMods";
+import QuizAdminSection from "@/components/admin/QuizAdminSection";
 
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
@@ -125,6 +126,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   gallery: { title: "Gallery", description: "Manage gallery images." },
   contact: { title: "Contact", description: "Manage contact methods and inbox." },
   "email-test": { title: "Email Test", description: "Trigger signup or password reset test emails and watch delivery status." },
+  quizzes: { title: "Quizzes", description: "Create, edit, and publish scored quizzes." },
 };
 
 const Admin = () => {
@@ -202,6 +204,7 @@ const Admin = () => {
       {section === "gallery" && <GalleryAdminSection />}
       {section === "contact" && <ContactAdminSection />}
       {section === "email-test" && <EmailTestSection />}
+      {section === "quizzes" && <QuizAdminSection />}
       
       
       {section === "permissions" && (isOwner ? <PermissionsTab /> : (
