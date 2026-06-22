@@ -292,7 +292,7 @@ export const AdminLayout = ({
         <ScrollArea className="h-screen flex-1 w-full">
           <main className="p-4 sm:p-6 md:p-8 space-y-6 md:space-y-8">
             {/* Mobile top bar */}
-            <div className="flex md:hidden items-center justify-between -mx-4 px-4 py-2 border-b -mt-4 sticky top-0 z-30 bg-background/95 backdrop-blur">
+            <div className="flex md:hidden items-center justify-between -mx-4 px-4 py-2 border-b -mt-2 sticky top-2 z-30 bg-background/95 backdrop-blur rounded-b-lg mx-0 mt-2 mb-2 shadow-sm">
               <Button variant="ghost" size="icon" onClick={() => setMobileOpen(true)}>
                 <Menu className="h-5 w-5" />
               </Button>
