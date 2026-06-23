@@ -343,13 +343,21 @@ const DiscoverItemsBrowse = ({
                   const isExternal = !it.download_url && !!it.external_url;
                   const isServer = it.kind === "server";
                   const ip = isServer ? getServerIp(it) : null;
+                  const detailBase: Record<string, string> = {
+                    resource_pack: "/resource-pack",
+                    data_pack: "/data-pack",
+                    shader: "/shader",
+                    modpack: "/modpack",
+                    server: "/server",
+                  };
+                  const detailHref = detailBase[it.kind]
+                    ? `${detailBase[it.kind]}/${it.slug ?? it.id}`
+                    : null;
                   return (
-                    <div
+                    <NavLink
                       key={it.id}
-                      onClick={() => isServer && setOpenItem(it)}
-                      className={`rounded-lg border border-border bg-card hover:border-primary/50 hover:shadow-elegant transition group ${
-                        isServer ? "cursor-pointer" : ""
-                      }`}
+                      to={detailHref ?? "#"}
+                      className="block rounded-lg border border-border bg-card hover:border-primary/50 hover:shadow-elegant transition group"
                     >
                       <div className="flex items-stretch gap-4 p-4">
                         <div className="shrink-0">
@@ -423,7 +431,10 @@ const DiscoverItemsBrowse = ({
                             <Button
                               size="sm"
                               className="mt-2"
-                              onClick={() => copyIp(it)}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                copyIp(it);
+                              }}
                               disabled={!ip}
                             >
                               {copiedId === it.id ? (
@@ -438,7 +449,12 @@ const DiscoverItemsBrowse = ({
                             </Button>
                           ) : url ? (
                             <Button asChild size="sm" className="mt-2">
-                              <a href={url} target="_blank" rel="noopener noreferrer">
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                              >
                                 {isExternal ? (
                                   <>
                                     <ExternalLink className="h-3.5 w-3.5 mr-1" /> Visit
@@ -457,7 +473,7 @@ const DiscoverItemsBrowse = ({
                           )}
                         </div>
                       </div>
-                    </div>
+                    </NavLink>
                   );
                 })}
               </div>
