@@ -246,7 +246,12 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                   </>
                 ) : url ? (
                   <Button asChild className="w-full">
-                    <a href={url} target="_blank" rel="noopener noreferrer">
+                    <a
+                      href={url}
+                      target={isExternal ? "_blank" : undefined}
+                      rel={isExternal ? "noopener noreferrer" : undefined}
+                      {...(isExternal ? {} : { download: "" })}
+                    >
                       {isExternal ? (
                         <><ExternalLink className="h-4 w-4 mr-1" /> Visit</>
                       ) : (
@@ -254,6 +259,7 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                       )}
                     </a>
                   </Button>
+
                 ) : (
                   <Button disabled className="w-full">Unavailable</Button>
                 )}
