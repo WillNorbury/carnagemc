@@ -108,6 +108,8 @@ export const DEFAULT_PERMISSIONS: PermissionMatrix = {
     "admin.access", "tickets.view_all", "tickets.reply",
   ],
   media: [],
+  havoc: [],
+  havoc_plus: [],
   donut_plus: [],
   default: [],
 };
