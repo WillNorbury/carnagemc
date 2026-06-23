@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Progress } from "@/components/ui/progress";
 import {
   ArrowLeft,
   Calendar,
@@ -15,10 +16,13 @@ import {
   Copy,
   Download,
   ExternalLink,
+  Loader2,
   Package,
   Server as ServerIcon,
   Sparkles,
+  XCircle,
 } from "lucide-react";
+
 
 type DiscoverItem = {
   id: string;
@@ -137,8 +141,81 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
     }
   };
 
+  const [dlState, setDlState] = useState<"idle" | "loading" | "error" | "done">("idle");
+  const [dlProgress, setDlProgress] = useState<number | null>(null); // 0-100, null = indeterminate
+  const [dlError, setDlError] = useState<string | null>(null);
+
+  const filenameFromUrl = (u: string) => {
+    try {
+      const p = new URL(u).pathname;
+      const last = decodeURIComponent(p.split("/").pop() || "");
+      return last || `${item?.slug ?? "download"}`;
+    } catch {
+      return `${item?.slug ?? "download"}`;
+    }
+  };
+
+  const startDownload = async () => {
+    if (!url || isExternal) return;
+    setDlState("loading");
+    setDlError(null);
+    setDlProgress(null);
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const totalHeader = res.headers.get("content-length");
+      const total = totalHeader ? parseInt(totalHeader, 10) : 0;
+      if (total > 0) setDlProgress(0);
+
+      const reader = res.body?.getReader();
+      if (!reader) {
+        // Fallback: no streaming support
+        const blob = await res.blob();
+        triggerSave(blob, filenameFromUrl(url));
+        setDlState("done");
+        setDlProgress(100);
+        setTimeout(() => setDlState("idle"), 1500);
+        return;
+      }
+      const chunks: Uint8Array[] = [];
+      let received = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value) {
+          chunks.push(value);
+          received += value.length;
+          if (total > 0) {
+            setDlProgress(Math.min(99, Math.round((received / total) * 100)));
+          }
+        }
+      }
+      const blob = new Blob(chunks as BlobPart[]);
+      triggerSave(blob, filenameFromUrl(url));
+      setDlProgress(100);
+      setDlState("done");
+      setTimeout(() => setDlState("idle"), 1500);
+    } catch (e: any) {
+      setDlError(e?.message ?? "Download failed");
+      setDlState("error");
+      toast.error("Download failed", { description: e?.message });
+    }
+  };
+
+  const triggerSave = (blob: Blob, filename: string) => {
+    const objUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = objUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(objUrl), 1000);
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
+
       <PageLoader loading={loading} label={`Loading ${meta.label.toLowerCase()}`} />
       <Navbar />
       <main className="container pt-24 pb-16">
@@ -245,20 +322,47 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                     )}
                   </>
                 ) : url ? (
-                  <Button asChild className="w-full">
-                    <a
-                      href={url}
-                      target={isExternal ? "_blank" : undefined}
-                      rel={isExternal ? "noopener noreferrer" : undefined}
-                      {...(isExternal ? {} : { download: "" })}
-                    >
-                      {isExternal ? (
-                        <><ExternalLink className="h-4 w-4 mr-1" /> Visit</>
-                      ) : (
-                        <><Download className="h-4 w-4 mr-1" /> Download</>
+                  isExternal ? (
+                    <Button asChild className="w-full">
+                      <a href={url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-4 w-4 mr-1" /> Visit
+                      </a>
+                    </Button>
+                  ) : (
+                    <div className="space-y-2">
+                      <Button
+                        className="w-full"
+                        onClick={startDownload}
+                        disabled={dlState === "loading"}
+                        variant={dlState === "error" ? "destructive" : "default"}
+                      >
+                        {dlState === "loading" ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                            {dlProgress !== null ? `Downloading ${dlProgress}%` : "Downloading…"}
+                          </>
+                        ) : dlState === "done" ? (
+                          <><Check className="h-4 w-4 mr-1" /> Downloaded</>
+                        ) : dlState === "error" ? (
+                          <><XCircle className="h-4 w-4 mr-1" /> Retry download</>
+                        ) : (
+                          <><Download className="h-4 w-4 mr-1" /> Download</>
+                        )}
+                      </Button>
+                      {dlState === "loading" && dlProgress !== null && (
+                        <Progress value={dlProgress} className="h-1.5" />
                       )}
-                    </a>
-                  </Button>
+                      {dlState === "loading" && dlProgress === null && (
+                        <div className="h-1.5 w-full overflow-hidden rounded bg-muted">
+                          <div className="h-full w-1/3 animate-pulse bg-primary" />
+                        </div>
+                      )}
+                      {dlState === "error" && dlError && (
+                        <p className="text-xs text-destructive">{dlError}</p>
+                      )}
+                    </div>
+                  )
+
 
                 ) : (
                   <Button disabled className="w-full">Unavailable</Button>
