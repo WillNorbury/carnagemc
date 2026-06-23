@@ -56,11 +56,40 @@ Deno.serve(async (req) => {
       return json(400, { error: "Invalid email address" });
     }
 
+    // Capture the previous email so we can notify the old address too
+    const { data: existing } = await admin.auth.admin.getUserById(user_id);
+    const previousEmail = existing.user?.email ?? null;
+
     const { data: updated, error: updateErr } = await admin.auth.admin.updateUserById(user_id, {
       email: trimmed,
       email_confirm: true,
     });
     if (updateErr) return json(400, { error: updateErr.message });
+
+    // Fire-and-forget security notification to both the new and old addresses
+    // so the account owner can see the change land in their inbox.
+    const notify = async (recipient: string) => {
+      try {
+        await admin.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "email-changed",
+            recipientEmail: recipient,
+            idempotencyKey: `email-changed-${user_id}-${Date.now()}-${recipient}`,
+            templateData: {
+              oldEmail: previousEmail ?? "(unknown)",
+              newEmail: trimmed,
+              changedBy: "a CarnageMC administrator",
+            },
+          },
+        });
+      } catch (_) {
+        // Non-fatal — the email change itself already succeeded.
+      }
+    };
+    await Promise.all([
+      notify(trimmed),
+      previousEmail && previousEmail.toLowerCase() !== trimmed ? notify(previousEmail) : Promise.resolve(),
+    ]);
 
     return json(200, { ok: true, email: updated.user?.email ?? trimmed });
   } catch (e) {

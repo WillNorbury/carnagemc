@@ -7,6 +7,7 @@ import { template as banAppealAdmin } from './ban-appeal-admin.tsx'
 import { template as applicationReceived } from './application-received.tsx'
 import { template as applicationStatus } from './application-status.tsx'
 import { template as applicationAdmin } from './application-admin.tsx'
+import { template as emailChanged } from './email-changed.tsx'
 
 export interface TemplateEntry {
   component: React.ComponentType<any>
@@ -23,4 +24,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'application-received': applicationReceived,
   'application-status': applicationStatus,
   'application-admin': applicationAdmin,
+  'email-changed': emailChanged,
 }
