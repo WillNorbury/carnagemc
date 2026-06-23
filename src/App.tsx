@@ -59,6 +59,7 @@ import QuizListPage from "./pages/Quiz.tsx";
 import QuizTake from "./pages/QuizTake.tsx";
 import QuizResult from "./pages/QuizResult.tsx";
 import QuizLeaderboard from "./pages/QuizLeaderboard.tsx";
+import DiscoverItemDetail from "./pages/DiscoverItemDetail.tsx";
 
 
 const queryClient = new QueryClient();
@@ -115,10 +116,15 @@ const Shell = () => {
                   <Route path="/plugins/:slug/settings" element={<PluginSettings />} />
                   <Route path="/plugins/:slug" element={<PluginDetail />} />
                   <Route path="/discover/resource-packs" element={<ResourcePacks />} />
+                  <Route path="/resource-pack/:slug" element={<DiscoverItemDetail urlKind="resource-pack" />} />
                   <Route path="/discover/data-packs" element={<DataPacks />} />
+                  <Route path="/data-pack/:slug" element={<DiscoverItemDetail urlKind="data-pack" />} />
                   <Route path="/discover/shaders" element={<Shaders />} />
+                  <Route path="/shader/:slug" element={<DiscoverItemDetail urlKind="shader" />} />
                   <Route path="/discover/modpacks" element={<Modpacks />} />
+                  <Route path="/modpack/:slug" element={<DiscoverItemDetail urlKind="modpack" />} />
                   <Route path="/discover/servers" element={<Servers />} />
+                  <Route path="/server/:slug" element={<DiscoverItemDetail urlKind="server" />} />
                   <Route path="/features" element={<Features />} />
                   <Route path="/features/:slug" element={<FeatureDetail />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
