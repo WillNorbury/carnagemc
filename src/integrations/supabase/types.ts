@@ -2173,6 +2173,8 @@ export type Database = {
         | "og"
         | "member"
         | "donut_plus"
+        | "havoc"
+        | "havoc_plus"
       application_status: "pending" | "approved" | "rejected"
       application_type: "staff" | "builder" | "youtuber"
       org_member_role: "owner" | "admin" | "member"
@@ -2340,6 +2342,8 @@ export const Constants = {
         "og",
         "member",
         "donut_plus",
+        "havoc",
+        "havoc_plus",
       ],
       application_status: ["pending", "approved", "rejected"],
       application_type: ["staff", "builder", "youtuber"],
