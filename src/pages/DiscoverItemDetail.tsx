@@ -322,20 +322,47 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                     )}
                   </>
                 ) : url ? (
-                  <Button asChild className="w-full">
-                    <a
-                      href={url}
-                      target={isExternal ? "_blank" : undefined}
-                      rel={isExternal ? "noopener noreferrer" : undefined}
-                      {...(isExternal ? {} : { download: "" })}
-                    >
-                      {isExternal ? (
-                        <><ExternalLink className="h-4 w-4 mr-1" /> Visit</>
-                      ) : (
-                        <><Download className="h-4 w-4 mr-1" /> Download</>
+                  isExternal ? (
+                    <Button asChild className="w-full">
+                      <a href={url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-4 w-4 mr-1" /> Visit
+                      </a>
+                    </Button>
+                  ) : (
+                    <div className="space-y-2">
+                      <Button
+                        className="w-full"
+                        onClick={startDownload}
+                        disabled={dlState === "loading"}
+                        variant={dlState === "error" ? "destructive" : "default"}
+                      >
+                        {dlState === "loading" ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                            {dlProgress !== null ? `Downloading ${dlProgress}%` : "Downloading…"}
+                          </>
+                        ) : dlState === "done" ? (
+                          <><Check className="h-4 w-4 mr-1" /> Downloaded</>
+                        ) : dlState === "error" ? (
+                          <><XCircle className="h-4 w-4 mr-1" /> Retry download</>
+                        ) : (
+                          <><Download className="h-4 w-4 mr-1" /> Download</>
+                        )}
+                      </Button>
+                      {dlState === "loading" && dlProgress !== null && (
+                        <Progress value={dlProgress} className="h-1.5" />
                       )}
-                    </a>
-                  </Button>
+                      {dlState === "loading" && dlProgress === null && (
+                        <div className="h-1.5 w-full overflow-hidden rounded bg-muted">
+                          <div className="h-full w-1/3 animate-pulse bg-primary" />
+                        </div>
+                      )}
+                      {dlState === "error" && dlError && (
+                        <p className="text-xs text-destructive">{dlError}</p>
+                      )}
+                    </div>
+                  )
+
 
                 ) : (
                   <Button disabled className="w-full">Unavailable</Button>
