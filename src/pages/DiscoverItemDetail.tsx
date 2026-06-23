@@ -141,8 +141,81 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
     }
   };
 
+  const [dlState, setDlState] = useState<"idle" | "loading" | "error" | "done">("idle");
+  const [dlProgress, setDlProgress] = useState<number | null>(null); // 0-100, null = indeterminate
+  const [dlError, setDlError] = useState<string | null>(null);
+
+  const filenameFromUrl = (u: string) => {
+    try {
+      const p = new URL(u).pathname;
+      const last = decodeURIComponent(p.split("/").pop() || "");
+      return last || `${item?.slug ?? "download"}`;
+    } catch {
+      return `${item?.slug ?? "download"}`;
+    }
+  };
+
+  const startDownload = async () => {
+    if (!url || isExternal) return;
+    setDlState("loading");
+    setDlError(null);
+    setDlProgress(null);
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const totalHeader = res.headers.get("content-length");
+      const total = totalHeader ? parseInt(totalHeader, 10) : 0;
+      if (total > 0) setDlProgress(0);
+
+      const reader = res.body?.getReader();
+      if (!reader) {
+        // Fallback: no streaming support
+        const blob = await res.blob();
+        triggerSave(blob, filenameFromUrl(url));
+        setDlState("done");
+        setDlProgress(100);
+        setTimeout(() => setDlState("idle"), 1500);
+        return;
+      }
+      const chunks: Uint8Array[] = [];
+      let received = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value) {
+          chunks.push(value);
+          received += value.length;
+          if (total > 0) {
+            setDlProgress(Math.min(99, Math.round((received / total) * 100)));
+          }
+        }
+      }
+      const blob = new Blob(chunks as BlobPart[]);
+      triggerSave(blob, filenameFromUrl(url));
+      setDlProgress(100);
+      setDlState("done");
+      setTimeout(() => setDlState("idle"), 1500);
+    } catch (e: any) {
+      setDlError(e?.message ?? "Download failed");
+      setDlState("error");
+      toast.error("Download failed", { description: e?.message });
+    }
+  };
+
+  const triggerSave = (blob: Blob, filename: string) => {
+    const objUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = objUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(objUrl), 1000);
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
+
       <PageLoader loading={loading} label={`Loading ${meta.label.toLowerCase()}`} />
       <Navbar />
       <main className="container pt-24 pb-16">
