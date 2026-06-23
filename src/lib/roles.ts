@@ -9,6 +9,8 @@ export const ALL_ROLES = [
   { value: "sr_helper", label: "SrHelper", emoji: "💚" },
   { value: "helper", label: "Helper", emoji: "🟢" },
   { value: "media", label: "Media", emoji: "📰" },
+  { value: "havoc_plus", label: "Havoc+", emoji: "💎" },
+  { value: "havoc", label: "Havoc", emoji: "🔥" },
   { value: "donut_plus", label: "Donut+", emoji: "🍩" },
   { value: "default", label: "Member", emoji: "👤" },
 ] as const;
