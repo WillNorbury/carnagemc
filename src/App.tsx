@@ -59,6 +59,7 @@ import QuizListPage from "./pages/Quiz.tsx";
 import QuizTake from "./pages/QuizTake.tsx";
 import QuizResult from "./pages/QuizResult.tsx";
 import QuizLeaderboard from "./pages/QuizLeaderboard.tsx";
+import DiscoverItemDetail from "./pages/DiscoverItemDetail.tsx";
 
 
 const queryClient = new QueryClient();
