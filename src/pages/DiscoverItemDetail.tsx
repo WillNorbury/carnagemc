@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Progress } from "@/components/ui/progress";
 import {
   ArrowLeft,
   Calendar,
@@ -15,10 +16,13 @@ import {
   Copy,
   Download,
   ExternalLink,
+  Loader2,
   Package,
   Server as ServerIcon,
   Sparkles,
+  XCircle,
 } from "lucide-react";
+
 
 type DiscoverItem = {
   id: string;
