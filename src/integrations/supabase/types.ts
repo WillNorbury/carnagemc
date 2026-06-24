@@ -2087,6 +2087,13 @@ export type Database = {
         Returns: number
       }
       gen_plugin_short_id: { Args: never; Returns: string }
+      get_anon_faq_votes: {
+        Args: { _voter_key: string }
+        Returns: {
+          faq_id: string
+          vote: string
+        }[]
+      }
       get_my_private_profile: {
         Args: never
         Returns: {

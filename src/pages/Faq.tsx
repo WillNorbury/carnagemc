@@ -68,10 +68,7 @@ const Faq = () => {
         setMyVotes(mv);
       } else {
         const vk = getVoterKey();
-        const { data: votes } = await (supabase.from("faq_votes" as any) as any)
-          .select("faq_id,vote")
-          .eq("voter_key", vk)
-          .is("user_id", null);
+        const { data: votes } = await (supabase.rpc as any)("get_anon_faq_votes", { _voter_key: vk });
         const mv: Record<string, any> = {};
         for (const v of (votes as any[]) ?? []) mv[v.faq_id] = v.vote;
         setMyVotes(mv);
