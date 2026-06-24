@@ -2111,6 +2111,21 @@ export type Database = {
         }[]
       }
       get_quiz_with_questions: { Args: { _slug: string }; Returns: Json }
+      get_streak_leaderboard: {
+        Args: { _limit?: number; _metric?: string }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          login_best: number
+          login_streak: number
+          mc_username: string
+          total_logins: number
+          total_votes: number
+          user_id: string
+          vote_best: number
+          vote_streak: number
+        }[]
+      }
       get_uptime_daily: {
         Args: { _days?: number }
         Returns: {
