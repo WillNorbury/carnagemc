@@ -8,6 +8,7 @@ import { template as applicationReceived } from './application-received.tsx'
 import { template as applicationStatus } from './application-status.tsx'
 import { template as applicationAdmin } from './application-admin.tsx'
 import { template as emailChanged } from './email-changed.tsx'
+import { template as reportAdmin } from './report-admin.tsx'
 
 export interface TemplateEntry {
   component: React.ComponentType<any>
