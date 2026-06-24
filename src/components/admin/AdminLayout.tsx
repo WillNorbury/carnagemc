@@ -42,6 +42,7 @@ import {
   Globe,
   Mail,
   Brain,
+  Flag,
 } from "lucide-react";
 
 export type AdminSection =
