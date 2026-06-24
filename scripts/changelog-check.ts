@@ -65,7 +65,10 @@ function cmpSemver(a: [number, number, number], b: [number, number, number]) {
 }
 
 async function fetchEntries(): Promise<Entry[]> {
-  if (!SUPABASE_ANON) throw new Error("Missing VITE_SUPABASE_PUBLISHABLE_KEY");
+  if (!SUPABASE_ANON) {
+    console.warn("⚠ Skipping changelog check: VITE_SUPABASE_PUBLISHABLE_KEY not available in build env.");
+    return [];
+  }
   const url =
     `${SUPABASE_URL}/rest/v1/changelog_entries` +
     `?select=id,title,content,category,version,entry_date,published` +
@@ -185,6 +188,7 @@ function toMarkdown(notes: ReleaseNote[]): string {
 
 export async function runChangelogCheck() {
   const entries = await fetchEntries();
+  if (entries.length === 0) return; // skip in build envs without DB access
   const errors = validate(entries);
   if (errors.length) {
     console.error("\n❌ Changelog validation failed:");
