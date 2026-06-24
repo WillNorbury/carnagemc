@@ -65,8 +65,10 @@ function cmpSemver(a: [number, number, number], b: [number, number, number]) {
 }
 
 async function fetchEntries(): Promise<Entry[]> {
-  if (!SUPABASE_ANON) throw new Error("Missing VITE_SUPABASE_PUBLISHABLE_KEY");
-  const url =
+  if (!SUPABASE_ANON) {
+    console.warn("⚠ Skipping changelog check: VITE_SUPABASE_PUBLISHABLE_KEY not available in build env.");
+    return [];
+  }
     `${SUPABASE_URL}/rest/v1/changelog_entries` +
     `?select=id,title,content,category,version,entry_date,published` +
     `&published=eq.true&order=entry_date.desc`;
