@@ -188,6 +188,7 @@ function toMarkdown(notes: ReleaseNote[]): string {
 
 export async function runChangelogCheck() {
   const entries = await fetchEntries();
+  if (entries.length === 0) return; // skip in build envs without DB access
   const errors = validate(entries);
   if (errors.length) {
     console.error("\n❌ Changelog validation failed:");
