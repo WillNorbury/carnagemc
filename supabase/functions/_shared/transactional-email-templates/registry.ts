@@ -26,4 +26,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'application-status': applicationStatus,
   'application-admin': applicationAdmin,
   'email-changed': emailChanged,
+  'report-admin': reportAdmin,
 }
