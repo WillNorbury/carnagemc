@@ -76,6 +76,7 @@ export type AdminSection =
   | "contact"
   | "email-test"
   | "quizzes"
+  | "reports"
   | "bot-dashboard"
   | "bot-management";
 
