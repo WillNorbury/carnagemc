@@ -39,7 +39,26 @@ const Auth = () => {
   const [mfaCode, setMfaCode] = useState("");
   const [mfaVerifying, setMfaVerifying] = useState(false);
 
-  useEffect(() => { if (user && mode !== "mfa") nav("/"); }, [user, nav, mode]);
+  useEffect(() => {
+    if (!user) return;
+    if (mode === "mfa") return;
+    let cancelled = false;
+    (async () => {
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (cancelled) return;
+      if (aal?.currentLevel === "aal1" && aal.nextLevel === "aal2") {
+        const { data: factors } = await supabase.auth.mfa.listFactors();
+        const totp = factors?.totp?.find((f) => f.status === "verified");
+        if (totp) {
+          setMfaFactorId(totp.id);
+          setMode("mfa");
+          return;
+        }
+      }
+      nav("/");
+    })();
+    return () => { cancelled = true; };
+  }, [user, nav, mode]);
 
   useEffect(() => {
     if (resendCooldown <= 0) return;
