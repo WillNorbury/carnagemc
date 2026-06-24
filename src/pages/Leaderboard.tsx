@@ -42,22 +42,22 @@ const Leaderboard = () => {
     let cancelled = false;
     setLoading(true);
     (async () => {
-      const { data } = await supabase
-        .from("user_streaks")
-        .select("user_id,login_streak,login_best,total_logins,vote_streak,vote_best,total_votes")
-        .order(tab, { ascending: false })
-        .limit(50);
-      const list = (data as Row[]) ?? [];
-      if (list.length) {
-        const ids = list.map((r) => r.user_id);
-        const { data: profs } = await supabase
-          .from("profiles")
-          .select("id,display_name,mc_username,avatar_url")
-          .in("id", ids);
-        const map = new Map<string, any>();
-        (profs ?? []).forEach((p: any) => map.set(p.id, p));
-        list.forEach((r) => (r.profile = map.get(r.user_id) ?? null));
-      }
+      const { data } = await supabase.rpc("get_streak_leaderboard", { _metric: tab, _limit: 50 });
+      const raw = (data as any[]) ?? [];
+      const list: Row[] = raw.map((r) => ({
+        user_id: r.user_id,
+        login_streak: r.login_streak,
+        login_best: r.login_best,
+        total_logins: r.total_logins,
+        vote_streak: r.vote_streak,
+        vote_best: r.vote_best,
+        total_votes: r.total_votes,
+        profile: {
+          display_name: r.display_name,
+          mc_username: r.mc_username,
+          avatar_url: r.avatar_url,
+        },
+      }));
       if (!cancelled) {
         setRows(list);
         setLoading(false);
