@@ -1,0 +1,476 @@
+{
+  "generatedAt": "2026-06-24T04:29:33.442Z",
+  "notes": [
+    {
+      "version": null,
+      "date": "2026-06-18",
+      "entries": [
+        {
+          "title": "Security hardening: profile, quiz, and streak data",
+          "content": "Locked down sensitive columns and leaderboard reads: Discord identifiers are no longer exposed to anonymous visitors, quiz correct-answer flags are hidden from the client, and streak leaderboards now use a safe server-side function instead of broad public table access.",
+          "category": "security"
+        }
+      ],
+      "breaking": [
+        {
+          "title": "Security hardening: profile, quiz, and streak data",
+          "content": "Locked down sensitive columns and leaderboard reads: Discord identifiers are no longer exposed to anonymous visitors, quiz correct-answer flags are hidden from the client, and streak leaderboards now use a safe server-side function instead of broad public table access."
+        }
+      ]
+    },
+    {
+      "version": null,
+      "date": "2026-06-12",
+      "entries": [
+        {
+          "title": "Two-factor enforcement at sign-in",
+          "content": "Accounts with an authenticator enrolled now must enter their 6-digit code during login before the session is granted.",
+          "category": "security"
+        }
+      ],
+      "breaking": [
+        {
+          "title": "Two-factor enforcement at sign-in",
+          "content": "Accounts with an authenticator enrolled now must enter their 6-digit code during login before the session is granted."
+        }
+      ]
+    },
+    {
+      "version": null,
+      "date": "2026-06-04",
+      "entries": [
+        {
+          "title": "Bug fixes across admin tools",
+          "content": "Fixed sorting on the applications queue, broken pagination on the gallery admin, and a stale-cache issue on the FAQ editor.",
+          "category": "fix"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-05-25",
+      "entries": [
+        {
+          "title": "Performance & mobile polish",
+          "content": "Sidebar swipe-to-open, faster route loading, reduced layout shift, and tighter mobile spacing across the site.",
+          "category": "update"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-05-07",
+      "entries": [
+        {
+          "title": "Partners group added to sidebar",
+          "content": "New \"Partners\" group in the main navigation, starting with 4Dupe as the first listed partner.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-04-25",
+      "entries": [
+        {
+          "title": "Maintenance mode gate",
+          "content": "Admins can flip the site into maintenance mode, showing a branded gate to non-staff visitors.",
+          "category": "update"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-04-10",
+      "entries": [
+        {
+          "title": "Global search & notifications bell",
+          "content": "Site-wide search palette (Cmd/Ctrl+K) and a notifications bell in the navbar for in-app alerts.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-03-21",
+      "entries": [
+        {
+          "title": "User Reports admin area",
+          "content": "New /admin?tab=reports section lets staff review, triage, and resolve reports about accounts, plugins, and other content. Status filters, admin notes, and reporter details are all included.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-02-24",
+      "entries": [
+        {
+          "title": "Organizations & team profiles",
+          "content": "Players can create organizations, invite members, and publish a public org profile page.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-02-04",
+      "entries": [
+        {
+          "title": "Admin alerts for new reports",
+          "content": "Whenever a user submits a report, every admin/owner gets an in-app notification, and an email is sent to the alert address when configured.",
+          "category": "update"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-01-15",
+      "entries": [
+        {
+          "title": "Mods, modpacks, resource & data packs",
+          "content": "Browse pages for mods, modpacks, resource packs, and data packs, with detail views, likes, saves, and reviews.",
+          "category": "addition"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2025-12-31",
+      "entries": [
+        {
+          "title": "Transactional email pipeline",
+          "content": "Migrated transactional email to a queued dispatcher with suppression list, unsubscribe tokens, and React Email templates.",
+          "category": "update"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2025-12-06",
+      "entries": [
+        {
+          "title": "Uptime monitoring & status page",
+          "content": "Live uptime checks, incident timeline, and per-service 30-day uptime percentages on the status page.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2025-11-11",
+      "entries": [
+        {
+          "title": "Login & vote streaks",
+          "content": "Daily login and vote streaks now track current and best runs, with a global streak leaderboard.",
+          "category": "addition"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2025-10-17",
+      "entries": [
+        {
+          "title": "Quiz system with leaderboards",
+          "content": "Added quizzes with timed attempts, scoring, per-quiz leaderboards, and an admin authoring area.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2025-09-22",
+      "entries": [
+        {
+          "title": "Plugin marketplace beta",
+          "content": "Introduced the plugin marketplace with versions, screenshots, JAR uploads, likes, saves, and reviews.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2025-08-23",
+      "entries": [
+        {
+          "title": "Ban appeals system launched",
+          "content": "New public ban appeal form with admin review queue, status updates, and email notifications to both the appellant and staff.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2025-07-29",
+      "entries": [
+        {
+          "title": "Discord account linking",
+          "content": "Players can now link their Discord account from their profile, syncing username and avatar back to the site.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.12.0",
+      "date": "2025-06-19",
+      "entries": [
+        {
+          "title": "Sitemap & SEO pass",
+          "content": "Generated dynamic sitemap, added per-page Open Graph and Twitter cards, and structured data on detail pages.",
+          "category": "update"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.11.1",
+      "date": "2025-05-20",
+      "entries": [
+        {
+          "title": "Bug fixes: tickets & search",
+          "content": "Fixed unread badge on tickets, garbled emojis in ticket replies, and search returning archived items.",
+          "category": "fix"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.11.0",
+      "date": "2025-04-20",
+      "entries": [
+        {
+          "title": "Email infrastructure: domain setup",
+          "content": "Configured a verified sender subdomain, SPF/DKIM, and a hardened From: address for all outgoing mail.",
+          "category": "security"
+        }
+      ],
+      "breaking": [
+        {
+          "title": "Email infrastructure: domain setup",
+          "content": "Configured a verified sender subdomain, SPF/DKIM, and a hardened From: address for all outgoing mail."
+        }
+      ]
+    },
+    {
+      "version": "v0.10.1",
+      "date": "2025-03-11",
+      "entries": [
+        {
+          "title": "Reviews on mods & plugins",
+          "content": "Star ratings and written reviews on mods and plugins with one-review-per-user enforcement.",
+          "category": "addition"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.10.0",
+      "date": "2025-01-30",
+      "entries": [
+        {
+          "title": "Discover items hub",
+          "content": "Unified discover hub for community-submitted builds, datapacks, and resources with slugged detail pages.",
+          "category": "addition"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.9.1",
+      "date": "2024-12-21",
+      "entries": [
+        {
+          "title": "Support tickets",
+          "content": "Players can open private support tickets with threaded messaging between user and staff.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.9.0",
+      "date": "2024-11-11",
+      "entries": [
+        {
+          "title": "Custom roles & permissions",
+          "content": "Granular custom roles and a permissions matrix so owners can scope what each role can do in the admin panel.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.8.0",
+      "date": "2024-10-02",
+      "entries": [
+        {
+          "title": "Wiki articles",
+          "content": "Admins can publish long-form wiki articles with rich formatting and a public browse page.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.7.1",
+      "date": "2024-08-23",
+      "entries": [
+        {
+          "title": "FAQ with voting",
+          "content": "New FAQ section with categories, search, and helpful/unhelpful voting.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.7.0",
+      "date": "2024-07-24",
+      "entries": [
+        {
+          "title": "Gallery launched",
+          "content": "Community gallery with screenshot uploads, captions, and an admin moderation queue.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.6.2",
+      "date": "2024-06-14",
+      "entries": [
+        {
+          "title": "Bug fixes: auth & avatars",
+          "content": "Fixed sign-in redirect loops, avatar upload size errors, and a profile save race condition.",
+          "category": "fix"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.6.1",
+      "date": "2024-05-15",
+      "entries": [
+        {
+          "title": "Performance pass",
+          "content": "Reduced bundle size, added route-level code splitting, and improved Lighthouse scores across the board.",
+          "category": "update"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.6.0",
+      "date": "2024-04-15",
+      "entries": [
+        {
+          "title": "Events calendar",
+          "content": "Public events listing with start/end times, descriptions, and an admin scheduler.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.5.0",
+      "date": "2024-03-06",
+      "entries": [
+        {
+          "title": "Server status widget",
+          "content": "Live online/offline status and player count badge in the navbar and on the homepage.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.4.1",
+      "date": "2024-01-26",
+      "entries": [
+        {
+          "title": "Contact form",
+          "content": "Visitors can send contact messages to staff with email confirmation and an admin inbox.",
+          "category": "addition"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.4.0",
+      "date": "2023-12-17",
+      "entries": [
+        {
+          "title": "News & announcements",
+          "content": "Added a news section with cover images, article pages, and pinned announcements.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.3.1",
+      "date": "2023-11-02",
+      "entries": [
+        {
+          "title": "Rules page overhaul",
+          "content": "Rebuilt rules page with collapsible sections, anchored links, and an admin editor.",
+          "category": "update"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.3.0",
+      "date": "2023-09-28",
+      "entries": [
+        {
+          "title": "Staff applications",
+          "content": "Public application form for staff roles with an admin review queue and status updates.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.2.0",
+      "date": "2023-08-19",
+      "entries": [
+        {
+          "title": "Player accounts & profiles",
+          "content": "Sign up, sign in, and a basic profile page with display name and avatar.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "v0.1.0",
+      "date": "2023-07-10",
+      "entries": [
+        {
+          "title": "CarnageMC website launched",
+          "content": "First public release of the CarnageMC site with home, rules, staff, and apply pages.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    }
+  ]
+}
