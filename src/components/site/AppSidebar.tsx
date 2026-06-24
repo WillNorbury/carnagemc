@@ -170,6 +170,7 @@ const publicGroups: NavGroup[] = [
   websiteGroup,
   mainGroup,
   communityGroup,
+  partnersGroup,
   helpGroup,
   actionsGroup,
   discoverGroup,
