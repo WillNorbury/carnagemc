@@ -148,7 +148,6 @@ export const ReportsAdminSection = () => {
       title: "Delete report?",
       description: "This permanently removes the report.",
       confirmText: "Delete",
-      variant: "destructive",
     });
     if (!ok) return;
     const { error } = await supabase.from("user_reports").delete().eq("id", r.id);
