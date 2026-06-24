@@ -69,6 +69,7 @@ async function fetchEntries(): Promise<Entry[]> {
     console.warn("⚠ Skipping changelog check: VITE_SUPABASE_PUBLISHABLE_KEY not available in build env.");
     return [];
   }
+  const url =
     `${SUPABASE_URL}/rest/v1/changelog_entries` +
     `?select=id,title,content,category,version,entry_date,published` +
     `&published=eq.true&order=entry_date.desc`;
