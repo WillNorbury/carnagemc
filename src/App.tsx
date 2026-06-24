@@ -61,6 +61,7 @@ import QuizTake from "./pages/QuizTake.tsx";
 import QuizResult from "./pages/QuizResult.tsx";
 import QuizLeaderboard from "./pages/QuizLeaderboard.tsx";
 import DiscoverItemDetail from "./pages/DiscoverItemDetail.tsx";
+import Discover from "./pages/Discover.tsx";
 
 
 const queryClient = new QueryClient();
@@ -89,6 +90,7 @@ const Shell = () => {
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/admin/announcements" element={<Navigate to="/admin?tab=news" replace />} />
                   <Route path="/admin/*" element={<AdminTabRedirect />} />
+                  <Route path="/discover" element={<Discover />} />
                   <Route path="/discover/mods" element={<Mods />} />
                   <Route path="/mod/:slug" element={<ModDetail />} />
                   <Route path="/mod-tiers" element={<ModTiers />} />
