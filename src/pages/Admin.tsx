@@ -207,6 +207,8 @@ const Admin = () => {
       {section === "contact" && <ContactAdminSection />}
       {section === "email-test" && <EmailTestSection />}
       {section === "quizzes" && <QuizAdminSection />}
+      {section === "reports" && <ReportsAdminSection />}
+      
       
       
       {section === "permissions" && (isOwner ? <PermissionsTab /> : (
