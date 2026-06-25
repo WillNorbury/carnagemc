@@ -100,7 +100,7 @@ type Props = { urlKind: keyof typeof KIND_META };
 const DiscoverItemDetail = ({ urlKind }: Props) => {
   const { slug } = useParams<{ slug: string }>();
   const meta = KIND_META[urlKind];
-  const { addToCart, addToWishlist, inCart, inWishlist } = useCart();
+  const { addToCart, addToWishlist, inCart, inWishlist, isPurchased } = useCart();
   const [item, setItem] = useState<DiscoverItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -172,6 +172,8 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
   const url = item ? item.download_url || item.external_url : null;
   const hasDownloadable = !!(item && (item.download_url || storagePath));
   const isExternal = item ? !item.download_url && !storagePath && !!item.external_url : false;
+  const purchased = item ? isPurchased(item.id) : false;
+  const requiresPurchase = price > 0 && !purchased;
 
   const copyIp = async () => {
     if (!ip) return;
@@ -201,6 +203,10 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
 
   const startDownload = async () => {
     if (isExternal) return;
+    if (requiresPurchase) {
+      toast.error("Purchase this item before downloading");
+      return;
+    }
     let dlUrl = url;
     if (storagePath) {
       const { data, error } = await supabase.storage
@@ -426,10 +432,12 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                     <Button
                       className="w-full"
                       onClick={startDownload}
-                      disabled={dlState === "loading"}
+                      disabled={dlState === "loading" || requiresPurchase}
                       variant={dlState === "error" ? "destructive" : "default"}
                     >
-                      {dlState === "loading" ? (
+                      {requiresPurchase ? (
+                        <>🔒 Purchase to download</>
+                      ) : dlState === "loading" ? (
                         <>
                           <Loader2 className="h-4 w-4 mr-1 animate-spin" />
                           {dlProgress !== null ? `Downloading ${dlProgress}%` : "Downloading…"}
@@ -439,7 +447,7 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                       ) : dlState === "error" ? (
                         <><XCircle className="h-4 w-4 mr-1" /> Retry download</>
                       ) : (
-                        <><Download className="h-4 w-4 mr-1" /> Download</>
+                        <><Download className="h-4 w-4 mr-1" /> Download{purchased && price > 0 ? " (owned)" : ""}</>
                       )}
                     </Button>
                     {dlState === "loading" && dlProgress !== null && (
@@ -469,7 +477,7 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                     <Button
                       variant="secondary"
                       size="sm"
-                      disabled={inCart(item.id)}
+                      disabled={inCart(item.id) || purchased}
                       onClick={() =>
                         addToCart({
                           id: item.id,
@@ -479,11 +487,14 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                           author: item.author,
                           price,
                           icon_url: item.icon_url,
+                          storage_path: storagePath ?? null,
+                          file_name: (item.meta?.file_name as string | undefined) ?? null,
+                          external_url: item.external_url,
                         })
                       }
                     >
                       <ShoppingCart className="h-4 w-4 mr-1" />
-                      {inCart(item.id) ? "In cart" : price > 0 ? "Buy" : "Add to cart"}
+                      {purchased ? "Owned" : inCart(item.id) ? "In cart" : price > 0 ? "Buy" : "Add to cart"}
                     </Button>
                     <Button
                       variant="outline"
@@ -498,6 +509,9 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                           author: item.author,
                           price,
                           icon_url: item.icon_url,
+                          storage_path: storagePath ?? null,
+                          file_name: (item.meta?.file_name as string | undefined) ?? null,
+                          external_url: item.external_url,
                         })
                       }
                     >

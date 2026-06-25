@@ -1,10 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { useCart } from "@/lib/cart";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Trash2, Heart, ArrowRight, Package } from "lucide-react";
+import { ShoppingCart, Trash2, Heart, ArrowRight, Package, Lock } from "lucide-react";
 
 const detailBase: Record<string, string> = {
   resource_pack: "/resource-pack",
@@ -16,8 +16,14 @@ const detailBase: Record<string, string> = {
 };
 
 const Cart = () => {
-  const { cart, removeFromCart, clearCart, addToWishlist } = useCart();
+  const { cart, removeFromCart, clearCart, addToWishlist, checkout } = useCart();
   const total = cart.reduce((s, i) => s + (i.price || 0), 0);
+  const nav = useNavigate();
+
+  const onCheckout = () => {
+    const order = checkout();
+    if (order) nav(`/orders?placed=${order.id}`);
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -27,11 +33,16 @@ const Cart = () => {
           <h1 className="font-display font-bold text-3xl flex items-center gap-2">
             <ShoppingCart className="h-7 w-7" /> Your Cart
           </h1>
-          {cart.length > 0 && (
-            <Button variant="ghost" size="sm" onClick={clearCart}>
-              Clear cart
+          <div className="flex gap-2">
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/orders">Order history</Link>
             </Button>
-          )}
+            {cart.length > 0 && (
+              <Button variant="ghost" size="sm" onClick={clearCart}>
+                Clear cart
+              </Button>
+            )}
+          </div>
         </div>
 
         {cart.length === 0 ? (
@@ -100,11 +111,11 @@ const Cart = () => {
                   <span>Total</span>
                   <span>${total.toFixed(2)}</span>
                 </div>
-                <Button className="w-full" disabled>
-                  Checkout (coming soon)
+                <Button className="w-full" onClick={onCheckout}>
+                  <Lock className="h-4 w-4 mr-1" /> Mock checkout
                 </Button>
                 <p className="text-xs text-muted-foreground text-center">
-                  This is a demo cart. No payment is processed.
+                  Demo only — no payment is processed. Orders save locally and unlock downloads.
                 </p>
               </Card>
             </aside>
