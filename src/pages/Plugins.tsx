@@ -82,6 +82,7 @@ const Plugins = () => {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [activeCats, setActiveCats] = useState<string[]>([]);
+  const [activePricing, setActivePricing] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<"relevance" | "downloads" | "updated" | "newest">("relevance");
 
   useEffect(() => {
