@@ -123,6 +123,15 @@ type Props = {
   searchPlaceholder: string;
   /** Predefined filter groups for categories (matched against item.category and item.tags) */
   filterGroups?: FilterGroup[];
+  /** Optional CTA shown above the listing */
+  createHref?: string;
+  createLabel?: string;
+};
+
+const getPrice = (it: DiscoverItem): number => {
+  const m = it.meta || {};
+  const p = typeof m.price === "number" ? m.price : parseFloat(m.price ?? "0");
+  return isFinite(p) ? p : 0;
 };
 
 const DiscoverItemsBrowse = ({
@@ -130,6 +139,8 @@ const DiscoverItemsBrowse = ({
   title,
   searchPlaceholder,
   filterGroups = [],
+  createHref,
+  createLabel = "Create listing",
 }: Props) => {
   const [items, setItems] = useState<DiscoverItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -194,16 +205,25 @@ const DiscoverItemsBrowse = ({
     let list = items.filter((it) => {
       for (const grp of filterGroups) {
         const sel = selected[grp.title];
-        if (sel && sel.size > 0) {
-          const haystack = [
-            (it.category ?? "").toLowerCase(),
-            ...it.tags.map((t) => t.toLowerCase()),
-          ];
-          const match = [...sel].some((v) =>
-            haystack.includes(v.toLowerCase()),
-          );
-          if (!match) return false;
+        if (!sel || sel.size === 0) continue;
+        if (grp.title.toLowerCase() === "pricing") {
+          const price = getPrice(it);
+          const wantsFree = sel.has("Free");
+          const wantsPaid = sel.has("Paid");
+          if (wantsFree && wantsPaid) {
+            // both selected = no constraint
+          } else if (wantsFree && price > 0) return false;
+          else if (wantsPaid && price === 0) return false;
+          continue;
         }
+        const haystack = [
+          (it.category ?? "").toLowerCase(),
+          ...it.tags.map((t) => t.toLowerCase()),
+        ];
+        const match = [...sel].some((v) =>
+          haystack.includes(v.toLowerCase()),
+        );
+        if (!match) return false;
       }
       if (!s) return true;
       return (
