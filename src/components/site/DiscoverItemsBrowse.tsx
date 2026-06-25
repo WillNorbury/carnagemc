@@ -350,6 +350,7 @@ const DiscoverItemsBrowse = ({
                     shader: "/shader",
                     modpack: "/modpack",
                     server: "/server",
+                    skript: "/skript",
                   };
                   const detailHref = detailBase[it.kind]
                     ? `${detailBase[it.kind]}/${it.slug ?? it.id}`
