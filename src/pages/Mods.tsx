@@ -186,6 +186,15 @@ const Mods = () => {
       if (selectedVersions.size && !vs.some((v) => selectedVersions.has(v))) return false;
       if (selectedLoaders.size && !ls.some((l) => selectedLoaders.has(l))) return false;
       if (selectedCategories.size && !(m.category && selectedCategories.has(m.category))) return false;
+      if (selectedPricing.size) {
+        const isFree = !m.price || Number(m.price) === 0;
+        const wantsFree = selectedPricing.has("Free");
+        const wantsPaid = selectedPricing.has("Paid");
+        if (!(wantsFree && wantsPaid)) {
+          if (wantsFree && !isFree) return false;
+          if (wantsPaid && isFree) return false;
+        }
+      }
       if (!s) return true;
       return (
         m.name.toLowerCase().includes(s) ||
