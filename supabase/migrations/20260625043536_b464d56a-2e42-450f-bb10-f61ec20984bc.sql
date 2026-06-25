@@ -1,0 +1,2 @@
+REVOKE SELECT (discord_id, discord_username, discord_avatar, mc_username) ON public.profiles FROM anon;
+REVOKE SELECT (discord_id, discord_username, discord_avatar, mc_username) ON public.profiles FROM PUBLIC;
