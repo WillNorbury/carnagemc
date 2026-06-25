@@ -139,6 +139,8 @@ const Shell = () => {
                   <Route path="/skript/:slug" element={<DiscoverItemDetail urlKind="skript" />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/wishlist" element={<Wishlist />} />
+                  <Route path="/orders" element={<Orders />} />
+                  <Route path="/store" element={<Store />} />
                   <Route path="/features" element={<Features />} />
                   <Route path="/features/:slug" element={<FeatureDetail />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
