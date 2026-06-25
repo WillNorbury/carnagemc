@@ -218,6 +218,33 @@ const Plugins = () => {
                 </Button>
               )}
             </Card>
+
+            <Card className="p-4">
+              <h3 className="font-display font-semibold mb-3">Pricing</h3>
+              <ul className="space-y-1.5">
+                {["Free", "Paid"].map((opt) => {
+                  const active = activePricing.includes(opt);
+                  return (
+                    <li key={opt}>
+                      <button
+                        onClick={() =>
+                          setActivePricing((prev) =>
+                            prev.includes(opt) ? prev.filter((x) => x !== opt) : [...prev, opt]
+                          )
+                        }
+                        className={`w-full text-left text-sm px-2 py-1 rounded transition ${
+                          active
+                            ? "text-primary bg-primary/10"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                        }`}
+                      >
+                        {opt}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </Card>
           </aside>
 
           {/* Main list */}
