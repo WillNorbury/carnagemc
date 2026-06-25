@@ -55,6 +55,7 @@ Deno.serve(async (req) => {
   let idempotencyKey: string
   let messageId: string
   let templateData: Record<string, any> = {}
+  let fromOverride: string | undefined
   try {
     const body = await req.json()
     templateName = body.templateName || body.template_name
@@ -63,6 +64,11 @@ Deno.serve(async (req) => {
     idempotencyKey = body.idempotencyKey || body.idempotency_key || messageId
     if (body.templateData && typeof body.templateData === 'object') {
       templateData = body.templateData
+    }
+    // Optional From override. Must be on a domain we control; we restrict to FROM_DOMAIN
+    // (root) or SENDER_DOMAIN (verified subdomain) to avoid spoofing.
+    if (typeof body.from === 'string' && body.from.trim()) {
+      fromOverride = body.from.trim()
     }
   } catch {
     return new Response(
@@ -311,12 +317,26 @@ Deno.serve(async (req) => {
     status: 'pending',
   })
 
+  // Resolve the From header. Only allow overrides on our verified domains.
+  const defaultFrom = `${SITE_NAME} <noreply@${FROM_DOMAIN}>`
+  let resolvedFrom = defaultFrom
+  if (fromOverride) {
+    const emailMatch = fromOverride.match(/<([^>]+)>|([^\s<>]+@[^\s<>]+)/)
+    const addr = (emailMatch?.[1] ?? emailMatch?.[2] ?? '').toLowerCase()
+    const domain = addr.split('@')[1] ?? ''
+    if (domain === FROM_DOMAIN || domain === SENDER_DOMAIN || domain.endsWith('.' + FROM_DOMAIN)) {
+      resolvedFrom = fromOverride
+    } else {
+      console.warn('Ignoring fromOverride for unverified domain', { domain })
+    }
+  }
+
   const { error: enqueueError } = await supabase.rpc('enqueue_email', {
     queue_name: 'transactional_emails',
     payload: {
       message_id: messageId,
       to: effectiveRecipient,
-      from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+      from: resolvedFrom,
       sender_domain: SENDER_DOMAIN,
       subject: resolvedSubject,
       html,
