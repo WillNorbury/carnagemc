@@ -414,6 +414,18 @@ const Mods = () => {
                             <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{m.description}</p>
                           )}
                           <div className="flex flex-wrap gap-1.5 mt-2">
+                            {(() => {
+                              const price = Number(m.price ?? 0);
+                              return (
+                                <Badge
+                                  className={price === 0
+                                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                    : "bg-primary text-primary-foreground"}
+                                >
+                                  {price === 0 ? "FREE" : `$${price.toFixed(2)}`}
+                                </Badge>
+                              );
+                            })()}
                             {modLoaders(m).map((l) => (
                               <Badge key={`l-${l}`} variant="secondary" className="font-normal">
                                 {l}
