@@ -146,7 +146,7 @@ const Plugins = () => {
       res = [...res].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
     }
     return res;
-  }, [plugins, q, activeCats, sortBy]);
+  }, [plugins, q, activeCats, activePricing, sortBy]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
