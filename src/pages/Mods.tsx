@@ -215,7 +215,7 @@ const Mods = () => {
       list = [...list].sort((a, b) => a.name.localeCompare(b.name));
     }
     return list;
-  }, [mods, q, sort, selectedVersions, selectedLoaders, selectedCategories]);
+  }, [mods, q, sort, selectedVersions, selectedLoaders, selectedCategories, selectedPricing]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize);
