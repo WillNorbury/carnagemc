@@ -3560,12 +3560,23 @@ const ChangelogTab = () => {
       entry_date: editing.entry_date,
       published: editing.published,
     };
-    const { error } = editing.id
-      ? await supabase.from("changelog_entries").update(payload).eq("id", editing.id)
-      : await supabase.from("changelog_entries").insert(payload);
+    const { data: saved, error } = editing.id
+      ? await supabase.from("changelog_entries").update(payload).eq("id", editing.id).select("id, published").maybeSingle()
+      : await supabase.from("changelog_entries").insert(payload).select("id, published").maybeSingle();
     setSaving(false);
     if (error) return toast.error(error.message);
     toast.success(editing.id ? "Entry updated" : "Entry created");
+
+    // Notify all subscribed users when a new published entry is created
+    if (!editing.id && saved?.id && saved?.published) {
+      supabase.functions
+        .invoke("notify-changelog", { body: { entryId: saved.id } })
+        .then(({ data, error: ne }) => {
+          if (ne) toast.error(`Email notify failed: ${ne.message}`);
+          else if (data?.ok) toast.success(`Notified ${data.queued ?? 0} subscriber${data.queued === 1 ? "" : "s"}`);
+        });
+    }
+
     setEditing(null);
     load();
   };
