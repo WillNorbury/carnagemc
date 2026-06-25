@@ -89,7 +89,15 @@ export function BanAppealsAdminSection() {
     let q = supabase.from("ban_appeals").select("*").order("created_at", { ascending: false });
     if (filter !== "all") q = q.eq("status", filter);
     const { data } = await q;
-    setItems((data as Appeal[]) ?? []);
+    const rows = (data as Appeal[]) ?? [];
+    // Fetch account emails for appeals that didn't include one but have a linked user
+    const missing = Array.from(new Set(rows.filter(r => !r.email && r.user_id).map(r => r.user_id as string)));
+    const emailMap: Record<string, string | null> = {};
+    await Promise.all(missing.map(async (uid) => {
+      const { data: em } = await supabase.rpc("admin_get_user_email", { _user_id: uid });
+      emailMap[uid] = (em as string | null) ?? null;
+    }));
+    setItems(rows.map(r => ({ ...r, account_email: r.user_id ? emailMap[r.user_id] ?? null : null })));
     setLoading(false);
   }
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [filter]);
