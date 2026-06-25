@@ -284,6 +284,32 @@ const Dashboard = () => {
         <MyPluginsPanel userId={user!.id} />
         <MyDiscoverItemsPanel userId={user!.id} />
 
+        {/* Create */}
+        <Card className="p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Plus className="h-5 w-5 text-primary" />
+            <h2 className="font-display font-bold text-lg">Create</h2>
+            <p className="text-xs text-muted-foreground ml-2">Publish to the Discover marketplace.</p>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-3">
+            <Link to="/discover/skripts/new" className="p-4 rounded-lg border border-border/60 hover:border-primary/50 transition group">
+              <FileCode className="h-5 w-5 text-primary mb-2" />
+              <div className="font-display font-bold">Upload Skript</div>
+              <div className="text-xs text-muted-foreground mt-1">Publish a .sk file (free or paid)</div>
+            </Link>
+            <Link to="/dashboard#my-plugins" className="p-4 rounded-lg border border-border/60 hover:border-primary/50 transition group">
+              <Puzzle className="h-5 w-5 text-primary mb-2" />
+              <div className="font-display font-bold">My Plugins</div>
+              <div className="text-xs text-muted-foreground mt-1">Manage your plugin listings</div>
+            </Link>
+            <Link to="/dashboard#my-items" className="p-4 rounded-lg border border-border/60 hover:border-primary/50 transition group">
+              <Boxes className="h-5 w-5 text-primary mb-2" />
+              <div className="font-display font-bold">My Discover Items</div>
+              <div className="text-xs text-muted-foreground mt-1">Mods, packs, shaders & more</div>
+            </Link>
+          </div>
+        </Card>
+
         {/* Shopping */}
         <Card className="p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
