@@ -109,13 +109,18 @@ Deno.serve(async (req) => {
     const errors: string[] = []
     for (const email of list) {
       try {
+        const idempotencyKey = testEmail
+          ? `changelog-${entry.id}-test-${email}-${Date.now()}`
+          : `changelog-${entry.id}-${email}`
         const { error } = await admin.functions.invoke('send-transactional-email', {
           body: {
             templateName: 'changelog-update',
             recipientEmail: email,
-            idempotencyKey: `changelog-${entry.id}-${email}`,
+            idempotencyKey,
             from: 'CarnageMC Updates <updates@carnagemc.net>',
-            templateData,
+            templateData: testEmail
+              ? { ...templateData, title: `[TEST] ${templateData.title}` }
+              : templateData,
           },
         })
         if (error) errors.push(`${email}: ${error.message}`)
