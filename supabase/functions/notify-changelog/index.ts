@@ -97,13 +97,20 @@ Deno.serve(async (req) => {
 
     if (list.length === 0) return json({ ok: true, sent: 0, message: 'No recipients' })
 
+    const slug = entry.title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .slice(0, 80)
     const templateData = {
       title: entry.title,
       content: entry.content,
       category: entry.category,
       version: entry.version,
       entryDate: entry.entry_date,
-      link: `${SITE_BASE}/changelog`,
+      link: `${SITE_BASE}/changelog/${slug}`,
       siteName: 'CarnageMC',
     }
 
