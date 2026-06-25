@@ -30,13 +30,15 @@ Deno.serve(async (req) => {
     const { data: userData } = await userClient.auth.getUser()
     if (!userData?.user) return json({ ok: false, error: 'Unauthorized' }, 401)
 
-    const { data: roleRow } = await userClient
+    const { data: roleRows } = await userClient
       .from('user_roles')
       .select('role')
       .eq('user_id', userData.user.id)
       .in('role', ['admin', 'owner'])
-      .maybeSingle()
-    if (!roleRow) return json({ ok: false, error: 'Forbidden — admin only' }, 403)
+      .limit(1)
+    if (!roleRows || roleRows.length === 0) {
+      return json({ ok: false, error: 'Forbidden — admin only' }, 403)
+    }
 
     const body = await req.json().catch(() => ({}))
     const entryId: string | undefined = body?.entryId
