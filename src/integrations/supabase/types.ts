@@ -903,6 +903,7 @@ export type Database = {
           mc_versions: string[]
           name: string
           org_id: string | null
+          price: number
           published: boolean
           short_id: string
           slug: string
@@ -930,6 +931,7 @@ export type Database = {
           mc_versions?: string[]
           name: string
           org_id?: string | null
+          price?: number
           published?: boolean
           short_id?: string
           slug: string
@@ -957,6 +959,7 @@ export type Database = {
           mc_versions?: string[]
           name?: string
           org_id?: string | null
+          price?: number
           published?: boolean
           short_id?: string
           slug?: string
@@ -1178,6 +1181,7 @@ export type Database = {
           org_id: string | null
           platform: string | null
           platforms: string[]
+          price: number
           published: boolean
           screenshots: string[]
           short_id: string
@@ -1205,6 +1209,7 @@ export type Database = {
           org_id?: string | null
           platform?: string | null
           platforms?: string[]
+          price?: number
           published?: boolean
           screenshots?: string[]
           short_id?: string
@@ -1232,6 +1237,7 @@ export type Database = {
           org_id?: string | null
           platform?: string | null
           platforms?: string[]
+          price?: number
           published?: boolean
           screenshots?: string[]
           short_id?: string
