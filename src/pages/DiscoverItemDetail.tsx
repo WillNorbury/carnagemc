@@ -16,12 +16,15 @@ import {
   Copy,
   Download,
   ExternalLink,
+  Heart,
   Loader2,
   Package,
   Server as ServerIcon,
+  ShoppingCart,
   Sparkles,
   XCircle,
 } from "lucide-react";
+import { useCart } from "@/lib/cart";
 
 
 type DiscoverItem = {
@@ -97,6 +100,7 @@ type Props = { urlKind: keyof typeof KIND_META };
 const DiscoverItemDetail = ({ urlKind }: Props) => {
   const { slug } = useParams<{ slug: string }>();
   const meta = KIND_META[urlKind];
+  const { addToCart, addToWishlist, inCart, inWishlist } = useCart();
   const [item, setItem] = useState<DiscoverItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -458,6 +462,49 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                   </Button>
                 ) : (
                   <Button disabled className="w-full">Unavailable</Button>
+                )}
+
+                {!isServer && item && (
+                  <div className="grid grid-cols-2 gap-2 pt-2">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      disabled={inCart(item.id)}
+                      onClick={() =>
+                        addToCart({
+                          id: item.id,
+                          kind: item.kind,
+                          slug: item.slug,
+                          name: item.name,
+                          author: item.author,
+                          price,
+                          icon_url: item.icon_url,
+                        })
+                      }
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-1" />
+                      {inCart(item.id) ? "In cart" : price > 0 ? "Buy" : "Add to cart"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={inWishlist(item.id)}
+                      onClick={() =>
+                        addToWishlist({
+                          id: item.id,
+                          kind: item.kind,
+                          slug: item.slug,
+                          name: item.name,
+                          author: item.author,
+                          price,
+                          icon_url: item.icon_url,
+                        })
+                      }
+                    >
+                      <Heart className={`h-4 w-4 mr-1 ${inWishlist(item.id) ? "fill-current" : ""}`} />
+                      {inWishlist(item.id) ? "Wishlisted" : "Wishlist"}
+                    </Button>
+                  </div>
                 )}
 
                 {item.external_url && !isServer && hasDownloadable && (
