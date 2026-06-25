@@ -66,7 +66,6 @@ import SkriptUpload from "./pages/SkriptUpload.tsx";
 import Cart from "./pages/Cart.tsx";
 import Wishlist from "./pages/Wishlist.tsx";
 import Orders from "./pages/Orders.tsx";
-import Store from "./pages/Store.tsx";
 import { CartProvider } from "./lib/cart.tsx";
 
 
@@ -140,7 +139,6 @@ const Shell = () => {
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/wishlist" element={<Wishlist />} />
                   <Route path="/orders" element={<Orders />} />
-                  <Route path="/store" element={<Store />} />
                   <Route path="/features" element={<Features />} />
                   <Route path="/features/:slug" element={<FeatureDetail />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
