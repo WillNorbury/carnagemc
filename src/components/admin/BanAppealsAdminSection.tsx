@@ -22,6 +22,7 @@ type Appeal = {
   status: string;
   admin_response: string | null;
   created_at: string;
+  account_email?: string | null;
 };
 
 export function BanAppealsAdminSection() {
@@ -88,7 +89,15 @@ export function BanAppealsAdminSection() {
     let q = supabase.from("ban_appeals").select("*").order("created_at", { ascending: false });
     if (filter !== "all") q = q.eq("status", filter);
     const { data } = await q;
-    setItems((data as Appeal[]) ?? []);
+    const rows = (data as Appeal[]) ?? [];
+    // Fetch account emails for appeals that didn't include one but have a linked user
+    const missing = Array.from(new Set(rows.filter(r => !r.email && r.user_id).map(r => r.user_id as string)));
+    const emailMap: Record<string, string | null> = {};
+    await Promise.all(missing.map(async (uid) => {
+      const { data: em } = await supabase.rpc("admin_get_user_email", { _user_id: uid });
+      emailMap[uid] = (em as string | null) ?? null;
+    }));
+    setItems(rows.map(r => ({ ...r, account_email: r.user_id ? emailMap[r.user_id] ?? null : null })));
     setLoading(false);
   }
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [filter]);
@@ -107,11 +116,12 @@ export function BanAppealsAdminSection() {
       detail: `${a.minecraft_username}: ${admin_response ?? "(no response)"}`,
       color: status === "approved" ? 0x10b981 : status === "denied" ? 0xef4444 : 0x6b7280,
     });
-    if (a.email) {
+    const notifyEmail = a.email || a.account_email;
+    if (notifyEmail) {
       supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "ban-appeal-status",
-          recipientEmail: a.email,
+          recipientEmail: notifyEmail,
           idempotencyKey: `ban-appeal-${a.id}-${status}`,
           templateData: {
             minecraftUsername: a.minecraft_username,
@@ -181,6 +191,7 @@ export function BanAppealsAdminSection() {
                 <div className="text-xs text-muted-foreground">
                   {a.discord_tag && <>Discord: {a.discord_tag} · </>}
                   {a.email && <>Email: {a.email} · </>}
+                  {!a.email && a.account_email && <>Account email: {a.account_email} · </>}
                   {new Date(a.created_at).toLocaleString()}
                 </div>
               </div>
