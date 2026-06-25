@@ -1,0 +1,2 @@
+ALTER TABLE public.discover_items DROP CONSTRAINT IF EXISTS discover_items_kind_check;
+ALTER TABLE public.discover_items ADD CONSTRAINT discover_items_kind_check CHECK (kind IN ('resource_pack','data_pack','shader','modpack','server','skript'));
