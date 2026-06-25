@@ -124,6 +124,7 @@ const Mods = () => {
   const [selectedVersions, setSelectedVersions] = useState<Set<string>>(new Set());
   const [selectedLoaders, setSelectedLoaders] = useState<Set<string>>(new Set());
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+  const [selectedPricing, setSelectedPricing] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     document.title = "Mods — CarnageMC";
