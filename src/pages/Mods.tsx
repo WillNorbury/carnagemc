@@ -31,6 +31,7 @@ type Mod = {
   jar_filename: string | null;
   jar_size: number | null;
   download_url: string | null;
+  price: number | null;
   created_at: string;
   updated_at: string;
 };
