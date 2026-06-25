@@ -301,6 +301,18 @@ const Mods = () => {
                 </label>
               ))}
             </FilterSection>
+
+            <FilterSection title="Pricing">
+              {["Free", "Paid"].map((p) => (
+                <label key={p} className="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
+                  <Checkbox
+                    checked={selectedPricing.has(p)}
+                    onCheckedChange={() => toggle(selectedPricing, p, setSelectedPricing)}
+                  />
+                  {p}
+                </label>
+              ))}
+            </FilterSection>
           </aside>
 
           {/* Main column */}
