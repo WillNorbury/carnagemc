@@ -343,6 +343,18 @@ const Plugins = () => {
                                   </p>
                                 )}
                                 <div className="flex flex-wrap gap-1.5 mt-3">
+                                  {(() => {
+                                    const price = Number(p.price ?? 0);
+                                    return (
+                                      <Badge
+                                        className={`text-xs ${price === 0
+                                          ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                          : "bg-primary text-primary-foreground"}`}
+                                      >
+                                        {price === 0 ? "FREE" : `$${price.toFixed(2)}`}
+                                      </Badge>
+                                    );
+                                  })()}
                                   {p.category && (
                                     <Badge variant="secondary" className="text-xs">
                                       {p.category}
