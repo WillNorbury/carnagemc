@@ -219,11 +219,13 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
       const total = totalHeader ? parseInt(totalHeader, 10) : 0;
       if (total > 0) setDlProgress(0);
 
+      const preferredName =
+        (item?.meta?.file_name as string) || filenameFromUrl(dlUrl);
+
       const reader = res.body?.getReader();
       if (!reader) {
-        // Fallback: no streaming support
         const blob = await res.blob();
-        triggerSave(blob, filenameFromUrl(url));
+        triggerSave(blob, preferredName);
         setDlState("done");
         setDlProgress(100);
         setTimeout(() => setDlState("idle"), 1500);
@@ -243,7 +245,7 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
         }
       }
       const blob = new Blob(chunks as BlobPart[]);
-      triggerSave(blob, filenameFromUrl(url));
+      triggerSave(blob, preferredName);
       setDlProgress(100);
       setDlState("done");
       setTimeout(() => setDlState("idle"), 1500);
