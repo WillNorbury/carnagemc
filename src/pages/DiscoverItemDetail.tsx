@@ -109,14 +109,16 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
         setLoading(false);
         return;
       }
-      const { data } = await (supabase.from("discover_items" as any) as any)
+      const isUuid =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+      let q = (supabase.from("discover_items" as any) as any)
         .select(
           "id, kind, name, slug, description, long_description, author, version, icon_url, banner_url, category, tags, featured, download_url, external_url, meta, created_at, updated_at",
         )
         .eq("kind", meta.kind)
-        .eq("published", true)
-        .or(`slug.eq.${slug},id.eq.${slug}`)
-        .maybeSingle();
+        .eq("published", true);
+      q = isUuid ? q.or(`slug.eq.${slug},id.eq.${slug}`) : q.eq("slug", slug);
+      const { data } = await q.maybeSingle();
       if (cancelled) return;
       setItem((data ?? null) as DiscoverItem | null);
       setLoading(false);
