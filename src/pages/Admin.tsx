@@ -3695,49 +3695,93 @@ const ChangelogTab = () => {
       ) : (
         <div className="space-y-2">
           {items.map((e) => (
-            <Card key={e.id} className="p-4 flex items-start justify-between gap-3 flex-wrap">
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <Badge variant="outline" className="capitalize">
-                    {e.category}
-                  </Badge>
-                  {e.version && (
-                    <Badge variant="secondary" className="font-mono">
-                      v{e.version}
-                    </Badge>
-                  )}
-                  {!e.published && (
-                    <Badge variant="outline" className="text-muted-foreground">
-                      Draft
-                    </Badge>
-                  )}
-                  <span className="text-xs text-muted-foreground">{new Date(e.entry_date).toLocaleDateString()}</span>
+            <Card key={e.id} className="p-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <Badge variant="outline" className="capitalize">{e.category}</Badge>
+                    {e.version && (
+                      <Badge variant="secondary" className="font-mono">v{e.version}</Badge>
+                    )}
+                    {!e.published && (
+                      <Badge variant="outline" className="text-muted-foreground">Draft</Badge>
+                    )}
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(e.entry_date).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="font-display font-bold">{e.title}</div>
+                  <p className="text-sm text-muted-foreground line-clamp-2 whitespace-pre-wrap">{e.content}</p>
                 </div>
-                <div className="font-display font-bold">{e.title}</div>
-                <p className="text-sm text-muted-foreground line-clamp-2 whitespace-pre-wrap">{e.content}</p>
+                <div className="flex gap-2 shrink-0">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setTestFor(testFor === e.id ? null : e.id);
+                      setTestEmail("");
+                    }}
+                    title="Send a test notification email"
+                  >
+                    <Mail className="h-4 w-4 mr-1" /> Test
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      setEditing({
+                        id: e.id,
+                        title: e.title,
+                        content: e.content,
+                        category: e.category,
+                        version: e.version ?? "",
+                        entry_date: e.entry_date,
+                        published: e.published,
+                      })
+                    }
+                  >
+                    Edit
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={() => remove(e.id)}>
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                </div>
               </div>
-              <div className="flex gap-2 shrink-0">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setEditing({
-                      id: e.id,
-                      title: e.title,
-                      content: e.content,
-                      category: e.category,
-                      version: e.version ?? "",
-                      entry_date: e.entry_date,
-                      published: e.published,
-                    })
-                  }
-                >
-                  Edit
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => remove(e.id)}>
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              </div>
+
+              {testFor === e.id && (
+                <div className="mt-3 pt-3 border-t border-border flex flex-wrap items-end gap-2">
+                  <div className="flex-1 min-w-[220px]">
+                    <Label className="text-xs">Send test notification to</Label>
+                    <Input
+                      type="email"
+                      autoFocus
+                      placeholder="you@example.com"
+                      value={testEmail}
+                      onChange={(ev) => setTestEmail(ev.target.value)}
+                      onKeyDown={(ev) => {
+                        if (ev.key === "Enter") sendTest(e.id);
+                      }}
+                    />
+                    <p className="text-[11px] text-muted-foreground mt-1">
+                      Sends a one-off "[TEST]" email from updates@carnagemc.net. Bypasses subscriber list and suppression.
+                      {!e.published && " Works on drafts too."}
+                    </p>
+                  </div>
+                  <Button size="sm" onClick={() => sendTest(e.id)} disabled={testSending}>
+                    {testSending ? "Sending…" : "Send test"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setTestFor(null);
+                      setTestEmail("");
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              )}
             </Card>
           ))}
         </div>
