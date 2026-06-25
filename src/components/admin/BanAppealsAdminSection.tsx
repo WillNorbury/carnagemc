@@ -116,11 +116,12 @@ export function BanAppealsAdminSection() {
       detail: `${a.minecraft_username}: ${admin_response ?? "(no response)"}`,
       color: status === "approved" ? 0x10b981 : status === "denied" ? 0xef4444 : 0x6b7280,
     });
-    if (a.email) {
+    const notifyEmail = a.email || a.account_email;
+    if (notifyEmail) {
       supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "ban-appeal-status",
-          recipientEmail: a.email,
+          recipientEmail: notifyEmail,
           idempotencyKey: `ban-appeal-${a.id}-${status}`,
           templateData: {
             minecraftUsername: a.minecraft_username,
