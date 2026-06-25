@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Loader2, User as UserIcon, FileText, LifeBuoy, ClipboardList, Link2, ExternalLink, CheckCircle2, Flame, Vote as VoteIcon, Trophy, ShoppingCart, Heart, Package, FileCode, Plus, Puzzle, Boxes } from "lucide-react";
 import MyPluginsPanel from "@/components/dashboard/MyPluginsPanel";
 import MyDiscoverItemsPanel from "@/components/dashboard/MyDiscoverItemsPanel";
+import SkriptUploadForm from "@/components/dashboard/SkriptUploadForm";
 import { useCart } from "@/lib/cart";
 
 type Streaks = {
@@ -285,18 +286,18 @@ const Dashboard = () => {
         <MyDiscoverItemsPanel userId={user!.id} />
 
         {/* Create */}
-        <Card className="p-6 mb-6">
+        <Card id="create-skript" className="p-6 mb-6 scroll-mt-24">
           <div className="flex items-center gap-2 mb-4">
             <Plus className="h-5 w-5 text-primary" />
             <h2 className="font-display font-bold text-lg">Create</h2>
             <p className="text-xs text-muted-foreground ml-2">Publish to the Discover marketplace.</p>
           </div>
-          <div className="grid sm:grid-cols-3 gap-3">
-            <Link to="/discover/skripts/new" className="p-4 rounded-lg border border-border/60 hover:border-primary/50 transition group">
+          <div className="grid sm:grid-cols-3 gap-3 mb-6">
+            <a href="#create-skript" className="p-4 rounded-lg border border-primary/40 bg-primary/5 hover:border-primary/60 transition group">
               <FileCode className="h-5 w-5 text-primary mb-2" />
               <div className="font-display font-bold">Upload Skript</div>
               <div className="text-xs text-muted-foreground mt-1">Publish a .sk file (free or paid)</div>
-            </Link>
+            </a>
             <Link to="/dashboard#my-plugins" className="p-4 rounded-lg border border-border/60 hover:border-primary/50 transition group">
               <Puzzle className="h-5 w-5 text-primary mb-2" />
               <div className="font-display font-bold">My Plugins</div>
@@ -307,6 +308,15 @@ const Dashboard = () => {
               <div className="font-display font-bold">My Discover Items</div>
               <div className="text-xs text-muted-foreground mt-1">Mods, packs, shaders & more</div>
             </Link>
+          </div>
+
+          <div className="border-t border-border/60 pt-5">
+            <div className="flex items-center gap-2 mb-4">
+              <FileCode className="h-4 w-4 text-primary" />
+              <h3 className="font-display font-bold">Upload a Skript</h3>
+              <span className="text-xs text-muted-foreground ml-1">Publish a .sk listing without leaving the dashboard.</span>
+            </div>
+            <SkriptUploadForm successHref="" compact />
           </div>
         </Card>
 
