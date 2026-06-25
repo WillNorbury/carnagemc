@@ -65,6 +65,11 @@ export default function BanAppeals() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
+  useEffect(() => {
+    if (user?.email && !form.email) setForm((f) => ({ ...f, email: user.email ?? "" }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
   async function submit() {
     const parsed = appealSchema.safeParse(form);
     if (!parsed.success) {
