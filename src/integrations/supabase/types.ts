@@ -2100,6 +2100,8 @@ export type Database = {
           vote: string
         }[]
       }
+      get_follower_count: { Args: { _user_id: string }; Returns: number }
+      get_following_count: { Args: { _user_id: string }; Returns: number }
       get_my_private_profile: {
         Args: never
         Returns: {
