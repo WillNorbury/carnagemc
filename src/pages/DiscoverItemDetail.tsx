@@ -131,9 +131,41 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
   }, [item, meta.label]);
 
   const isServer = meta.kind === "server";
+  const isSkript = meta.kind === "skript";
   const ip = item && isServer ? getServerIp(item) : null;
+  const storagePath = item?.meta?.storage_path as string | undefined;
+  const price = (() => {
+    const p = item?.meta?.price;
+    const n = typeof p === "number" ? p : parseFloat(p ?? "0");
+    return isFinite(n) ? n : 0;
+  })();
+  const screenshots: string[] = Array.isArray(item?.meta?.screenshots)
+    ? (item!.meta!.screenshots as string[]).filter((s) => typeof s === "string")
+    : [];
+  const specs: { label: string; value: string }[] = item
+    ? [
+        item.version ? { label: "Version", value: `v${item.version}` } : null,
+        item.meta?.skript_version
+          ? { label: "Skript", value: String(item.meta.skript_version) }
+          : null,
+        item.meta?.mc_version
+          ? { label: "Minecraft", value: String(item.meta.mc_version) }
+          : null,
+        item.category ? { label: "Category", value: item.category } : null,
+        Array.isArray(item.meta?.addons) && item.meta!.addons.length > 0
+          ? { label: "Addons", value: (item.meta!.addons as string[]).join(", ") }
+          : null,
+        item.meta?.file_size
+          ? {
+              label: "File size",
+              value: `${(Number(item.meta.file_size) / 1024).toFixed(1)} KB`,
+            }
+          : null,
+      ].filter(Boolean) as { label: string; value: string }[]
+    : [];
   const url = item ? item.download_url || item.external_url : null;
-  const isExternal = item ? !item.download_url && !!item.external_url : false;
+  const hasDownloadable = !!(item && (item.download_url || storagePath));
+  const isExternal = item ? !item.download_url && !storagePath && !!item.external_url : false;
 
   const copyIp = async () => {
     if (!ip) return;
@@ -162,12 +194,26 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
   };
 
   const startDownload = async () => {
-    if (!url || isExternal) return;
+    if (isExternal) return;
+    let dlUrl = url;
+    if (storagePath) {
+      const { data, error } = await supabase.storage
+        .from("skripts")
+        .createSignedUrl(storagePath, 60, {
+          download: (item?.meta?.file_name as string) || `${item?.slug ?? "skript"}.sk`,
+        });
+      if (error || !data?.signedUrl) {
+        toast.error("Could not generate download link");
+        return;
+      }
+      dlUrl = data.signedUrl;
+    }
+    if (!dlUrl) return;
     setDlState("loading");
     setDlError(null);
     setDlProgress(null);
     try {
-      const res = await fetch(url);
+      const res = await fetch(dlUrl);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const totalHeader = res.headers.get("content-length");
       const total = totalHeader ? parseInt(totalHeader, 10) : 0;
