@@ -303,6 +303,13 @@ const DiscoverItemsBrowse = ({
           </aside>
 
           <section className="space-y-4">
+            {createHref && (
+              <div className="flex justify-end">
+                <Button asChild>
+                  <NavLink to={createHref}>+ {createLabel}</NavLink>
+                </Button>
+              </div>
+            )}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -445,9 +452,24 @@ const DiscoverItemsBrowse = ({
                           className="hidden md:flex flex-col items-end justify-between text-xs text-muted-foreground shrink-0 min-w-[140px]"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3.5 w-3.5" />
-                            {timeAgo(it.updated_at)}
+                          <div className="flex flex-col items-end gap-1">
+                            {!isServer && (() => {
+                              const price = getPrice(it);
+                              return (
+                                <Badge
+                                  variant={price === 0 ? "secondary" : "default"}
+                                  className={price === 0
+                                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                    : "bg-primary text-primary-foreground"}
+                                >
+                                  {price === 0 ? "FREE" : `$${price.toFixed(2)}`}
+                                </Badge>
+                              );
+                            })()}
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3.5 w-3.5" />
+                              {timeAgo(it.updated_at)}
+                            </div>
                           </div>
                           {isServer ? (
                             <Button
