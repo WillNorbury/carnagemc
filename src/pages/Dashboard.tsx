@@ -315,6 +315,9 @@ const Dashboard = () => {
           <h2 className="font-display font-bold text-lg mb-4">Quick Links</h2>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-2">
             {[
+              { to: "/cart", label: "Cart" },
+              { to: "/wishlist", label: "Wishlist" },
+              { to: "/orders", label: "Orders" },
               { to: "/tickets", label: "Support Tickets" },
               { to: "/vote", label: "Vote & Earn" },
               { to: "/changelog", label: "Changelog" },
