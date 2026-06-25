@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Sparkles, Wrench, Bug, Zap, ShieldCheck, Plus } from "lucide-react";
+import { Sparkles, Wrench, Bug, Zap, ShieldCheck, Plus, ArrowRight } from "lucide-react";
+import { changelogSlug } from "@/lib/changelog-slug";
 
 type Entry = {
   id: string;
@@ -135,23 +137,26 @@ const Changelog = () => {
                         const meta = catMeta(e.category);
                         const Icon = meta.icon;
                         return (
-                          <Card key={e.id} className="p-5 hover:border-primary/40 transition">
-                            <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
-                              <div className="flex items-center gap-2 min-w-0">
-                                <Badge variant="outline" className={meta.cls}>
-                                  <Icon className="h-3 w-3 mr-1" />
-                                  {meta.label}
-                                </Badge>
-                                {e.version && (
-                                  <Badge variant="secondary" className="font-mono">
-                                    v{e.version}
+                          <Link key={e.id} to={`/changelog/${changelogSlug(e.title)}`} className="block group">
+                            <Card className="p-5 hover:border-primary/40 hover:shadow-md transition cursor-pointer">
+                              <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <Badge variant="outline" className={meta.cls}>
+                                    <Icon className="h-3 w-3 mr-1" />
+                                    {meta.label}
                                   </Badge>
-                                )}
+                                  {e.version && (
+                                    <Badge variant="secondary" className="font-mono">
+                                      v{e.version}
+                                    </Badge>
+                                  )}
+                                </div>
+                                <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition" />
                               </div>
-                            </div>
-                            <h3 className="font-display font-bold text-lg mb-1">{e.title}</h3>
-                            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{e.content}</p>
-                          </Card>
+                              <h3 className="font-display font-bold text-lg mb-1 group-hover:text-primary transition">{e.title}</h3>
+                              <p className="text-sm text-muted-foreground line-clamp-2">{e.content}</p>
+                            </Card>
+                          </Link>
                         );
                       })}
                     </div>
