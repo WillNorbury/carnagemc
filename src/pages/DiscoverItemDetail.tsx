@@ -340,6 +340,30 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                 ))}
               </div>
 
+              {screenshots.length > 0 && (
+                <Card className="p-4">
+                  <h2 className="font-display font-semibold text-lg mb-3">Gallery</h2>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {screenshots.map((src, i) => (
+                      <a
+                        key={i}
+                        href={src}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block aspect-video overflow-hidden rounded-md border border-border hover:border-primary/50 transition"
+                      >
+                        <img
+                          src={src}
+                          alt={`${item.name} screenshot ${i + 1}`}
+                          loading="lazy"
+                          className="w-full h-full object-cover"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                </Card>
+              )}
+
               {item.long_description && (
                 <Card className="p-6">
                   <h2 className="font-display font-semibold text-lg mb-3">About</h2>
@@ -351,6 +375,22 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
             </div>
 
             <aside className="space-y-4">
+              {!isServer && (
+                <Card className="p-5">
+                  <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">
+                    Price
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-display font-bold text-3xl">
+                      {price === 0 ? "Free" : `$${price.toFixed(2)}`}
+                    </span>
+                    {price > 0 && (
+                      <span className="text-xs text-muted-foreground">USD</span>
+                    )}
+                  </div>
+                </Card>
+              )}
+
               <Card className="p-5 space-y-4">
                 {isServer ? (
                   <>
@@ -375,54 +415,50 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                       <Button disabled className="w-full">Unavailable</Button>
                     )}
                   </>
-                ) : url ? (
-                  isExternal ? (
-                    <Button asChild className="w-full">
-                      <a href={url} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="h-4 w-4 mr-1" /> Visit
-                      </a>
+                ) : hasDownloadable ? (
+                  <div className="space-y-2">
+                    <Button
+                      className="w-full"
+                      onClick={startDownload}
+                      disabled={dlState === "loading"}
+                      variant={dlState === "error" ? "destructive" : "default"}
+                    >
+                      {dlState === "loading" ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                          {dlProgress !== null ? `Downloading ${dlProgress}%` : "Downloading…"}
+                        </>
+                      ) : dlState === "done" ? (
+                        <><Check className="h-4 w-4 mr-1" /> Downloaded</>
+                      ) : dlState === "error" ? (
+                        <><XCircle className="h-4 w-4 mr-1" /> Retry download</>
+                      ) : (
+                        <><Download className="h-4 w-4 mr-1" /> Download</>
+                      )}
                     </Button>
-                  ) : (
-                    <div className="space-y-2">
-                      <Button
-                        className="w-full"
-                        onClick={startDownload}
-                        disabled={dlState === "loading"}
-                        variant={dlState === "error" ? "destructive" : "default"}
-                      >
-                        {dlState === "loading" ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                            {dlProgress !== null ? `Downloading ${dlProgress}%` : "Downloading…"}
-                          </>
-                        ) : dlState === "done" ? (
-                          <><Check className="h-4 w-4 mr-1" /> Downloaded</>
-                        ) : dlState === "error" ? (
-                          <><XCircle className="h-4 w-4 mr-1" /> Retry download</>
-                        ) : (
-                          <><Download className="h-4 w-4 mr-1" /> Download</>
-                        )}
-                      </Button>
-                      {dlState === "loading" && dlProgress !== null && (
-                        <Progress value={dlProgress} className="h-1.5" />
-                      )}
-                      {dlState === "loading" && dlProgress === null && (
-                        <div className="h-1.5 w-full overflow-hidden rounded bg-muted">
-                          <div className="h-full w-1/3 animate-pulse bg-primary" />
-                        </div>
-                      )}
-                      {dlState === "error" && dlError && (
-                        <p className="text-xs text-destructive">{dlError}</p>
-                      )}
-                    </div>
-                  )
-
-
+                    {dlState === "loading" && dlProgress !== null && (
+                      <Progress value={dlProgress} className="h-1.5" />
+                    )}
+                    {dlState === "loading" && dlProgress === null && (
+                      <div className="h-1.5 w-full overflow-hidden rounded bg-muted">
+                        <div className="h-full w-1/3 animate-pulse bg-primary" />
+                      </div>
+                    )}
+                    {dlState === "error" && dlError && (
+                      <p className="text-xs text-destructive">{dlError}</p>
+                    )}
+                  </div>
+                ) : isExternal && url ? (
+                  <Button asChild className="w-full">
+                    <a href={url} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4 mr-1" /> Visit
+                    </a>
+                  </Button>
                 ) : (
                   <Button disabled className="w-full">Unavailable</Button>
                 )}
 
-                {item.external_url && !isServer && item.download_url && (
+                {item.external_url && !isServer && hasDownloadable && (
                   <Button asChild variant="outline" className="w-full" size="sm">
                     <a href={item.external_url} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-1" /> Visit website
@@ -430,6 +466,21 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                   </Button>
                 )}
               </Card>
+
+              {specs.length > 0 && (
+                <Card className="p-5 space-y-2 text-sm">
+                  <h3 className="font-display font-semibold mb-1">Specifications</h3>
+                  {specs.map((s) => (
+                    <div key={s.label} className="flex justify-between gap-3">
+                      <span className="text-muted-foreground">{s.label}</span>
+                      <span className="text-right text-foreground/90 truncate max-w-[60%]">
+                        {s.value}
+                      </span>
+                    </div>
+                  ))}
+                </Card>
+              )}
+
 
               <Card className="p-5 space-y-3 text-sm">
                 <div className="flex items-center gap-2 text-muted-foreground">
