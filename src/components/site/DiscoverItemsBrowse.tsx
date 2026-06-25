@@ -69,6 +69,7 @@ const DISCOVER_TABS = [
   { label: "Shaders", to: "/discover/shaders" },
   { label: "Modpacks", to: "/discover/modpacks" },
   { label: "Plugins", to: "/discover/plugins" },
+  { label: "Skripts", to: "/discover/skripts" },
   { label: "Servers", to: "/discover/servers" },
 ];
 
@@ -349,6 +350,7 @@ const DiscoverItemsBrowse = ({
                     shader: "/shader",
                     modpack: "/modpack",
                     server: "/server",
+                    skript: "/skript",
                   };
                   const detailHref = detailBase[it.kind]
                     ? `${detailBase[it.kind]}/${it.slug ?? it.id}`

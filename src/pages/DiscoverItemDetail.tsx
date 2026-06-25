@@ -79,6 +79,12 @@ const KIND_META: Record<
     browseTo: "/discover/servers",
     browseLabel: "Servers",
   },
+  skript: {
+    kind: "skript",
+    label: "Skript",
+    browseTo: "/discover/skripts",
+    browseLabel: "Skripts",
+  },
 };
 
 const getServerIp = (it: DiscoverItem): string | null => {

@@ -61,6 +61,7 @@ import QuizTake from "./pages/QuizTake.tsx";
 import QuizResult from "./pages/QuizResult.tsx";
 import QuizLeaderboard from "./pages/QuizLeaderboard.tsx";
 import DiscoverItemDetail from "./pages/DiscoverItemDetail.tsx";
+import Skripts from "./pages/Skripts.tsx";
 
 
 const queryClient = new QueryClient();
@@ -127,6 +128,8 @@ const Shell = () => {
                   <Route path="/modpack/:slug" element={<DiscoverItemDetail urlKind="modpack" />} />
                   <Route path="/discover/servers" element={<Servers />} />
                   <Route path="/server/:slug" element={<DiscoverItemDetail urlKind="server" />} />
+                  <Route path="/discover/skripts" element={<Skripts />} />
+                  <Route path="/skript/:slug" element={<DiscoverItemDetail urlKind="skript" />} />
                   <Route path="/features" element={<Features />} />
                   <Route path="/features/:slug" element={<FeatureDetail />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
