@@ -131,9 +131,41 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
   }, [item, meta.label]);
 
   const isServer = meta.kind === "server";
+  const isSkript = meta.kind === "skript";
   const ip = item && isServer ? getServerIp(item) : null;
+  const storagePath = item?.meta?.storage_path as string | undefined;
+  const price = (() => {
+    const p = item?.meta?.price;
+    const n = typeof p === "number" ? p : parseFloat(p ?? "0");
+    return isFinite(n) ? n : 0;
+  })();
+  const screenshots: string[] = Array.isArray(item?.meta?.screenshots)
+    ? (item!.meta!.screenshots as string[]).filter((s) => typeof s === "string")
+    : [];
+  const specs: { label: string; value: string }[] = item
+    ? [
+        item.version ? { label: "Version", value: `v${item.version}` } : null,
+        item.meta?.skript_version
+          ? { label: "Skript", value: String(item.meta.skript_version) }
+          : null,
+        item.meta?.mc_version
+          ? { label: "Minecraft", value: String(item.meta.mc_version) }
+          : null,
+        item.category ? { label: "Category", value: item.category } : null,
+        Array.isArray(item.meta?.addons) && item.meta!.addons.length > 0
+          ? { label: "Addons", value: (item.meta!.addons as string[]).join(", ") }
+          : null,
+        item.meta?.file_size
+          ? {
+              label: "File size",
+              value: `${(Number(item.meta.file_size) / 1024).toFixed(1)} KB`,
+            }
+          : null,
+      ].filter(Boolean) as { label: string; value: string }[]
+    : [];
   const url = item ? item.download_url || item.external_url : null;
-  const isExternal = item ? !item.download_url && !!item.external_url : false;
+  const hasDownloadable = !!(item && (item.download_url || storagePath));
+  const isExternal = item ? !item.download_url && !storagePath && !!item.external_url : false;
 
   const copyIp = async () => {
     if (!ip) return;
@@ -162,22 +194,38 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
   };
 
   const startDownload = async () => {
-    if (!url || isExternal) return;
+    if (isExternal) return;
+    let dlUrl = url;
+    if (storagePath) {
+      const { data, error } = await supabase.storage
+        .from("skripts")
+        .createSignedUrl(storagePath, 60, {
+          download: (item?.meta?.file_name as string) || `${item?.slug ?? "skript"}.sk`,
+        });
+      if (error || !data?.signedUrl) {
+        toast.error("Could not generate download link");
+        return;
+      }
+      dlUrl = data.signedUrl;
+    }
+    if (!dlUrl) return;
     setDlState("loading");
     setDlError(null);
     setDlProgress(null);
     try {
-      const res = await fetch(url);
+      const res = await fetch(dlUrl);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const totalHeader = res.headers.get("content-length");
       const total = totalHeader ? parseInt(totalHeader, 10) : 0;
       if (total > 0) setDlProgress(0);
 
+      const preferredName =
+        (item?.meta?.file_name as string) || filenameFromUrl(dlUrl);
+
       const reader = res.body?.getReader();
       if (!reader) {
-        // Fallback: no streaming support
         const blob = await res.blob();
-        triggerSave(blob, filenameFromUrl(url));
+        triggerSave(blob, preferredName);
         setDlState("done");
         setDlProgress(100);
         setTimeout(() => setDlState("idle"), 1500);
@@ -197,7 +245,7 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
         }
       }
       const blob = new Blob(chunks as BlobPart[]);
-      triggerSave(blob, filenameFromUrl(url));
+      triggerSave(blob, preferredName);
       setDlProgress(100);
       setDlState("done");
       setTimeout(() => setDlState("idle"), 1500);
@@ -292,6 +340,30 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                 ))}
               </div>
 
+              {screenshots.length > 0 && (
+                <Card className="p-4">
+                  <h2 className="font-display font-semibold text-lg mb-3">Gallery</h2>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {screenshots.map((src, i) => (
+                      <a
+                        key={i}
+                        href={src}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block aspect-video overflow-hidden rounded-md border border-border hover:border-primary/50 transition"
+                      >
+                        <img
+                          src={src}
+                          alt={`${item.name} screenshot ${i + 1}`}
+                          loading="lazy"
+                          className="w-full h-full object-cover"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                </Card>
+              )}
+
               {item.long_description && (
                 <Card className="p-6">
                   <h2 className="font-display font-semibold text-lg mb-3">About</h2>
@@ -303,6 +375,22 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
             </div>
 
             <aside className="space-y-4">
+              {!isServer && (
+                <Card className="p-5">
+                  <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">
+                    Price
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-display font-bold text-3xl">
+                      {price === 0 ? "Free" : `$${price.toFixed(2)}`}
+                    </span>
+                    {price > 0 && (
+                      <span className="text-xs text-muted-foreground">USD</span>
+                    )}
+                  </div>
+                </Card>
+              )}
+
               <Card className="p-5 space-y-4">
                 {isServer ? (
                   <>
@@ -327,54 +415,50 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                       <Button disabled className="w-full">Unavailable</Button>
                     )}
                   </>
-                ) : url ? (
-                  isExternal ? (
-                    <Button asChild className="w-full">
-                      <a href={url} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="h-4 w-4 mr-1" /> Visit
-                      </a>
+                ) : hasDownloadable ? (
+                  <div className="space-y-2">
+                    <Button
+                      className="w-full"
+                      onClick={startDownload}
+                      disabled={dlState === "loading"}
+                      variant={dlState === "error" ? "destructive" : "default"}
+                    >
+                      {dlState === "loading" ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                          {dlProgress !== null ? `Downloading ${dlProgress}%` : "Downloading…"}
+                        </>
+                      ) : dlState === "done" ? (
+                        <><Check className="h-4 w-4 mr-1" /> Downloaded</>
+                      ) : dlState === "error" ? (
+                        <><XCircle className="h-4 w-4 mr-1" /> Retry download</>
+                      ) : (
+                        <><Download className="h-4 w-4 mr-1" /> Download</>
+                      )}
                     </Button>
-                  ) : (
-                    <div className="space-y-2">
-                      <Button
-                        className="w-full"
-                        onClick={startDownload}
-                        disabled={dlState === "loading"}
-                        variant={dlState === "error" ? "destructive" : "default"}
-                      >
-                        {dlState === "loading" ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                            {dlProgress !== null ? `Downloading ${dlProgress}%` : "Downloading…"}
-                          </>
-                        ) : dlState === "done" ? (
-                          <><Check className="h-4 w-4 mr-1" /> Downloaded</>
-                        ) : dlState === "error" ? (
-                          <><XCircle className="h-4 w-4 mr-1" /> Retry download</>
-                        ) : (
-                          <><Download className="h-4 w-4 mr-1" /> Download</>
-                        )}
-                      </Button>
-                      {dlState === "loading" && dlProgress !== null && (
-                        <Progress value={dlProgress} className="h-1.5" />
-                      )}
-                      {dlState === "loading" && dlProgress === null && (
-                        <div className="h-1.5 w-full overflow-hidden rounded bg-muted">
-                          <div className="h-full w-1/3 animate-pulse bg-primary" />
-                        </div>
-                      )}
-                      {dlState === "error" && dlError && (
-                        <p className="text-xs text-destructive">{dlError}</p>
-                      )}
-                    </div>
-                  )
-
-
+                    {dlState === "loading" && dlProgress !== null && (
+                      <Progress value={dlProgress} className="h-1.5" />
+                    )}
+                    {dlState === "loading" && dlProgress === null && (
+                      <div className="h-1.5 w-full overflow-hidden rounded bg-muted">
+                        <div className="h-full w-1/3 animate-pulse bg-primary" />
+                      </div>
+                    )}
+                    {dlState === "error" && dlError && (
+                      <p className="text-xs text-destructive">{dlError}</p>
+                    )}
+                  </div>
+                ) : isExternal && url ? (
+                  <Button asChild className="w-full">
+                    <a href={url} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4 mr-1" /> Visit
+                    </a>
+                  </Button>
                 ) : (
                   <Button disabled className="w-full">Unavailable</Button>
                 )}
 
-                {item.external_url && !isServer && item.download_url && (
+                {item.external_url && !isServer && hasDownloadable && (
                   <Button asChild variant="outline" className="w-full" size="sm">
                     <a href={item.external_url} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-1" /> Visit website
@@ -382,6 +466,21 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                   </Button>
                 )}
               </Card>
+
+              {specs.length > 0 && (
+                <Card className="p-5 space-y-2 text-sm">
+                  <h3 className="font-display font-semibold mb-1">Specifications</h3>
+                  {specs.map((s) => (
+                    <div key={s.label} className="flex justify-between gap-3">
+                      <span className="text-muted-foreground">{s.label}</span>
+                      <span className="text-right text-foreground/90 truncate max-w-[60%]">
+                        {s.value}
+                      </span>
+                    </div>
+                  ))}
+                </Card>
+              )}
+
 
               <Card className="p-5 space-y-3 text-sm">
                 <div className="flex items-center gap-2 text-muted-foreground">

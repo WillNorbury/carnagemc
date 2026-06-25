@@ -123,6 +123,15 @@ type Props = {
   searchPlaceholder: string;
   /** Predefined filter groups for categories (matched against item.category and item.tags) */
   filterGroups?: FilterGroup[];
+  /** Optional CTA shown above the listing */
+  createHref?: string;
+  createLabel?: string;
+};
+
+const getPrice = (it: DiscoverItem): number => {
+  const m = it.meta || {};
+  const p = typeof m.price === "number" ? m.price : parseFloat(m.price ?? "0");
+  return isFinite(p) ? p : 0;
 };
 
 const DiscoverItemsBrowse = ({
@@ -130,6 +139,8 @@ const DiscoverItemsBrowse = ({
   title,
   searchPlaceholder,
   filterGroups = [],
+  createHref,
+  createLabel = "Create listing",
 }: Props) => {
   const [items, setItems] = useState<DiscoverItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -194,16 +205,25 @@ const DiscoverItemsBrowse = ({
     let list = items.filter((it) => {
       for (const grp of filterGroups) {
         const sel = selected[grp.title];
-        if (sel && sel.size > 0) {
-          const haystack = [
-            (it.category ?? "").toLowerCase(),
-            ...it.tags.map((t) => t.toLowerCase()),
-          ];
-          const match = [...sel].some((v) =>
-            haystack.includes(v.toLowerCase()),
-          );
-          if (!match) return false;
+        if (!sel || sel.size === 0) continue;
+        if (grp.title.toLowerCase() === "pricing") {
+          const price = getPrice(it);
+          const wantsFree = sel.has("Free");
+          const wantsPaid = sel.has("Paid");
+          if (wantsFree && wantsPaid) {
+            // both selected = no constraint
+          } else if (wantsFree && price > 0) return false;
+          else if (wantsPaid && price === 0) return false;
+          continue;
         }
+        const haystack = [
+          (it.category ?? "").toLowerCase(),
+          ...it.tags.map((t) => t.toLowerCase()),
+        ];
+        const match = [...sel].some((v) =>
+          haystack.includes(v.toLowerCase()),
+        );
+        if (!match) return false;
       }
       if (!s) return true;
       return (
@@ -283,6 +303,13 @@ const DiscoverItemsBrowse = ({
           </aside>
 
           <section className="space-y-4">
+            {createHref && (
+              <div className="flex justify-end">
+                <Button asChild>
+                  <NavLink to={createHref}>+ {createLabel}</NavLink>
+                </Button>
+              </div>
+            )}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -425,9 +452,24 @@ const DiscoverItemsBrowse = ({
                           className="hidden md:flex flex-col items-end justify-between text-xs text-muted-foreground shrink-0 min-w-[140px]"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3.5 w-3.5" />
-                            {timeAgo(it.updated_at)}
+                          <div className="flex flex-col items-end gap-1">
+                            {!isServer && (() => {
+                              const price = getPrice(it);
+                              return (
+                                <Badge
+                                  variant={price === 0 ? "secondary" : "default"}
+                                  className={price === 0
+                                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                    : "bg-primary text-primary-foreground"}
+                                >
+                                  {price === 0 ? "FREE" : `$${price.toFixed(2)}`}
+                                </Badge>
+                              );
+                            })()}
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3.5 w-3.5" />
+                              {timeAgo(it.updated_at)}
+                            </div>
                           </div>
                           {isServer ? (
                             <Button
