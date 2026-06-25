@@ -191,6 +191,7 @@ export function BanAppealsAdminSection() {
                 <div className="text-xs text-muted-foreground">
                   {a.discord_tag && <>Discord: {a.discord_tag} · </>}
                   {a.email && <>Email: {a.email} · </>}
+                  {!a.email && a.account_email && <>Account email: {a.account_email} · </>}
                   {new Date(a.created_at).toLocaleString()}
                 </div>
               </div>
