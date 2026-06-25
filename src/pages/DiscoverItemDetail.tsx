@@ -100,7 +100,7 @@ type Props = { urlKind: keyof typeof KIND_META };
 const DiscoverItemDetail = ({ urlKind }: Props) => {
   const { slug } = useParams<{ slug: string }>();
   const meta = KIND_META[urlKind];
-  const { addToCart, addToWishlist, inCart, inWishlist } = useCart();
+  const { addToCart, addToWishlist, inCart, inWishlist, isPurchased } = useCart();
   const [item, setItem] = useState<DiscoverItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -172,6 +172,8 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
   const url = item ? item.download_url || item.external_url : null;
   const hasDownloadable = !!(item && (item.download_url || storagePath));
   const isExternal = item ? !item.download_url && !storagePath && !!item.external_url : false;
+  const purchased = item ? isPurchased(item.id) : false;
+  const requiresPurchase = price > 0 && !purchased;
 
   const copyIp = async () => {
     if (!ip) return;
@@ -201,6 +203,10 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
 
   const startDownload = async () => {
     if (isExternal) return;
+    if (requiresPurchase) {
+      toast.error("Purchase this item before downloading");
+      return;
+    }
     let dlUrl = url;
     if (storagePath) {
       const { data, error } = await supabase.storage
