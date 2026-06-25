@@ -40,7 +40,18 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}))
     const entryId: string | undefined = body?.entryId
+    const testEmail: string | undefined =
+      typeof body?.testEmail === 'string' && body.testEmail.trim()
+        ? body.testEmail.trim().toLowerCase()
+        : undefined
     if (!entryId) return json({ ok: false, error: 'entryId required' }, 400)
+
+    if (testEmail) {
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRe.test(testEmail)) {
+        return json({ ok: false, error: 'Invalid testEmail' }, 400)
+      }
+    }
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
       auth: { persistSession: false },
@@ -52,33 +63,36 @@ Deno.serve(async (req) => {
       .eq('id', entryId)
       .maybeSingle()
     if (entryErr || !entry) return json({ ok: false, error: 'Entry not found' }, 404)
-    if (!entry.published) return json({ ok: false, error: 'Entry not published' }, 400)
+    // Allow test sends on unpublished entries; only block bulk sends on drafts.
+    if (!testEmail && !entry.published) return json({ ok: false, error: 'Entry not published' }, 400)
 
-    // Collect every confirmed user's email, paginated
-    const recipients = new Set<string>()
-    let page = 1
-    const perPage = 1000
-    while (true) {
-      const { data, error } = await admin.auth.admin.listUsers({ page, perPage })
-      if (error) return json({ ok: false, error: error.message }, 500)
-      const users = data?.users ?? []
-      for (const u of users) {
-        if (u.email && u.email_confirmed_at) recipients.add(u.email.toLowerCase())
+    let list: string[]
+    if (testEmail) {
+      list = [testEmail]
+    } else {
+      // Collect every confirmed user's email, paginated
+      const recipients = new Set<string>()
+      let page = 1
+      const perPage = 1000
+      while (true) {
+        const { data, error } = await admin.auth.admin.listUsers({ page, perPage })
+        if (error) return json({ ok: false, error: error.message }, 500)
+        const users = data?.users ?? []
+        for (const u of users) {
+          if (u.email && u.email_confirmed_at) recipients.add(u.email.toLowerCase())
+        }
+        if (users.length < perPage) break
+        page += 1
+        if (page > 50) break
       }
-      if (users.length < perPage) break
-      page += 1
-      if (page > 50) break
+      // Drop suppressed addresses
+      const { data: suppressed } = await admin.from('suppressed_emails').select('email')
+      for (const row of suppressed ?? []) {
+        if (row?.email) recipients.delete(String(row.email).toLowerCase())
+      }
+      list = [...recipients]
     }
 
-    // Drop suppressed addresses
-    const { data: suppressed } = await admin
-      .from('suppressed_emails')
-      .select('email')
-    for (const row of suppressed ?? []) {
-      if (row?.email) recipients.delete(String(row.email).toLowerCase())
-    }
-
-    const list = [...recipients]
     if (list.length === 0) return json({ ok: true, sent: 0, message: 'No recipients' })
 
     const templateData = {
@@ -95,13 +109,18 @@ Deno.serve(async (req) => {
     const errors: string[] = []
     for (const email of list) {
       try {
+        const idempotencyKey = testEmail
+          ? `changelog-${entry.id}-test-${email}-${Date.now()}`
+          : `changelog-${entry.id}-${email}`
         const { error } = await admin.functions.invoke('send-transactional-email', {
           body: {
             templateName: 'changelog-update',
             recipientEmail: email,
-            idempotencyKey: `changelog-${entry.id}-${email}`,
+            idempotencyKey,
             from: 'CarnageMC Updates <updates@carnagemc.net>',
-            templateData,
+            templateData: testEmail
+              ? { ...templateData, title: `[TEST] ${templateData.title}` }
+              : templateData,
           },
         })
         if (error) errors.push(`${email}: ${error.message}`)
