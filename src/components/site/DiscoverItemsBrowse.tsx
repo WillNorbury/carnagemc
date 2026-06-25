@@ -69,6 +69,7 @@ const DISCOVER_TABS = [
   { label: "Shaders", to: "/discover/shaders" },
   { label: "Modpacks", to: "/discover/modpacks" },
   { label: "Plugins", to: "/discover/plugins" },
+  { label: "Skripts", to: "/discover/skripts" },
   { label: "Servers", to: "/discover/servers" },
 ];
 
