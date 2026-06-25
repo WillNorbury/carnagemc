@@ -25,6 +25,7 @@ import Plugins from "./pages/Plugins.tsx";
 import PluginDetail from "./pages/PluginDetail.tsx";
 import PluginSettings from "./pages/PluginSettings.tsx";
 import Changelog from "./pages/Changelog.tsx";
+import ChangelogEntry from "./pages/ChangelogEntry.tsx";
 import ReleaseNotes from "./pages/ReleaseNotes.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import LinkAccount from "./pages/LinkAccount.tsx";
@@ -99,6 +100,7 @@ const Shell = () => {
                   <Route path="/mod/:slug" element={<ModDetail />} />
                   <Route path="/mod-tiers" element={<ModTiers />} />
                   <Route path="/changelog" element={<Changelog />} />
+                  <Route path="/changelog/:slug" element={<ChangelogEntry />} />
                   <Route path="/release-notes" element={<ReleaseNotes />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/link-account" element={<LinkAccount />} />
