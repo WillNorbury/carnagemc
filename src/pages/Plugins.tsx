@@ -25,6 +25,7 @@ type Plugin = {
   platforms: string[] | null;
   mc_versions: string[] | null;
   featured: boolean;
+  price: number | null;
   updated_at: string;
 };
 
