@@ -254,7 +254,7 @@ const DashboardSection = ({ onNavigate }: { onNavigate: (s: AdminSection) => voi
   useEffect(() => {
     (async () => {
       const [{ count: users }, { count: news }, { data: roles }, { data: status }, { data: logs }] = await Promise.all([
-        supabase.from("profiles").select("*", { count: "exact", head: true }),
+        supabase.from("profiles").select("id", { count: "exact", head: true }),
         supabase.from("news").select("*", { count: "exact", head: true }),
         supabase.from("user_roles").select("user_id, role").eq("role", "admin"),
         supabase.from("server_status").select("*").eq("id", 1).maybeSingle(),

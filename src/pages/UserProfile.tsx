@@ -197,11 +197,10 @@ const UserProfile = () => {
           }))
       );
 
-      // Follower counts
-      const { count: followers } = await supabase
-        .from("user_follows").select("*", { count: "exact", head: true })
-        .eq("followee_id", p.id);
-      setFollowerCount(followers ?? 0);
+      // Follower counts (via secure RPC so the social graph is not enumerable)
+      const { data: followers } = await supabase
+        .rpc("get_follower_count", { _user_id: p.id });
+      setFollowerCount((followers as number | null) ?? 0);
       if (user?.id && user.id !== p.id) {
         const { data: a } = await supabase
           .from("user_follows").select("follower_id")
