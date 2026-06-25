@@ -22,6 +22,7 @@ type Appeal = {
   status: string;
   admin_response: string | null;
   created_at: string;
+  account_email?: string | null;
 };
 
 export function BanAppealsAdminSection() {
