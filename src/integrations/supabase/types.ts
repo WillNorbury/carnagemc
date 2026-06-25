@@ -2078,6 +2078,7 @@ export type Database = {
       }
     }
     Functions: {
+      admin_get_user_email: { Args: { _user_id: string }; Returns: string }
       can_access_ticket: { Args: { _ticket_id: string }; Returns: boolean }
       check_is_admin_logged: {
         Args: { _context?: string; _user_agent?: string }
