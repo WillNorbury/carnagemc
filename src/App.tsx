@@ -63,6 +63,9 @@ import QuizLeaderboard from "./pages/QuizLeaderboard.tsx";
 import DiscoverItemDetail from "./pages/DiscoverItemDetail.tsx";
 import Skripts from "./pages/Skripts.tsx";
 import SkriptUpload from "./pages/SkriptUpload.tsx";
+import Cart from "./pages/Cart.tsx";
+import Wishlist from "./pages/Wishlist.tsx";
+import { CartProvider } from "./lib/cart.tsx";
 
 
 const queryClient = new QueryClient();
@@ -132,6 +135,8 @@ const Shell = () => {
                   <Route path="/discover/skripts" element={<Skripts />} />
                   <Route path="/discover/skripts/new" element={<SkriptUpload />} />
                   <Route path="/skript/:slug" element={<DiscoverItemDetail urlKind="skript" />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/wishlist" element={<Wishlist />} />
                   <Route path="/features" element={<Features />} />
                   <Route path="/features/:slug" element={<FeatureDetail />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
@@ -169,7 +174,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Shell />
+          <CartProvider>
+            <Shell />
+          </CartProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
