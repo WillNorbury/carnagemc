@@ -3528,6 +3528,30 @@ const ChangelogTab = () => {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<typeof emptyChangelog | null>(null);
   const [saving, setSaving] = useState(false);
+  const [testFor, setTestFor] = useState<string | null>(null);
+  const [testEmail, setTestEmail] = useState("");
+  const [testSending, setTestSending] = useState(false);
+
+  const sendTest = async (entryId: string) => {
+    const email = testEmail.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Enter a valid email address");
+      return;
+    }
+    setTestSending(true);
+    const { data, error } = await supabase.functions.invoke("notify-changelog", {
+      body: { entryId, testEmail: email },
+    });
+    setTestSending(false);
+    if (error) return toast.error(`Test send failed: ${error.message}`);
+    if (data?.ok) {
+      toast.success(`Test email queued to ${email}`);
+      setTestFor(null);
+      setTestEmail("");
+    } else {
+      toast.error(data?.error ?? "Test send failed");
+    }
+  };
 
   const load = async () => {
     setLoading(true);
