@@ -5,6 +5,8 @@ const Skripts = () => (
     kind="skript"
     title="Skripts"
     searchPlaceholder="Search skripts (.sk)..."
+    createHref="/discover/skripts/new"
+    createLabel="Upload skript"
     filterGroups={[
       {
         title: "Category",
@@ -23,6 +25,10 @@ const Skripts = () => (
           "SkBee", "Skript-reflect", "skript-yaml", "skript-mirror",
           "skript-placeholders", "TuSKe", "skUtilities", "skript-gui",
         ],
+      },
+      {
+        title: "Pricing",
+        options: ["Free", "Paid"],
       },
     ]}
   />
