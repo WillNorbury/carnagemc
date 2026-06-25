@@ -12,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { roleLabel, type AppRole } from "@/lib/roles";
 import { toast } from "sonner";
-import { Loader2, User as UserIcon, FileText, LifeBuoy, ClipboardList, Link2, ExternalLink, CheckCircle2, Flame, Vote as VoteIcon, Trophy, ShoppingCart, Heart, Package } from "lucide-react";
+import { Loader2, User as UserIcon, FileText, LifeBuoy, ClipboardList, Link2, ExternalLink, CheckCircle2, Flame, Vote as VoteIcon, Trophy, ShoppingCart, Heart, Package, FileCode, Plus, Puzzle, Boxes } from "lucide-react";
 import MyPluginsPanel from "@/components/dashboard/MyPluginsPanel";
 import MyDiscoverItemsPanel from "@/components/dashboard/MyDiscoverItemsPanel";
 import { useCart } from "@/lib/cart";
