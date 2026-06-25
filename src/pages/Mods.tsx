@@ -31,6 +31,7 @@ type Mod = {
   jar_filename: string | null;
   jar_size: number | null;
   download_url: string | null;
+  price: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -123,13 +124,14 @@ const Mods = () => {
   const [selectedVersions, setSelectedVersions] = useState<Set<string>>(new Set());
   const [selectedLoaders, setSelectedLoaders] = useState<Set<string>>(new Set());
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+  const [selectedPricing, setSelectedPricing] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     document.title = "Mods — CarnageMC";
     (async () => {
       const { data } = await (supabase.from("mods" as any) as any)
         .select(
-          "id, slug, short_id, name, description, version, mc_version, mc_versions, loader, loaders, author, icon_url, category, tags, featured, jar_path, jar_filename, jar_size, download_url, created_at, updated_at, sort_order",
+          "id, slug, short_id, name, description, version, mc_version, mc_versions, loader, loaders, author, icon_url, category, tags, featured, jar_path, jar_filename, jar_size, download_url, price, created_at, updated_at, sort_order",
         )
         .eq("published", true)
         .order("featured", { ascending: false })
@@ -184,6 +186,15 @@ const Mods = () => {
       if (selectedVersions.size && !vs.some((v) => selectedVersions.has(v))) return false;
       if (selectedLoaders.size && !ls.some((l) => selectedLoaders.has(l))) return false;
       if (selectedCategories.size && !(m.category && selectedCategories.has(m.category))) return false;
+      if (selectedPricing.size) {
+        const isFree = !m.price || Number(m.price) === 0;
+        const wantsFree = selectedPricing.has("Free");
+        const wantsPaid = selectedPricing.has("Paid");
+        if (!(wantsFree && wantsPaid)) {
+          if (wantsFree && !isFree) return false;
+          if (wantsPaid && isFree) return false;
+        }
+      }
       if (!s) return true;
       return (
         m.name.toLowerCase().includes(s) ||
@@ -204,7 +215,7 @@ const Mods = () => {
       list = [...list].sort((a, b) => a.name.localeCompare(b.name));
     }
     return list;
-  }, [mods, q, sort, selectedVersions, selectedLoaders, selectedCategories]);
+  }, [mods, q, sort, selectedVersions, selectedLoaders, selectedCategories, selectedPricing]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize);
@@ -287,6 +298,18 @@ const Mods = () => {
                     onCheckedChange={() => toggle(selectedCategories, c, setSelectedCategories)}
                   />
                   {c}
+                </label>
+              ))}
+            </FilterSection>
+
+            <FilterSection title="Pricing">
+              {["Free", "Paid"].map((p) => (
+                <label key={p} className="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
+                  <Checkbox
+                    checked={selectedPricing.has(p)}
+                    onCheckedChange={() => toggle(selectedPricing, p, setSelectedPricing)}
+                  />
+                  {p}
                 </label>
               ))}
             </FilterSection>
@@ -391,6 +414,18 @@ const Mods = () => {
                             <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{m.description}</p>
                           )}
                           <div className="flex flex-wrap gap-1.5 mt-2">
+                            {(() => {
+                              const price = Number(m.price ?? 0);
+                              return (
+                                <Badge
+                                  className={price === 0
+                                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                    : "bg-primary text-primary-foreground"}
+                                >
+                                  {price === 0 ? "FREE" : `$${price.toFixed(2)}`}
+                                </Badge>
+                              );
+                            })()}
                             {modLoaders(m).map((l) => (
                               <Badge key={`l-${l}`} variant="secondary" className="font-normal">
                                 {l}

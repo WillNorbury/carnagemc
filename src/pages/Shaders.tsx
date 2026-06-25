@@ -22,6 +22,7 @@ const Shaders = () => (
         options: ["Potato", "Low", "Medium", "High", "Screenshot"],
       },
       { title: "Loader", options: ["Iris", "OptiFine", "Vanilla Shader"] },
+      { title: "Pricing", options: ["Free", "Paid"] },
     ]}
   />
 );

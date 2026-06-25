@@ -25,6 +25,7 @@ type Plugin = {
   platforms: string[] | null;
   mc_versions: string[] | null;
   featured: boolean;
+  price: number | null;
   updated_at: string;
 };
 
@@ -81,6 +82,7 @@ const Plugins = () => {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [activeCats, setActiveCats] = useState<string[]>([]);
+  const [activePricing, setActivePricing] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<"relevance" | "downloads" | "updated" | "newest">("relevance");
 
   useEffect(() => {
@@ -88,7 +90,7 @@ const Plugins = () => {
     (async () => {
       const { data } = await supabase
         .from("plugins")
-        .select("id, short_id, slug, name, description, version, author, user_id, icon_url, category, tags, platform, platforms, mc_versions, featured, updated_at")
+        .select("id, short_id, slug, name, description, version, author, user_id, icon_url, category, tags, platform, platforms, mc_versions, featured, price, updated_at")
         .eq("published", true)
         .order("featured", { ascending: false })
         .order("created_at", { ascending: false });
@@ -119,6 +121,15 @@ const Plugins = () => {
         const tagSet = new Set([(p.category ?? "").toLowerCase(), ...p.tags.map((t) => t.toLowerCase())]);
         if (!activeCats.some((c) => tagSet.has(c.toLowerCase()))) return false;
       }
+      if (activePricing.length > 0) {
+        const isFree = !p.price || Number(p.price) === 0;
+        const wantsFree = activePricing.includes("Free");
+        const wantsPaid = activePricing.includes("Paid");
+        if (!(wantsFree && wantsPaid)) {
+          if (wantsFree && !isFree) return false;
+          if (wantsPaid && isFree) return false;
+        }
+      }
       if (!q.trim()) return true;
       const s = q.toLowerCase();
       return (
@@ -135,7 +146,7 @@ const Plugins = () => {
       res = [...res].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
     }
     return res;
-  }, [plugins, q, activeCats, sortBy]);
+  }, [plugins, q, activeCats, activePricing, sortBy]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -206,6 +217,33 @@ const Plugins = () => {
                   Clear filters
                 </Button>
               )}
+            </Card>
+
+            <Card className="p-4">
+              <h3 className="font-display font-semibold mb-3">Pricing</h3>
+              <ul className="space-y-1.5">
+                {["Free", "Paid"].map((opt) => {
+                  const active = activePricing.includes(opt);
+                  return (
+                    <li key={opt}>
+                      <button
+                        onClick={() =>
+                          setActivePricing((prev) =>
+                            prev.includes(opt) ? prev.filter((x) => x !== opt) : [...prev, opt]
+                          )
+                        }
+                        className={`w-full text-left text-sm px-2 py-1 rounded transition ${
+                          active
+                            ? "text-primary bg-primary/10"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                        }`}
+                      >
+                        {opt}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
             </Card>
           </aside>
 
@@ -305,6 +343,18 @@ const Plugins = () => {
                                   </p>
                                 )}
                                 <div className="flex flex-wrap gap-1.5 mt-3">
+                                  {(() => {
+                                    const price = Number(p.price ?? 0);
+                                    return (
+                                      <Badge
+                                        className={`text-xs ${price === 0
+                                          ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                          : "bg-primary text-primary-foreground"}`}
+                                      >
+                                        {price === 0 ? "FREE" : `$${price.toFixed(2)}`}
+                                      </Badge>
+                                    );
+                                  })()}
                                   {p.category && (
                                     <Badge variant="secondary" className="text-xs">
                                       {p.category}

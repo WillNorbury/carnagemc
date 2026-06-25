@@ -24,6 +24,7 @@ const ResourcePacks = () => (
         title: "Resolution",
         options: ["8x or lower", "16x", "32x", "48x", "64x", "128x", "256x"],
       },
+      { title: "Pricing", options: ["Free", "Paid"] },
     ]}
   />
 );
