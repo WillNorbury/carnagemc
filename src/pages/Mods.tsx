@@ -131,7 +131,7 @@ const Mods = () => {
     (async () => {
       const { data } = await (supabase.from("mods" as any) as any)
         .select(
-          "id, slug, short_id, name, description, version, mc_version, mc_versions, loader, loaders, author, icon_url, category, tags, featured, jar_path, jar_filename, jar_size, download_url, created_at, updated_at, sort_order",
+          "id, slug, short_id, name, description, version, mc_version, mc_versions, loader, loaders, author, icon_url, category, tags, featured, jar_path, jar_filename, jar_size, download_url, price, created_at, updated_at, sort_order",
         )
         .eq("published", true)
         .order("featured", { ascending: false })
