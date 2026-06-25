@@ -121,6 +121,15 @@ const Plugins = () => {
         const tagSet = new Set([(p.category ?? "").toLowerCase(), ...p.tags.map((t) => t.toLowerCase())]);
         if (!activeCats.some((c) => tagSet.has(c.toLowerCase()))) return false;
       }
+      if (activePricing.length > 0) {
+        const isFree = !p.price || Number(p.price) === 0;
+        const wantsFree = activePricing.includes("Free");
+        const wantsPaid = activePricing.includes("Paid");
+        if (!(wantsFree && wantsPaid)) {
+          if (wantsFree && !isFree) return false;
+          if (wantsPaid && isFree) return false;
+        }
+      }
       if (!q.trim()) return true;
       const s = q.toLowerCase();
       return (
