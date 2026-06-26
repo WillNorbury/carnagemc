@@ -156,7 +156,7 @@ Deno.serve(async (req) => {
         : category === 'test' ? 'Test'
         : 'All Users'
 
-    const fromAddress = from ?? 'CarnageMC <noreply@carnagemc.net>'
+    const fromAddress = effectiveFrom ?? 'CarnageMC <noreply@carnagemc.net>'
     const stamp = Date.now()
 
     let queued = 0
