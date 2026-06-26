@@ -22,6 +22,15 @@ const SERVICE_NAMES: Record<string, string> = {
   portfolio: "Portfolio",
 };
 
+const SERVICE_ENDPOINTS: Record<string, string> = {
+  website: "https://carnagemc.net",
+  minecraft: "",
+  api: "",
+  panel: "https://panel.voxelnode.dev",
+  discord: "https://discord.gg/V8xYY2DasZ",
+  portfolio: "https://portfolio.carnagemc.net",
+};
+
 async function checkHttp(
   service_key: string,
   url: string,
