@@ -68,7 +68,9 @@ export const ApplicationStatusEmailEditor = () => {
     const next: Record<Variant, Row> = {} as any;
     (["approved", "rejected", "pending"] as Variant[]).forEach((v) => {
       const found = (data ?? []).find((r: any) => r.variant === v);
-      next[v] = found ?? {
+      next[v] = found
+        ? { ...(found as any), variant: v }
+        : {
         template_name: "application-status",
         variant: v,
         subject: DEFAULTS[v].subject,
