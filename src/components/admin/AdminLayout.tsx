@@ -78,6 +78,7 @@ export type AdminSection =
   | "contact"
   | "email-test"
   | "send-email"
+  | "email-diagnostics"
   | "quizzes"
   | "reports"
   | "bot-dashboard"
