@@ -261,6 +261,7 @@ const PluginDetail = () => {
     { id: "description", label: "Description" },
     { id: "gallery", label: "Gallery" },
     { id: "versions", label: "Versions" },
+    { id: "reviews", label: "Reviews" },
   ];
 
   return (
