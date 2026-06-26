@@ -3783,6 +3783,16 @@ const ChangelogTab = () => {
                     <Mail className="h-4 w-4 mr-1" /> Test
                   </Button>
                   <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => sendBroadcast(e)}
+                    disabled={broadcastingId === e.id || !e.published}
+                    title={e.published ? "Email this entry to all subscribers" : "Publish the entry first"}
+                  >
+                    <Mail className="h-4 w-4 mr-1" />
+                    {broadcastingId === e.id ? "Sending…" : "Send Changelog"}
+                  </Button>
+                  <Button
                     variant="outline"
                     size="sm"
                     onClick={() =>
