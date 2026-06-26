@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, Mail, Send, ShieldAlert } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Mail, Send, ShieldAlert, History, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+
+type AuditRow = {
+  id: string;
+  sender_email: string | null;
+  category: string;
+  from_address: string | null;
+  subject: string;
+  total_recipients: number;
+  queued_count: number;
+  failed_count: number;
+  test_email: string | null;
+  created_at: string;
+};
 
 type Category = "all" | "admins" | "owners" | "test";
 
@@ -26,6 +40,21 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
   const [testEmail, setTestEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [logs, setLogs] = useState<AuditRow[]>([]);
+  const [loadingLogs, setLoadingLogs] = useState(false);
+
+  const loadLogs = useCallback(async () => {
+    setLoadingLogs(true);
+    const { data, error } = await supabase
+      .from("admin_broadcast_logs")
+      .select("id,sender_email,category,from_address,subject,total_recipients,queued_count,failed_count,test_email,created_at")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    setLoadingLogs(false);
+    if (!error && data) setLogs(data as AuditRow[]);
+  }, []);
+
+  useEffect(() => { loadLogs(); }, [loadLogs]);
 
   const ownerOnlyCat = category === "owners" || category === "admins";
 
@@ -65,6 +94,7 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
     const ok = `Queued ${data.queued}/${data.total} (${data.category})`;
     setResult({ ok: true, msg: ok });
     toast.success(ok);
+    loadLogs();
   };
 
   return (
@@ -153,6 +183,58 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
             Send Email
           </Button>
         </div>
+      </Card>
+
+      <Card className="p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <History className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-bold">Broadcast Audit Log</h2>
+          </div>
+          <Button variant="outline" size="sm" onClick={loadLogs} disabled={loadingLogs}>
+            {loadingLogs ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+          </Button>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Records every broadcast sent through this panel: sender, time, category, and recipient count. Latest 50 entries.
+        </p>
+        {logs.length === 0 ? (
+          <p className="text-sm text-muted-foreground italic">No broadcasts logged yet.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-left text-xs uppercase text-muted-foreground border-b">
+                <tr>
+                  <th className="py-2 pr-3">When</th>
+                  <th className="py-2 pr-3">Sender</th>
+                  <th className="py-2 pr-3">Category</th>
+                  <th className="py-2 pr-3">Subject</th>
+                  <th className="py-2 pr-3 text-right">Recipients</th>
+                  <th className="py-2 pr-3 text-right">Queued</th>
+                  <th className="py-2 pr-3 text-right">Failed</th>
+                </tr>
+              </thead>
+              <tbody>
+                {logs.map((l) => (
+                  <tr key={l.id} className="border-b last:border-0">
+                    <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">
+                      {new Date(l.created_at).toLocaleString()}
+                    </td>
+                    <td className="py-2 pr-3">{l.sender_email ?? "—"}</td>
+                    <td className="py-2 pr-3"><Badge variant="secondary">{l.category}</Badge></td>
+                    <td className="py-2 pr-3 max-w-xs truncate" title={l.subject}>
+                      {l.subject}
+                      {l.test_email && <span className="ml-1 text-xs text-muted-foreground">→ {l.test_email}</span>}
+                    </td>
+                    <td className="py-2 pr-3 text-right">{l.total_recipients}</td>
+                    <td className="py-2 pr-3 text-right text-emerald-600">{l.queued_count}</td>
+                    <td className="py-2 pr-3 text-right text-destructive">{l.failed_count}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </Card>
     </div>
   );

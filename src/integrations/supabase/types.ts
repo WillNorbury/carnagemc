@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_broadcast_logs: {
+        Row: {
+          category: string
+          created_at: string
+          failed_count: number
+          from_address: string | null
+          id: string
+          message_preview: string | null
+          queued_count: number
+          sender_email: string | null
+          sender_id: string | null
+          subject: string
+          test_email: string | null
+          total_recipients: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          failed_count?: number
+          from_address?: string | null
+          id?: string
+          message_preview?: string | null
+          queued_count?: number
+          sender_email?: string | null
+          sender_id?: string | null
+          subject: string
+          test_email?: string | null
+          total_recipients?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          failed_count?: number
+          from_address?: string | null
+          id?: string
+          message_preview?: string | null
+          queued_count?: number
+          sender_email?: string | null
+          sender_id?: string | null
+          subject?: string
+          test_email?: string | null
+          total_recipients?: number
+        }
+        Relationships: []
+      }
       admin_check_logs: {
         Row: {
           context: string | null

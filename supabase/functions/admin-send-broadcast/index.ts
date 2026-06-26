@@ -172,6 +172,22 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Audit log
+    try {
+      await admin.from('admin_broadcast_logs').insert({
+        sender_id: userData.user.id,
+        sender_email: userData.user.email ?? null,
+        category: categoryLabel,
+        from_address: fromAddress,
+        subject,
+        message_preview: message.slice(0, 500),
+        total_recipients: list.length,
+        queued_count: queued,
+        failed_count: errors.length,
+        test_email: testEmail ?? null,
+      })
+    } catch (_) { /* non-fatal */ }
+
     return json({
       ok: true,
       total: list.length,
