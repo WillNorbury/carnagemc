@@ -70,7 +70,8 @@ Deno.serve(async (req) => {
 
     if (candidate) {
       const email = extractEmail(candidate)
-      const inList = ALLOWED_FROM.includes(candidate)
+      const allowedEmails = ALLOWED_FROM.map((a) => extractEmail(a)!).filter(Boolean)
+      const inList = ALLOWED_FROM.includes(candidate) || (!!email && allowedEmails.includes(email))
       const domainOk = !!email && allowedDomain(email)
       candidateCheck = {
         input: candidate,
@@ -82,7 +83,7 @@ Deno.serve(async (req) => {
           : !domainOk
           ? `Domain @${email.split('@')[1]} is not the verified sender domain (${SENDER_DOMAIN}) or display domain (${FROM_DOMAIN})`
           : !inList
-          ? 'Email is on the verified domain but not in the ALLOWED_FROM whitelist'
+          ? `Address @${email} is on the verified domain but not in the ALLOWED_FROM whitelist`
           : 'OK — verified domain and whitelisted',
       }
     }
