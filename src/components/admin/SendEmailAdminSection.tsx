@@ -94,6 +94,7 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
     const ok = `Queued ${data.queued}/${data.total} (${data.category})`;
     setResult({ ok: true, msg: ok });
     toast.success(ok);
+    loadLogs();
   };
 
   return (
