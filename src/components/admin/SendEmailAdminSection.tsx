@@ -118,6 +118,7 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
 
   return (
     <div className="space-y-6 max-w-3xl">
+      <AllowedFromAddressesAdminSection onChanged={loadFromOptions} />
       <Card className="p-6 space-y-4">
         <div className="flex items-center gap-2">
           <Mail className="h-5 w-5 text-primary" />
