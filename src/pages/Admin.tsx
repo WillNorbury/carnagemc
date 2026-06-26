@@ -4197,7 +4197,10 @@ const ApplicationsTab = () => {
                         placeholder="Internal notes..."
                       />
                     </div>
-                    <div className="flex justify-end gap-2">
+                    <div className="flex flex-wrap justify-end gap-2">
+                      <Button variant="secondary" onClick={() => decide(a.id, "reviewed")}>
+                        Mark reviewed
+                      </Button>
                       <Button variant="outline" onClick={() => decide(a.id, "rejected")}>
                         Reject
                       </Button>
