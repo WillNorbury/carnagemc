@@ -40,8 +40,21 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
   const [testEmail, setTestEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [logs, setLogs] = useState<AuditRow[]>([]);
+  const [loadingLogs, setLoadingLogs] = useState(false);
 
-  const ownerOnlyCat = category === "owners" || category === "admins";
+  const loadLogs = useCallback(async () => {
+    setLoadingLogs(true);
+    const { data, error } = await supabase
+      .from("admin_broadcast_logs")
+      .select("id,sender_email,category,from_address,subject,total_recipients,queued_count,failed_count,test_email,created_at")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    setLoadingLogs(false);
+    if (!error && data) setLogs(data as AuditRow[]);
+  }, []);
+
+  useEffect(() => { loadLogs(); }, [loadLogs]);
 
   const send = async () => {
     if (!subject.trim() || !message.trim()) {
