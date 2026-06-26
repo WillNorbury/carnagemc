@@ -30,4 +30,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'email-changed': emailChanged,
   'report-admin': reportAdmin,
   'changelog-update': changelogUpdate,
+  'admin-broadcast': adminBroadcast,
 }
