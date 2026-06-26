@@ -87,6 +87,40 @@ Deno.serve(async (req) => {
     return json({ error: 'Applicant has no email on file', skipped: true }, 200)
   }
 
+  const templateData = {
+    mcUsername: app.mc_username ?? '',
+    applicationType: app.type ?? '',
+    status: body.status,
+    reviewerNotes: body.reviewerNotes ?? '',
+    dashboardUrl: body.dashboardUrl ?? '',
+  }
+
+  // Look up admin-editable override for this status variant
+  const { data: override } = await admin
+    .from('email_template_overrides')
+    .select('subject, body_markdown, enabled')
+    .eq('template_name', 'application-status')
+    .eq('variant', body.status)
+    .maybeSingle()
+
+  let subjectOverride: string | undefined
+  let bodyHtmlOverride: string | undefined
+  let bodyTextOverride: string | undefined
+  if (override?.enabled && override.subject && override.body_markdown) {
+    const vars: Record<string, string> = {
+      mcUsername: String(templateData.mcUsername),
+      applicationType: String(templateData.applicationType),
+      status: String(templateData.status),
+      reviewerNotes: String(templateData.reviewerNotes),
+      dashboardUrl: String(templateData.dashboardUrl),
+    }
+    subjectOverride = applyVars(override.subject, vars)
+    const md = applyVars(override.body_markdown, vars)
+    const accent = body.status === 'approved' ? 'hsl(160,84%,39%)' : body.status === 'rejected' ? 'hsl(0,75%,55%)' : 'hsl(22,100%,55%)'
+    bodyHtmlOverride = wrapHtml(await marked.parse(md), accent)
+    bodyTextOverride = md
+  }
+
   const { data: invokeData, error: invokeErr } = await admin.functions.invoke(
     'send-transactional-email',
     {
@@ -95,13 +129,10 @@ Deno.serve(async (req) => {
         recipientEmail,
         idempotencyKey: `application-${app.id}-${body.status}`,
         from: 'CarnageMC Applications <applications@carnagemc.net>',
-        templateData: {
-          mcUsername: app.mc_username,
-          applicationType: app.type,
-          status: body.status,
-          reviewerNotes: body.reviewerNotes ?? '',
-          dashboardUrl: body.dashboardUrl ?? '',
-        },
+        templateData,
+        subjectOverride,
+        bodyHtmlOverride,
+        bodyTextOverride,
       },
     },
   )
