@@ -385,7 +385,10 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                   </p>
                 </Card>
               )}
+
+              <ItemReviews targetType="discover_item" targetId={item.id} />
             </div>
+
 
             <aside className="space-y-4">
               {!isServer && (
