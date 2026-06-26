@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import logoAsset from "@/assets/havocsmp-logo.png.asset.json";
 const logo = logoAsset.url;
 import { ThemeToggle } from "@/components/site/ThemeToggle";
+import { LiveClock } from "@/components/admin/LiveClock";
 import {
   LayoutDashboard,
   Users,
