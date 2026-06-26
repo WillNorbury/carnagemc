@@ -271,12 +271,14 @@ const ApplyForm = ({
       why: s.data.why,
       portfolioUrl: s.data.portfolio_url || "",
     };
+    const applicationsFrom = "CarnageMC Applications <applications@carnagemc.net>";
     if (user.email) {
       supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "application-received",
           recipientEmail: user.email,
           idempotencyKey: `application-received-${appId}`,
+          from: applicationsFrom,
           templateData: common,
         },
       }).catch(() => {});
@@ -285,6 +287,7 @@ const ApplyForm = ({
       body: {
         templateName: "application-admin",
         idempotencyKey: `application-admin-${appId}`,
+        from: applicationsFrom,
         templateData: {
           ...common,
           adminUrl: `${window.location.origin}/admin?tab=applications`,
