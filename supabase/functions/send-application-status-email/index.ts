@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
     }
     subjectOverride = applyVars(override.subject, vars)
     const md = applyVars(override.body_markdown, vars)
-    const accent = body.status === 'approved' ? 'hsl(160,84%,39%)' : body.status === 'rejected' ? 'hsl(0,75%,55%)' : 'hsl(22,100%,55%)'
+    const accent = body.status === 'approved' ? 'hsl(160,84%,39%)' : body.status === 'rejected' ? 'hsl(0,75%,55%)' : body.status === 'reviewed' ? 'hsl(200,90%,55%)' : 'hsl(22,100%,55%)'
     bodyHtmlOverride = wrapHtml(await marked.parse(md), accent)
     bodyTextOverride = md
   }
