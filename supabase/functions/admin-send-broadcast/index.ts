@@ -97,9 +97,7 @@ Deno.serve(async (req) => {
       effectiveFrom = allowedList[0].canonical
     }
 
-    const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
-      auth: { persistSession: false },
-    })
+
 
     // Build recipient list
     let list: string[] = []
