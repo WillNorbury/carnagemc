@@ -183,6 +183,11 @@ async function emailAdmins(
     link: string
     linkLabel: string
     idempotencyKey: string
+    serviceName?: string
+    endpoint?: string
+    errorSnippet?: string
+    duration?: string
+    uptimeWindow?: string
   },
 ) {
   try {
