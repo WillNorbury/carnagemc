@@ -4026,7 +4026,7 @@ const ApplicationsTab = () => {
     const { error } = await supabase
       .from("applications")
       .update({
-        status,
+        status: status as any,
         reviewer_notes: notes || null,
         reviewed_by: u?.id ?? null,
         reviewed_at: new Date().toISOString(),
