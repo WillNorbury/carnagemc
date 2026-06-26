@@ -1262,9 +1262,6 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string
-          discord_avatar: string | null
-          discord_id: string | null
-          discord_username: string | null
           display_name: string | null
           id: string
           mc_username: string | null
@@ -1275,9 +1272,6 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
-          discord_avatar?: string | null
-          discord_id?: string | null
-          discord_username?: string | null
           display_name?: string | null
           id: string
           mc_username?: string | null
@@ -1288,14 +1282,38 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
-          discord_avatar?: string | null
-          discord_id?: string | null
-          discord_username?: string | null
           display_name?: string | null
           id?: string
           mc_username?: string | null
           preferences?: Json
           updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles_private: {
+        Row: {
+          created_at: string
+          discord_avatar: string | null
+          discord_id: string | null
+          discord_username: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          discord_avatar?: string | null
+          discord_id?: string | null
+          discord_username?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          discord_avatar?: string | null
+          discord_id?: string | null
+          discord_username?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

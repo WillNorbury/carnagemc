@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
       await Promise.all([
         admin.from("site_content").select("value").eq("key", "discord_bot").maybeSingle(),
         admin.from("site_content").select("value").eq("key", "discord_role_map").maybeSingle(),
-        admin.from("profiles").select("discord_id, display_name").eq("id", user_id).maybeSingle(),
+        admin.from("profiles_private").select("discord_id").eq("user_id", user_id).maybeSingle(),
         admin.from("user_roles").select("role").eq("user_id", user_id),
         admin.from("user_custom_roles").select("role_key").eq("user_id", user_id),
       ]);

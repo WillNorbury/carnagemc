@@ -96,11 +96,18 @@ Deno.serve(async (req) => {
         Deno.env.get("SUPABASE_URL")!,
         Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
       );
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("id, preferences")
+      const { data: link } = await supabase
+        .from("profiles_private")
+        .select("user_id")
         .eq("discord_id", discordId)
         .maybeSingle();
+      const { data: profile } = link
+        ? await supabase
+            .from("profiles")
+            .select("id, preferences")
+            .eq("id", link.user_id)
+            .maybeSingle()
+        : { data: null as any };
 
       if (!profile) {
         return reply("⚠️ Your Discord account isn't linked to a CarnageMC account yet. Sign in on the website and link Discord first.");

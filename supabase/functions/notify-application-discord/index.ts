@@ -69,12 +69,14 @@ Deno.serve(async (req) => {
     if (userIds.length === 0) return json({ ok: true, sent: 0, skipped: 0, reason: "no staff" });
 
     const { data: profiles, error: profErr } = await admin
-      .from("profiles")
-      .select("id, discord_id, display_name")
-      .in("id", userIds);
+      .from("profiles_private")
+      .select("user_id, discord_id")
+      .in("user_id", userIds);
     if (profErr) return json({ ok: false, error: profErr.message }, 500);
 
-    const recipients = (profiles ?? []).filter((p) => p.discord_id);
+    const recipients = (profiles ?? [])
+      .filter((p) => p.discord_id)
+      .map((p) => ({ id: p.user_id, discord_id: p.discord_id }));
 
     const trunc = (s: string | null | undefined, n = 1024) =>
       !s ? "—" : s.length > n ? s.slice(0, n - 1) + "…" : s;

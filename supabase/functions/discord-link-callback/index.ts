@@ -88,13 +88,14 @@ Deno.serve(async (req) => {
     if (!userRes.ok) return redirect(returnTo, "error", "fetch_user_failed");
     const du = await userRes.json();
 
-    const { error: updErr } = await admin.from("profiles").update({
+    const { error: updErr } = await admin.from("profiles_private").upsert({
+      user_id: stateRow.user_id,
       discord_id: du.id,
       discord_username: du.global_name || du.username,
       discord_avatar: du.avatar
         ? `https://cdn.discordapp.com/avatars/${du.id}/${du.avatar}.png`
         : null,
-    }).eq("id", stateRow.user_id);
+    }, { onConflict: "user_id" });
 
     if (updErr) {
       const msg = updErr.message.includes("duplicate") ? "already_linked" : "update_failed";
