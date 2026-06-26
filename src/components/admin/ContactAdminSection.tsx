@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { logWebsiteEvent } from "@/lib/logEvent";
-import { Trash2, Plus } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Trash2, Plus, Send } from "lucide-react";
 
 type Method = {
   id: string;
@@ -28,6 +29,8 @@ type Message = {
   subject: string | null;
   message: string;
   handled: boolean;
+  reply_text: string | null;
+  replied_at: string | null;
   created_at: string;
 };
 
@@ -35,6 +38,8 @@ export function ContactAdminSection() {
   const [methods, setMethods] = useState<Method[]>([]);
   const [adding, setAdding] = useState<Omit<Method, "id"> | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({});
+  const [sendingId, setSendingId] = useState<string | null>(null);
 
   async function load() {
     const [{ data: m }, { data: msgs }] = await Promise.all([
@@ -72,6 +77,45 @@ export function ContactAdminSection() {
     const { error } = await supabase.from("contact_messages").update({ handled, handled_at: handled ? new Date().toISOString() : null }).eq("id", msg.id);
     if (error) return toast.error(error.message);
     setMessages(messages.map((x) => x.id === msg.id ? { ...x, handled } : x));
+  }
+
+  async function sendReply(msg: Message) {
+    const reply = (replyDrafts[msg.id] ?? "").trim();
+    if (!reply) return toast.error("Write a reply first");
+    setSendingId(msg.id);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const staffName = userData.user?.user_metadata?.display_name || userData.user?.user_metadata?.full_name || "CarnageMC Team";
+      const { error: emailErr } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "contact-reply",
+          recipientEmail: msg.email,
+          from: "CarnageMC Contact <contact@carnagemc.net>",
+          idempotencyKey: `contact-reply-${msg.id}-${Date.now()}`,
+          templateData: {
+            recipientName: msg.name,
+            originalSubject: msg.subject || "your message",
+            originalMessage: msg.message,
+            reply,
+            staffName,
+          },
+        },
+      });
+      if (emailErr) throw emailErr;
+      const { error: updErr } = await supabase
+        .from("contact_messages")
+        .update({ reply_text: reply, replied_at: new Date().toISOString(), handled: true, handled_at: new Date().toISOString() })
+        .eq("id", msg.id);
+      if (updErr) throw updErr;
+      logWebsiteEvent({ kind: "contact_reply_sent", title: "Contact reply sent", detail: `${msg.email}: ${msg.subject || "(no subject)"}`, color: 0x10b981 });
+      toast.success(`Reply emailed to ${msg.email} from contact@carnagemc.net`);
+      setReplyDrafts((d) => ({ ...d, [msg.id]: "" }));
+      load();
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to send reply");
+    } finally {
+      setSendingId(null);
+    }
   }
 
   return (
@@ -138,6 +182,28 @@ export function ContactAdminSection() {
                 </div>
               </div>
               <p className="text-sm whitespace-pre-wrap bg-muted/30 p-3 rounded">{msg.message}</p>
+              {msg.reply_text && (
+                <div className="text-sm bg-primary/5 border border-primary/20 p-3 rounded">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    Replied {msg.replied_at ? new Date(msg.replied_at).toLocaleString() : ""} from contact@carnagemc.net
+                  </div>
+                  <p className="whitespace-pre-wrap">{msg.reply_text}</p>
+                </div>
+              )}
+              <div className="space-y-2">
+                <Textarea
+                  placeholder={msg.reply_text ? "Send a follow-up reply…" : "Write a reply (sent from contact@carnagemc.net)…"}
+                  value={replyDrafts[msg.id] ?? ""}
+                  onChange={(e) => setReplyDrafts((d) => ({ ...d, [msg.id]: e.target.value }))}
+                  rows={3}
+                />
+                <div className="flex justify-end">
+                  <Button size="sm" onClick={() => sendReply(msg)} disabled={sendingId === msg.id || !(replyDrafts[msg.id] ?? "").trim()}>
+                    <Send className="h-4 w-4 mr-1" />
+                    {sendingId === msg.id ? "Sending…" : "Send reply"}
+                  </Button>
+                </div>
+              </div>
             </div>
           ))}
         </CardContent>
