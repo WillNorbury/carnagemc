@@ -131,6 +131,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   quizzes: { title: "Quizzes", description: "Create, edit, and publish scored quizzes." },
   reports: { title: "Reports", description: "Review reports submitted by users about accounts, plugins, or other content." },
   "send-email": { title: "Send Email", description: "Broadcast emails to all users, admins, or owners only." },
+  "email-diagnostics": { title: "Email Diagnostics", description: "Verify the notify.carnagemc.net sender domain and From-address allowlist." },
 };
 
 const Admin = () => {
