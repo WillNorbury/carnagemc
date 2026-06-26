@@ -78,6 +78,7 @@ import AdminModsPage from "@/pages/AdminMods";
 import QuizAdminSection from "@/components/admin/QuizAdminSection";
 import { ReportsAdminSection } from "@/components/admin/ReportsAdminSection";
 import { SendEmailAdminSection } from "@/components/admin/SendEmailAdminSection";
+import { EmailDiagnosticsSection } from "@/components/admin/EmailDiagnosticsSection";
 
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
