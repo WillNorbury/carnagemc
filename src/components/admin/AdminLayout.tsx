@@ -321,17 +321,6 @@ export const AdminLayout = ({
                 <ThemeToggle className="hidden md:inline-flex" />
               </div>
             </div>
-
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div className="min-w-0">
-                <h1 className="text-2xl md:text-3xl font-bold tracking-tight truncate">{title}</h1>
-                {description && <p className="mt-1.5 text-sm md:text-base text-muted-foreground">{description}</p>}
-              </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                {actions}
-                <ThemeToggle className="hidden md:inline-flex" />
-              </div>
-            </div>
             <div className="min-w-0 overflow-x-auto">{children}</div>
           </main>
         </ScrollArea>
