@@ -19,6 +19,7 @@ const ALLOWED_FROM = new Set([
   'CarnageMC <noreply@carnagemc.net>',
   'CarnageMC Updates <updates@notify.carnagemc.net>',
   '"William @ CarnageMC" <william@notify.carnagemc.net>',
+  '"William @ CarnageMC" <william@carnagemc.net>',
 ])
 
 Deno.serve(async (req) => {

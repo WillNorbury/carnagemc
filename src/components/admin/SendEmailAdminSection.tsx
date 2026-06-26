@@ -30,6 +30,7 @@ const FROM_OPTIONS = [
   { label: "noreply@carnagemc.net", value: "CarnageMC <noreply@carnagemc.net>" },
   { label: "updates@notify.carnagemc.net", value: "CarnageMC Updates <updates@notify.carnagemc.net>" },
   { label: "william@notify.carnagemc.net", value: '"William @ CarnageMC" <william@notify.carnagemc.net>' },
+  { label: "william@carnagemc.net", value: '"William @ CarnageMC" <william@carnagemc.net>' },
 ];
 
 export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
