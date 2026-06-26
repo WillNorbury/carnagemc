@@ -3995,6 +3995,7 @@ const ApplicationsTab = () => {
         templateName,
         recipientEmail: recipient,
         idempotencyKey: `test-${templateName}-${stamp}`,
+        from: "CarnageMC Applications <applications@carnagemc.net>",
         templateData,
       },
     });
