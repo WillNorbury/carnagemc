@@ -20,6 +20,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Gamepad2, ChevronDown, Search, KeyRound, Info } from "lucide-react";
+import ItemReviews from "@/components/site/ItemReviews";
 import {
   ArrowLeft,
   Bookmark,
