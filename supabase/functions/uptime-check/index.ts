@@ -164,6 +164,60 @@ async function logWebsiteDelivery(
   });
 }
 
+async function emailAdmins(
+  supabase: ReturnType<typeof createClient>,
+  payload: {
+    title: string
+    severity: 'info' | 'warning' | 'critical' | 'success'
+    summary: string
+    details: string
+    link: string
+    linkLabel: string
+    idempotencyKey: string
+  },
+) {
+  try {
+    const { data: roles } = await supabase
+      .from('user_roles')
+      .select('user_id')
+      .in('role', ['admin', 'owner']);
+    const ids = [...new Set((roles ?? []).map((r: any) => r.user_id).filter(Boolean))];
+    if (ids.length === 0) return;
+    const emails = new Set<string>();
+    for (const id of ids) {
+      const { data } = await (supabase.auth as any).admin.getUserById(id);
+      const e = data?.user?.email;
+      if (e) emails.add(e);
+    }
+    const envFallback = (Deno.env.get('ALERT_EMAIL') || '')
+      .split(/[\s,;\n]+/).map((s) => s.trim()).filter(Boolean);
+    for (const e of envFallback) emails.add(e);
+    await Promise.all(
+      [...emails].map((to) =>
+        supabase.functions.invoke('send-transactional-email', {
+          body: {
+            templateName: 'admin-alert',
+            recipientEmail: to,
+            from: 'CarnageMC Admin <admin@carnagemc.net>',
+            idempotencyKey: `${payload.idempotencyKey}-${to}`,
+            templateData: {
+              title: payload.title,
+              severity: payload.severity,
+              summary: payload.summary,
+              details: payload.details,
+              link: payload.link,
+              linkLabel: payload.linkLabel,
+              timestamp: new Date().toISOString(),
+            },
+          },
+        }).catch((err) => console.error('admin email failed', to, err))
+      ),
+    );
+  } catch (e) {
+    console.error('emailAdmins error', e);
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -302,6 +356,15 @@ Deno.serve(async (req) => {
           if (c.service_key === "website" && websiteWebhookUrl)
             await logWebsiteDelivery(supabase, "down", websiteWebhookUrl, results);
           await supabase.from("uptime_incidents").update({ alerted: true }).eq("id", inc.id);
+          await emailAdmins(supabase, {
+            title: `${name} is DOWN`,
+            severity: 'critical',
+            summary: `${name} has failed multiple consecutive checks.`,
+            details: `Service: ${name}\nUptime (24h): ${uptimePct}\nError: ${c.error || 'Unknown error'}`,
+            link: 'https://carnagemc.net/status',
+            linkLabel: 'View Status',
+            idempotencyKey: `uptime-down-${inc.id}`,
+          });
           alerts.push({ service: c.service_key, kind: "down" });
         }
       } else if (openIncident && !openIncident.alerted) {
@@ -339,6 +402,15 @@ Deno.serve(async (req) => {
           .from("uptime_incidents")
           .update({ alerted: true, last_error: c.error })
           .eq("id", openIncident.id);
+        await emailAdmins(supabase, {
+          title: `${name} still DOWN`,
+          severity: 'critical',
+          summary: `${name} is still failing after ${duration}.`,
+          details: `Service: ${name}\nUptime (24h): ${uptimePct}\nIncident duration: ${duration}\nError: ${c.error || 'Unknown error'}`,
+          link: 'https://carnagemc.net/status',
+          linkLabel: 'View Status',
+          idempotencyKey: `uptime-down-${openIncident.id}-rep`,
+        });
         alerts.push({ service: c.service_key, kind: "down" });
       }
     } else if (openIncident) {
@@ -374,6 +446,15 @@ Deno.serve(async (req) => {
         );
         if (c.service_key === "website" && websiteWebhookUrl)
           await logWebsiteDelivery(supabase, "up", websiteWebhookUrl, results);
+        await emailAdmins(supabase, {
+          title: `${name} recovered`,
+          severity: 'success',
+          summary: `${name} is responding successfully again.`,
+          details: `Service: ${name}\nUptime (24h): ${uptimePct}\nIncident lasted: ${duration}`,
+          link: 'https://carnagemc.net/status',
+          linkLabel: 'View Status',
+          idempotencyKey: `uptime-up-${openIncident.id}`,
+        });
         alerts.push({ service: c.service_key, kind: "up" });
       }
     }
