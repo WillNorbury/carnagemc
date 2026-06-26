@@ -119,6 +119,36 @@ export type Database = {
         }
         Relationships: []
       }
+      allowed_from_addresses: {
+        Row: {
+          active: boolean
+          created_at: string
+          created_by: string | null
+          display_name: string | null
+          email: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          display_name?: string | null
+          email: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          display_name?: string | null
+          email?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       application_types: {
         Row: {
           accepting: boolean
