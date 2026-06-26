@@ -20,7 +20,7 @@ function wrapHtml(inner: string, accent: string) {
 
 interface RequestBody {
   applicationId: string
-  status: 'approved' | 'rejected' | 'pending'
+  status: 'approved' | 'rejected' | 'pending' | 'reviewed'
   reviewerNotes?: string | null
   dashboardUrl?: string
 }
