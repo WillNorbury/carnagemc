@@ -3831,7 +3831,7 @@ type ApplicationRow = {
   id: string;
   user_id: string;
   type: "staff" | "builder" | "youtuber";
-  status: "pending" | "approved" | "rejected";
+  status: "pending" | "approved" | "rejected" | "reviewed";
   mc_username: string;
   discord: string | null;
   age: number | null;
