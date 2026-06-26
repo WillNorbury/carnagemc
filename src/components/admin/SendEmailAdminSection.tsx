@@ -149,7 +149,7 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
             <Select value={from} onValueChange={setFrom}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                {FROM_OPTIONS.map((o) => (
+                {fromOptions.map((o) => (
                   <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
                 ))}
               </SelectContent>
