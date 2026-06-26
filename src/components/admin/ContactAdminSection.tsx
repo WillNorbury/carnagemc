@@ -182,6 +182,28 @@ export function ContactAdminSection() {
                 </div>
               </div>
               <p className="text-sm whitespace-pre-wrap bg-muted/30 p-3 rounded">{msg.message}</p>
+              {msg.reply_text && (
+                <div className="text-sm bg-primary/5 border border-primary/20 p-3 rounded">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    Replied {msg.replied_at ? new Date(msg.replied_at).toLocaleString() : ""} from contact@carnagemc.net
+                  </div>
+                  <p className="whitespace-pre-wrap">{msg.reply_text}</p>
+                </div>
+              )}
+              <div className="space-y-2">
+                <Textarea
+                  placeholder={msg.reply_text ? "Send a follow-up reply…" : "Write a reply (sent from contact@carnagemc.net)…"}
+                  value={replyDrafts[msg.id] ?? ""}
+                  onChange={(e) => setReplyDrafts((d) => ({ ...d, [msg.id]: e.target.value }))}
+                  rows={3}
+                />
+                <div className="flex justify-end">
+                  <Button size="sm" onClick={() => sendReply(msg)} disabled={sendingId === msg.id || !(replyDrafts[msg.id] ?? "").trim()}>
+                    <Send className="h-4 w-4 mr-1" />
+                    {sendingId === msg.id ? "Sending…" : "Send reply"}
+                  </Button>
+                </div>
+              </div>
             </div>
           ))}
         </CardContent>
