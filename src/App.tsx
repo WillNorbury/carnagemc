@@ -68,6 +68,7 @@ import Cart from "./pages/Cart.tsx";
 import Wishlist from "./pages/Wishlist.tsx";
 import Orders from "./pages/Orders.tsx";
 import { CartProvider } from "./lib/cart.tsx";
+import TornadoDeaths from "./pages/TornadoDeaths.tsx";
 
 
 const queryClient = new QueryClient();
@@ -162,6 +163,8 @@ const Shell = () => {
                   <Route path="/quiz/:slug" element={<QuizTake />} />
                   <Route path="/quiz/:slug/leaderboard" element={<QuizLeaderboard />} />
                   <Route path="/quiz/:slug/result/:attemptId" element={<QuizResult />} />
+                  
+                  <Route path="/weather/tornado-deaths" element={<TornadoDeaths />} />
                   
                   <Route path="*" element={<NotFound />} />
           </Routes>
