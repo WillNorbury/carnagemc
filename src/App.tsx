@@ -68,6 +68,7 @@ import Cart from "./pages/Cart.tsx";
 import Wishlist from "./pages/Wishlist.tsx";
 import Orders from "./pages/Orders.tsx";
 import { CartProvider } from "./lib/cart.tsx";
+import TornadoDeaths from "./pages/TornadoDeaths.tsx";
 
 
 const queryClient = new QueryClient();
