@@ -116,6 +116,54 @@ export const AllowedFromAddressesAdminSection = ({
     onChanged?.();
   };
 
+  const startEdit = (row: AllowedFromRow) => {
+    setEditingId(row.id);
+    setEditEmail(row.email);
+    setEditDisplayName(row.display_name ?? "");
+    setEditEmailError(null);
+    setEditDisplayNameError(null);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditEmail("");
+    setEditDisplayName("");
+    setEditEmailError(null);
+    setEditDisplayNameError(null);
+  };
+
+  const saveEdit = async (row: AllowedFromRow) => {
+    const v = editEmail.trim().toLowerCase();
+    let emailErr: string | null = null;
+    let dnErr: string | null = null;
+    if (!v) emailErr = "Email is required";
+    else if (v.length > 254) emailErr = "Email is too long (max 254 chars)";
+    else if (!emailRe.test(v)) emailErr = "Enter a valid email address";
+    else if (rows.some((r) => r.id !== row.id && r.email.toLowerCase() === v))
+      emailErr = "This email is already in the whitelist";
+    if (editDisplayName.trim().length > 120) dnErr = "Display name is too long (max 120 chars)";
+    setEditEmailError(emailErr);
+    setEditDisplayNameError(dnErr);
+    if (emailErr || dnErr) return;
+    setSavingEdit(true);
+    const { error } = await (supabase.from("allowed_from_addresses" as any) as any)
+      .update({ email: v, display_name: editDisplayName.trim() || null })
+      .eq("id", row.id);
+    setSavingEdit(false);
+    if (error) {
+      const msg = error.message || "Failed to save";
+      if (/duplicate|unique/i.test(msg)) setEditEmailError("This email is already in the whitelist");
+      else if (/email_format/i.test(msg)) setEditEmailError("Email format rejected by server");
+      else if (/display_name_len/i.test(msg)) setEditDisplayNameError("Display name too long");
+      else toast.error(msg);
+      return;
+    }
+    toast.success("Updated");
+    cancelEdit();
+    load();
+    onChanged?.();
+  };
+
   return (
     <Card className="p-6 space-y-4">
       <div className="flex items-center justify-between gap-2">
