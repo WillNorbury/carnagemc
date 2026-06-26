@@ -56,6 +56,14 @@ import {
   Compass,
   Globe,
   Info,
+  Brain,
+  ShieldQuestion,
+  MailPlus,
+  ShoppingCart,
+  Heart,
+  Receipt,
+  Tornado,
+  FileCode,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -98,6 +106,7 @@ const communityGroup: NavGroup = {
     { to: "/staff", label: "Staff", icon: ShieldCheck },
     { to: "/mod-tiers", label: "Mod Tiers", icon: Star },
     { to: "/gallery", label: "Gallery", icon: ImageIcon },
+    { to: "/quiz", label: "Quizzes", icon: Brain },
   ],
 };
 
@@ -119,6 +128,8 @@ const helpGroup: NavGroup = {
     { to: "/install", label: "How to Install", icon: Download },
     { to: "/support", label: "Support", icon: LifeBuoy },
     { to: "/contact", label: "Contact", icon: Mail },
+    { to: "/trust", label: "Trust & Safety", icon: ShieldQuestion },
+    { to: "/subscribe", label: "Subscribe", icon: MailPlus },
   ],
 };
 
@@ -144,7 +155,15 @@ const discoverGroup: NavGroup = {
     { to: "/discover/data-packs", label: "Data Packs", icon: Database },
     { to: "/discover/shaders", label: "Shaders", icon: Sun },
     { to: "/discover/servers", label: "Servers", icon: ServerIcon },
+    { to: "/discover/skripts", label: "Skripts", icon: FileCode },
   ],
+};
+
+const weatherGroup: NavGroup = {
+  id: "weather",
+  label: "Weather",
+  icon: Tornado,
+  items: [{ to: "/weather/tornado-deaths", label: "Tornado Deaths", icon: Tornado }],
 };
 
 const soonGroup: NavGroup = {
@@ -163,6 +182,9 @@ const accountGroup: NavGroup = {
     { to: "/profile", label: "Profile", icon: UserIcon },
     { to: "/tickets", label: "Tickets", icon: Ticket },
     { to: "/link-account", label: "Link Account", icon: Link2 },
+    { to: "/cart", label: "Cart", icon: ShoppingCart },
+    { to: "/wishlist", label: "Wishlist", icon: Heart },
+    { to: "/orders", label: "Orders", icon: Receipt },
   ],
 };
 
@@ -174,6 +196,7 @@ const publicGroups: NavGroup[] = [
   helpGroup,
   actionsGroup,
   discoverGroup,
+  weatherGroup,
   soonGroup,
 ];
 
