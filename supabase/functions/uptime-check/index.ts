@@ -433,10 +433,15 @@ Deno.serve(async (req) => {
           title: `${name} still DOWN`,
           severity: 'critical',
           summary: `${name} is still failing after ${duration}.`,
-          details: `Service: ${name}\nUptime (24h): ${uptimePct}\nIncident duration: ${duration}\nError: ${c.error || 'Unknown error'}`,
+          details: `Service: ${name}\nEndpoint: ${SERVICE_ENDPOINTS[c.service_key] || 'n/a'}\nUptime (24h): ${uptimePct}\nIncident duration: ${duration}\nError: ${c.error || 'Unknown error'}`,
           link: 'https://carnagemc.net/status',
           linkLabel: 'View Status',
           idempotencyKey: `uptime-down-${openIncident.id}-rep`,
+          serviceName: name,
+          endpoint: SERVICE_ENDPOINTS[c.service_key] || c.service_key,
+          errorSnippet: (c.error || 'Unknown error').slice(0, 500),
+          duration,
+          uptimeWindow: uptimePct,
         });
         alerts.push({ service: c.service_key, kind: "down" });
       }
