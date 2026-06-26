@@ -210,6 +210,9 @@ export const EmailDiagnosticsSection = () => {
                 </div>
               </AlertDescription>
             </Alert>
+          )}
+
+
 
           <div className="pt-4 border-t space-y-2">
             <div className="text-sm font-medium">Send a test email</div>
