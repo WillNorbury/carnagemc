@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, Mail, Send, ShieldAlert } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Mail, Send, ShieldAlert, History, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+
+type AuditRow = {
+  id: string;
+  sender_email: string | null;
+  category: string;
+  from_address: string | null;
+  subject: string;
+  total_recipients: number;
+  queued_count: number;
+  failed_count: number;
+  test_email: string | null;
+  created_at: string;
+};
 
 type Category = "all" | "admins" | "owners" | "test";
 
