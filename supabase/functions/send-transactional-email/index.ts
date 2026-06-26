@@ -303,20 +303,20 @@ Deno.serve(async (req) => {
     unsubscribeToken = existingToken.token
   }
 
-  // 4. Render React Email template to HTML and plain text
-  const html = await renderAsync(
+  // 4. Render React Email template to HTML and plain text (skipped if caller provided overrides)
+  const html = bodyHtmlOverride ?? await renderAsync(
     React.createElement(template.component, templateData)
   )
-  const plainText = await renderAsync(
+  const plainText = bodyTextOverride ?? await renderAsync(
     React.createElement(template.component, templateData),
     { plainText: true }
   )
 
-  // Resolve subject — supports static string or dynamic function
-  const resolvedSubject =
-    typeof template.subject === 'function'
+  // Resolve subject — caller override wins, then dynamic, then static string
+  const resolvedSubject = subjectOverride
+    ?? (typeof template.subject === 'function'
       ? template.subject(templateData)
-      : template.subject
+      : template.subject)
 
   // 5. Enqueue the pre-rendered email for async processing by the dispatcher.
   // The dispatcher (process-email-queue) handles sending, retries, and rate-limit backoff.
