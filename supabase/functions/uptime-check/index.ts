@@ -164,6 +164,60 @@ async function logWebsiteDelivery(
   });
 }
 
+async function emailAdmins(
+  supabase: ReturnType<typeof createClient>,
+  payload: {
+    title: string
+    severity: 'info' | 'warning' | 'critical' | 'success'
+    summary: string
+    details: string
+    link: string
+    linkLabel: string
+    idempotencyKey: string
+  },
+) {
+  try {
+    const { data: roles } = await supabase
+      .from('user_roles')
+      .select('user_id')
+      .in('role', ['admin', 'owner']);
+    const ids = [...new Set((roles ?? []).map((r: any) => r.user_id).filter(Boolean))];
+    if (ids.length === 0) return;
+    const emails = new Set<string>();
+    for (const id of ids) {
+      const { data } = await (supabase.auth as any).admin.getUserById(id);
+      const e = data?.user?.email;
+      if (e) emails.add(e);
+    }
+    const envFallback = (Deno.env.get('ALERT_EMAIL') || '')
+      .split(/[\s,;\n]+/).map((s) => s.trim()).filter(Boolean);
+    for (const e of envFallback) emails.add(e);
+    await Promise.all(
+      [...emails].map((to) =>
+        supabase.functions.invoke('send-transactional-email', {
+          body: {
+            templateName: 'admin-alert',
+            recipientEmail: to,
+            from: 'CarnageMC Admin <admin@carnagemc.net>',
+            idempotencyKey: `${payload.idempotencyKey}-${to}`,
+            templateData: {
+              title: payload.title,
+              severity: payload.severity,
+              summary: payload.summary,
+              details: payload.details,
+              link: payload.link,
+              linkLabel: payload.linkLabel,
+              timestamp: new Date().toISOString(),
+            },
+          },
+        }).catch((err) => console.error('admin email failed', to, err))
+      ),
+    );
+  } catch (e) {
+    console.error('emailAdmins error', e);
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
