@@ -133,16 +133,32 @@ export const AllowedFromAddressesAdminSection = ({
             type="email"
             placeholder="name@notify.carnagemc.net"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            aria-invalid={!!emailError}
+            className={emailError ? "border-destructive focus-visible:ring-destructive" : ""}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (emailError) setEmailError(null);
+            }}
+            onBlur={() => {
+              const { emailErr } = validate(email, displayName);
+              setEmailError(emailErr);
+            }}
           />
+          {emailError && <p className="text-xs text-destructive">{emailError}</p>}
         </div>
         <div className="space-y-1">
           <Label>Display name (optional)</Label>
           <Input
             placeholder="CarnageMC Updates"
             value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
+            aria-invalid={!!displayNameError}
+            className={displayNameError ? "border-destructive focus-visible:ring-destructive" : ""}
+            onChange={(e) => {
+              setDisplayName(e.target.value);
+              if (displayNameError) setDisplayNameError(null);
+            }}
           />
+          {displayNameError && <p className="text-xs text-destructive">{displayNameError}</p>}
         </div>
         <Button onClick={add} disabled={saving}>
           {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
