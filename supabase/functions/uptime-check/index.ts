@@ -222,6 +222,11 @@ async function emailAdmins(
               link: payload.link,
               linkLabel: payload.linkLabel,
               timestamp: new Date().toISOString(),
+              serviceName: payload.serviceName,
+              endpoint: payload.endpoint,
+              errorSnippet: payload.errorSnippet,
+              duration: payload.duration,
+              uptimeWindow: payload.uptimeWindow,
             },
           },
         }).catch((err) => console.error('admin email failed', to, err))
