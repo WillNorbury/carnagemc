@@ -30,6 +30,8 @@ export const AllowedFromAddressesAdminSection = ({
   const [saving, setSaving] = useState(false);
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [displayNameError, setDisplayNameError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -46,18 +48,43 @@ export const AllowedFromAddressesAdminSection = ({
     load();
   }, [load]);
 
+  const validate = (e: string, dn: string): { emailErr: string | null; dnErr: string | null } => {
+    let emailErr: string | null = null;
+    let dnErr: string | null = null;
+    const v = e.trim().toLowerCase();
+    if (!v) emailErr = "Email is required";
+    else if (v.length > 254) emailErr = "Email is too long (max 254 chars)";
+    else if (!emailRe.test(v)) emailErr = "Enter a valid email address";
+    else if (rows.some((r) => r.email.toLowerCase() === v))
+      emailErr = "This email is already in the whitelist";
+    if (dn.trim().length > 120) dnErr = "Display name is too long (max 120 chars)";
+    return { emailErr, dnErr };
+  };
+
   const add = async () => {
+    const { emailErr, dnErr } = validate(email, displayName);
+    setEmailError(emailErr);
+    setDisplayNameError(dnErr);
+    if (emailErr || dnErr) return;
     const e = email.trim().toLowerCase();
-    if (!emailRe.test(e)) return toast.error("Enter a valid email");
     setSaving(true);
     const { error } = await (supabase.from("allowed_from_addresses" as any) as any).insert({
       email: e,
       display_name: displayName.trim() || null,
     });
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      const msg = error.message || "Failed to add";
+      if (/duplicate|unique/i.test(msg)) setEmailError("This email is already in the whitelist");
+      else if (/email_format/i.test(msg)) setEmailError("Email format rejected by server");
+      else if (/display_name_len/i.test(msg)) setDisplayNameError("Display name too long");
+      else toast.error(msg);
+      return;
+    }
     setEmail("");
     setDisplayName("");
+    setEmailError(null);
+    setDisplayNameError(null);
     toast.success("Sender added");
     load();
     onChanged?.();
@@ -106,16 +133,32 @@ export const AllowedFromAddressesAdminSection = ({
             type="email"
             placeholder="name@notify.carnagemc.net"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            aria-invalid={!!emailError}
+            className={emailError ? "border-destructive focus-visible:ring-destructive" : ""}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (emailError) setEmailError(null);
+            }}
+            onBlur={() => {
+              const { emailErr } = validate(email, displayName);
+              setEmailError(emailErr);
+            }}
           />
+          {emailError && <p className="text-xs text-destructive">{emailError}</p>}
         </div>
         <div className="space-y-1">
           <Label>Display name (optional)</Label>
           <Input
             placeholder="CarnageMC Updates"
             value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
+            aria-invalid={!!displayNameError}
+            className={displayNameError ? "border-destructive focus-visible:ring-destructive" : ""}
+            onChange={(e) => {
+              setDisplayName(e.target.value);
+              if (displayNameError) setDisplayNameError(null);
+            }}
           />
+          {displayNameError && <p className="text-xs text-destructive">{displayNameError}</p>}
         </div>
         <Button onClick={add} disabled={saving}>
           {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
