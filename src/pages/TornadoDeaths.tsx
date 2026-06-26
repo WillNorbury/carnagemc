@@ -187,7 +187,7 @@ const TornadoDeaths = () => {
           </Button>
         </div>
         <Card className="p-4 md:p-6">
-          <HeatBar rows={STATES} valueKey={mode} />
+          <USHeatMap rows={STATES} valueKey={mode} />
           <div className="flex items-center justify-between text-xs text-muted-foreground mt-4">
             <span>Fewer deaths</span>
             <div className="flex-1 mx-3 h-2 rounded" style={{ background: "linear-gradient(90deg, hsl(120 70% 45%), hsl(60 70% 45%), hsl(0 70% 45%))" }} />
