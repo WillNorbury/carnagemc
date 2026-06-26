@@ -129,6 +129,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   "email-test": { title: "Email Test", description: "Trigger signup or password reset test emails and watch delivery status." },
   quizzes: { title: "Quizzes", description: "Create, edit, and publish scored quizzes." },
   reports: { title: "Reports", description: "Review reports submitted by users about accounts, plugins, or other content." },
+  "send-email": { title: "Send Email", description: "Broadcast emails to all users, admins, or owners only." },
 };
 
 const Admin = () => {
