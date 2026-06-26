@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
+import { userProfilePath } from "@/lib/userSlug";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import PageLoader from "@/components/site/PageLoader";
@@ -39,6 +41,7 @@ import {
 type DiscoverItem = {
   id: string;
   kind: string;
+  user_id: string | null;
   name: string;
   slug: string | null;
   description: string | null;
@@ -55,6 +58,13 @@ type DiscoverItem = {
   meta: Record<string, any> | null;
   created_at: string;
   updated_at: string;
+};
+
+type CreatorProfile = {
+  id: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  mc_username: string | null;
 };
 
 const getServerIp = (it: DiscoverItem): string | null => {
@@ -143,6 +153,7 @@ const DiscoverItemsBrowse = ({
   createLabel = "Create listing",
 }: Props) => {
   const [items, setItems] = useState<DiscoverItem[]>([]);
+  const [creators, setCreators] = useState<Record<string, CreatorProfile>>({});
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<SortKey>("relevance");
@@ -161,13 +172,26 @@ const DiscoverItemsBrowse = ({
     (async () => {
       const { data } = await (supabase.from("discover_items" as any) as any)
         .select(
-          "id, kind, name, slug, description, long_description, author, version, icon_url, banner_url, category, tags, featured, download_url, external_url, meta, created_at, updated_at",
+          "id, kind, user_id, name, slug, description, long_description, author, version, icon_url, banner_url, category, tags, featured, download_url, external_url, meta, created_at, updated_at",
         )
         .eq("kind", kind)
         .eq("published", true)
         .order("featured", { ascending: false })
         .order("created_at", { ascending: false });
-      setItems((data ?? []) as DiscoverItem[]);
+      const list = (data ?? []) as DiscoverItem[];
+      setItems(list);
+      const userIds = Array.from(new Set(list.map((i) => i.user_id).filter(Boolean) as string[]));
+      if (userIds.length) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("id, display_name, avatar_url, mc_username")
+          .in("id", userIds);
+        const map: Record<string, CreatorProfile> = {};
+        ((profs ?? []) as CreatorProfile[]).forEach((p) => { map[p.id] = p; });
+        setCreators(map);
+      } else {
+        setCreators({});
+      }
       setLoading(false);
     })();
   }, [kind]);
@@ -412,13 +436,37 @@ const DiscoverItemsBrowse = ({
                             <span className="font-display font-bold text-lg group-hover:text-primary transition">
                               {it.name}
                             </span>
-                            {it.author && (
+                            {it.author && !it.user_id && (
                               <span className="text-sm text-muted-foreground">
                                 by <span className="text-foreground/80">{it.author}</span>
                               </span>
                             )}
                             {it.featured && <Sparkles className="h-4 w-4 text-primary" />}
                           </div>
+                          {(() => {
+                            const creator = it.user_id ? creators[it.user_id] : null;
+                            if (!creator) return null;
+                            const initials = (creator.display_name ?? creator.mc_username ?? "?").slice(0, 2).toUpperCase();
+                            const avatar = creator.avatar_url || (creator.mc_username ? `https://mc-heads.net/avatar/${creator.mc_username}/64` : undefined);
+                            const name = creator.display_name || creator.mc_username || "Unknown";
+                            return (
+                              <Link
+                                to={userProfilePath(creator)}
+                                onClick={(e) => e.stopPropagation()}
+                                className="mt-1 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary w-fit"
+                              >
+                                <span>by</span>
+                                <Avatar className="h-4 w-4">
+                                  <AvatarImage src={avatar} />
+                                  <AvatarFallback className="text-[8px]">{initials}</AvatarFallback>
+                                </Avatar>
+                                <span className="font-medium text-foreground/80 hover:text-primary">{name}</span>
+                                {it.author && it.author !== name && (
+                                  <span className="text-muted-foreground/70">· credited as {it.author}</span>
+                                )}
+                              </Link>
+                            );
+                          })()}
                           {it.description && (
                             <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
                               {it.description}
