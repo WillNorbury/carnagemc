@@ -13,14 +13,15 @@ const json = (body: unknown, status = 200) =>
 
 type Category = 'all' | 'admins' | 'owners' | 'subscribers' | 'test'
 
-// Display names with special chars (like @) MUST be RFC 5322 quoted, or
-// providers reject the From header as invalid.
-const ALLOWED_FROM = new Set([
-  'CarnageMC <noreply@carnagemc.net>',
-  'CarnageMC Updates <updates@notify.carnagemc.net>',
-  '"William @ CarnageMC" <william@notify.carnagemc.net>',
-  '"William @ CarnageMC" <william@carnagemc.net>',
-])
+// Build the canonical RFC 5322 "Display <email>" string.
+const formatFrom = (email: string, displayName: string | null) => {
+  const e = (email ?? '').trim()
+  const dn = (displayName ?? '').trim()
+  if (!dn) return e
+  const needsQuote = /[",@<>()\[\]:;\\]/.test(dn)
+  const safeDn = needsQuote ? `"${dn.replace(/"/g, '\\"')}"` : dn
+  return `${safeDn} <${e}>`
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
