@@ -10,6 +10,7 @@ import { template as applicationAdmin } from './application-admin.tsx'
 import { template as emailChanged } from './email-changed.tsx'
 import { template as reportAdmin } from './report-admin.tsx'
 import { template as changelogUpdate } from './changelog-update.tsx'
+import { template as adminBroadcast } from './admin-broadcast.tsx'
 
 export interface TemplateEntry {
   component: React.ComponentType<any>
@@ -29,4 +30,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'email-changed': emailChanged,
   'report-admin': reportAdmin,
   'changelog-update': changelogUpdate,
+  'admin-broadcast': adminBroadcast,
 }

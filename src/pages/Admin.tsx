@@ -77,6 +77,7 @@ import AdminEventsPage from "@/pages/AdminEvents";
 import AdminModsPage from "@/pages/AdminMods";
 import QuizAdminSection from "@/components/admin/QuizAdminSection";
 import { ReportsAdminSection } from "@/components/admin/ReportsAdminSection";
+import { SendEmailAdminSection } from "@/components/admin/SendEmailAdminSection";
 
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
@@ -129,6 +130,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   "email-test": { title: "Email Test", description: "Trigger signup or password reset test emails and watch delivery status." },
   quizzes: { title: "Quizzes", description: "Create, edit, and publish scored quizzes." },
   reports: { title: "Reports", description: "Review reports submitted by users about accounts, plugins, or other content." },
+  "send-email": { title: "Send Email", description: "Broadcast emails to all users, admins, or owners only." },
 };
 
 const Admin = () => {
@@ -208,6 +210,7 @@ const Admin = () => {
       {section === "email-test" && <EmailTestSection />}
       {section === "quizzes" && <QuizAdminSection />}
       {section === "reports" && <ReportsAdminSection />}
+      {section === "send-email" && <SendEmailAdminSection isOwner={isOwner} />}
       
       
       
