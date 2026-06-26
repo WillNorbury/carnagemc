@@ -913,6 +913,39 @@ export type Database = {
         }
         Relationships: []
       }
+      item_reviews: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          rating: number
+          target_id: string
+          target_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          id?: string
+          rating: number
+          target_id: string
+          target_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          target_id?: string
+          target_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       mod_likes: {
         Row: {
           created_at: string

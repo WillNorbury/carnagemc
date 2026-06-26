@@ -20,6 +20,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Gamepad2, ChevronDown, Search, KeyRound, Info } from "lucide-react";
+import ItemReviews from "@/components/site/ItemReviews";
 import {
   ArrowLeft,
   Bookmark,
@@ -112,7 +113,7 @@ const GAME_VERSIONS = [
   "1.18.2","1.18.1","1.18","1.17.1","1.17","1.16.5","1.16.4","1.16.3","1.16.2","1.16.1","1.16",
 ];
 
-type Tab = "description" | "gallery" | "versions";
+type Tab = "description" | "gallery" | "versions" | "reviews";
 
 type PluginVersion = {
   id: string;
@@ -261,6 +262,7 @@ const PluginDetail = () => {
     { id: "description", label: "Description" },
     { id: "gallery", label: "Gallery" },
     { id: "versions", label: "Versions" },
+    { id: "reviews", label: "Reviews" },
   ];
 
   return (
@@ -498,7 +500,12 @@ const PluginDetail = () => {
                     </div>
                   )}
 
+                  {tab === "reviews" && plugin && (
+                    <ItemReviews targetType="plugin" targetId={plugin.id} />
+                  )}
+
                 </Card>
+
               </div>
 
               {/* Sidebar */}

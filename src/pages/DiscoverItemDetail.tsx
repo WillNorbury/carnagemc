@@ -25,6 +25,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useCart } from "@/lib/cart";
+import ItemReviews from "@/components/site/ItemReviews";
 
 
 type DiscoverItem = {
@@ -384,7 +385,10 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                   </p>
                 </Card>
               )}
+
+              <ItemReviews targetType="discover_item" targetId={item.id} />
             </div>
+
 
             <aside className="space-y-4">
               {!isServer && (
