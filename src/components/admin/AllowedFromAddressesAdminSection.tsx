@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { AtSign, Loader2, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { AtSign, Check, Loader2, Pencil, Plus, RefreshCw, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { confirm } from "@/lib/confirm";
 
@@ -32,6 +32,12 @@ export const AllowedFromAddressesAdminSection = ({
   const [displayName, setDisplayName] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);
   const [displayNameError, setDisplayNameError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editEmail, setEditEmail] = useState("");
+  const [editDisplayName, setEditDisplayName] = useState("");
+  const [editEmailError, setEditEmailError] = useState<string | null>(null);
+  const [editDisplayNameError, setEditDisplayNameError] = useState<string | null>(null);
+  const [savingEdit, setSavingEdit] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -110,6 +116,54 @@ export const AllowedFromAddressesAdminSection = ({
     onChanged?.();
   };
 
+  const startEdit = (row: AllowedFromRow) => {
+    setEditingId(row.id);
+    setEditEmail(row.email);
+    setEditDisplayName(row.display_name ?? "");
+    setEditEmailError(null);
+    setEditDisplayNameError(null);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditEmail("");
+    setEditDisplayName("");
+    setEditEmailError(null);
+    setEditDisplayNameError(null);
+  };
+
+  const saveEdit = async (row: AllowedFromRow) => {
+    const v = editEmail.trim().toLowerCase();
+    let emailErr: string | null = null;
+    let dnErr: string | null = null;
+    if (!v) emailErr = "Email is required";
+    else if (v.length > 254) emailErr = "Email is too long (max 254 chars)";
+    else if (!emailRe.test(v)) emailErr = "Enter a valid email address";
+    else if (rows.some((r) => r.id !== row.id && r.email.toLowerCase() === v))
+      emailErr = "This email is already in the whitelist";
+    if (editDisplayName.trim().length > 120) dnErr = "Display name is too long (max 120 chars)";
+    setEditEmailError(emailErr);
+    setEditDisplayNameError(dnErr);
+    if (emailErr || dnErr) return;
+    setSavingEdit(true);
+    const { error } = await (supabase.from("allowed_from_addresses" as any) as any)
+      .update({ email: v, display_name: editDisplayName.trim() || null })
+      .eq("id", row.id);
+    setSavingEdit(false);
+    if (error) {
+      const msg = error.message || "Failed to save";
+      if (/duplicate|unique/i.test(msg)) setEditEmailError("This email is already in the whitelist");
+      else if (/email_format/i.test(msg)) setEditEmailError("Email format rejected by server");
+      else if (/display_name_len/i.test(msg)) setEditDisplayNameError("Display name too long");
+      else toast.error(msg);
+      return;
+    }
+    toast.success("Updated");
+    cancelEdit();
+    load();
+    onChanged?.();
+  };
+
   return (
     <Card className="p-6 space-y-4">
       <div className="flex items-center justify-between gap-2">
@@ -180,23 +234,80 @@ export const AllowedFromAddressesAdminSection = ({
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => (
-                <tr key={r.id} className="border-b last:border-0">
-                  <td className="py-2 pr-3 font-mono">{r.email}</td>
-                  <td className="py-2 pr-3">{r.display_name ?? <span className="text-muted-foreground">—</span>}</td>
-                  <td className="py-2 pr-3">
-                    <div className="flex items-center gap-2">
-                      <Switch checked={r.active} onCheckedChange={() => toggleActive(r)} />
-                      <Badge variant={r.active ? "default" : "outline"}>{r.active ? "Active" : "Disabled"}</Badge>
-                    </div>
-                  </td>
-                  <td className="py-2 pr-3 text-right">
-                    <Button size="sm" variant="ghost" onClick={() => remove(r)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+              {rows.map((r) => {
+                const isEditing = editingId === r.id;
+                return (
+                  <tr key={r.id} className="border-b last:border-0 align-top">
+                    <td className="py-2 pr-3 font-mono">
+                      {isEditing ? (
+                        <div className="space-y-1">
+                          <Input
+                            type="email"
+                            value={editEmail}
+                            aria-invalid={!!editEmailError}
+                            className={`h-8 font-mono text-xs ${editEmailError ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                            onChange={(e) => {
+                              setEditEmail(e.target.value);
+                              if (editEmailError) setEditEmailError(null);
+                            }}
+                          />
+                          {editEmailError && <p className="text-xs text-destructive">{editEmailError}</p>}
+                        </div>
+                      ) : (
+                        r.email
+                      )}
+                    </td>
+                    <td className="py-2 pr-3">
+                      {isEditing ? (
+                        <div className="space-y-1">
+                          <Input
+                            value={editDisplayName}
+                            placeholder="Display name (optional)"
+                            aria-invalid={!!editDisplayNameError}
+                            className={`h-8 text-xs ${editDisplayNameError ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                            onChange={(e) => {
+                              setEditDisplayName(e.target.value);
+                              if (editDisplayNameError) setEditDisplayNameError(null);
+                            }}
+                          />
+                          {editDisplayNameError && <p className="text-xs text-destructive">{editDisplayNameError}</p>}
+                        </div>
+                      ) : (
+                        r.display_name ?? <span className="text-muted-foreground">—</span>
+                      )}
+                    </td>
+                    <td className="py-2 pr-3">
+                      <div className="flex items-center gap-2">
+                        <Switch checked={r.active} onCheckedChange={() => toggleActive(r)} disabled={isEditing} />
+                        <Badge variant={r.active ? "default" : "outline"}>{r.active ? "Active" : "Disabled"}</Badge>
+                      </div>
+                    </td>
+                    <td className="py-2 pr-3 text-right">
+                      <div className="flex justify-end gap-1">
+                        {isEditing ? (
+                          <>
+                            <Button size="sm" variant="ghost" onClick={() => saveEdit(r)} disabled={savingEdit}>
+                              {savingEdit ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={cancelEdit} disabled={savingEdit}>
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button size="sm" variant="ghost" onClick={() => startEdit(r)}>
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => remove(r)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

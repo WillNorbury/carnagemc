@@ -81,6 +81,7 @@ Deno.serve(async (req) => {
         templateName: 'application-status',
         recipientEmail,
         idempotencyKey: `application-${app.id}-${body.status}`,
+        from: 'CarnageMC Applications <applications@carnagemc.net>',
         templateData: {
           mcUsername: app.mc_username,
           applicationType: app.type,
