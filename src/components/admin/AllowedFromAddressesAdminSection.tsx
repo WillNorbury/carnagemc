@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { AtSign, Loader2, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { AtSign, Check, Loader2, Pencil, Plus, RefreshCw, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { confirm } from "@/lib/confirm";
 
