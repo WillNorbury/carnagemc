@@ -1,5 +1,18 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors'
+import { marked } from 'npm:marked@12'
+
+function applyVars(input: string, data: Record<string, string>): string {
+  return input.replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (_, k) => data[k] ?? '')
+}
+
+function wrapHtml(inner: string, accent: string) {
+  return `<!doctype html><html><body style="background:#ffffff;font-family:Inter,Arial,sans-serif;margin:0;padding:0;">
+  <div style="max-width:560px;margin:0 auto;padding:24px 28px;color:hsl(20,25%,15%);font-size:14px;line-height:1.6;border-top:4px solid ${accent};">
+  ${inner}
+  <p style="font-size:12px;color:#999;margin:24px 0 0;">— CarnageMC Staff</p>
+  </div></body></html>`
+}
 
 // Admin-only edge function: looks up an applicant's email from auth.users using
 // the service role, then enqueues the `application-status` email via the
@@ -74,6 +87,40 @@ Deno.serve(async (req) => {
     return json({ error: 'Applicant has no email on file', skipped: true }, 200)
   }
 
+  const templateData = {
+    mcUsername: app.mc_username ?? '',
+    applicationType: app.type ?? '',
+    status: body.status,
+    reviewerNotes: body.reviewerNotes ?? '',
+    dashboardUrl: body.dashboardUrl ?? '',
+  }
+
+  // Look up admin-editable override for this status variant
+  const { data: override } = await admin
+    .from('email_template_overrides')
+    .select('subject, body_markdown, enabled')
+    .eq('template_name', 'application-status')
+    .eq('variant', body.status)
+    .maybeSingle()
+
+  let subjectOverride: string | undefined
+  let bodyHtmlOverride: string | undefined
+  let bodyTextOverride: string | undefined
+  if (override?.enabled && override.subject && override.body_markdown) {
+    const vars: Record<string, string> = {
+      mcUsername: String(templateData.mcUsername),
+      applicationType: String(templateData.applicationType),
+      status: String(templateData.status),
+      reviewerNotes: String(templateData.reviewerNotes),
+      dashboardUrl: String(templateData.dashboardUrl),
+    }
+    subjectOverride = applyVars(override.subject, vars)
+    const md = applyVars(override.body_markdown, vars)
+    const accent = body.status === 'approved' ? 'hsl(160,84%,39%)' : body.status === 'rejected' ? 'hsl(0,75%,55%)' : 'hsl(22,100%,55%)'
+    bodyHtmlOverride = wrapHtml(await marked.parse(md), accent)
+    bodyTextOverride = md
+  }
+
   const { data: invokeData, error: invokeErr } = await admin.functions.invoke(
     'send-transactional-email',
     {
@@ -82,13 +129,10 @@ Deno.serve(async (req) => {
         recipientEmail,
         idempotencyKey: `application-${app.id}-${body.status}`,
         from: 'CarnageMC Applications <applications@carnagemc.net>',
-        templateData: {
-          mcUsername: app.mc_username,
-          applicationType: app.type,
-          status: body.status,
-          reviewerNotes: body.reviewerNotes ?? '',
-          dashboardUrl: body.dashboardUrl ?? '',
-        },
+        templateData,
+        subjectOverride,
+        bodyHtmlOverride,
+        bodyTextOverride,
       },
     },
   )

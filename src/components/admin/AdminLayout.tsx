@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import logoAsset from "@/assets/havocsmp-logo.png.asset.json";
 const logo = logoAsset.url;
 import { ThemeToggle } from "@/components/site/ThemeToggle";
+import { LiveClock } from "@/components/admin/LiveClock";
 import {
   LayoutDashboard,
   Users,
@@ -305,12 +306,7 @@ export const AdminLayout = ({
               <Button variant="ghost" size="icon" onClick={() => setMobileOpen(true)}>
                 <Menu className="h-5 w-5" />
               </Button>
-              <Link to="/" className="flex items-center gap-2 font-semibold">
-                <img src={logo} alt="CarnageMC" className="h-6 w-6" />
-                <span className="text-sm">
-                  XYLO<span className="text-gradient">MC</span>
-                </span>
-              </Link>
+              <LiveClock />
               <ThemeToggle />
             </div>
 
@@ -320,6 +316,7 @@ export const AdminLayout = ({
                 {description && <p className="mt-1.5 text-sm md:text-base text-muted-foreground">{description}</p>}
               </div>
               <div className="flex items-center gap-2 flex-wrap">
+                <LiveClock className="hidden md:inline-flex" />
                 {actions}
                 <ThemeToggle className="hidden md:inline-flex" />
               </div>
