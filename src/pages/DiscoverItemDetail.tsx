@@ -25,6 +25,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useCart } from "@/lib/cart";
+import ItemReviews from "@/components/site/ItemReviews";
 
 
 type DiscoverItem = {
