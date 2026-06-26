@@ -4096,6 +4096,10 @@ const ApplicationsTab = () => {
 
       <ApplicationEmailLog />
 
+      <ApplicationStatusEmailEditor />
+
+
+
 
 
       <div className="flex flex-wrap gap-2">
