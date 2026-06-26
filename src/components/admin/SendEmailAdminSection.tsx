@@ -183,6 +183,58 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
           </Button>
         </div>
       </Card>
+
+      <Card className="p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <History className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-bold">Broadcast Audit Log</h2>
+          </div>
+          <Button variant="outline" size="sm" onClick={loadLogs} disabled={loadingLogs}>
+            {loadingLogs ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+          </Button>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Records every broadcast sent through this panel: sender, time, category, and recipient count. Latest 50 entries.
+        </p>
+        {logs.length === 0 ? (
+          <p className="text-sm text-muted-foreground italic">No broadcasts logged yet.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-left text-xs uppercase text-muted-foreground border-b">
+                <tr>
+                  <th className="py-2 pr-3">When</th>
+                  <th className="py-2 pr-3">Sender</th>
+                  <th className="py-2 pr-3">Category</th>
+                  <th className="py-2 pr-3">Subject</th>
+                  <th className="py-2 pr-3 text-right">Recipients</th>
+                  <th className="py-2 pr-3 text-right">Queued</th>
+                  <th className="py-2 pr-3 text-right">Failed</th>
+                </tr>
+              </thead>
+              <tbody>
+                {logs.map((l) => (
+                  <tr key={l.id} className="border-b last:border-0">
+                    <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">
+                      {new Date(l.created_at).toLocaleString()}
+                    </td>
+                    <td className="py-2 pr-3">{l.sender_email ?? "—"}</td>
+                    <td className="py-2 pr-3"><Badge variant="secondary">{l.category}</Badge></td>
+                    <td className="py-2 pr-3 max-w-xs truncate" title={l.subject}>
+                      {l.subject}
+                      {l.test_email && <span className="ml-1 text-xs text-muted-foreground">→ {l.test_email}</span>}
+                    </td>
+                    <td className="py-2 pr-3 text-right">{l.total_recipients}</td>
+                    <td className="py-2 pr-3 text-right text-emerald-600">{l.queued_count}</td>
+                    <td className="py-2 pr-3 text-right text-destructive">{l.failed_count}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
     </div>
   );
 };
