@@ -39,6 +39,7 @@ import {
 type DiscoverItem = {
   id: string;
   kind: string;
+  user_id: string | null;
   name: string;
   slug: string | null;
   description: string | null;
@@ -55,6 +56,13 @@ type DiscoverItem = {
   meta: Record<string, any> | null;
   created_at: string;
   updated_at: string;
+};
+
+type CreatorProfile = {
+  id: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  mc_username: string | null;
 };
 
 const getServerIp = (it: DiscoverItem): string | null => {
