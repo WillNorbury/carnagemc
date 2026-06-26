@@ -151,6 +151,7 @@ const DiscoverItemsBrowse = ({
   createLabel = "Create listing",
 }: Props) => {
   const [items, setItems] = useState<DiscoverItem[]>([]);
+  const [creators, setCreators] = useState<Record<string, CreatorProfile>>({});
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<SortKey>("relevance");
@@ -169,13 +170,26 @@ const DiscoverItemsBrowse = ({
     (async () => {
       const { data } = await (supabase.from("discover_items" as any) as any)
         .select(
-          "id, kind, name, slug, description, long_description, author, version, icon_url, banner_url, category, tags, featured, download_url, external_url, meta, created_at, updated_at",
+          "id, kind, user_id, name, slug, description, long_description, author, version, icon_url, banner_url, category, tags, featured, download_url, external_url, meta, created_at, updated_at",
         )
         .eq("kind", kind)
         .eq("published", true)
         .order("featured", { ascending: false })
         .order("created_at", { ascending: false });
-      setItems((data ?? []) as DiscoverItem[]);
+      const list = (data ?? []) as DiscoverItem[];
+      setItems(list);
+      const userIds = Array.from(new Set(list.map((i) => i.user_id).filter(Boolean) as string[]));
+      if (userIds.length) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("id, display_name, avatar_url, mc_username")
+          .in("id", userIds);
+        const map: Record<string, CreatorProfile> = {};
+        ((profs ?? []) as CreatorProfile[]).forEach((p) => { map[p.id] = p; });
+        setCreators(map);
+      } else {
+        setCreators({});
+      }
       setLoading(false);
     })();
   }, [kind]);
