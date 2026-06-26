@@ -2396,7 +2396,7 @@ export type Database = {
         | "donut_plus"
         | "havoc"
         | "havoc_plus"
-      application_status: "pending" | "approved" | "rejected"
+      application_status: "pending" | "approved" | "rejected" | "reviewed"
       application_type: "staff" | "builder" | "youtuber"
       org_member_role: "owner" | "admin" | "member"
       ticket_priority: "low" | "normal" | "high" | "urgent"
@@ -2566,7 +2566,7 @@ export const Constants = {
         "havoc",
         "havoc_plus",
       ],
-      application_status: ["pending", "approved", "rejected"],
+      application_status: ["pending", "approved", "rejected", "reviewed"],
       application_type: ["staff", "builder", "youtuber"],
       org_member_role: ["owner", "admin", "member"],
       ticket_priority: ["low", "normal", "high", "urgent"],
