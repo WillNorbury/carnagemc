@@ -13,6 +13,11 @@ interface Props {
   link?: string
   linkLabel?: string
   timestamp?: string
+  serviceName?: string
+  endpoint?: string
+  errorSnippet?: string
+  duration?: string
+  uptimeWindow?: string
 }
 
 const colors: Record<string, string> = {
@@ -30,8 +35,18 @@ const Email = ({
   link = 'https://carnagemc.net/admin',
   linkLabel = 'Open Admin',
   timestamp,
+  serviceName,
+  endpoint,
+  errorSnippet,
+  duration,
+  uptimeWindow,
 }: Props) => {
   const accent = colors[severity] ?? colors.info
+  const facts: Array<[string, string]> = []
+  if (serviceName) facts.push(['Service', serviceName])
+  if (endpoint) facts.push(['Endpoint', endpoint])
+  if (duration) facts.push(['Duration', duration])
+  if (uptimeWindow) facts.push(['Uptime (24h)', uptimeWindow])
   return (
     <Html lang="en" dir="ltr">
       <Head />
@@ -43,7 +58,22 @@ const Email = ({
           </Section>
           <Heading style={{ ...h1, color: accent }}>{title}</Heading>
           {summary && <Text style={text}>{summary}</Text>}
-          {details && (
+          {facts.length > 0 && (
+            <Section style={factsBox}>
+              {facts.map(([k, v]) => (
+                <Text key={k} style={factLine}>
+                  <span style={factKey}>{k}:</span> <span style={factVal}>{v}</span>
+                </Text>
+              ))}
+            </Section>
+          )}
+          {errorSnippet && (
+            <Section style={{ ...quote, borderLeftColor: accent }}>
+              <Text style={quoteLabel}>Last error</Text>
+              <Text style={quoteText}>{errorSnippet}</Text>
+            </Section>
+          )}
+          {details && !errorSnippet && (
             <Section style={{ ...quote, borderLeftColor: accent }}>
               <Text style={quoteText}>{details}</Text>
             </Section>
