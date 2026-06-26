@@ -44,6 +44,7 @@ import {
   Brain,
   Flag,
   Send,
+  ShieldCheck,
 } from "lucide-react";
 
 export type AdminSection =
@@ -78,6 +79,7 @@ export type AdminSection =
   | "contact"
   | "email-test"
   | "send-email"
+  | "email-diagnostics"
   | "quizzes"
   | "reports"
   | "bot-dashboard"
@@ -121,6 +123,7 @@ const items: NavItem[] = [
   { kind: "link", id: "contact", icon: HelpCircle, label: "Contact" },
   { kind: "link", id: "email-test", icon: Mail, label: "Email Test" },
   { kind: "link", id: "send-email", icon: Send, label: "Send Email" },
+  { kind: "link", id: "email-diagnostics", icon: ShieldCheck, label: "Email Diagnostics" },
   { kind: "link", id: "quizzes", icon: Brain, label: "Quizzes" },
   { kind: "link", id: "reports", icon: Flag, label: "Reports" },
   { kind: "section", title: "Discord Bot", icon: Bot },

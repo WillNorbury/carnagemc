@@ -78,6 +78,7 @@ import AdminModsPage from "@/pages/AdminMods";
 import QuizAdminSection from "@/components/admin/QuizAdminSection";
 import { ReportsAdminSection } from "@/components/admin/ReportsAdminSection";
 import { SendEmailAdminSection } from "@/components/admin/SendEmailAdminSection";
+import { EmailDiagnosticsSection } from "@/components/admin/EmailDiagnosticsSection";
 
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
@@ -131,6 +132,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   quizzes: { title: "Quizzes", description: "Create, edit, and publish scored quizzes." },
   reports: { title: "Reports", description: "Review reports submitted by users about accounts, plugins, or other content." },
   "send-email": { title: "Send Email", description: "Broadcast emails to all users, admins, or owners only." },
+  "email-diagnostics": { title: "Email Diagnostics", description: "Verify the notify.carnagemc.net sender domain and From-address allowlist." },
 };
 
 const Admin = () => {
@@ -211,6 +213,7 @@ const Admin = () => {
       {section === "quizzes" && <QuizAdminSection />}
       {section === "reports" && <ReportsAdminSection />}
       {section === "send-email" && <SendEmailAdminSection isOwner={isOwner} />}
+      {section === "email-diagnostics" && <EmailDiagnosticsSection />}
       
       
       
