@@ -56,6 +56,8 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
 
   useEffect(() => { loadLogs(); }, [loadLogs]);
 
+  const ownerOnlyCat = category === "owners" || category === "admins";
+
   const send = async () => {
     if (!subject.trim() || !message.trim()) {
       toast.error("Subject and message are required");
