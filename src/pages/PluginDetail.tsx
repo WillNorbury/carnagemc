@@ -112,7 +112,7 @@ const GAME_VERSIONS = [
   "1.18.2","1.18.1","1.18","1.17.1","1.17","1.16.5","1.16.4","1.16.3","1.16.2","1.16.1","1.16",
 ];
 
-type Tab = "description" | "gallery" | "versions";
+type Tab = "description" | "gallery" | "versions" | "reviews";
 
 type PluginVersion = {
   id: string;
