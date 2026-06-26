@@ -436,13 +436,37 @@ const DiscoverItemsBrowse = ({
                             <span className="font-display font-bold text-lg group-hover:text-primary transition">
                               {it.name}
                             </span>
-                            {it.author && (
+                            {it.author && !it.user_id && (
                               <span className="text-sm text-muted-foreground">
                                 by <span className="text-foreground/80">{it.author}</span>
                               </span>
                             )}
                             {it.featured && <Sparkles className="h-4 w-4 text-primary" />}
                           </div>
+                          {(() => {
+                            const creator = it.user_id ? creators[it.user_id] : null;
+                            if (!creator) return null;
+                            const initials = (creator.display_name ?? creator.mc_username ?? "?").slice(0, 2).toUpperCase();
+                            const avatar = creator.avatar_url || (creator.mc_username ? `https://mc-heads.net/avatar/${creator.mc_username}/64` : undefined);
+                            const name = creator.display_name || creator.mc_username || "Unknown";
+                            return (
+                              <Link
+                                to={userProfilePath(creator)}
+                                onClick={(e) => e.stopPropagation()}
+                                className="mt-1 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary w-fit"
+                              >
+                                <span>by</span>
+                                <Avatar className="h-4 w-4">
+                                  <AvatarImage src={avatar} />
+                                  <AvatarFallback className="text-[8px]">{initials}</AvatarFallback>
+                                </Avatar>
+                                <span className="font-medium text-foreground/80 hover:text-primary">{name}</span>
+                                {it.author && it.author !== name && (
+                                  <span className="text-muted-foreground/70">· credited as {it.author}</span>
+                                )}
+                              </Link>
+                            );
+                          })()}
                           {it.description && (
                             <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
                               {it.description}
