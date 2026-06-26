@@ -10,6 +10,11 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Mail, Send, ShieldAlert, History, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AllowedFromAddressesAdminSection,
+  formatFromAddress,
+  type AllowedFromRow,
+} from "./AllowedFromAddressesAdminSection";
 
 type AuditRow = {
   id: string;
@@ -26,23 +31,36 @@ type AuditRow = {
 
 type Category = "all" | "admins" | "owners" | "test";
 
-const FROM_OPTIONS = [
-  { label: "noreply@carnagemc.net", value: "CarnageMC <noreply@carnagemc.net>" },
-  { label: "updates@notify.carnagemc.net", value: "CarnageMC Updates <updates@notify.carnagemc.net>" },
-  { label: "william@notify.carnagemc.net", value: '"William @ CarnageMC" <william@notify.carnagemc.net>' },
-  { label: "william@carnagemc.net", value: '"William @ CarnageMC" <william@carnagemc.net>' },
-];
-
 export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [category, setCategory] = useState<Category>("all");
-  const [from, setFrom] = useState(FROM_OPTIONS[2].value);
+  const [from, setFrom] = useState<string>("");
+  const [fromOptions, setFromOptions] = useState<{ label: string; value: string }[]>([]);
   const [testEmail, setTestEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
   const [logs, setLogs] = useState<AuditRow[]>([]);
   const [loadingLogs, setLoadingLogs] = useState(false);
+
+  const loadFromOptions = useCallback(async () => {
+    const { data } = await supabase
+      .from("allowed_from_addresses" as any)
+      .select("email,display_name,active")
+      .eq("active", true)
+      .order("created_at", { ascending: true });
+    const opts = ((data as any as AllowedFromRow[]) ?? []).map((r) => ({
+      label: r.email,
+      value: formatFromAddress(r.email, r.display_name),
+    }));
+    setFromOptions(opts);
+    setFrom((curr) => {
+      if (curr && opts.some((o) => o.value === curr)) return curr;
+      return opts[0]?.value ?? "";
+    });
+  }, []);
+
+  useEffect(() => { loadFromOptions(); }, [loadFromOptions]);
 
   const loadLogs = useCallback(async () => {
     setLoadingLogs(true);
@@ -100,6 +118,7 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
 
   return (
     <div className="space-y-6 max-w-3xl">
+      <AllowedFromAddressesAdminSection onChanged={loadFromOptions} />
       <Card className="p-6 space-y-4">
         <div className="flex items-center gap-2">
           <Mail className="h-5 w-5 text-primary" />
@@ -131,7 +150,7 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
             <Select value={from} onValueChange={setFrom}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                {FROM_OPTIONS.map((o) => (
+                {fromOptions.map((o) => (
                   <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
                 ))}
               </SelectContent>
