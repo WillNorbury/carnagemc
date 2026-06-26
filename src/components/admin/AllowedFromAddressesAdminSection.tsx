@@ -32,6 +32,12 @@ export const AllowedFromAddressesAdminSection = ({
   const [displayName, setDisplayName] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);
   const [displayNameError, setDisplayNameError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editEmail, setEditEmail] = useState("");
+  const [editDisplayName, setEditDisplayName] = useState("");
+  const [editEmailError, setEditEmailError] = useState<string | null>(null);
+  const [editDisplayNameError, setEditDisplayNameError] = useState<string | null>(null);
+  const [savingEdit, setSavingEdit] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
