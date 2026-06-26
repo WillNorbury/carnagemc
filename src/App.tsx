@@ -164,6 +164,8 @@ const Shell = () => {
                   <Route path="/quiz/:slug/leaderboard" element={<QuizLeaderboard />} />
                   <Route path="/quiz/:slug/result/:attemptId" element={<QuizResult />} />
                   
+                  <Route path="/weather/tornado-deaths" element={<TornadoDeaths />} />
+                  
                   <Route path="*" element={<NotFound />} />
           </Routes>
         </SidebarInset>
