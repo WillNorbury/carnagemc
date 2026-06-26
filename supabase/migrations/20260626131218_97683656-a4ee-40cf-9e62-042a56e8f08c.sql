@@ -1,0 +1,1 @@
+REVOKE SELECT (preferences) ON public.profiles FROM anon, authenticated;
