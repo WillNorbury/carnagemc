@@ -356,6 +356,15 @@ Deno.serve(async (req) => {
           if (c.service_key === "website" && websiteWebhookUrl)
             await logWebsiteDelivery(supabase, "down", websiteWebhookUrl, results);
           await supabase.from("uptime_incidents").update({ alerted: true }).eq("id", inc.id);
+          await emailAdmins(supabase, {
+            title: `${name} is DOWN`,
+            severity: 'critical',
+            summary: `${name} has failed multiple consecutive checks.`,
+            details: `Service: ${name}\nUptime (24h): ${uptimePct}\nError: ${c.error || 'Unknown error'}`,
+            link: 'https://carnagemc.net/status',
+            linkLabel: 'View Status',
+            idempotencyKey: `uptime-down-${inc.id}`,
+          });
           alerts.push({ service: c.service_key, kind: "down" });
         }
       } else if (openIncident && !openIncident.alerted) {
@@ -393,6 +402,15 @@ Deno.serve(async (req) => {
           .from("uptime_incidents")
           .update({ alerted: true, last_error: c.error })
           .eq("id", openIncident.id);
+        await emailAdmins(supabase, {
+          title: `${name} still DOWN`,
+          severity: 'critical',
+          summary: `${name} is still failing after ${duration}.`,
+          details: `Service: ${name}\nUptime (24h): ${uptimePct}\nIncident duration: ${duration}\nError: ${c.error || 'Unknown error'}`,
+          link: 'https://carnagemc.net/status',
+          linkLabel: 'View Status',
+          idempotencyKey: `uptime-down-${openIncident.id}-rep`,
+        });
         alerts.push({ service: c.service_key, kind: "down" });
       }
     } else if (openIncident) {
@@ -428,6 +446,15 @@ Deno.serve(async (req) => {
         );
         if (c.service_key === "website" && websiteWebhookUrl)
           await logWebsiteDelivery(supabase, "up", websiteWebhookUrl, results);
+        await emailAdmins(supabase, {
+          title: `${name} recovered`,
+          severity: 'success',
+          summary: `${name} is responding successfully again.`,
+          details: `Service: ${name}\nUptime (24h): ${uptimePct}\nIncident lasted: ${duration}`,
+          link: 'https://carnagemc.net/status',
+          linkLabel: 'View Status',
+          idempotencyKey: `uptime-up-${openIncident.id}`,
+        });
         alerts.push({ service: c.service_key, kind: "up" });
       }
     }
