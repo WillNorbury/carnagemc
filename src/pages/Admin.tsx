@@ -3831,7 +3831,7 @@ type ApplicationRow = {
   id: string;
   user_id: string;
   type: "staff" | "builder" | "youtuber";
-  status: "pending" | "approved" | "rejected";
+  status: "pending" | "approved" | "rejected" | "reviewed";
   mc_username: string;
   discord: string | null;
   age: number | null;
@@ -3946,7 +3946,7 @@ const ApplicationsTab = () => {
   const { user } = useAuth();
   const [items, setItems] = useState<ApplicationRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
+  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected" | "reviewed">("pending");
   const [open, setOpen] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
   const [testEmail, setTestEmail] = useState<string>("");
@@ -4019,14 +4019,14 @@ const ApplicationsTab = () => {
 
   const filtered = filter === "all" ? items : items.filter((i) => i.status === filter);
 
-  const decide = async (id: string, status: "approved" | "rejected") => {
+  const decide = async (id: string, status: "approved" | "rejected" | "reviewed") => {
     const {
       data: { user: u },
     } = await supabase.auth.getUser();
     const { error } = await supabase
       .from("applications")
       .update({
-        status,
+        status: status as any,
         reviewer_notes: notes || null,
         reviewed_by: u?.id ?? null,
         reviewed_at: new Date().toISOString(),
@@ -4060,7 +4060,9 @@ const ApplicationsTab = () => {
       ? "text-emerald-400 border-emerald-400/40"
       : s === "rejected"
         ? "text-destructive border-destructive/40"
-        : "text-amber-400 border-amber-400/40";
+        : s === "reviewed"
+          ? "text-sky-400 border-sky-400/40"
+          : "text-amber-400 border-amber-400/40";
 
   return (
     <div className="space-y-6">
@@ -4103,7 +4105,7 @@ const ApplicationsTab = () => {
 
 
       <div className="flex flex-wrap gap-2">
-        {(["all", "pending", "approved", "rejected"] as const).map((f) => (
+        {(["all", "pending", "reviewed", "approved", "rejected"] as const).map((f) => (
           <Button
             key={f}
             size="sm"
@@ -4195,7 +4197,10 @@ const ApplicationsTab = () => {
                         placeholder="Internal notes..."
                       />
                     </div>
-                    <div className="flex justify-end gap-2">
+                    <div className="flex flex-wrap justify-end gap-2">
+                      <Button variant="secondary" onClick={() => decide(a.id, "reviewed")}>
+                        Mark reviewed
+                      </Button>
                       <Button variant="outline" onClick={() => decide(a.id, "rejected")}>
                         Reject
                       </Button>
