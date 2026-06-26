@@ -4105,7 +4105,7 @@ const ApplicationsTab = () => {
 
 
       <div className="flex flex-wrap gap-2">
-        {(["all", "pending", "approved", "rejected"] as const).map((f) => (
+        {(["all", "pending", "reviewed", "approved", "rejected"] as const).map((f) => (
           <Button
             key={f}
             size="sm"
