@@ -4019,7 +4019,7 @@ const ApplicationsTab = () => {
 
   const filtered = filter === "all" ? items : items.filter((i) => i.status === filter);
 
-  const decide = async (id: string, status: "approved" | "rejected") => {
+  const decide = async (id: string, status: "approved" | "rejected" | "reviewed") => {
     const {
       data: { user: u },
     } = await supabase.auth.getUser();
@@ -4060,7 +4060,9 @@ const ApplicationsTab = () => {
       ? "text-emerald-400 border-emerald-400/40"
       : s === "rejected"
         ? "text-destructive border-destructive/40"
-        : "text-amber-400 border-amber-400/40";
+        : s === "reviewed"
+          ? "text-sky-400 border-sky-400/40"
+          : "text-amber-400 border-amber-400/40";
 
   return (
     <div className="space-y-6">
