@@ -66,8 +66,18 @@ Deno.serve(async (req) => {
     if ((category === 'owners' || category === 'admins') && !isOwner) {
       return json({ ok: false, error: 'Forbidden — owner only category' }, 403)
     }
-    if (from && !ALLOWED_FROM.has(from)) {
-      return json({ ok: false, error: 'invalid from address' }, 400)
+    const extractEmail = (s: string) => {
+      const m = s.match(/<([^>]+)>/)
+      return (m ? m[1] : s).trim().toLowerCase()
+    }
+    let effectiveFrom = from
+    if (from) {
+      if (!ALLOWED_FROM.has(from)) {
+        const inEmail = extractEmail(from)
+        const matched = [...ALLOWED_FROM].find((a) => extractEmail(a) === inEmail)
+        if (!matched) return json({ ok: false, error: 'invalid from address' }, 400)
+        effectiveFrom = matched
+      }
     }
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
