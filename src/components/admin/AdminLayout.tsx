@@ -43,6 +43,7 @@ import {
   Mail,
   Brain,
   Flag,
+  Send,
 } from "lucide-react";
 
 export type AdminSection =
