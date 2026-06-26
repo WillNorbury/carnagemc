@@ -44,6 +44,7 @@ import {
   Brain,
   Flag,
   Send,
+  ShieldCheck,
 } from "lucide-react";
 
 export type AdminSection =
