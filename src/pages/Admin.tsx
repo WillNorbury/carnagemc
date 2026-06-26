@@ -3567,6 +3567,27 @@ const ChangelogTab = () => {
   const [testFor, setTestFor] = useState<string | null>(null);
   const [testEmail, setTestEmail] = useState("");
   const [testSending, setTestSending] = useState(false);
+  const [broadcastingId, setBroadcastingId] = useState<string | null>(null);
+
+  const sendBroadcast = async (entry: ChangelogRow) => {
+    if (!entry.published) {
+      toast.error("Publish the entry before sending to subscribers");
+      return;
+    }
+    if (!(await confirm({
+      title: "Send changelog email?",
+      description: `This will email "${entry.title}" to every subscribed user on the site. Continue?`,
+      confirmText: "Send",
+    }))) return;
+    setBroadcastingId(entry.id);
+    const { data, error } = await supabase.functions.invoke("notify-changelog", {
+      body: { entryId: entry.id },
+    });
+    setBroadcastingId(null);
+    if (error) return toast.error(`Send failed: ${error.message}`);
+    if (data?.ok) toast.success(`Queued to ${data.queued ?? 0} subscriber${data.queued === 1 ? "" : "s"}`);
+    else toast.error(data?.error ?? "Send failed");
+  };
 
   const sendTest = async (entryId: string) => {
     const email = testEmail.trim().toLowerCase();
