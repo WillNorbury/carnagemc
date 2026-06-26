@@ -482,10 +482,14 @@ Deno.serve(async (req) => {
           title: `${name} recovered`,
           severity: 'success',
           summary: `${name} is responding successfully again.`,
-          details: `Service: ${name}\nUptime (24h): ${uptimePct}\nIncident lasted: ${duration}`,
+          details: `Service: ${name}\nEndpoint: ${SERVICE_ENDPOINTS[c.service_key] || 'n/a'}\nUptime (24h): ${uptimePct}\nIncident lasted: ${duration}`,
           link: 'https://carnagemc.net/status',
           linkLabel: 'View Status',
           idempotencyKey: `uptime-up-${openIncident.id}`,
+          serviceName: name,
+          endpoint: SERVICE_ENDPOINTS[c.service_key] || c.service_key,
+          duration,
+          uptimeWindow: uptimePct,
         });
         alerts.push({ service: c.service_key, kind: "up" });
       }
