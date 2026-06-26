@@ -280,6 +280,9 @@ Deno.serve(async (req) => {
 
   const siteUrl = "https://carnagemc.net";
   const apiHealth = `${SUPABASE_URL}/rest/v1/`;
+  SERVICE_ENDPOINTS.website = siteUrl;
+  SERVICE_ENDPOINTS.minecraft = mcHost;
+  SERVICE_ENDPOINTS.api = apiHealth;
 
   const checks = await Promise.all([
     checkHttp("website", siteUrl),
