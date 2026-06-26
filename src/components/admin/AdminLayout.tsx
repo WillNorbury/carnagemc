@@ -306,13 +306,20 @@ export const AdminLayout = ({
               <Button variant="ghost" size="icon" onClick={() => setMobileOpen(true)}>
                 <Menu className="h-5 w-5" />
               </Button>
-              <Link to="/" className="flex items-center gap-2 font-semibold">
-                <img src={logo} alt="CarnageMC" className="h-6 w-6" />
-                <span className="text-sm">
-                  XYLO<span className="text-gradient">MC</span>
-                </span>
-              </Link>
+              <LiveClock />
               <ThemeToggle />
+            </div>
+
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="min-w-0">
+                <h1 className="text-2xl md:text-3xl font-bold tracking-tight truncate">{title}</h1>
+                {description && <p className="mt-1.5 text-sm md:text-base text-muted-foreground">{description}</p>}
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <LiveClock className="hidden md:inline-flex" />
+                {actions}
+                <ThemeToggle className="hidden md:inline-flex" />
+              </div>
             </div>
 
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
