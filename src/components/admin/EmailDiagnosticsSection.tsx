@@ -210,7 +210,32 @@ export const EmailDiagnosticsSection = () => {
                 </div>
               </AlertDescription>
             </Alert>
-          )}
+
+          <div className="pt-4 border-t space-y-2">
+            <div className="text-sm font-medium">Send a test email</div>
+            <p className="text-xs text-muted-foreground">
+              Sends a one-off email using the From address above (or the first allowed From if empty). The provider's accept/reject result will surface in "Recent send failures" within a few seconds if it fails.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Input
+                type="email"
+                placeholder="you@example.com"
+                value={testTo}
+                onChange={(e) => setTestTo(e.target.value)}
+              />
+              <Button onClick={sendTest} disabled={!testTo.trim() || sendingTest}>
+                {sendingTest ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Send test email
+              </Button>
+            </div>
+            {testResult && (
+              <Alert variant={testResult.ok ? "default" : "destructive"}>
+                {testResult.ok ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                <AlertTitle>{testResult.ok ? "Queued" : "Send failed"}</AlertTitle>
+                <AlertDescription>{testResult.msg}</AlertDescription>
+              </Alert>
+            )}
+          </div>
         </CardContent>
       </Card>
 
