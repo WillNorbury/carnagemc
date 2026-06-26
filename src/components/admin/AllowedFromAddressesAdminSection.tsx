@@ -30,6 +30,8 @@ export const AllowedFromAddressesAdminSection = ({
   const [saving, setSaving] = useState(false);
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [displayNameError, setDisplayNameError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
