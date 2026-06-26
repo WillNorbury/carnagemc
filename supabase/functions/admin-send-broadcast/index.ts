@@ -72,14 +72,29 @@ Deno.serve(async (req) => {
       const m = s.match(/<([^>]+)>/)
       return (m ? m[1] : s).trim().toLowerCase()
     }
+
+    const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
+      auth: { persistSession: false },
+    })
+
+    // Load active allowed sender addresses from DB
+    const { data: allowedRows } = await admin
+      .from('allowed_from_addresses')
+      .select('email,display_name,active')
+      .eq('active', true)
+    const allowedList = (allowedRows ?? []).map((r: any) => ({
+      email: String(r.email).toLowerCase(),
+      canonical: formatFrom(r.email, r.display_name),
+    }))
+
     let effectiveFrom = from
     if (from) {
-      if (!ALLOWED_FROM.has(from)) {
-        const inEmail = extractEmail(from)
-        const matched = [...ALLOWED_FROM].find((a) => extractEmail(a) === inEmail)
-        if (!matched) return json({ ok: false, error: 'invalid from address' }, 400)
-        effectiveFrom = matched
-      }
+      const inEmail = extractEmail(from)
+      const matched = allowedList.find((a) => a.email === inEmail)
+      if (!matched) return json({ ok: false, error: 'invalid from address' }, 400)
+      effectiveFrom = matched.canonical
+    } else if (allowedList.length > 0) {
+      effectiveFrom = allowedList[0].canonical
     }
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
