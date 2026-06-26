@@ -3946,7 +3946,7 @@ const ApplicationsTab = () => {
   const { user } = useAuth();
   const [items, setItems] = useState<ApplicationRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
+  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected" | "reviewed">("pending");
   const [open, setOpen] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
   const [testEmail, setTestEmail] = useState<string>("");
