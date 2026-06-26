@@ -182,9 +182,9 @@ const Profile = () => {
     if (!user) return;
     setUnlinkingDiscord(true);
     const { error } = await supabase
-      .from("profiles")
+      .from("profiles_private")
       .update({ discord_id: null, discord_username: null, discord_avatar: null })
-      .eq("id", user.id);
+      .eq("user_id", user.id);
     setUnlinkingDiscord(false);
     if (error) return toast.error(error.message);
     setDiscord({ id: null, username: null, avatar: null });
