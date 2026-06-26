@@ -499,7 +499,12 @@ const PluginDetail = () => {
                     </div>
                   )}
 
+                  {tab === "reviews" && plugin && (
+                    <ItemReviews targetType="plugin" targetId={plugin.id} />
+                  )}
+
                 </Card>
+
               </div>
 
               {/* Sidebar */}
