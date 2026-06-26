@@ -234,23 +234,80 @@ export const AllowedFromAddressesAdminSection = ({
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => (
-                <tr key={r.id} className="border-b last:border-0">
-                  <td className="py-2 pr-3 font-mono">{r.email}</td>
-                  <td className="py-2 pr-3">{r.display_name ?? <span className="text-muted-foreground">—</span>}</td>
-                  <td className="py-2 pr-3">
-                    <div className="flex items-center gap-2">
-                      <Switch checked={r.active} onCheckedChange={() => toggleActive(r)} />
-                      <Badge variant={r.active ? "default" : "outline"}>{r.active ? "Active" : "Disabled"}</Badge>
-                    </div>
-                  </td>
-                  <td className="py-2 pr-3 text-right">
-                    <Button size="sm" variant="ghost" onClick={() => remove(r)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+              {rows.map((r) => {
+                const isEditing = editingId === r.id;
+                return (
+                  <tr key={r.id} className="border-b last:border-0 align-top">
+                    <td className="py-2 pr-3 font-mono">
+                      {isEditing ? (
+                        <div className="space-y-1">
+                          <Input
+                            type="email"
+                            value={editEmail}
+                            aria-invalid={!!editEmailError}
+                            className={`h-8 font-mono text-xs ${editEmailError ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                            onChange={(e) => {
+                              setEditEmail(e.target.value);
+                              if (editEmailError) setEditEmailError(null);
+                            }}
+                          />
+                          {editEmailError && <p className="text-xs text-destructive">{editEmailError}</p>}
+                        </div>
+                      ) : (
+                        r.email
+                      )}
+                    </td>
+                    <td className="py-2 pr-3">
+                      {isEditing ? (
+                        <div className="space-y-1">
+                          <Input
+                            value={editDisplayName}
+                            placeholder="Display name (optional)"
+                            aria-invalid={!!editDisplayNameError}
+                            className={`h-8 text-xs ${editDisplayNameError ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                            onChange={(e) => {
+                              setEditDisplayName(e.target.value);
+                              if (editDisplayNameError) setEditDisplayNameError(null);
+                            }}
+                          />
+                          {editDisplayNameError && <p className="text-xs text-destructive">{editDisplayNameError}</p>}
+                        </div>
+                      ) : (
+                        r.display_name ?? <span className="text-muted-foreground">—</span>
+                      )}
+                    </td>
+                    <td className="py-2 pr-3">
+                      <div className="flex items-center gap-2">
+                        <Switch checked={r.active} onCheckedChange={() => toggleActive(r)} disabled={isEditing} />
+                        <Badge variant={r.active ? "default" : "outline"}>{r.active ? "Active" : "Disabled"}</Badge>
+                      </div>
+                    </td>
+                    <td className="py-2 pr-3 text-right">
+                      <div className="flex justify-end gap-1">
+                        {isEditing ? (
+                          <>
+                            <Button size="sm" variant="ghost" onClick={() => saveEdit(r)} disabled={savingEdit}>
+                              {savingEdit ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={cancelEdit} disabled={savingEdit}>
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button size="sm" variant="ghost" onClick={() => startEdit(r)}>
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => remove(r)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
