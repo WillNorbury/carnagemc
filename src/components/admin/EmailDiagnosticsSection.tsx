@@ -40,6 +40,9 @@ export const EmailDiagnosticsSection = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<DiagnosticsResponse | null>(null);
   const [candidate, setCandidate] = useState("");
+  const [testTo, setTestTo] = useState("");
+  const [sendingTest, setSendingTest] = useState(false);
+  const [testResult, setTestResult] = useState<{ ok: boolean; msg: string } | null>(null);
 
   const run = useCallback(async (from?: string) => {
     setLoading(true);
@@ -64,6 +67,39 @@ export const EmailDiagnosticsSection = () => {
   useEffect(() => {
     run();
   }, [run]);
+
+  const sendTest = async () => {
+    if (!testTo.trim()) return;
+    const fromValue = candidate.trim() || data?.allowed_from?.[0] || "";
+    setSendingTest(true);
+    setTestResult(null);
+    try {
+      const { data: res, error } = await supabase.functions.invoke<any>("admin-send-broadcast", {
+        body: {
+          category: "test",
+          testEmail: testTo.trim(),
+          from: fromValue,
+          subject: "[TEST] Email diagnostics from CarnageMC",
+          message:
+            `This is a diagnostics test sent from the Email Diagnostics panel.\n\nFrom: ${fromValue}\nTime: ${new Date().toISOString()}\n\nIf you received this, the From address works end-to-end.`,
+        },
+      });
+      if (error || !res?.ok) {
+        setTestResult({ ok: false, msg: res?.error || error?.message || "Send failed" });
+      } else {
+        setTestResult({
+          ok: true,
+          msg: `Queued ${res.queued}/${res.total} (failed ${res.failed ?? 0}). Provider result appears in 'Recent send failures' below if it rejects.`,
+        });
+        // Refresh so any new failure shows up
+        setTimeout(() => run(candidate || undefined), 4000);
+      }
+    } catch (e) {
+      setTestResult({ ok: false, msg: (e as Error).message });
+    } finally {
+      setSendingTest(false);
+    }
+  };
 
   const ok = data?.ok;
   const cand = data?.candidate ?? null;
@@ -175,6 +211,34 @@ export const EmailDiagnosticsSection = () => {
               </AlertDescription>
             </Alert>
           )}
+
+
+
+          <div className="pt-4 border-t space-y-2">
+            <div className="text-sm font-medium">Send a test email</div>
+            <p className="text-xs text-muted-foreground">
+              Sends a one-off email using the From address above (or the first allowed From if empty). The provider's accept/reject result will surface in "Recent send failures" within a few seconds if it fails.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Input
+                type="email"
+                placeholder="you@example.com"
+                value={testTo}
+                onChange={(e) => setTestTo(e.target.value)}
+              />
+              <Button onClick={sendTest} disabled={!testTo.trim() || sendingTest}>
+                {sendingTest ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Send test email
+              </Button>
+            </div>
+            {testResult && (
+              <Alert variant={testResult.ok ? "default" : "destructive"}>
+                {testResult.ok ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                <AlertTitle>{testResult.ok ? "Queued" : "Send failed"}</AlertTitle>
+                <AlertDescription>{testResult.msg}</AlertDescription>
+              </Alert>
+            )}
+          </div>
         </CardContent>
       </Card>
 
