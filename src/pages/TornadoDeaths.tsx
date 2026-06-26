@@ -3,6 +3,7 @@ import { SEO } from "@/components/site/SEO";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import USHeatMap from "@/components/site/USHeatMap";
 
 type StateRow = { state: string; deaths: number; perMillion: number; share: number };
 
