@@ -13,6 +13,11 @@ interface Props {
   link?: string
   linkLabel?: string
   timestamp?: string
+  serviceName?: string
+  endpoint?: string
+  errorSnippet?: string
+  duration?: string
+  uptimeWindow?: string
 }
 
 const colors: Record<string, string> = {
@@ -30,8 +35,18 @@ const Email = ({
   link = 'https://carnagemc.net/admin',
   linkLabel = 'Open Admin',
   timestamp,
+  serviceName,
+  endpoint,
+  errorSnippet,
+  duration,
+  uptimeWindow,
 }: Props) => {
   const accent = colors[severity] ?? colors.info
+  const facts: Array<[string, string]> = []
+  if (serviceName) facts.push(['Service', serviceName])
+  if (endpoint) facts.push(['Endpoint', endpoint])
+  if (duration) facts.push(['Duration', duration])
+  if (uptimeWindow) facts.push(['Uptime (24h)', uptimeWindow])
   return (
     <Html lang="en" dir="ltr">
       <Head />
@@ -43,7 +58,22 @@ const Email = ({
           </Section>
           <Heading style={{ ...h1, color: accent }}>{title}</Heading>
           {summary && <Text style={text}>{summary}</Text>}
-          {details && (
+          {facts.length > 0 && (
+            <Section style={factsBox}>
+              {facts.map(([k, v]) => (
+                <Text key={k} style={factLine}>
+                  <span style={factKey}>{k}:</span> <span style={factVal}>{v}</span>
+                </Text>
+              ))}
+            </Section>
+          )}
+          {errorSnippet && (
+            <Section style={{ ...quote, borderLeftColor: accent }}>
+              <Text style={quoteLabel}>Last error</Text>
+              <Text style={quoteText}>{errorSnippet}</Text>
+            </Section>
+          )}
+          {details && !errorSnippet && (
             <Section style={{ ...quote, borderLeftColor: accent }}>
               <Text style={quoteText}>{details}</Text>
             </Section>
@@ -84,5 +114,10 @@ const h1 = { fontSize: '22px', fontWeight: 700 as const, margin: '0 0 12px' }
 const text = { fontSize: '14px', color: 'hsl(20, 25%, 25%)', lineHeight: '1.6', margin: '0 0 12px' }
 const muted = { fontSize: '12px', color: 'hsl(20, 10%, 50%)', margin: '16px 0 0' }
 const quote = { borderLeft: '3px solid', padding: '12px 16px', background: 'hsl(20, 15%, 97%)', margin: '12px 0 16px' }
+const quoteLabel = { fontSize: '11px', fontWeight: 700 as const, letterSpacing: '0.5px', color: 'hsl(20, 15%, 40%)', textTransform: 'uppercase' as const, margin: '0 0 6px' }
 const quoteText = { fontSize: '13px', color: 'hsl(20, 25%, 25%)', whiteSpace: 'pre-wrap' as const, margin: 0, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }
 const button = { color: '#fff', fontSize: '14px', borderRadius: '12px', padding: '12px 20px', textDecoration: 'none', display: 'inline-block' }
+const factsBox = { background: 'hsl(20, 15%, 98%)', border: '1px solid hsl(20, 15%, 90%)', borderRadius: '8px', padding: '10px 14px', margin: '0 0 12px' }
+const factLine = { fontSize: '13px', color: 'hsl(20, 25%, 25%)', margin: '2px 0' }
+const factKey = { fontWeight: 600 as const, color: 'hsl(20, 15%, 40%)' }
+const factVal = { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }

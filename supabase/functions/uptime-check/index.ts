@@ -22,6 +22,15 @@ const SERVICE_NAMES: Record<string, string> = {
   portfolio: "Portfolio",
 };
 
+const SERVICE_ENDPOINTS: Record<string, string> = {
+  website: "https://carnagemc.net",
+  minecraft: "",
+  api: "",
+  panel: "https://panel.voxelnode.dev",
+  discord: "https://discord.gg/V8xYY2DasZ",
+  portfolio: "https://portfolio.carnagemc.net",
+};
+
 async function checkHttp(
   service_key: string,
   url: string,
@@ -174,6 +183,11 @@ async function emailAdmins(
     link: string
     linkLabel: string
     idempotencyKey: string
+    serviceName?: string
+    endpoint?: string
+    errorSnippet?: string
+    duration?: string
+    uptimeWindow?: string
   },
 ) {
   try {
@@ -208,6 +222,11 @@ async function emailAdmins(
               link: payload.link,
               linkLabel: payload.linkLabel,
               timestamp: new Date().toISOString(),
+              serviceName: payload.serviceName,
+              endpoint: payload.endpoint,
+              errorSnippet: payload.errorSnippet,
+              duration: payload.duration,
+              uptimeWindow: payload.uptimeWindow,
             },
           },
         }).catch((err) => console.error('admin email failed', to, err))
@@ -261,6 +280,9 @@ Deno.serve(async (req) => {
 
   const siteUrl = "https://carnagemc.net";
   const apiHealth = `${SUPABASE_URL}/rest/v1/`;
+  SERVICE_ENDPOINTS.website = siteUrl;
+  SERVICE_ENDPOINTS.minecraft = mcHost;
+  SERVICE_ENDPOINTS.api = apiHealth;
 
   const checks = await Promise.all([
     checkHttp("website", siteUrl),
@@ -360,10 +382,15 @@ Deno.serve(async (req) => {
             title: `${name} is DOWN`,
             severity: 'critical',
             summary: `${name} has failed multiple consecutive checks.`,
-            details: `Service: ${name}\nUptime (24h): ${uptimePct}\nError: ${c.error || 'Unknown error'}`,
+            details: `Service: ${name}\nEndpoint: ${SERVICE_ENDPOINTS[c.service_key] || 'n/a'}\nUptime (24h): ${uptimePct}\nError: ${c.error || 'Unknown error'}`,
             link: 'https://carnagemc.net/status',
             linkLabel: 'View Status',
             idempotencyKey: `uptime-down-${inc.id}`,
+            serviceName: name,
+            endpoint: SERVICE_ENDPOINTS[c.service_key] || c.service_key,
+            errorSnippet: (c.error || 'Unknown error').slice(0, 500),
+            duration: formatDuration(0),
+            uptimeWindow: uptimePct,
           });
           alerts.push({ service: c.service_key, kind: "down" });
         }
@@ -406,10 +433,15 @@ Deno.serve(async (req) => {
           title: `${name} still DOWN`,
           severity: 'critical',
           summary: `${name} is still failing after ${duration}.`,
-          details: `Service: ${name}\nUptime (24h): ${uptimePct}\nIncident duration: ${duration}\nError: ${c.error || 'Unknown error'}`,
+          details: `Service: ${name}\nEndpoint: ${SERVICE_ENDPOINTS[c.service_key] || 'n/a'}\nUptime (24h): ${uptimePct}\nIncident duration: ${duration}\nError: ${c.error || 'Unknown error'}`,
           link: 'https://carnagemc.net/status',
           linkLabel: 'View Status',
           idempotencyKey: `uptime-down-${openIncident.id}-rep`,
+          serviceName: name,
+          endpoint: SERVICE_ENDPOINTS[c.service_key] || c.service_key,
+          errorSnippet: (c.error || 'Unknown error').slice(0, 500),
+          duration,
+          uptimeWindow: uptimePct,
         });
         alerts.push({ service: c.service_key, kind: "down" });
       }
@@ -450,10 +482,14 @@ Deno.serve(async (req) => {
           title: `${name} recovered`,
           severity: 'success',
           summary: `${name} is responding successfully again.`,
-          details: `Service: ${name}\nUptime (24h): ${uptimePct}\nIncident lasted: ${duration}`,
+          details: `Service: ${name}\nEndpoint: ${SERVICE_ENDPOINTS[c.service_key] || 'n/a'}\nUptime (24h): ${uptimePct}\nIncident lasted: ${duration}`,
           link: 'https://carnagemc.net/status',
           linkLabel: 'View Status',
           idempotencyKey: `uptime-up-${openIncident.id}`,
+          serviceName: name,
+          endpoint: SERVICE_ENDPOINTS[c.service_key] || c.service_key,
+          duration,
+          uptimeWindow: uptimePct,
         });
         alerts.push({ service: c.service_key, kind: "up" });
       }
