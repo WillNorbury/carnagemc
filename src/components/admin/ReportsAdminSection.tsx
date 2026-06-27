@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -21,7 +23,10 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { confirm } from "@/lib/confirm";
-import { Flag, Loader2, Trash2, ExternalLink, RefreshCw } from "lucide-react";
+import { format } from "date-fns";
+import type { DateRange } from "react-day-picker";
+import { Flag, Loader2, Trash2, ExternalLink, RefreshCw, CalendarIcon, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type ReportStatus = "open" | "in_review" | "resolved" | "rejected";
 
