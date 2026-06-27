@@ -44,6 +44,7 @@ import {
   Building2,
 } from "lucide-react";
 import { toast } from "sonner";
+import ReportDialog from "@/components/site/ReportDialog";
 
 type Profile = {
   id: string;
@@ -106,6 +107,7 @@ const UserProfile = () => {
   const [editBio, setEditBio] = useState("");
   const [editAvatar, setEditAvatar] = useState("");
   const [editBusy, setEditBusy] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   const isOwn = !!user && !!profile && user.id === profile.id;
 
@@ -380,7 +382,10 @@ const UserProfile = () => {
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      onClick={() => toast.success("Report submitted — thanks for letting us know")}
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        setReportOpen(true);
+                      }}
                       className="text-destructive focus:text-destructive"
                     >
                       <Flag className="h-4 w-4 mr-2" /> Report user
@@ -389,6 +394,15 @@ const UserProfile = () => {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
+            {profile && (
+              <ReportDialog
+                targetType="user"
+                targetId={profile.id}
+                targetLabel={profile.display_name ?? profile.mc_username ?? "User"}
+                open={reportOpen}
+                onOpenChange={setReportOpen}
+              />
+            )}
           </div>
         </div>
 

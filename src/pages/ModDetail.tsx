@@ -6,6 +6,7 @@ import PageLoader from "@/components/site/PageLoader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
+import ReportDialog from "@/components/site/ReportDialog";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -99,6 +100,7 @@ const ModDetail = () => {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [actionBusy, setActionBusy] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -189,9 +191,6 @@ const ModDetail = () => {
     }
   };
 
-  const reportMod = () => {
-    toast.success("Report submitted — thanks for letting us know");
-  };
 
   const url = mod
     ? mod.download_url
@@ -331,11 +330,23 @@ const ModDetail = () => {
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={reportMod} className="text-destructive focus:text-destructive">
+                    <DropdownMenuItem
+                      onSelect={(e) => { e.preventDefault(); setReportOpen(true); }}
+                      className="text-destructive focus:text-destructive"
+                    >
                       <Flag className="h-4 w-4 mr-2" /> Report mod
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                {mod && (
+                  <ReportDialog
+                    targetType="mod"
+                    targetId={mod.id}
+                    targetLabel={mod.name}
+                    open={reportOpen}
+                    onOpenChange={setReportOpen}
+                  />
+                )}
               </div>
             </div>
 

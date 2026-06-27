@@ -21,6 +21,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Gamepad2, ChevronDown, Search, KeyRound, Info } from "lucide-react";
 import ItemReviews from "@/components/site/ItemReviews";
+import ReportDialog from "@/components/site/ReportDialog";
 import {
   ArrowLeft,
   Bookmark,
@@ -144,6 +145,7 @@ const PluginDetail = () => {
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
   const [platformOpen, setPlatformOpen] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
+  const [reportOpen, setReportOpen] = useState(false);
 
   useEffect(() => {
     if (!key) return;
@@ -386,13 +388,25 @@ const PluginDetail = () => {
 
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      onClick={() => toast.success("Report submitted — thanks for letting us know")}
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        setReportOpen(true);
+                      }}
                       className="text-destructive focus:text-destructive"
                     >
                       <Flag className="h-4 w-4 mr-2" /> Report plugin
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                {plugin && (
+                  <ReportDialog
+                    targetType="plugin"
+                    targetId={plugin.id}
+                    targetLabel={plugin.name}
+                    open={reportOpen}
+                    onOpenChange={setReportOpen}
+                  />
+                )}
               </div>
             </div>
 
