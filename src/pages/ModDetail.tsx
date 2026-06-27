@@ -330,11 +330,23 @@ const ModDetail = () => {
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={reportMod} className="text-destructive focus:text-destructive">
+                    <DropdownMenuItem
+                      onSelect={(e) => { e.preventDefault(); setReportOpen(true); }}
+                      className="text-destructive focus:text-destructive"
+                    >
                       <Flag className="h-4 w-4 mr-2" /> Report mod
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                {mod && (
+                  <ReportDialog
+                    targetType="mod"
+                    targetId={mod.id}
+                    targetLabel={mod.name}
+                    open={reportOpen}
+                    onOpenChange={setReportOpen}
+                  />
+                )}
               </div>
             </div>
 
