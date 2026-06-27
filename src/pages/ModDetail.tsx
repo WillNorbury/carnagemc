@@ -191,9 +191,6 @@ const ModDetail = () => {
     }
   };
 
-  const reportMod = () => {
-    toast.success("Report submitted — thanks for letting us know");
-  };
 
   const url = mod
     ? mod.download_url
