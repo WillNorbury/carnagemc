@@ -8,6 +8,7 @@ export const ALL_ROLES = [
   { value: "mod", label: "Mod", emoji: "🔨" },
   { value: "sr_helper", label: "SrHelper", emoji: "💚" },
   { value: "helper", label: "Helper", emoji: "🟢" },
+  { value: "builder", label: "Builder", emoji: "🛠️" },
   { value: "media", label: "Media", emoji: "📰" },
   { value: "havoc_plus", label: "Havoc+", emoji: "💎" },
   { value: "havoc", label: "Havoc", emoji: "🔥" },
