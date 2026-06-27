@@ -21,6 +21,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Gamepad2, ChevronDown, Search, KeyRound, Info } from "lucide-react";
 import ItemReviews from "@/components/site/ItemReviews";
+import ReportDialog from "@/components/site/ReportDialog";
 import {
   ArrowLeft,
   Bookmark,
