@@ -199,10 +199,54 @@ export const ReportsAdminSection = () => {
             </Button>
           ))}
         </div>
-        <Button size="sm" variant="outline" onClick={load} disabled={loading}>
-          {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Popover open={dateOpen} onOpenChange={setDateOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                size="sm"
+                variant="outline"
+                className={cn("justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
+              >
+                <CalendarIcon className="h-4 w-4 mr-2" />
+                {dateRange?.from ? (
+                  dateRange.to ? (
+                    <>
+                      {format(dateRange.from, "LLL d, y")} – {format(dateRange.to, "LLL d, y")}
+                    </>
+                  ) : (
+                    format(dateRange.from, "LLL d, y")
+                  )
+                ) : (
+                  <span>Any date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="range"
+                selected={dateRange}
+                onSelect={setDateRange}
+                numberOfMonths={2}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+          {dateRange && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setDateRange(undefined)}
+              title="Clear date filter"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+          <Button size="sm" variant="outline" onClick={load} disabled={loading}>
+            {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {loading ? (
