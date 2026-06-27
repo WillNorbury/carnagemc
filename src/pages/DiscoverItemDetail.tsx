@@ -23,9 +23,11 @@ import {
   ShoppingCart,
   Sparkles,
   XCircle,
+  Flag,
 } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import ItemReviews from "@/components/site/ItemReviews";
+import ReportDialog from "@/components/site/ReportDialog";
 
 
 type DiscoverItem = {
