@@ -106,19 +106,39 @@ export const ReportsAdminSection = () => {
     load();
   }, []);
 
-  const filtered = useMemo(
-    () => (filter === "all" ? reports : reports.filter((r) => r.status === filter)),
-    [reports, filter],
-  );
+  const filtered = useMemo(() => {
+    const from = dateRange?.from ? new Date(dateRange.from).setHours(0, 0, 0, 0) : null;
+    const toRaw = dateRange?.to ?? dateRange?.from;
+    const to = toRaw ? new Date(toRaw).setHours(23, 59, 59, 999) : null;
+    return reports.filter((r) => {
+      if (filter !== "all" && r.status !== filter) return false;
+      if (from || to) {
+        const t = new Date(r.created_at).getTime();
+        if (from && t < from) return false;
+        if (to && t > to) return false;
+      }
+      return true;
+    });
+  }, [reports, filter, dateRange]);
 
   const counts = useMemo(() => {
-    const c: Record<string, number> = { all: reports.length };
+    const from = dateRange?.from ? new Date(dateRange.from).setHours(0, 0, 0, 0) : null;
+    const toRaw = dateRange?.to ?? dateRange?.from;
+    const to = toRaw ? new Date(toRaw).setHours(23, 59, 59, 999) : null;
+    const inRange = reports.filter((r) => {
+      if (!from && !to) return true;
+      const t = new Date(r.created_at).getTime();
+      if (from && t < from) return false;
+      if (to && t > to) return false;
+      return true;
+    });
+    const c: Record<string, number> = { all: inRange.length };
     STATUS_OPTIONS.forEach((s) => (c[s] = 0));
-    reports.forEach((r) => {
+    inRange.forEach((r) => {
       c[r.status] = (c[r.status] ?? 0) + 1;
     });
     return c;
-  }, [reports]);
+  }, [reports, dateRange]);
 
   const updateStatus = async (r: Report, status: ReportStatus) => {
     const patch: Partial<Report> = { status };
