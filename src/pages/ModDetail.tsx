@@ -6,6 +6,7 @@ import PageLoader from "@/components/site/PageLoader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
+import ReportDialog from "@/components/site/ReportDialog";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
