@@ -398,6 +398,15 @@ const PluginDetail = () => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                {plugin && (
+                  <ReportDialog
+                    targetType="plugin"
+                    targetId={plugin.id}
+                    targetLabel={plugin.name}
+                    open={reportOpen}
+                    onOpenChange={setReportOpen}
+                  />
+                )}
               </div>
             </div>
 
