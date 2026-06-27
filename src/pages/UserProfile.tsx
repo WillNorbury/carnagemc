@@ -380,7 +380,10 @@ const UserProfile = () => {
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      onClick={() => toast.success("Report submitted — thanks for letting us know")}
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        setReportOpen(true);
+                      }}
                       className="text-destructive focus:text-destructive"
                     >
                       <Flag className="h-4 w-4 mr-2" /> Report user
