@@ -534,6 +534,17 @@ const DiscoverItemDetail = ({ urlKind }: Props) => {
                     </a>
                   </Button>
                 )}
+
+                <ReportDialog
+                  targetType={(item.kind as any) || "other"}
+                  targetId={item.id}
+                  targetLabel={item.name}
+                  trigger={
+                    <Button variant="ghost" size="sm" className="w-full text-muted-foreground hover:text-destructive">
+                      <Flag className="h-4 w-4 mr-1" /> Report this {meta.label.toLowerCase()}
+                    </Button>
+                  }
+                />
               </Card>
 
               {specs.length > 0 && (
