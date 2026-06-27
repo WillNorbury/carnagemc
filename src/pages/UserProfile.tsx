@@ -106,6 +106,7 @@ const UserProfile = () => {
   const [editBio, setEditBio] = useState("");
   const [editAvatar, setEditAvatar] = useState("");
   const [editBusy, setEditBusy] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   const isOwn = !!user && !!profile && user.id === profile.id;
 
