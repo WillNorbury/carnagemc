@@ -144,6 +144,7 @@ const PluginDetail = () => {
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
   const [platformOpen, setPlatformOpen] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
+  const [reportOpen, setReportOpen] = useState(false);
 
   useEffect(() => {
     if (!key) return;
