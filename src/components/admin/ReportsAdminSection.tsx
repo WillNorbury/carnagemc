@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -21,7 +23,10 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { confirm } from "@/lib/confirm";
-import { Flag, Loader2, Trash2, ExternalLink, RefreshCw } from "lucide-react";
+import { format } from "date-fns";
+import type { DateRange } from "react-day-picker";
+import { Flag, Loader2, Trash2, ExternalLink, RefreshCw, CalendarIcon, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type ReportStatus = "open" | "in_review" | "resolved" | "rejected";
 
@@ -61,6 +66,8 @@ export const ReportsAdminSection = () => {
   const [reporters, setReporters] = useState<Record<string, { display_name: string | null }>>({});
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<ReportStatus | "all">("open");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [dateOpen, setDateOpen] = useState(false);
   const [editing, setEditing] = useState<Report | null>(null);
   const [savingNotes, setSavingNotes] = useState(false);
   const [notesDraft, setNotesDraft] = useState("");
@@ -99,19 +106,39 @@ export const ReportsAdminSection = () => {
     load();
   }, []);
 
-  const filtered = useMemo(
-    () => (filter === "all" ? reports : reports.filter((r) => r.status === filter)),
-    [reports, filter],
-  );
+  const filtered = useMemo(() => {
+    const from = dateRange?.from ? new Date(dateRange.from).setHours(0, 0, 0, 0) : null;
+    const toRaw = dateRange?.to ?? dateRange?.from;
+    const to = toRaw ? new Date(toRaw).setHours(23, 59, 59, 999) : null;
+    return reports.filter((r) => {
+      if (filter !== "all" && r.status !== filter) return false;
+      if (from || to) {
+        const t = new Date(r.created_at).getTime();
+        if (from && t < from) return false;
+        if (to && t > to) return false;
+      }
+      return true;
+    });
+  }, [reports, filter, dateRange]);
 
   const counts = useMemo(() => {
-    const c: Record<string, number> = { all: reports.length };
+    const from = dateRange?.from ? new Date(dateRange.from).setHours(0, 0, 0, 0) : null;
+    const toRaw = dateRange?.to ?? dateRange?.from;
+    const to = toRaw ? new Date(toRaw).setHours(23, 59, 59, 999) : null;
+    const inRange = reports.filter((r) => {
+      if (!from && !to) return true;
+      const t = new Date(r.created_at).getTime();
+      if (from && t < from) return false;
+      if (to && t > to) return false;
+      return true;
+    });
+    const c: Record<string, number> = { all: inRange.length };
     STATUS_OPTIONS.forEach((s) => (c[s] = 0));
-    reports.forEach((r) => {
+    inRange.forEach((r) => {
       c[r.status] = (c[r.status] ?? 0) + 1;
     });
     return c;
-  }, [reports]);
+  }, [reports, dateRange]);
 
   const updateStatus = async (r: Report, status: ReportStatus) => {
     const patch: Partial<Report> = { status };
@@ -172,10 +199,54 @@ export const ReportsAdminSection = () => {
             </Button>
           ))}
         </div>
-        <Button size="sm" variant="outline" onClick={load} disabled={loading}>
-          {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Popover open={dateOpen} onOpenChange={setDateOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                size="sm"
+                variant="outline"
+                className={cn("justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
+              >
+                <CalendarIcon className="h-4 w-4 mr-2" />
+                {dateRange?.from ? (
+                  dateRange.to ? (
+                    <>
+                      {format(dateRange.from, "LLL d, y")} – {format(dateRange.to, "LLL d, y")}
+                    </>
+                  ) : (
+                    format(dateRange.from, "LLL d, y")
+                  )
+                ) : (
+                  <span>Any date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="range"
+                selected={dateRange}
+                onSelect={setDateRange}
+                numberOfMonths={2}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+          {dateRange && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setDateRange(undefined)}
+              title="Clear date filter"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+          <Button size="sm" variant="outline" onClick={load} disabled={loading}>
+            {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {loading ? (
