@@ -100,6 +100,7 @@ const ModDetail = () => {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [actionBusy, setActionBusy] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
