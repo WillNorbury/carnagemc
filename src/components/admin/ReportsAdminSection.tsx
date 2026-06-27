@@ -66,7 +66,8 @@ export const ReportsAdminSection = () => {
   const [reporters, setReporters] = useState<Record<string, { display_name: string | null }>>({});
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<ReportStatus | "all">("open");
-  const [editing, setEditing] = useState<Report | null>(null);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [dateOpen, setDateOpen] = useState(false);
   const [savingNotes, setSavingNotes] = useState(false);
   const [notesDraft, setNotesDraft] = useState("");
 
