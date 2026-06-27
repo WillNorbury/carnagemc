@@ -394,6 +394,15 @@ const UserProfile = () => {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
+            {profile && (
+              <ReportDialog
+                targetType="user"
+                targetId={profile.id}
+                targetLabel={profile.display_name ?? profile.mc_username ?? "User"}
+                open={reportOpen}
+                onOpenChange={setReportOpen}
+              />
+            )}
           </div>
         </div>
 
