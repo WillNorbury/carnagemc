@@ -14,6 +14,7 @@ import { template as adminBroadcast } from './admin-broadcast.tsx'
 import { template as ticketReply } from './ticket-reply.tsx'
 import { template as contactReply } from './contact-reply.tsx'
 import { template as adminAlert } from './admin-alert.tsx'
+import { template as newsUpdate } from './news-update.tsx'
 
 export interface TemplateEntry {
   component: React.ComponentType<any>
@@ -37,4 +38,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'ticket-reply': ticketReply,
   'contact-reply': contactReply,
   'admin-alert': adminAlert,
+  'news-update': newsUpdate,
 }
