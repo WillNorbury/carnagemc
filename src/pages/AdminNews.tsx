@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { confirm } from "@/lib/confirm";
-import { Plus, Megaphone, ImagePlus, Pencil, Eye, EyeOff, Trash2 } from "lucide-react";
+import { Plus, Megaphone, ImagePlus, Pencil, Eye, EyeOff, Trash2, Send } from "lucide-react";
 import { usePermissions } from "@/lib/usePermissions";
 
 type Priority = "low" | "normal" | "high" | "urgent";
@@ -129,11 +129,28 @@ export const NewsAnnouncementsTab = () => {
         published: existing?.published ?? true,
       };
 
-      const { error } = isEdit
-        ? await supabase.from("news").update(payload).eq("id", editingId!)
-        : await supabase.from("news").insert(payload);
+      const { data: saved, error } = isEdit
+        ? await supabase.from("news").update(payload).eq("id", editingId!).select("id, published").maybeSingle()
+        : await supabase.from("news").insert(payload).select("id, published").maybeSingle();
       if (error) throw error;
       toast.success(isEdit ? "Announcement updated" : "Announcement published");
+
+      // Auto-send to all subscribers when newly publishing (not on edits of already-published posts)
+      if (!isEdit && saved?.id && saved.published) {
+        try {
+          const { data: res, error: invErr } = await supabase.functions.invoke("notify-news", {
+            body: { newsId: saved.id },
+          });
+          if (invErr || !(res as any)?.ok) {
+            toast.error(`Email broadcast failed: ${(res as any)?.error || invErr?.message}`);
+          } else {
+            toast.success(`Emailed ${(res as any).queued}/${(res as any).total} subscribers`);
+          }
+        } catch (e: any) {
+          toast.error(`Email broadcast failed: ${e?.message}`);
+        }
+      }
+
       resetForm();
       load();
     } catch (e: any) {
@@ -141,6 +158,27 @@ export const NewsAnnouncementsTab = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const sendEmail = async (n: News) => {
+    if (!n.published) {
+      toast.error("Publish the post first");
+      return;
+    }
+    const ok = await confirm({
+      title: "Send to all subscribers?",
+      description: `Emails every user with a confirmed account about "${n.title}".`,
+      confirmText: "Send",
+    });
+    if (!ok) return;
+    const { data, error } = await supabase.functions.invoke("notify-news", {
+      body: { newsId: n.id },
+    });
+    if (error || !(data as any)?.ok) {
+      toast.error((data as any)?.error || error?.message || "Failed");
+      return;
+    }
+    toast.success(`Emailed ${(data as any).queued}/${(data as any).total} subscribers`);
   };
 
   const startEdit = (n: News) => {
