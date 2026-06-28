@@ -336,6 +336,9 @@ export const NewsAnnouncementsTab = () => {
                   </p>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
+                  <Button variant="ghost" size="icon" onClick={() => sendEmail(n)} title="Email to subscribers" disabled={!n.published}>
+                    <Send className="h-4 w-4" />
+                  </Button>
                   <Button variant="ghost" size="icon" onClick={() => startEdit(n)} title="Edit">
                     <Pencil className="h-4 w-4" />
                   </Button>
