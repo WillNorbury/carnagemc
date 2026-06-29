@@ -128,7 +128,9 @@ const Punishments = () => {
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    supabase.rpc("is_current_user_admin").then(({ data }) => setIsAdmin(!!data)).catch(() => setIsAdmin(false));
+    (async () => {
+      try { const { data } = await supabase.rpc("is_current_user_admin"); setIsAdmin(!!data); } catch { setIsAdmin(false); }
+    })();
   }, []);
 
   useEffect(() => {
