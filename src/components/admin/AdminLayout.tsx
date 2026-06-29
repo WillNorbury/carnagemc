@@ -84,7 +84,8 @@ export type AdminSection =
   | "quizzes"
   | "reports"
   | "bot-dashboard"
-  | "bot-management";
+  | "bot-management"
+  | "punishments";
 
 type NavItem =
   | { kind: "link"; id: AdminSection; icon: any; label: string }
