@@ -370,6 +370,13 @@ export const NewsAnnouncementsTab = () => {
           ))}
         </div>
       </div>
+
+      <NewsDeliveryLogDialog
+        open={!!logFor}
+        onOpenChange={(v) => !v && setLogFor(null)}
+        newsId={logFor?.id ?? null}
+        newsTitle={logFor?.title}
+      />
     </div>
   );
 };
