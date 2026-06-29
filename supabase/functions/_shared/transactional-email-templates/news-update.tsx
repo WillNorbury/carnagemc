@@ -108,3 +108,5 @@ const footer = {
   color: '#9ca3af', fontSize: '12px', marginTop: '32px',
   borderTop: '1px solid #e5e7eb', paddingTop: '16px',
 }
+const footerLink = { color: '#ff7a1a', textDecoration: 'underline' }
+
