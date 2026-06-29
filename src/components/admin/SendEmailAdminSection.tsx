@@ -160,8 +160,9 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
 
         {category === "test" && (
           <div className="space-y-2">
-            <Label>Test recipient email</Label>
-            <Input type="email" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} placeholder="you@example.com" />
+            <Label>Recipient email</Label>
+            <Input type="email" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} placeholder="person@example.com" />
+            <p className="text-xs text-muted-foreground">Sends a normal email to this one address — not flagged as a test.</p>
           </div>
         )}
 
