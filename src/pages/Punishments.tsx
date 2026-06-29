@@ -97,10 +97,6 @@ const Punishments = () => {
     let cancelled = false;
     (async () => {
       setLoading(true); setError(null);
-      const { data: res, error: err } = await supabase.functions.invoke("punishments-lookup", {
-        body: null,
-      });
-      // The above invoke uses POST; we want GET-style with query string, so call the URL directly:
       try {
         const fnUrl = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/punishments-lookup?player=${encodeURIComponent(player)}`;
         const r = await fetch(fnUrl, {
@@ -115,7 +111,6 @@ const Punishments = () => {
       } finally {
         if (!cancelled) setLoading(false);
       }
-      void res; void err;
     })();
     return () => { cancelled = true; };
   }, [player]);
