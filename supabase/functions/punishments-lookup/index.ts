@@ -8,7 +8,8 @@ const PORT = Number(Deno.env.get('LITEBANS_MYSQL_PORT') ?? '3306')
 const USER = Deno.env.get('LITEBANS_MYSQL_USER') ?? ''
 const PASS = Deno.env.get('LITEBANS_MYSQL_PASSWORD') ?? ''
 const DB = Deno.env.get('LITEBANS_MYSQL_DATABASE') ?? ''
-const PREFIX = (Deno.env.get('LITEBANS_TABLE_PREFIX') ?? 'litebans_').replace(/[^a-zA-Z0-9_]/g, '')
+const RAW_PREFIX = (Deno.env.get('LITEBANS_TABLE_PREFIX') ?? 'litebans_').replace(/[^a-zA-Z0-9_]/g, '')
+const PREFIX = RAW_PREFIX.endsWith('_') || RAW_PREFIX === '' ? RAW_PREFIX : RAW_PREFIX + '_'
 
 const UUID_RE = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$/i
 const NAME_RE = /^[a-zA-Z0-9_]{2,16}$/
