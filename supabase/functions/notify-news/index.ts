@@ -8,6 +8,23 @@ const corsHeaders = {
 const SITE_BASE = 'https://www.carnagemc.net'
 const FROM = 'CarnageMC News <news@carnagemc.net>'
 
+const enc = new TextEncoder()
+const b64url = (buf: ArrayBuffer) => {
+  const s = btoa(String.fromCharCode(...new Uint8Array(buf)))
+  return s.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+const hmacToken = async (email: string, secret: string) => {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    enc.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  )
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(`news:${email}`))
+  return b64url(sig)
+}
+
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
@@ -60,7 +77,11 @@ Deno.serve(async (req) => {
     if (entryErr || !entry) return json({ ok: false, error: 'News not found' }, 404)
     if (!testEmail && !entry.published) return json({ ok: false, error: 'Not published' }, 400)
 
+    const unsubFnUrl = `${SUPABASE_URL}/functions/v1/unsubscribe-news`
+
     let list: string[]
+    let skippedOptOut = 0
+    let skippedSuppressed = 0
     if (testEmail) {
       list = [testEmail]
     } else {
@@ -80,44 +101,90 @@ Deno.serve(async (req) => {
       }
       const { data: suppressed } = await admin.from('suppressed_emails').select('email')
       for (const row of suppressed ?? []) {
-        if (row?.email) recipients.delete(String(row.email).toLowerCase())
+        const e = row?.email ? String(row.email).toLowerCase() : null
+        if (e && recipients.delete(e)) skippedSuppressed += 1
+      }
+      const { data: optOuts } = await admin.from('news_email_opt_outs').select('email')
+      for (const row of optOuts ?? []) {
+        const e = row?.email ? String(row.email).toLowerCase() : null
+        if (e && recipients.delete(e)) skippedOptOut += 1
       }
       list = [...recipients]
     }
 
-    if (list.length === 0) return json({ ok: true, sent: 0, message: 'No recipients' })
-
-    const templateData = {
-      title: entry.title,
-      content: entry.content,
-      priority: entry.priority,
-      coverUrl: entry.cover_url,
-      link: `${SITE_BASE}/news/${entry.slug}`,
-      siteName: 'CarnageMC',
+    if (list.length === 0) {
+      return json({
+        ok: true,
+        sent: 0,
+        total: 0,
+        queued: 0,
+        skipped_opt_out: skippedOptOut,
+        skipped_suppressed: skippedSuppressed,
+        message: 'No recipients',
+      })
     }
 
     let queued = 0
     const errors: string[] = []
     for (const email of list) {
+      const idempotencyKey = testEmail
+        ? `news-${entry.id}-test-${email}-${Date.now()}`
+        : `news-${entry.id}-${email}`
       try {
-        const idempotencyKey = testEmail
-          ? `news-${entry.id}-test-${email}-${Date.now()}`
-          : `news-${entry.id}-${email}`
+        const token = await hmacToken(email, SERVICE_KEY)
+        const newsUnsubscribeUrl =
+          `${unsubFnUrl}?email=${encodeURIComponent(email)}&token=${token}`
+
+        const templateData = {
+          title: testEmail ? `[TEST] ${entry.title}` : entry.title,
+          content: entry.content,
+          priority: entry.priority,
+          coverUrl: entry.cover_url,
+          link: `${SITE_BASE}/news/${entry.slug}`,
+          siteName: 'CarnageMC',
+          newsUnsubscribeUrl,
+        }
+
         const { error } = await admin.functions.invoke('send-transactional-email', {
           body: {
             templateName: 'news-update',
             recipientEmail: email,
             idempotencyKey,
             from: FROM,
-            templateData: testEmail
-              ? { ...templateData, title: `[TEST] ${templateData.title}` }
-              : templateData,
+            templateData,
           },
         })
-        if (error) errors.push(`${email}: ${error.message}`)
-        else queued += 1
+        if (error) {
+          errors.push(`${email}: ${error.message}`)
+          await admin.from('news_email_deliveries').insert({
+            news_id: entry.id,
+            recipient_email: email,
+            status: 'failed',
+            error: error.message,
+            message_id: idempotencyKey,
+            is_test: !!testEmail,
+          })
+        } else {
+          queued += 1
+          await admin.from('news_email_deliveries').insert({
+            news_id: entry.id,
+            recipient_email: email,
+            status: 'queued',
+            message_id: idempotencyKey,
+            is_test: !!testEmail,
+          })
+        }
       } catch (e) {
-        errors.push(`${email}: ${(e as Error).message}`)
+        const msg = (e as Error).message
+        errors.push(`${email}: ${msg}`)
+        await admin.from('news_email_deliveries').insert({
+          news_id: entry.id,
+          recipient_email: email,
+          status: 'failed',
+          error: msg,
+          message_id: idempotencyKey,
+          is_test: !!testEmail,
+        })
       }
     }
 
@@ -126,6 +193,8 @@ Deno.serve(async (req) => {
       total: list.length,
       queued,
       failed: errors.length,
+      skipped_opt_out: skippedOptOut,
+      skipped_suppressed: skippedSuppressed,
       errors: errors.slice(0, 10),
     })
   } catch (e) {
