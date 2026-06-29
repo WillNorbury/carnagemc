@@ -124,9 +124,12 @@ const Punishments = () => {
   const [data, setData] = useState<LookupResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    if (!player) { setData(null); return; }
+    supabase.rpc("is_current_user_admin").then(({ data }) => setIsAdmin(!!data)).catch(() => setIsAdmin(false));
+  }, []);
     let cancelled = false;
     let timer: ReturnType<typeof setInterval> | null = null;
 
