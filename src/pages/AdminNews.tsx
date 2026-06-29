@@ -11,8 +11,9 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { confirm } from "@/lib/confirm";
-import { Plus, Megaphone, ImagePlus, Pencil, Eye, EyeOff, Trash2, Send } from "lucide-react";
+import { Plus, Megaphone, ImagePlus, Pencil, Eye, EyeOff, Trash2, Send, ListChecks } from "lucide-react";
 import { usePermissions } from "@/lib/usePermissions";
+import { NewsDeliveryLogDialog } from "@/components/admin/NewsDeliveryLogDialog";
 
 type Priority = "low" | "normal" | "high" | "urgent";
 
