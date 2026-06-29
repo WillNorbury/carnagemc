@@ -35,6 +35,48 @@ Deno.serve(async (req) => {
   try {
     const url = new URL(req.url)
     const player = (url.searchParams.get('player') ?? '').trim()
+    const recentDays = Number(url.searchParams.get('recent_days') ?? '0')
+
+    if (!HOST || !USER || !DB) {
+      return json({ error: 'MySQL not configured' }, 500)
+    }
+
+    // Recent mode: return latest punishments across all players within N days
+    if (recentDays > 0) {
+      const conn = await mysql.createConnection({
+        host: HOST, port: PORT, user: USER, password: PASS, database: DB, connectTimeout: 8000,
+      })
+      const sinceMs = Date.now() - recentDays * 86400_000
+      const kinds: Array<'bans'|'mutes'|'warnings'|'kicks'> = ['bans','mutes','warnings','kicks']
+      const out: Record<string, any[]> = {}
+      for (const k of kinds) {
+        try {
+          const [rows] = await conn.query(
+            `SELECT id, uuid, reason, banned_by_name, banned_by_uuid, removed_by_name, removed_by_reason, removed_by_date,
+                    time, until, active, ipban, server_scope
+             FROM \`${PREFIX}${k}\` WHERE time >= ? ORDER BY time DESC LIMIT 500`,
+            [sinceMs],
+          )
+          out[k] = (rows as any[]).map(normalize)
+        } catch (e) {
+          try {
+            const [rows] = await conn.query(
+              `SELECT id, uuid, reason, banned_by_name, banned_by_uuid, time, until, active
+               FROM \`${PREFIX}${k}\` WHERE time >= ? ORDER BY time DESC LIMIT 500`,
+              [sinceMs],
+            )
+            out[k] = (rows as any[]).map(normalize)
+          } catch (e2) { out[k] = []; console.error(`recent ${k} failed`, e2) }
+        }
+      }
+      await conn.end()
+      return json({
+        recent_days: recentDays,
+        counts: Object.fromEntries(kinds.map(k => [k, out[k]?.length ?? 0])),
+        ...out,
+      })
+    }
+
     if (!player) return json({ error: 'Missing player' }, 400)
 
     let uuidDashed: string | null = null
@@ -49,10 +91,6 @@ Deno.serve(async (req) => {
       username = resolved.name
     } else {
       return json({ error: 'Invalid player identifier' }, 400)
-    }
-
-    if (!HOST || !USER || !DB) {
-      return json({ error: 'MySQL not configured' }, 500)
     }
 
     const conn = await mysql.createConnection({
