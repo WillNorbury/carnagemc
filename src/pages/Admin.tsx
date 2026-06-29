@@ -240,6 +240,7 @@ const Admin = () => {
           {section === "email-test" && <EmailTestSection />}
           {section === "quizzes" && <QuizAdminSection />}
           {section === "reports" && <ReportsAdminSection />}
+          {section === "punishments" && <PunishmentsAdminSection />}
           {section === "send-email" && <SendEmailAdminSection isOwner={isOwner} />}
           {section === "email-diagnostics" && <EmailDiagnosticsSection />}
           {section === "permissions" && (isOwner ? <PermissionsTab /> : denied)}
