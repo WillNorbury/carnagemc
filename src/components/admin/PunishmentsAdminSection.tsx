@@ -33,7 +33,7 @@ export const PunishmentsAdminSection = () => {
   const [player, setPlayer] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [activeOnly, setActiveOnly] = useState(true);
+  const [activeOnly, setActiveOnly] = useState(false);
   const [silent, setSilent] = useState(true);
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
