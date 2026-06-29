@@ -168,7 +168,7 @@ Deno.serve(async (req) => {
     const categoryLabel =
       category === 'owners' ? 'Owner Only'
         : category === 'admins' ? 'Admins'
-        : category === 'test' ? 'Test'
+        : category === 'test' ? 'Direct'
         : 'All Users'
 
     const fromAddress = effectiveFrom ?? 'CarnageMC <noreply@carnagemc.net>'
