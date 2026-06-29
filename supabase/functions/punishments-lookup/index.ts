@@ -252,9 +252,10 @@ Deno.serve(async (req) => {
       uuidDashed = dashUuid(player)
     } else if (NAME_RE.test(player)) {
       const resolved = await resolveUsername(player)
-      if (!resolved) return json({ error: 'Player not found', player }, 404)
-      uuidDashed = resolved.uuid
-      username = resolved.name
+      if (resolved) {
+        uuidDashed = resolved.uuid
+        username = resolved.name
+      }
     } else {
       return json({ error: 'Invalid player identifier' }, 400)
     }
@@ -263,6 +264,26 @@ Deno.serve(async (req) => {
       host: HOST, port: PORT, user: USER, password: PASS, database: DB,
       connectTimeout: 8000,
     })
+
+    // Fallback: resolve name -> UUID via LiteBans history if Mojang failed
+    if (!uuidDashed && NAME_RE.test(player)) {
+      try {
+        const [rows] = await conn.query(
+          `SELECT uuid, name, MAX(date) AS d FROM \`${PREFIX}history\`
+           WHERE LOWER(name) = LOWER(?) GROUP BY uuid, name ORDER BY d DESC LIMIT 1`,
+          [player],
+        )
+        const r = (rows as any[])[0]
+        if (r?.uuid) {
+          uuidDashed = dashUuid(r.uuid)
+          username = r.name ?? player
+        }
+      } catch {}
+      if (!uuidDashed) {
+        await conn.end()
+        return json({ error: 'Player not found', player }, 404)
+      }
+    }
 
     const undashed = stripUuid(uuidDashed!)
     const variants = [uuidDashed, undashed]
