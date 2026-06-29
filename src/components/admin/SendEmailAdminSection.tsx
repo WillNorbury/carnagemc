@@ -107,12 +107,29 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
     if (error || !data?.ok) {
       const msg = (data as any)?.error || error?.message || "Failed to send";
       setResult({ ok: false, msg });
-      toast.error(msg);
+      toast.error(
+        category === "test" ? `Failed to send to ${testEmail}` : "Failed to send email",
+        { description: msg }
+      );
       return;
     }
-    const ok = `Queued ${data.queued}/${data.total} (${data.category})`;
-    setResult({ ok: true, msg: ok });
-    toast.success(ok);
+    const queuedN = Number(data.queued ?? 0);
+    const totalN = Number(data.total ?? 0);
+    if (category === "test") {
+      if (queuedN > 0) {
+        const msg = `Email sent to ${testEmail}`;
+        setResult({ ok: true, msg });
+        toast.success(msg, { description: `Subject: ${subject.trim()}` });
+      } else {
+        const msg = `${testEmail} is suppressed or could not be queued`;
+        setResult({ ok: false, msg });
+        toast.error("Email not sent", { description: msg });
+      }
+    } else {
+      const ok = `Queued ${queuedN}/${totalN} (${data.category})`;
+      setResult({ ok: true, msg: ok });
+      toast.success(ok);
+    }
     loadLogs();
   };
 
