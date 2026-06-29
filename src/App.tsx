@@ -70,6 +70,7 @@ import Wishlist from "./pages/Wishlist.tsx";
 import Orders from "./pages/Orders.tsx";
 import { CartProvider } from "./lib/cart.tsx";
 import TornadoDeaths from "./pages/TornadoDeaths.tsx";
+import Punishments from "./pages/Punishments.tsx";
 
 
 const queryClient = new QueryClient();
@@ -167,6 +168,8 @@ const Shell = () => {
                   <Route path="/quiz/:slug/result/:attemptId" element={<QuizResult />} />
                   
                   <Route path="/weather/tornado-deaths" element={<TornadoDeaths />} />
+                  <Route path="/punishments" element={<Punishments />} />
+                  <Route path="/punishments/:player" element={<Punishments />} />
                   
                   <Route path="*" element={<NotFound />} />
           </Routes>
