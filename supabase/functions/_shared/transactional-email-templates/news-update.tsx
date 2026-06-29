@@ -21,6 +21,7 @@ interface Props {
   coverUrl?: string | null
   link?: string
   siteName?: string
+  newsUnsubscribeUrl?: string
 }
 
 const Email = ({
@@ -30,6 +31,7 @@ const Email = ({
   coverUrl,
   link,
   siteName = 'CarnageMC',
+  newsUnsubscribeUrl,
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
@@ -52,6 +54,15 @@ const Email = ({
         )}
         <Text style={footer}>
           You're receiving this because you have an account on {siteName}.
+          {newsUnsubscribeUrl && (
+            <>
+              {' '}
+              <Link href={newsUnsubscribeUrl} style={footerLink}>
+                Unsubscribe from news updates
+              </Link>
+              .
+            </>
+          )}
         </Text>
       </Container>
     </Body>
@@ -70,8 +81,10 @@ export const template = {
     coverUrl: null,
     link: 'https://carnagemc.net/news',
     siteName: 'CarnageMC',
+    newsUnsubscribeUrl: 'https://carnagemc.net/news/unsubscribe?token=demo',
   },
 } satisfies TemplateEntry
+
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
 const container = { padding: '32px 28px', maxWidth: '560px', margin: '0 auto' }
