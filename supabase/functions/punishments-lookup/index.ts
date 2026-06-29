@@ -36,10 +36,41 @@ Deno.serve(async (req) => {
     const url = new URL(req.url)
     const player = (url.searchParams.get('player') ?? '').trim()
     const recentDays = Number(url.searchParams.get('recent_days') ?? '0')
+    const debug = url.searchParams.get('debug') === '1'
 
     if (!HOST || !USER || !DB) {
       return json({ error: 'MySQL not configured' }, 500)
     }
+
+    // Debug mode: list every table in the connected DB with row counts
+    if (debug) {
+      const conn = await mysql.createConnection({
+        host: HOST, port: PORT, user: USER, password: PASS, database: DB, connectTimeout: 8000,
+      })
+      const [tbls] = await conn.query(
+        `SELECT table_name AS name FROM information_schema.tables WHERE table_schema = ?`,
+        [DB],
+      )
+      const tables: Array<{ name: string; rows: number | string }> = []
+      for (const t of tbls as any[]) {
+        const name = t.name ?? t.NAME ?? t.TABLE_NAME
+        try {
+          const [c] = await conn.query(`SELECT COUNT(*) AS n FROM \`${name}\``)
+          tables.push({ name, rows: Number((c as any[])[0].n) })
+        } catch (e) {
+          tables.push({ name, rows: `error: ${(e as Error).message}` })
+        }
+      }
+      await conn.end()
+      return json({
+        database: DB,
+        configured_prefix: PREFIX,
+        host: HOST,
+        port: PORT,
+        tables,
+      })
+    }
+
 
     // Recent mode: return latest punishments across all players within N days
     if (recentDays > 0) {
