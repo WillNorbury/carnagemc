@@ -34,7 +34,7 @@ export const PunishmentsAdminSection = () => {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [activeOnly, setActiveOnly] = useState(false);
-  const [silent, setSilent] = useState(true);
+  const [silent, setSilent] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
   const [actingId, setActingId] = useState<number | null>(null);
@@ -62,7 +62,9 @@ export const PunishmentsAdminSection = () => {
     }
   };
 
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, [type]);
+  useEffect(() => {
+    load(); /* eslint-disable-next-line */
+  }, [type]);
 
   const unban = async (item: Item) => {
     if (type !== "bans" && type !== "mutes") return;
@@ -74,7 +76,10 @@ export const PunishmentsAdminSection = () => {
         body: { action, id: item.id, silent },
       });
       if (error) throw error;
-      toast({ title: `${action} succeeded`, description: `Punishment #${item.id} removed${silent ? " silently" : ""}.` });
+      toast({
+        title: `${action} succeeded`,
+        description: `Punishment #${item.id} removed${silent ? " silently" : ""}.`,
+      });
       await load();
     } catch (e: any) {
       toast({ title: `${action} failed`, description: e?.message ?? String(e), variant: "destructive" });
@@ -89,7 +94,9 @@ export const PunishmentsAdminSection = () => {
         <div className="space-y-1">
           <Label>Type</Label>
           <Select value={type} onValueChange={(v) => setType(v as PunType)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="bans">Bans</SelectItem>
               <SelectItem value="mutes">Mutes</SelectItem>
@@ -129,7 +136,9 @@ export const PunishmentsAdminSection = () => {
           <Switch checked={silent} onCheckedChange={setSilent} />
           Silent (<code>-s</code>) when removing
         </label>
-        <span className="text-muted-foreground">{items.length} result{items.length === 1 ? "" : "s"}</span>
+        <span className="text-muted-foreground">
+          {items.length} result{items.length === 1 ? "" : "s"}
+        </span>
       </div>
 
       <div className="rounded-md border">
@@ -147,17 +156,25 @@ export const PunishmentsAdminSection = () => {
           </TableHeader>
           <TableBody>
             {items.length === 0 && !loading && (
-              <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No punishments match the filters.</TableCell></TableRow>
+              <TableRow>
+                <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                  No punishments match the filters.
+                </TableCell>
+              </TableRow>
             )}
             {items.map((it) => (
               <TableRow key={it.id}>
                 <TableCell>
                   <div className="text-sm">{it.username ?? "—"}</div>
                 </TableCell>
-                <TableCell className="max-w-[260px] truncate" title={it.reason ?? ""}>{it.reason ?? "—"}</TableCell>
+                <TableCell className="max-w-[260px] truncate" title={it.reason ?? ""}>
+                  {it.reason ?? "—"}
+                </TableCell>
                 <TableCell>{it.issued_by ?? "—"}</TableCell>
                 <TableCell className="text-xs">{fmt(it.issued_at)}</TableCell>
-                <TableCell className="text-xs">{it.permanent ? <Badge variant="destructive">Permanent</Badge> : fmt(it.expires_at)}</TableCell>
+                <TableCell className="text-xs">
+                  {it.permanent ? <Badge variant="destructive">Permanent</Badge> : fmt(it.expires_at)}
+                </TableCell>
                 <TableCell>
                   {it.active ? <Badge>Active</Badge> : <Badge variant="secondary">Removed</Badge>}
                   {!it.active && it.removed_by && (
@@ -166,14 +183,10 @@ export const PunishmentsAdminSection = () => {
                 </TableCell>
                 <TableCell className="text-right">
                   {(type === "bans" || type === "mutes") && it.active && (
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => unban(it)}
-                      disabled={actingId === it.id}
-                    >
+                    <Button size="sm" variant="destructive" onClick={() => unban(it)} disabled={actingId === it.id}>
                       {actingId === it.id ? <Loader2 className="animate-spin" /> : <ShieldOff />}
-                      {type === "bans" ? "Unban" : "Unmute"}{silent ? " -s" : ""}
+                      {type === "bans" ? "Unban" : "Unmute"}
+                      {silent ? " -s" : ""}
                     </Button>
                   )}
                 </TableCell>
