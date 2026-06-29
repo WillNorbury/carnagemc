@@ -23,3 +23,5 @@ project_id = "xedqdxjorneezfnpyogg"
     verify_jwt = false
   [functions.handle-email-suppression]
     verify_jwt = false
+  [functions.unsubscribe-news]
+    verify_jwt = false

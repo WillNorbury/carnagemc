@@ -11,8 +11,9 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { confirm } from "@/lib/confirm";
-import { Plus, Megaphone, ImagePlus, Pencil, Eye, EyeOff, Trash2, Send } from "lucide-react";
+import { Plus, Megaphone, ImagePlus, Pencil, Eye, EyeOff, Trash2, Send, ListChecks } from "lucide-react";
 import { usePermissions } from "@/lib/usePermissions";
+import { NewsDeliveryLogDialog } from "@/components/admin/NewsDeliveryLogDialog";
 
 type Priority = "low" | "normal" | "high" | "urgent";
 
@@ -51,6 +52,7 @@ export const NewsAnnouncementsTab = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [logFor, setLogFor] = useState<News | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -339,6 +341,9 @@ export const NewsAnnouncementsTab = () => {
                   <Button variant="ghost" size="icon" onClick={() => sendEmail(n)} title="Email to subscribers" disabled={!n.published}>
                     <Send className="h-4 w-4" />
                   </Button>
+                  <Button variant="ghost" size="icon" onClick={() => setLogFor(n)} title="View delivery log">
+                    <ListChecks className="h-4 w-4" />
+                  </Button>
                   <Button variant="ghost" size="icon" onClick={() => startEdit(n)} title="Edit">
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -365,6 +370,13 @@ export const NewsAnnouncementsTab = () => {
           ))}
         </div>
       </div>
+
+      <NewsDeliveryLogDialog
+        open={!!logFor}
+        onOpenChange={(v) => !v && setLogFor(null)}
+        newsId={logFor?.id ?? null}
+        newsTitle={logFor?.title}
+      />
     </div>
   );
 };
