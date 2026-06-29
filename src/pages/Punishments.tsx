@@ -130,6 +130,9 @@ const Punishments = () => {
   useEffect(() => {
     supabase.rpc("is_current_user_admin").then(({ data }) => setIsAdmin(!!data)).catch(() => setIsAdmin(false));
   }, []);
+
+  useEffect(() => {
+    if (!player) { setData(null); return; }
     let cancelled = false;
     let timer: ReturnType<typeof setInterval> | null = null;
 
