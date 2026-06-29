@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Ban, MicOff, Footprints, AlertTriangle, Search, Shield, Clock, ExternalLink } from "lucide-react";
+import { Ban, MicOff, Footprints, AlertTriangle, Search, Shield, Clock, ExternalLink, ShieldOff, Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 type Punishment = {
   id: number;
@@ -57,7 +58,26 @@ function StatusBadge({ p }: { p: Punishment }) {
   return <Badge className="bg-primary">Active</Badge>;
 }
 
-function PunishmentRow({ p }: { p: Punishment }) {
+function PunishmentRow({ p, kind, isAdmin, onRemoved }: { p: Punishment; kind: "bans"|"mutes"|"kicks"|"warnings"; isAdmin: boolean; onRemoved: () => void }) {
+  const [acting, setActing] = useState(false);
+  const canRemove = isAdmin && (kind === "bans" || kind === "mutes") && p.active && !p.removed_at;
+  const removeAction = kind === "bans" ? "unban" : "unmute";
+  const doRemove = async (silent: boolean) => {
+    if (!confirm(`${removeAction}${silent ? " silently (-s)" : ""}?`)) return;
+    setActing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("punishments-lookup", {
+        body: { action: removeAction, id: p.id, silent },
+      });
+      if (error) throw error;
+      toast({ title: `${removeAction} succeeded`, description: `#${p.id} removed${silent ? " silently" : ""}.` });
+      onRemoved();
+    } catch (e: any) {
+      toast({ title: `${removeAction} failed`, description: e?.message ?? String(e), variant: "destructive" });
+    } finally {
+      setActing(false);
+    }
+  };
   return (
     <Card className="p-4 space-y-2">
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -78,7 +98,20 @@ function PunishmentRow({ p }: { p: Punishment }) {
             </div>
           )}
         </div>
-        <StatusBadge p={p} />
+        <div className="flex flex-col items-end gap-2">
+          <StatusBadge p={p} />
+          {canRemove && (
+            <div className="flex gap-1">
+              <Button size="sm" variant="destructive" disabled={acting} onClick={() => doRemove(true)}>
+                {acting ? <Loader2 className="h-3 w-3 animate-spin" /> : <ShieldOff className="h-3 w-3" />}
+                <span className="ml-1 capitalize">{removeAction} -s</span>
+              </Button>
+              <Button size="sm" variant="outline" disabled={acting} onClick={() => doRemove(false)}>
+                <span className="capitalize">{removeAction}</span>
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </Card>
   );
@@ -91,6 +124,14 @@ const Punishments = () => {
   const [data, setData] = useState<LookupResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  useEffect(() => {
+    (async () => {
+      try { const { data } = await supabase.rpc("is_current_user_admin"); setIsAdmin(!!data); } catch { setIsAdmin(false); }
+    })();
+  }, []);
 
   useEffect(() => {
     if (!player) { setData(null); return; }
@@ -119,7 +160,7 @@ const Punishments = () => {
     fetchOnce(true);
     timer = setInterval(() => fetchOnce(false), 1000);
     return () => { cancelled = true; if (timer) clearInterval(timer); };
-  }, [player]);
+  }, [player, reloadKey]);
 
   const total = useMemo(() => data ? Object.values(data.counts).reduce((a, b) => a + b, 0) : 0, [data]);
   const headTitle = player ? `${data?.player.username ?? player} — Punishment History` : "Punishment Lookup";
@@ -227,7 +268,7 @@ const Punishments = () => {
                   <TabsContent key={k} value={k} className="space-y-3 mt-4">
                     {data[k].length === 0 ? (
                       <div className="text-sm text-muted-foreground text-center py-8">No {KIND_META[k].label.toLowerCase()} on record.</div>
-                    ) : data[k].map((p) => <PunishmentRow key={`${k}-${p.id}`} p={p} />)}
+                    ) : data[k].map((p) => <PunishmentRow key={`${k}-${p.id}`} p={p} kind={k} isAdmin={isAdmin} onRemoved={() => setReloadKey((x) => x + 1)} />)}
                   </TabsContent>
                 ))}
               </Tabs>
