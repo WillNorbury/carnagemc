@@ -138,7 +138,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
 
 const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
-  const { roles: userRoles } = usePermissions();
+  const { roles: userRoles, can, loading: permsLoading } = usePermissions();
   const isOwner = userRoles.includes("owner");
   const location = useLocation();
   const navigate = useNavigate();
@@ -163,13 +163,20 @@ const Admin = () => {
     navigate(`/admin?tab=${s}`);
   };
 
+  // Permission-based access: owner sees everything, otherwise check the section's
+  // permission key. Sections without a mapped key require generic "admin.access".
+  const canSeeSection = (id: AdminSection) => {
+    if (isOwner) return true;
+    const key = SECTION_PERMISSIONS[id] ?? "admin.access";
+    return can(key);
+  };
 
+  const hasAdminAccess = isOwner || isAdmin || can("admin.access");
 
-
-  if (loading)
+  if (loading || permsLoading)
     return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
   if (!user) return <Navigate to="/auth" replace />;
-  if (!isAdmin)
+  if (!hasAdminAccess)
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <ShieldOff className="h-12 w-12 text-destructive" />
@@ -179,69 +186,69 @@ const Admin = () => {
     );
 
   const meta = sectionMeta[section] ?? sectionMeta.dashboard;
+  const allowed = canSeeSection(section);
+
+  const denied = (
+    <div className="flex flex-col items-center justify-center gap-4 py-20">
+      <ShieldOff className="h-12 w-12 text-destructive" />
+      <h2 className="text-xl font-bold">Access denied</h2>
+      <p className="text-muted-foreground">You don't have permission to view this section.</p>
+    </div>
+  );
 
   return (
-    <AdminLayout current={section} onNavigate={onNavigate} title={meta.title} description={meta.description} isOwner={isOwner}>
-      {section === "dashboard" && <DashboardSection onNavigate={onNavigate} />}
-      {section === "users" && <UsersTab />}
-      {section === "roles" && <RolesSection />}
-      {section === "news" && <NewsAnnouncementsTab />}
-      {section === "content" && <ContentTab />}
-      {section === "status" && <StatusTab />}
-      {section === "tickets" && <TicketsAdminSection />}
-      {section === "logs" && <LogsTab />}
-      {section === "plugins" && <PluginsTab />}
-      {section === "changelog" && <ChangelogTab />}
-      {section === "applications" && <ApplicationsTab />}
-      {section === "apply" && <ApplyTypesAdminSection />}
-      {section === "features" && <FeaturesTab />}
-      {section === "rules" && <RulesTab />}
-      {section === "alerts" && <AlertsTab />}
-      {section === "maintenance" && <MaintenanceTab />}
-      {section === "faqs" && <AdminFaqsPage />}
-      {section === "events" && <AdminEventsPage />}
-      {section === "mods" && <AdminModsPage />}
-      {section === "resource-packs" && <DiscoverItemsAdminTab kind="resource_pack" />}
-      {section === "data-packs" && <DiscoverItemsAdminTab kind="data_pack" />}
-      {section === "shaders" && <DiscoverItemsAdminTab kind="shader" />}
-      {section === "modpacks" && <DiscoverItemsAdminTab kind="modpack" />}
-      {section === "servers" && <DiscoverItemsAdminTab kind="server" />}
-      {section === "ban-appeals" && <BanAppealsAdminSection />}
-      {section === "wiki" && <WikiAdminSection />}
-      {section === "gallery" && <GalleryAdminSection />}
-      {section === "contact" && <ContactAdminSection />}
-      {section === "email-test" && <EmailTestSection />}
-      {section === "quizzes" && <QuizAdminSection />}
-      {section === "reports" && <ReportsAdminSection />}
-      {section === "send-email" && <SendEmailAdminSection isOwner={isOwner} />}
-      {section === "email-diagnostics" && <EmailDiagnosticsSection />}
-      
-      
-      
-      {section === "permissions" && (isOwner ? <PermissionsTab /> : (
-        <div className="flex flex-col items-center justify-center gap-4 py-20">
-          <ShieldOff className="h-12 w-12 text-destructive" />
-          <h2 className="text-xl font-bold">Access denied</h2>
-          <p className="text-muted-foreground">Only the owner can access this section.</p>
-        </div>
-      ))}
-      {section === "bot-dashboard" && (isOwner ? <BotDashboardSection /> : (
-        <div className="flex flex-col items-center justify-center gap-4 py-20">
-          <ShieldOff className="h-12 w-12 text-destructive" />
-          <h2 className="text-xl font-bold">Access denied</h2>
-          <p className="text-muted-foreground">Only the owner can access this section.</p>
-        </div>
-      ))}
-      {section === "bot-management" && (isOwner ? <BotManagementSection /> : (
-        <div className="flex flex-col items-center justify-center gap-4 py-20">
-          <ShieldOff className="h-12 w-12 text-destructive" />
-          <h2 className="text-xl font-bold">Access denied</h2>
-          <p className="text-muted-foreground">Only the owner can access this section.</p>
-        </div>
-      ))}
+    <AdminLayout
+      current={section}
+      onNavigate={onNavigate}
+      title={meta.title}
+      description={meta.description}
+      isOwner={isOwner}
+      canSee={canSeeSection}
+    >
+      {!allowed ? denied : (
+        <>
+          {section === "dashboard" && <DashboardSection onNavigate={onNavigate} />}
+          {section === "users" && <UsersTab />}
+          {section === "roles" && <RolesSection />}
+          {section === "news" && <NewsAnnouncementsTab />}
+          {section === "content" && <ContentTab />}
+          {section === "status" && <StatusTab />}
+          {section === "tickets" && <TicketsAdminSection />}
+          {section === "logs" && <LogsTab />}
+          {section === "plugins" && <PluginsTab />}
+          {section === "changelog" && <ChangelogTab />}
+          {section === "applications" && <ApplicationsTab />}
+          {section === "apply" && <ApplyTypesAdminSection />}
+          {section === "features" && <FeaturesTab />}
+          {section === "rules" && <RulesTab />}
+          {section === "alerts" && <AlertsTab />}
+          {section === "maintenance" && <MaintenanceTab />}
+          {section === "faqs" && <AdminFaqsPage />}
+          {section === "events" && <AdminEventsPage />}
+          {section === "mods" && <AdminModsPage />}
+          {section === "resource-packs" && <DiscoverItemsAdminTab kind="resource_pack" />}
+          {section === "data-packs" && <DiscoverItemsAdminTab kind="data_pack" />}
+          {section === "shaders" && <DiscoverItemsAdminTab kind="shader" />}
+          {section === "modpacks" && <DiscoverItemsAdminTab kind="modpack" />}
+          {section === "servers" && <DiscoverItemsAdminTab kind="server" />}
+          {section === "ban-appeals" && <BanAppealsAdminSection />}
+          {section === "wiki" && <WikiAdminSection />}
+          {section === "gallery" && <GalleryAdminSection />}
+          {section === "contact" && <ContactAdminSection />}
+          {section === "email-test" && <EmailTestSection />}
+          {section === "quizzes" && <QuizAdminSection />}
+          {section === "reports" && <ReportsAdminSection />}
+          {section === "send-email" && <SendEmailAdminSection isOwner={isOwner} />}
+          {section === "email-diagnostics" && <EmailDiagnosticsSection />}
+          {section === "permissions" && (isOwner ? <PermissionsTab /> : denied)}
+          {section === "bot-dashboard" && (isOwner ? <BotDashboardSection /> : denied)}
+          {section === "bot-management" && (isOwner ? <BotManagementSection /> : denied)}
+        </>
+      )}
     </AdminLayout>
   );
 };
+
 
 const ComingSoonAdminSection = ({ label }: { label: string }) => (
   <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
