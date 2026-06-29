@@ -58,7 +58,26 @@ function StatusBadge({ p }: { p: Punishment }) {
   return <Badge className="bg-primary">Active</Badge>;
 }
 
-function PunishmentRow({ p }: { p: Punishment }) {
+function PunishmentRow({ p, kind, isAdmin, onRemoved }: { p: Punishment; kind: "bans"|"mutes"|"kicks"|"warnings"; isAdmin: boolean; onRemoved: () => void }) {
+  const [acting, setActing] = useState(false);
+  const canRemove = isAdmin && (kind === "bans" || kind === "mutes") && p.active && !p.removed_at;
+  const removeAction = kind === "bans" ? "unban" : "unmute";
+  const doRemove = async (silent: boolean) => {
+    if (!confirm(`${removeAction}${silent ? " silently (-s)" : ""}?`)) return;
+    setActing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("punishments-lookup", {
+        body: { action: removeAction, id: p.id, silent },
+      });
+      if (error) throw error;
+      toast({ title: `${removeAction} succeeded`, description: `#${p.id} removed${silent ? " silently" : ""}.` });
+      onRemoved();
+    } catch (e: any) {
+      toast({ title: `${removeAction} failed`, description: e?.message ?? String(e), variant: "destructive" });
+    } finally {
+      setActing(false);
+    }
+  };
   return (
     <Card className="p-4 space-y-2">
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -79,7 +98,20 @@ function PunishmentRow({ p }: { p: Punishment }) {
             </div>
           )}
         </div>
-        <StatusBadge p={p} />
+        <div className="flex flex-col items-end gap-2">
+          <StatusBadge p={p} />
+          {canRemove && (
+            <div className="flex gap-1">
+              <Button size="sm" variant="destructive" disabled={acting} onClick={() => doRemove(true)}>
+                {acting ? <Loader2 className="h-3 w-3 animate-spin" /> : <ShieldOff className="h-3 w-3" />}
+                <span className="ml-1 capitalize">{removeAction} -s</span>
+              </Button>
+              <Button size="sm" variant="outline" disabled={acting} onClick={() => doRemove(false)}>
+                <span className="capitalize">{removeAction}</span>
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </Card>
   );
