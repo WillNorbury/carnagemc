@@ -188,6 +188,28 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = z.string().email().max(255).safeParse(forgotEmail);
+    if (!parsed.success) {
+      toast.error("Enter a valid email address");
+      return;
+    }
+    setForgotLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      setForgotSent(true);
+      toast.success("Reset link sent — check your inbox");
+    } catch (err: any) {
+      toast.error(err.message ?? "Failed to send reset email");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
   const discord = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "discord",
