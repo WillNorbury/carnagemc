@@ -95,24 +95,30 @@ const Punishments = () => {
   useEffect(() => {
     if (!player) { setData(null); return; }
     let cancelled = false;
-    (async () => {
-      setLoading(true); setError(null);
+    let timer: ReturnType<typeof setInterval> | null = null;
+
+    const fetchOnce = async (isInitial: boolean) => {
+      if (isInitial) { setLoading(true); setError(null); }
       try {
-        const fnUrl = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/punishments-lookup?player=${encodeURIComponent(player)}`;
+        const fnUrl = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/punishments-lookup?player=${encodeURIComponent(player)}&_=${Date.now()}`;
         const r = await fetch(fnUrl, {
           headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string },
+          cache: "no-store",
         });
         const j = await r.json();
         if (cancelled) return;
-        if (!r.ok) { setError(j?.error ?? "Lookup failed"); setData(null); }
-        else setData(j as LookupResponse);
+        if (!r.ok) { setError(j?.error ?? "Lookup failed"); if (isInitial) setData(null); }
+        else { setData(j as LookupResponse); setError(null); }
       } catch (e: any) {
-        if (!cancelled) setError(e?.message ?? "Network error");
+        if (!cancelled && isInitial) setError(e?.message ?? "Network error");
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled && isInitial) setLoading(false);
       }
-    })();
-    return () => { cancelled = true; };
+    };
+
+    fetchOnce(true);
+    timer = setInterval(() => fetchOnce(false), 1000);
+    return () => { cancelled = true; if (timer) clearInterval(timer); };
   }, [player]);
 
   const total = useMemo(() => data ? Object.values(data.counts).reduce((a, b) => a + b, 0) : 0, [data]);
