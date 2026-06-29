@@ -9,6 +9,7 @@ import { SwipeToOpenSidebar } from "@/components/site/SwipeToOpenSidebar";
 import { AuthProvider } from "@/lib/auth";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import Admin from "./pages/Admin.tsx";
 import News from "./pages/News.tsx";
 import NewsArticle from "./pages/NewsArticle.tsx";
@@ -94,6 +95,7 @@ const Shell = () => {
           <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/admin/announcements" element={<Navigate to="/admin?tab=news" replace />} />
                   <Route path="/admin/*" element={<AdminTabRedirect />} />
