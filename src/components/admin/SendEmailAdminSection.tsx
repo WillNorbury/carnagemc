@@ -141,7 +141,7 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
                 <SelectItem value="owners" disabled={!isOwner}>
                   Owner Only {!isOwner && "(Owner only)"}
                 </SelectItem>
-                <SelectItem value="test">Test (single email)</SelectItem>
+                <SelectItem value="test">Single recipient</SelectItem>
               </SelectContent>
             </Select>
           </div>
