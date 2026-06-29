@@ -268,7 +268,7 @@ const Punishments = () => {
                   <TabsContent key={k} value={k} className="space-y-3 mt-4">
                     {data[k].length === 0 ? (
                       <div className="text-sm text-muted-foreground text-center py-8">No {KIND_META[k].label.toLowerCase()} on record.</div>
-                    ) : data[k].map((p) => <PunishmentRow key={`${k}-${p.id}`} p={p} />)}
+                    ) : data[k].map((p) => <PunishmentRow key={`${k}-${p.id}`} p={p} kind={k} isAdmin={isAdmin} onRemoved={() => setReloadKey((x) => x + 1)} />)}
                   </TabsContent>
                 ))}
               </Tabs>
