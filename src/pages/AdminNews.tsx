@@ -341,6 +341,9 @@ export const NewsAnnouncementsTab = () => {
                   <Button variant="ghost" size="icon" onClick={() => sendEmail(n)} title="Email to subscribers" disabled={!n.published}>
                     <Send className="h-4 w-4" />
                   </Button>
+                  <Button variant="ghost" size="icon" onClick={() => setLogFor(n)} title="View delivery log">
+                    <ListChecks className="h-4 w-4" />
+                  </Button>
                   <Button variant="ghost" size="icon" onClick={() => startEdit(n)} title="Edit">
                     <Pencil className="h-4 w-4" />
                   </Button>
