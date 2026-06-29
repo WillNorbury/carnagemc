@@ -77,6 +77,7 @@ import AdminEventsPage from "@/pages/AdminEvents";
 import AdminModsPage from "@/pages/AdminMods";
 import QuizAdminSection from "@/components/admin/QuizAdminSection";
 import { ReportsAdminSection } from "@/components/admin/ReportsAdminSection";
+import { PunishmentsAdminSection } from "@/components/admin/PunishmentsAdminSection";
 import { SendEmailAdminSection } from "@/components/admin/SendEmailAdminSection";
 import { EmailDiagnosticsSection } from "@/components/admin/EmailDiagnosticsSection";
 import { ApplicationStatusEmailEditor } from "@/components/admin/ApplicationStatusEmailEditor";
@@ -134,6 +135,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   reports: { title: "Reports", description: "Review reports submitted by users about accounts, plugins, or other content." },
   "send-email": { title: "Send Email", description: "Broadcast emails to all users, admins, or owners only." },
   "email-diagnostics": { title: "Email Diagnostics", description: "Verify the notify.carnagemc.net sender domain and From-address allowlist." },
+  punishments: { title: "Punishments", description: "Browse bans, mutes, kicks, and warnings from the network database. Unban or unmute players from the web (silent by default)." },
 };
 
 const Admin = () => {
@@ -238,6 +240,7 @@ const Admin = () => {
           {section === "email-test" && <EmailTestSection />}
           {section === "quizzes" && <QuizAdminSection />}
           {section === "reports" && <ReportsAdminSection />}
+          {section === "punishments" && <PunishmentsAdminSection />}
           {section === "send-email" && <SendEmailAdminSection isOwner={isOwner} />}
           {section === "email-diagnostics" && <EmailDiagnosticsSection />}
           {section === "permissions" && (isOwner ? <PermissionsTab /> : denied)}

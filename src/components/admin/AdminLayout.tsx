@@ -84,7 +84,8 @@ export type AdminSection =
   | "quizzes"
   | "reports"
   | "bot-dashboard"
-  | "bot-management";
+  | "bot-management"
+  | "punishments";
 
 type NavItem =
   | { kind: "link"; id: AdminSection; icon: any; label: string }
@@ -136,6 +137,7 @@ const items: NavItem[] = [
   { kind: "link", id: "mods", icon: Boxes, label: "Mods" },
   { kind: "link", id: "maintenance", icon: Wrench, label: "Maintenance" },
   { kind: "link", id: "ban-appeals", icon: Gavel, label: "Ban Appeals" },
+  { kind: "link", id: "punishments", icon: ShieldCheck, label: "Punishments" },
   { kind: "link", id: "wiki", icon: FileText, label: "Wiki" },
   { kind: "link", id: "gallery", icon: Package, label: "Gallery" },
   { kind: "link", id: "contact", icon: HelpCircle, label: "Contact" },
