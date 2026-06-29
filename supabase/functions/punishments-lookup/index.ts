@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
 
     const conn = await mysql.createConnection({
       host: HOST, port: PORT, user: USER, password: PASS, database: DB,
-      connectTimeout: 8000, ssl: { rejectUnauthorized: false },
+      connectTimeout: 8000,
     })
 
     const undashed = stripUuid(uuidDashed!)
