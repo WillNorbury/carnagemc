@@ -1,0 +1,1 @@
+CREATE POLICY "Users can insert their own quiz attempts" ON public.quiz_attempts FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
