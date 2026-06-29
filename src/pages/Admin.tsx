@@ -55,7 +55,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
+import { AdminLayout, type AdminSection, SECTION_PERMISSIONS } from "@/components/admin/AdminLayout";
 import { BanAppealsAdminSection } from "@/components/admin/BanAppealsAdminSection";
 import { WikiAdminSection } from "@/components/admin/WikiAdminSection";
 import { GalleryAdminSection } from "@/components/admin/GalleryAdminSection";
