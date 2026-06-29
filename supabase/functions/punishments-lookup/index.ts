@@ -31,8 +31,142 @@ async function resolveUsername(name: string): Promise<{ uuid: string; name: stri
   } catch { return null }
 }
 
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
+const SUPABASE_ANON = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+
+async function requireAdmin(req: Request): Promise<{ ok: true; userId: string; userName: string } | { ok: false; resp: Response }> {
+  const auth = req.headers.get('Authorization') ?? ''
+  if (!auth.startsWith('Bearer ')) return { ok: false, resp: json({ error: 'unauthorized' }, 401) }
+  try {
+    const { createClient } = await import('npm:@supabase/supabase-js@2')
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON, { global: { headers: { Authorization: auth } } })
+    const { data: u } = await sb.auth.getUser()
+    if (!u?.user) return { ok: false, resp: json({ error: 'unauthorized' }, 401) }
+    const { data: isAdmin } = await sb.rpc('is_current_user_admin')
+    if (!isAdmin) return { ok: false, resp: json({ error: 'forbidden' }, 403) }
+    const name = (u.user.user_metadata?.display_name as string | undefined)
+      ?? (u.user.email?.split('@')[0]) ?? 'Web Admin'
+    return { ok: true, userId: u.user.id, userName: name }
+  } catch (e) {
+    return { ok: false, resp: json({ error: 'auth failed: ' + (e as Error).message }, 500) }
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
+
+  // Admin POST actions: { action: "list" | "unban" | "unmute", ... }
+  if (req.method === 'POST') {
+    let body: any = {}
+    try { body = await req.json() } catch {}
+    const action = body?.action as string | undefined
+
+    if (action === 'list' || action === 'unban' || action === 'unmute') {
+      const gate = await requireAdmin(req)
+      if (!gate.ok) return gate.resp
+      if (!HOST || !USER || !DB) return json({ error: 'MySQL not configured' }, 500)
+
+      const conn = await mysql.createConnection({
+        host: HOST, port: PORT, user: USER, password: PASS, database: DB, connectTimeout: 8000,
+      })
+      try {
+        if (action === 'list') {
+          const type = ['bans','mutes','warnings','kicks'].includes(body?.type) ? body.type : 'bans'
+          const limit = Math.min(Math.max(Number(body?.limit ?? 100), 1), 500)
+          const fromMs = body?.from ? Date.parse(body.from) : null
+          const toMs = body?.to ? Date.parse(body.to) : null
+          const playerQ = (body?.player ?? '').toString().trim()
+          const activeOnly = body?.active_only === true
+
+          const where: string[] = []
+          const params: any[] = []
+          if (fromMs && Number.isFinite(fromMs)) { where.push('time >= ?'); params.push(fromMs) }
+          if (toMs && Number.isFinite(toMs)) { where.push('time <= ?'); params.push(toMs) }
+          if (activeOnly && (type === 'bans' || type === 'mutes')) where.push('active = 1')
+          if (playerQ) {
+            if (UUID_RE.test(playerQ)) {
+              const d = dashUuid(playerQ); const u = stripUuid(playerQ)
+              where.push('uuid IN (?, ?)'); params.push(d, u)
+            } else if (NAME_RE.test(playerQ)) {
+              const resolved = await resolveUsername(playerQ)
+              if (resolved) {
+                where.push('uuid IN (?, ?)'); params.push(resolved.uuid, stripUuid(resolved.uuid))
+              } else {
+                where.push('1=0')
+              }
+            }
+          }
+          const whereSql = where.length ? 'WHERE ' + where.join(' AND ') : ''
+          let rows: any[] = []
+          try {
+            const [r] = await conn.query(
+              `SELECT id, uuid, reason, banned_by_name, banned_by_uuid, removed_by_name, removed_by_reason, removed_by_date,
+                      time, until, active, ipban, server_scope
+               FROM \`${PREFIX}${type}\` ${whereSql} ORDER BY time DESC LIMIT ${limit}`,
+              params,
+            )
+            rows = r as any[]
+          } catch {
+            const [r] = await conn.query(
+              `SELECT id, uuid, reason, banned_by_name, banned_by_uuid, time, until, active
+               FROM \`${PREFIX}${type}\` ${whereSql} ORDER BY time DESC LIMIT ${limit}`,
+              params,
+            )
+            rows = r as any[]
+          }
+          // Resolve usernames from history for display
+          const uuids = Array.from(new Set(rows.map(r => r.uuid).filter(Boolean)))
+          const nameMap = new Map<string, string>()
+          if (uuids.length) {
+            try {
+              const placeholders = uuids.map(() => '?').join(',')
+              const [h] = await conn.query(
+                `SELECT uuid, name, MAX(date) AS d FROM \`${PREFIX}history\`
+                 WHERE uuid IN (${placeholders}) GROUP BY uuid, name`,
+                uuids,
+              )
+              for (const r of h as any[]) {
+                if (!nameMap.has(r.uuid)) nameMap.set(r.uuid, r.name)
+              }
+            } catch {}
+          }
+          return json({
+            type,
+            count: rows.length,
+            items: rows.map((r) => ({ ...normalize(r), username: nameMap.get(r.uuid) ?? null })),
+          })
+        }
+
+        // Unban / unmute
+        const type = action === 'unmute' ? 'mutes' : 'bans'
+        const id = Number(body?.id)
+        if (!Number.isFinite(id) || id <= 0) return json({ error: 'invalid id' }, 400)
+        const silent = body?.silent !== false // default silent
+        const reason = (body?.reason ?? (silent ? '#silent web-console' : 'web-console')).toString().slice(0, 255)
+        const removedBy = (body?.removed_by ?? gate.userName).toString().slice(0, 64)
+
+        // Mark inactive and stamp removal fields. LiteBans plugin reads removed_by_* on next check.
+        // Prefix reason with #silent so any LiteBans listener treats it as suppressed broadcast.
+        const finalReason = silent && !reason.startsWith('#silent') ? `#silent ${reason}` : reason
+        const [res] = await conn.query(
+          `UPDATE \`${PREFIX}${type}\`
+             SET active = 0,
+                 removed_by_name = ?,
+                 removed_by_reason = ?,
+                 removed_by_date = ?
+           WHERE id = ? AND active = 1`,
+          [removedBy, finalReason, Date.now(), id],
+        ) as any
+        const affected = res?.affectedRows ?? 0
+        if (!affected) return json({ error: 'no active punishment with that id' }, 404)
+        return json({ ok: true, type, id, silent, removed_by: removedBy })
+      } finally {
+        await conn.end()
+      }
+    }
+    return json({ error: 'unknown action' }, 400)
+  }
+
   try {
     const url = new URL(req.url)
     const player = (url.searchParams.get('player') ?? '').trim()
