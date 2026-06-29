@@ -363,8 +363,8 @@ function normalize(r: any) {
     issued_at: toIso(r.time),
     expires_at: r.until && Number(r.until) > 0 ? toIso(r.until) : null,
     permanent: !r.until || Number(r.until) <= 0,
-    active: r.active === 1 || r.active === true,
-    ip_ban: r.ipban === 1 || r.ipban === true,
+    active: Number(r.active) === 1 || r.active === true || r.active === '1',
+    ip_ban: Number(r.ipban) === 1 || r.ipban === true || r.ipban === '1',
     server: r.server_scope ?? null,
   }
 }
