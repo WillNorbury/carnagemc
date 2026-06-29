@@ -336,7 +336,18 @@ const Auth = () => {
                 <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
               <div>
-                <Label htmlFor="pw">Password</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="pw">Password</Label>
+                  {mode === "signin" && (
+                    <button
+                      type="button"
+                      onClick={() => { setForgotEmail(email); setForgotSent(false); setForgotOpen(true); }}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
                 <Input id="pw" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
@@ -346,6 +357,49 @@ const Auth = () => {
           </Tabs>
         )}
       </Card>
+
+      <Dialog open={forgotOpen} onOpenChange={(o) => { setForgotOpen(o); if (!o) setForgotSent(false); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <KeyRound className="w-5 h-5 text-primary" /> Reset your password
+            </DialogTitle>
+            <DialogDescription>
+              {forgotSent
+                ? "If an account exists for that email, a reset link has been sent from passwords@carnagemc.net. Check your inbox (and spam folder)."
+                : "Enter your account email and we'll send you a password reset link."}
+            </DialogDescription>
+          </DialogHeader>
+          {!forgotSent ? (
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div>
+                <Label htmlFor="fpw-email">Email</Label>
+                <Input
+                  id="fpw-email"
+                  type="email"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  required
+                  autoFocus
+                />
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="ghost" onClick={() => setForgotOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={forgotLoading}>
+                  {forgotLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Send reset link
+                </Button>
+              </DialogFooter>
+            </form>
+          ) : (
+            <DialogFooter>
+              <Button onClick={() => setForgotOpen(false)} className="w-full">Done</Button>
+            </DialogFooter>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
