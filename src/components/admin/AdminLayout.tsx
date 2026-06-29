@@ -91,6 +91,23 @@ type NavItem =
   | { kind: "route"; to: string; icon: any; label: string }
   | { kind: "section"; title: string; icon: any };
 
+// Maps each admin section to the permission key required to see/access it.
+// Sections without a specific permission default to "admin.access".
+export const SECTION_PERMISSIONS: Partial<Record<AdminSection, string>> = {
+  dashboard: "admin.dashboard.view",
+  users: "users.view",
+  roles: "roles.view",
+  permissions: "permissions.edit",
+  news: "news.view",
+  content: "content.edit",
+  status: "status.view",
+  logs: "admin.logs.view",
+  tickets: "tickets.view_all",
+  "bot-dashboard": "bot.view",
+  "bot-management": "bot.configure",
+};
+
+
 const items: NavItem[] = [
   { kind: "link", id: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { kind: "link", id: "users", icon: Users, label: "Users" },
@@ -140,6 +157,7 @@ export const AdminLayout = ({
   actions,
   children,
   isOwner,
+  canSee,
 }: {
   current: AdminSection;
   onNavigate: (s: AdminSection) => void;
@@ -148,6 +166,7 @@ export const AdminLayout = ({
   actions?: ReactNode;
   children: ReactNode;
   isOwner?: boolean;
+  canSee?: (id: AdminSection) => boolean;
 }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -155,11 +174,22 @@ export const AdminLayout = ({
   const { signOut, user } = useAuth();
 
   const visibleItems = items.filter((it) => {
-    if (it.kind === "section" && it.title === "Discord Bot") return isOwner ?? false;
-    if (it.kind === "link" && (it.id === "bot-dashboard" || it.id === "bot-management" || it.id === "permissions"))
-      return isOwner ?? false;
+    if (it.kind === "section" && it.title === "Discord Bot") {
+      // Hide the section header when the user cannot see any bot links.
+      if (isOwner) return true;
+      if (!canSee) return false;
+      return canSee("bot-dashboard") || canSee("bot-management");
+    }
+    if (it.kind === "link") {
+      if (it.id === "permissions" || it.id === "bot-dashboard" || it.id === "bot-management") {
+        // Owner-only sections (also gated by their permission key).
+        if (!isOwner) return false;
+      }
+      if (canSee) return canSee(it.id);
+    }
     return true;
   });
+
 
   const handleNavigate = (s: AdminSection) => {
     onNavigate(s);
