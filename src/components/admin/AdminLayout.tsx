@@ -91,6 +91,23 @@ type NavItem =
   | { kind: "route"; to: string; icon: any; label: string }
   | { kind: "section"; title: string; icon: any };
 
+// Maps each admin section to the permission key required to see/access it.
+// Sections without a specific permission default to "admin.access".
+export const SECTION_PERMISSIONS: Partial<Record<AdminSection, string>> = {
+  dashboard: "admin.dashboard.view",
+  users: "users.view",
+  roles: "roles.view",
+  permissions: "permissions.edit",
+  news: "news.view",
+  content: "content.edit",
+  status: "status.view",
+  logs: "admin.logs.view",
+  tickets: "tickets.view_all",
+  "bot-dashboard": "bot.view",
+  "bot-management": "bot.configure",
+};
+
+
 const items: NavItem[] = [
   { kind: "link", id: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { kind: "link", id: "users", icon: Users, label: "Users" },
