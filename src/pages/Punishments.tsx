@@ -160,7 +160,7 @@ const Punishments = () => {
     fetchOnce(true);
     timer = setInterval(() => fetchOnce(false), 1000);
     return () => { cancelled = true; if (timer) clearInterval(timer); };
-  }, [player]);
+  }, [player, reloadKey]);
 
   const total = useMemo(() => data ? Object.values(data.counts).reduce((a, b) => a + b, 0) : 0, [data]);
   const headTitle = player ? `${data?.player.username ?? player} — Punishment History` : "Punishment Lookup";
