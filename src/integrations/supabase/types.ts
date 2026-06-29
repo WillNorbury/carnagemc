@@ -1173,6 +1173,71 @@ export type Database = {
         }
         Relationships: []
       }
+      news_email_deliveries: {
+        Row: {
+          created_at: string
+          error: string | null
+          id: string
+          is_test: boolean
+          message_id: string | null
+          news_id: string
+          recipient_email: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          id?: string
+          is_test?: boolean
+          message_id?: string | null
+          news_id: string
+          recipient_email: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          id?: string
+          is_test?: boolean
+          message_id?: string | null
+          news_id?: string
+          recipient_email?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_email_deliveries_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_email_opt_outs: {
+        Row: {
+          created_at: string
+          email: string
+          reason: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          reason?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          reason?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string | null
