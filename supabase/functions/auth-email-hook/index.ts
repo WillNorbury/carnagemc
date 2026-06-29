@@ -41,6 +41,13 @@ const SENDER_DOMAIN = "notify.carnagemc.net"
 const ROOT_DOMAIN = "carnagemc.net"
 const FROM_DOMAIN = "carnagemc.net" // Domain shown in From address (may be root or sender subdomain)
 
+// Per-action From overrides. Recovery emails are sent from passwords@ so users
+// can recognize them at a glance and replies route to the right inbox.
+const FROM_OVERRIDES: Record<string, string> = {
+  recovery: `CarnageMC Passwords <passwords@${FROM_DOMAIN}>`,
+  reauthentication: `CarnageMC Passwords <passwords@${FROM_DOMAIN}>`,
+}
+
 // Sample data for preview mode ONLY (not used in actual email sending).
 // URLs are baked in at scaffold time from the project's real data.
 // The sample email uses a fixed placeholder (RFC 6761 .test TLD) so the Go backend
