@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Ban, MicOff, Footprints, AlertTriangle, Search, Shield, Clock, ExternalLink } from "lucide-react";
+import { Ban, MicOff, Footprints, AlertTriangle, Search, Shield, Clock, ExternalLink, ShieldOff, Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 type Punishment = {
   id: number;
