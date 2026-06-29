@@ -151,9 +151,8 @@ export const PunishmentsAdminSection = () => {
             )}
             {items.map((it) => (
               <TableRow key={it.id}>
-                <TableCell className="font-mono text-xs">
-                  <div className="font-sans text-sm">{it.username ?? "—"}</div>
-                  <div className="text-muted-foreground">{it.uuid}</div>
+                <TableCell>
+                  <div className="text-sm">{it.username ?? "—"}</div>
                 </TableCell>
                 <TableCell className="max-w-[260px] truncate" title={it.reason ?? ""}>{it.reason ?? "—"}</TableCell>
                 <TableCell>{it.issued_by ?? "—"}</TableCell>
