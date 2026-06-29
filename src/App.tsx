@@ -9,6 +9,7 @@ import { SwipeToOpenSidebar } from "@/components/site/SwipeToOpenSidebar";
 import { AuthProvider } from "@/lib/auth";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import Admin from "./pages/Admin.tsx";
 import News from "./pages/News.tsx";
 import NewsArticle from "./pages/NewsArticle.tsx";
