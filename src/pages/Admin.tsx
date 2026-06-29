@@ -134,6 +134,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   reports: { title: "Reports", description: "Review reports submitted by users about accounts, plugins, or other content." },
   "send-email": { title: "Send Email", description: "Broadcast emails to all users, admins, or owners only." },
   "email-diagnostics": { title: "Email Diagnostics", description: "Verify the notify.carnagemc.net sender domain and From-address allowlist." },
+  punishments: { title: "Punishments", description: "Browse bans, mutes, kicks, and warnings from the network database. Unban or unmute players from the web (silent by default)." },
 };
 
 const Admin = () => {
