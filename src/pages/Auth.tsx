@@ -13,7 +13,8 @@ import { toast } from "sonner";
 import logoAsset from "@/assets/havocsmp-logo.png.asset.json";
 import { Link } from "react-router-dom";
 import { SEO } from "@/components/site/SEO";
-import { Mail, Loader2, ShieldCheck } from "lucide-react";
+import { Mail, Loader2, ShieldCheck, KeyRound } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 const schema = z.object({
   email: z.string().email("Invalid email").max(255),
