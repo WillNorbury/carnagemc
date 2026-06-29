@@ -347,7 +347,9 @@ function normalize(r: any) {
     if (v === null || v === undefined) return null
     const n = typeof v === 'bigint' ? Number(v) : Number(v)
     if (!Number.isFinite(n) || n <= 0) return null
-    return new Date(n).toISOString()
+    // JS Date valid range is roughly ±8.64e15 ms from epoch
+    if (n > 8.64e15) return null
+    try { return new Date(n).toISOString() } catch { return null }
   }
   return {
     id: r.id,
