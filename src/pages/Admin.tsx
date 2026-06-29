@@ -77,6 +77,7 @@ import AdminEventsPage from "@/pages/AdminEvents";
 import AdminModsPage from "@/pages/AdminMods";
 import QuizAdminSection from "@/components/admin/QuizAdminSection";
 import { ReportsAdminSection } from "@/components/admin/ReportsAdminSection";
+import { PunishmentsAdminSection } from "@/components/admin/PunishmentsAdminSection";
 import { SendEmailAdminSection } from "@/components/admin/SendEmailAdminSection";
 import { EmailDiagnosticsSection } from "@/components/admin/EmailDiagnosticsSection";
 import { ApplicationStatusEmailEditor } from "@/components/admin/ApplicationStatusEmailEditor";
