@@ -36,7 +36,7 @@ const LiveConsole = ({ server }: { server: Server }) => {
   const [busy, setBusy] = useState(false);
   const [paused, setPaused] = useState(false);
   const [filter, setFilter] = useState("");
-  const [chatOnly, setChatOnly] = useState(false);
+  
   const [history, setHistory] = useState<string[]>([]);
   const [histIdx, setHistIdx] = useState<number | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
