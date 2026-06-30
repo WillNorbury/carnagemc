@@ -1,0 +1,6 @@
+# Paste the values from the website's Admin → Console → Servers → Install dialog.
+endpoint: "https://YOUR-PROJECT.functions.supabase.co/mc-bridge-poll"
+server-slug: "survival"
+server-secret: "REPLACE_ME"
+poll-interval-ms: 500
+log-batch-ms: 1000

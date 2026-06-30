@@ -1,0 +1,6 @@
+name: CarnageConsoleBridge
+version: ${project.version}
+main: net.carnagemc.consolebridge.ConsoleBridgePlugin
+api-version: '1.20'
+author: CarnageMC
+description: Streams console output to and runs queued commands from the CarnageMC admin console.
