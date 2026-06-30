@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { Terminal, Trash2, Plus, RefreshCw, Settings, Eye, EyeOff, Copy } from "lucide-react";
+import { Terminal, Trash2, Plus, RefreshCw, Settings, Eye, EyeOff, Copy, Download, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Server = {
