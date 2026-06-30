@@ -946,6 +946,124 @@ export type Database = {
         }
         Relationships: []
       }
+      mc_console_commands: {
+        Row: {
+          command: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          issued_by: string | null
+          response: string | null
+          sent_at: string | null
+          server_id: string
+          status: string
+        }
+        Insert: {
+          command: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          issued_by?: string | null
+          response?: string | null
+          sent_at?: string | null
+          server_id: string
+          status?: string
+        }
+        Update: {
+          command?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          issued_by?: string | null
+          response?: string | null
+          sent_at?: string | null
+          server_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mc_console_commands_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "mc_servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mc_console_logs: {
+        Row: {
+          id: number
+          level: string
+          line: string
+          logged_at: string
+          server_id: string
+          source: string
+        }
+        Insert: {
+          id?: number
+          level?: string
+          line: string
+          logged_at?: string
+          server_id: string
+          source?: string
+        }
+        Update: {
+          id?: number
+          level?: string
+          line?: string
+          logged_at?: string
+          server_id?: string
+          source?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mc_console_logs_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "mc_servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mc_servers: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          enabled: boolean
+          id: string
+          ingest_secret: string
+          last_seen_at: string | null
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          ingest_secret?: string
+          last_seen_at?: string | null
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          ingest_secret?: string
+          last_seen_at?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       mod_likes: {
         Row: {
           created_at: string
@@ -2389,6 +2507,7 @@ export type Database = {
         }[]
       }
       is_current_user_admin: { Args: never; Returns: boolean }
+      mc_server_rotate_secret: { Args: { _server_id: string }; Returns: string }
       move_to_dlq: {
         Args: {
           dlq_name: string
