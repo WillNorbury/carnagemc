@@ -29,12 +29,29 @@ function isOnline(last?: string | null) {
   return Date.now() - new Date(last).getTime() < 30_000;
 }
 
+// Matches typical Minecraft chat lines logged by the server, e.g.
+//   "<Notch> hello"            (vanilla / Paper)
+//   "[Not Secure] <Notch> hi"  (1.19+ unsigned chat)
+//   "Notch » hello"            (some chat plugins)
+const CHAT_RE = /(?:\[Not Secure\]\s*)?<([^>]{1,32})>\s?(.*)$|^([A-Za-z0-9_]{2,16})\s*[»:]\s+(.+)$/;
+function parseChat(line: string): { player: string; message: string } | null {
+  // Strip leading "[HH:MM:SS INFO]: " style prefixes Paper sometimes keeps in the message
+  const stripped = line.replace(/^\[[^\]]+\]:\s*/, "");
+  const m = stripped.match(CHAT_RE);
+  if (!m) return null;
+  const player = m[1] ?? m[3];
+  const message = (m[2] ?? m[4] ?? "").trim();
+  if (!player || !message) return null;
+  return { player, message };
+}
+
 const LiveConsole = ({ server }: { server: Server }) => {
   const [lines, setLines] = useState<LogRow[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [paused, setPaused] = useState(false);
   const [filter, setFilter] = useState("");
+  const [chatOnly, setChatOnly] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
   const [histIdx, setHistIdx] = useState<number | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
@@ -143,10 +160,14 @@ const LiveConsole = ({ server }: { server: Server }) => {
   };
 
   const visible = useMemo(() => {
-    if (!filter.trim()) return lines;
-    const q = filter.toLowerCase();
-    return lines.filter((l) => l.line.toLowerCase().includes(q));
-  }, [lines, filter]);
+    let l = lines;
+    if (chatOnly) l = l.filter((x) => parseChat(x.line) !== null);
+    if (filter.trim()) {
+      const q = filter.toLowerCase();
+      l = l.filter((x) => x.line.toLowerCase().includes(q));
+    }
+    return l;
+  }, [lines, filter, chatOnly]);
 
   const online = isOnline(server.last_seen_at);
 
@@ -160,6 +181,14 @@ const LiveConsole = ({ server }: { server: Server }) => {
         </div>
         <div className="flex items-center gap-2">
           <Input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="filter…" className="h-8 w-40" />
+          <Button
+            variant={chatOnly ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setChatOnly((c) => !c)}
+            title="Show only player chat messages"
+          >
+            💬 Chat
+          </Button>
           <Button variant="ghost" size="sm" onClick={() => setPaused((p) => !p)}>
             {paused ? "Resume" : "Pause"}
           </Button>
@@ -171,25 +200,35 @@ const LiveConsole = ({ server }: { server: Server }) => {
       <div className="bg-black text-green-300 font-mono text-xs p-4 h-[60vh] overflow-y-auto whitespace-pre-wrap">
         {visible.length === 0 && (
           <div className="text-muted-foreground italic">
-            {online ? "Waiting for log output…" : "Server offline — install the bridge plugin to start streaming."}
+            {chatOnly ? "No chat messages yet…" : online ? "Waiting for log output…" : "Server offline — install the bridge plugin to start streaming."}
           </div>
         )}
-        {visible.map((l) => (
-          <div
-            key={l.id}
-            className={
-              l.level === "ERROR" ? "text-red-400" :
-              l.level === "WARN" ? "text-yellow-300" :
-              l.source === "command" ? (l.line.startsWith(">") ? "text-white" : "text-cyan-300") :
-              "text-green-300"
-            }
-          >
-            <span className="text-muted-foreground/60 mr-2">
-              {new Date(l.logged_at).toLocaleTimeString()}
-            </span>
-            {l.line}
-          </div>
-        ))}
+        {visible.map((l) => {
+          const chat = parseChat(l.line);
+          const colorClass = chat
+            ? "text-pink-300"
+            : l.level === "ERROR" ? "text-red-400"
+            : l.level === "WARN" ? "text-yellow-300"
+            : l.source === "command" ? (l.line.startsWith(">") ? "text-white" : "text-cyan-300")
+            : "text-green-300";
+          return (
+            <div key={l.id} className={colorClass}>
+              <span className="text-muted-foreground/60 mr-2">
+                {new Date(l.logged_at).toLocaleTimeString()}
+              </span>
+              {chat ? (
+                <>
+                  <span className="text-pink-400">💬</span>{" "}
+                  <span className="font-semibold text-fuchsia-300">{chat.player}</span>
+                  <span className="text-muted-foreground"> » </span>
+                  <span className="text-pink-100">{chat.message}</span>
+                </>
+              ) : (
+                l.line
+              )}
+            </div>
+          );
+        })}
         <div ref={endRef} />
       </div>
       <div className="flex items-center gap-2 border-t p-2 bg-card">
