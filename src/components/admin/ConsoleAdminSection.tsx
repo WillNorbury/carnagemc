@@ -29,21 +29,6 @@ function isOnline(last?: string | null) {
   return Date.now() - new Date(last).getTime() < 30_000;
 }
 
-// Matches typical Minecraft chat lines logged by the server, e.g.
-//   "<Notch> hello"            (vanilla / Paper)
-//   "[Not Secure] <Notch> hi"  (1.19+ unsigned chat)
-//   "Notch » hello"            (some chat plugins)
-const CHAT_RE = /(?:\[Not Secure\]\s*)?<([^>]{1,32})>\s?(.*)$|^([A-Za-z0-9_]{2,16})\s*[»:]\s+(.+)$/;
-function parseChat(line: string): { player: string; message: string } | null {
-  // Strip leading "[HH:MM:SS INFO]: " style prefixes Paper sometimes keeps in the message
-  const stripped = line.replace(/^\[[^\]]+\]:\s*/, "");
-  const m = stripped.match(CHAT_RE);
-  if (!m) return null;
-  const player = m[1] ?? m[3];
-  const message = (m[2] ?? m[4] ?? "").trim();
-  if (!player || !message) return null;
-  return { player, message };
-}
 
 const LiveConsole = ({ server }: { server: Server }) => {
   const [lines, setLines] = useState<LogRow[]>([]);
