@@ -78,6 +78,7 @@ import AdminModsPage from "@/pages/AdminMods";
 import QuizAdminSection from "@/components/admin/QuizAdminSection";
 import { ReportsAdminSection } from "@/components/admin/ReportsAdminSection";
 import { PunishmentsAdminSection } from "@/components/admin/PunishmentsAdminSection";
+import { ConsoleAdminSection } from "@/components/admin/ConsoleAdminSection";
 import { SendEmailAdminSection } from "@/components/admin/SendEmailAdminSection";
 import { EmailDiagnosticsSection } from "@/components/admin/EmailDiagnosticsSection";
 import { ApplicationStatusEmailEditor } from "@/components/admin/ApplicationStatusEmailEditor";
@@ -136,6 +137,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   "send-email": { title: "Send Email", description: "Broadcast emails to all users, admins, or owners only." },
   "email-diagnostics": { title: "Email Diagnostics", description: "Verify the notify.carnagemc.net sender domain and From-address allowlist." },
   punishments: { title: "Punishments", description: "Browse bans, mutes, kicks, and warnings from the network database. Unban or unmute players from the web (silent by default)." },
+  console: { title: "Owner Console", description: "Terminal-style admin console. Type `help` for available commands." },
 };
 
 const Admin = () => {
@@ -246,6 +248,7 @@ const Admin = () => {
           {section === "permissions" && (isOwner ? <PermissionsTab /> : denied)}
           {section === "bot-dashboard" && (isOwner ? <BotDashboardSection /> : denied)}
           {section === "bot-management" && (isOwner ? <BotManagementSection /> : denied)}
+          {section === "console" && (isOwner ? <ConsoleAdminSection /> : denied)}
         </>
       )}
     </AdminLayout>

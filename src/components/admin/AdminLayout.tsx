@@ -85,7 +85,8 @@ export type AdminSection =
   | "reports"
   | "bot-dashboard"
   | "bot-management"
-  | "punishments";
+  | "punishments"
+  | "console";
 
 type NavItem =
   | { kind: "link"; id: AdminSection; icon: any; label: string }
@@ -146,6 +147,7 @@ const items: NavItem[] = [
   { kind: "link", id: "email-diagnostics", icon: ShieldCheck, label: "Email Diagnostics" },
   { kind: "link", id: "quizzes", icon: Brain, label: "Quizzes" },
   { kind: "link", id: "reports", icon: Flag, label: "Reports" },
+  { kind: "link", id: "console", icon: Code, label: "Console" },
   { kind: "section", title: "Discord Bot", icon: Bot },
   { kind: "link", id: "bot-dashboard", icon: LayoutDashboard, label: "Bot Dashboard" },
   { kind: "link", id: "bot-management", icon: Code, label: "Management" },
@@ -183,7 +185,7 @@ export const AdminLayout = ({
       return canSee("bot-dashboard") || canSee("bot-management");
     }
     if (it.kind === "link") {
-      if (it.id === "permissions" || it.id === "bot-dashboard" || it.id === "bot-management") {
+      if (it.id === "permissions" || it.id === "bot-dashboard" || it.id === "bot-management" || it.id === "console") {
         // Owner-only sections (also gated by their permission key).
         if (!isOwner) return false;
       }
