@@ -1,76 +1,83 @@
-## Goal
+# Owner Console → Live Minecraft Server Console
 
-Two related features:
-1. **Improve the existing `/faq` page** — categorized, searchable, with "Was this helpful?" voting.
-2. **Add a new `/quiz` feature** — admin-managed multiple-choice questions, scored attempts, public leaderboard.
+A web terminal in `/admin?tab=console` (owner-only) that picks a Minecraft server, sends real console commands, and streams the live server log (chat, joins, errors, command output) in real time.
 
----
+## How the bridge works
 
-## 1. FAQ improvements (existing `faqs` table)
+The website cannot talk to a Minecraft server directly — most servers are behind NAT/firewalls. We use an **outbound-only bridge plugin** that runs on each MC server. The plugin polls our backend for queued commands and pushes log lines back. No inbound ports need to be opened.
 
-Frontend-only changes to `src/pages/Faq.tsx`:
+```text
+Browser  ──HTTPS──►  Edge fn (queue cmd) ──► Postgres queue
+                                                │
+   MC server ◄── poll commands ◄── Edge fn ◄────┘
+   MC server ── POST log lines ──► Edge fn ──► Postgres logs ──► Realtime ──► Browser
+```
 
-- Search box that filters by question + answer text.
-- Category tabs/pills (uses existing `category` column).
-- "Was this helpful? 👍 / 👎" buttons on each FAQ.
-- Anonymous-friendly vote storage in a new lightweight table `faq_votes` (one row per visitor per FAQ, dedup by `auth.uid()` for signed-in users or a localStorage-generated `voter_key` for anon).
-- Show helpful count + percentage under each answer.
-- Sort options: Most helpful / Newest / Default order.
+## What gets built
 
-New table:
-- `faq_votes` — `faq_id`, `user_id` (nullable), `voter_key` (text, nullable), `vote` (`helpful` | `not_helpful`), `created_at`. Unique on `(faq_id, coalesce(user_id::text, voter_key))`. Anon INSERT allowed; SELECT public for aggregate counts via a view.
+### 1. Database (migration)
 
----
+- `mc_servers` — one row per Minecraft server. Fields: `name`, `slug`, `description`, `ingest_secret` (random, server-stored, used by the plugin to authenticate), `enabled`, `last_seen_at`.
+- `mc_console_commands` — command queue. Fields: `server_id`, `command`, `issued_by` (user_id), `status` (`pending|sent|done|error`), `response`, `sent_at`, `completed_at`.
+- `mc_console_logs` — streamed log lines. Fields: `server_id`, `level` (`INFO|WARN|ERROR`), `source` (`server|chat|command`), `line`, `logged_at`.
+- RLS: owner-only `SELECT/INSERT/UPDATE` on all three. Service role has full access (used by the bridge edge functions). Realtime enabled on `mc_console_logs` and `mc_console_commands` (so the UI updates instantly).
 
-## 2. Quiz system (new)
+### 2. Edge functions
 
-### Pages
-- `/quiz` — list of available quizzes (cards: title, # questions, your best score, global top score).
-- `/quiz/:slug` — take the quiz (one question per screen, progress bar, timer optional).
-- `/quiz/:slug/result/:attemptId` — show score, correct/incorrect breakdown, share button, link to leaderboard.
-- `/quiz/:slug/leaderboard` — top 50 attempts, ranked by score then time.
+- `mc-bridge-poll` (called by the plugin)
+  - Auth: `X-Server-Slug` + `X-Server-Secret` headers checked against `mc_servers.ingest_secret`.
+  - `GET` → returns up to N pending commands, marks them `sent`, stamps `last_seen_at`.
+  - `POST` (results) → updates command rows with `response`, sets `status=done|error`.
+  - `POST /logs` (or `?kind=logs`) → bulk-insert log lines.
+- `mc-console-send` (called by the website)
+  - Owner-only (uses existing `is_current_user_admin` + owner role check).
+  - Validates `server_id` + `command`, inserts into `mc_console_commands`.
+- `mc-server-secret-rotate` — owner regenerates a server's `ingest_secret`.
 
-### Admin tab `/admin?tab=quizzes`
-- List quizzes → create/edit/delete.
-- Quiz editor: title, slug, description, category, passing score %, time limit (optional), published toggle, randomize questions toggle.
-- Question editor within quiz: question text, 2–6 answer options, mark correct answer(s), optional explanation shown after answering, points value.
+### 3. Admin UI updates (owner-only)
 
-### New tables
-- `quizzes` — `id`, `slug` (unique), `title`, `description`, `category`, `passing_score` (int %), `time_limit_seconds` (nullable), `randomize`, `published`, `created_by`, `created_at`, `updated_at`.
-- `quiz_questions` — `id`, `quiz_id` (FK), `prompt`, `explanation` (nullable), `points` (default 1), `sort_order`.
-- `quiz_options` — `id`, `question_id` (FK), `label`, `is_correct`, `sort_order`.
-- `quiz_attempts` — `id`, `quiz_id`, `user_id`, `score` (int), `max_score` (int), `percent` (numeric), `duration_seconds`, `passed` (bool), `answers` (jsonb snapshot: `[{ question_id, option_id, correct }]`), `created_at`.
+Replace the current `ConsoleAdminSection` with:
 
-### RLS
-- `quizzes`, `quiz_questions`, `quiz_options`: anon + auth SELECT where quiz is `published`; admins/owners full access.
-- `quiz_attempts`: user INSERT own; user SELECT own; admins SELECT all. Leaderboard reads via a `SECURITY DEFINER` function `get_quiz_leaderboard(slug, limit)` that returns aggregated rows (rank, display_name, avatar_url, percent, duration_seconds) — no direct table grants needed for leaderboard reads.
+- **Server picker** (dropdown) listing `mc_servers`. Shows green dot if `last_seen_at` is within the last 30s.
+- **Live log pane** — subscribes to Realtime `INSERT` on `mc_console_logs` filtered by the selected server. Auto-scroll, color by level, search/filter input, "Pause" toggle.
+- **Command input** at the bottom. Submitting inserts via `mc-console-send`. The browser shows the command echo immediately, and the response line streams back when the plugin marks it `done`.
+- **Server management subtab** (owner): add/edit/delete servers (`name`, `description`, `enabled`), and a "Show install instructions" button that displays the plugin download link, the server's slug, and a one-time-reveal of `ingest_secret` with a "Rotate" button.
 
-### Scoring
-- Best attempt per user counts for leaderboard.
-- Tiebreak: higher percent → shorter duration → earlier created_at.
-- Server-side score validation: a `submit_quiz_attempt(quiz_id, answers jsonb, duration int)` `SECURITY DEFINER` function recomputes the score from `quiz_options.is_correct` so clients can't cheat.
+### 4. The bridge plugin
 
-### Sidebar
-- Add "FAQ" already exists. Add "Quiz" link under Community section in `AppSidebar`.
+Tiny Paper/Spigot/Folia plugin (`CarnageConsoleBridge`) shipped as a JAR the user uploads to each server's `plugins/` folder. On startup it reads `config.yml`:
 
----
+```yaml
+endpoint: https://<project>.functions.supabase.co/mc-bridge-poll
+server-slug: survival
+server-secret: <paste from website>
+poll-interval-ms: 500
+log-batch-ms: 1000
+```
 
-## Files
+Behavior:
 
-- `supabase/migrations/<ts>_faq_votes_and_quiz.sql` — new tables + GRANTs + RLS + the two SECURITY DEFINER functions.
-- `src/pages/Faq.tsx` — edit (search, categories, voting, sorting).
-- `src/pages/Quiz.tsx` (list), `QuizTake.tsx`, `QuizResult.tsx`, `QuizLeaderboard.tsx` — new.
-- `src/components/admin/QuizAdminSection.tsx` — new (quiz + question + option editor).
-- `src/pages/Admin.tsx` — register the new "Quizzes" tab.
-- `src/components/site/AppSidebar.tsx` — add "Quiz" link.
-- `src/App.tsx` — register 4 new routes.
+- **Console capture**: attaches a `log4j` appender to the root logger to capture every console line (chat, joins, plugin errors, command output). Buffers lines and POSTs them in batches every `log-batch-ms`.
+- **Command execution**: every `poll-interval-ms` calls `GET` on the bridge. For each command, runs `Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd)` on the main thread, captures any direct response text into a per-command buffer, then POSTs the result.
+- **Heartbeat**: every poll also stamps `last_seen_at` so the UI shows online status.
+- Plugin source + build instructions live in a new `mc-bridge-plugin/` folder in the repo so it's versioned alongside the website.
 
----
+## Security
 
-## Out of scope (ask before adding)
+- `ingest_secret` is per-server, generated server-side, shown to the owner once on creation/rotation. Stored hashed at rest if practical (otherwise plain in the row with strict RLS).
+- All website endpoints check `owner` role via the existing `usePermissions` + `is_current_user_admin` pattern used by the current Console tab.
+- Command audit: every command keeps `issued_by` (user_id) and timestamps forever in `mc_console_commands`.
+- Rate limit: edge function caps each server to N commands/min to avoid runaway loops.
 
-- Reward integration (Discord role / in-game rank on passing) — easy to bolt on later via existing `website-log-event` webhook.
-- Multi-correct-answer scoring (partial credit) — current plan: question is correct only if the chosen option matches.
-- Anti-cheat beyond server recompute (no IP/device throttling).
+## Technical notes
 
-Approve and I'll build it.
+- Polling at 500 ms is cheap (one request, single row select) and works on any host. We can upgrade to SSE/WebSocket later without changing the UI contract.
+- Realtime is enabled per-table via `ALTER PUBLICATION supabase_realtime ADD TABLE ...` in the migration. The UI uses one `supabase.channel` per selected server.
+- The existing `punishments-lookup` console commands (`lookup`, `unban`, `list`, etc.) stay available as **client-side shortcuts** in the same UI, so the tab does both web-side admin actions and real MC console commands.
+- No inbound firewall changes required on the MC host — outbound HTTPS only.
+
+## Out of scope (can be added later)
+
+- Tab-complete suggestions sourced from the MC server.
+- Per-server role permissions (e.g. let admins use one server but not another).
+- Replaying historical logs older than what's stored in `mc_console_logs` (we'd keep a rolling N days and purge).
