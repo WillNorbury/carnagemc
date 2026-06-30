@@ -209,60 +209,158 @@ const LiveConsole = ({ server }: { server: Server }) => {
   );
 };
 
-const ServerInstallDialog = ({ server, onRotate }: { server: Server; onRotate: () => void }) => {
+const JAR_PATH = "CarnageConsoleBridge-latest.jar";
+
+const ServerInstallDialog = ({ server, onRotate, isOwner }: { server: Server; onRotate: () => void; isOwner: boolean }) => {
   const [show, setShow] = useState(false);
-  const copy = (v: string) => { navigator.clipboard.writeText(v); toast({ title: "Copied" }); };
+  const [jarUrl, setJarUrl] = useState<string | null>(null);
+  const [jarMeta, setJarMeta] = useState<{ size: number; updated: string } | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const copy = (v: string, label = "Copied") => { navigator.clipboard.writeText(v); toast({ title: label }); };
+
+  const configYaml =
+`# Drop into plugins/CarnageConsoleBridge/config.yml on your Minecraft server
+endpoint: ${BRIDGE_URL}
+server-slug: ${server.slug}
+server-secret: ${server.ingest_secret}
+poll-interval-ms: 1000
+log-batch-ms: 1000`;
+
+  const loadJar = async () => {
+    const { data: list } = await supabase.storage.from("mc-bridge-jars").list("", { limit: 100 });
+    const file = list?.find((f) => f.name === JAR_PATH);
+    if (!file) { setJarUrl(null); setJarMeta(null); return; }
+    const { data: signed } = await supabase.storage.from("mc-bridge-jars").createSignedUrl(JAR_PATH, 3600);
+    setJarUrl(signed?.signedUrl ?? null);
+    setJarMeta({
+      size: (file.metadata as any)?.size ?? 0,
+      updated: file.updated_at ?? file.created_at ?? "",
+    });
+  };
+  useEffect(() => { loadJar(); }, []);
+
+  const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.name.endsWith(".jar")) { toast({ title: "Must be a .jar file", variant: "destructive" }); return; }
+    setUploading(true);
+    const { error } = await supabase.storage.from("mc-bridge-jars")
+      .upload(JAR_PATH, file, { upsert: true, contentType: "application/java-archive" });
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); return; }
+    toast({ title: "JAR uploaded", description: `${(file.size / 1024).toFixed(0)} KB` });
+    loadJar();
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Settings className="h-4 w-4 mr-1" /> Install</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Install bridge for {server.name}</DialogTitle>
           <DialogDescription>
-            Drop the bridge plugin JAR into your server's <code>plugins/</code> folder, then paste this
-            <code> config.yml</code>:
+            Three steps: download the JAR, drop it into <code>plugins/</code>, paste the config.yml below.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Label className="w-32">Endpoint</Label>
-            <Input readOnly value={BRIDGE_URL} className="font-mono text-xs" />
-            <Button size="icon" variant="ghost" onClick={() => copy(BRIDGE_URL)}><Copy className="h-4 w-4" /></Button>
-          </div>
-          <div className="flex items-center gap-2">
-            <Label className="w-32">Server slug</Label>
-            <Input readOnly value={server.slug} className="font-mono text-xs" />
-            <Button size="icon" variant="ghost" onClick={() => copy(server.slug)}><Copy className="h-4 w-4" /></Button>
-          </div>
-          <div className="flex items-center gap-2">
-            <Label className="w-32">Ingest secret</Label>
-            <Input readOnly type={show ? "text" : "password"} value={server.ingest_secret} className="font-mono text-xs" />
-            <Button size="icon" variant="ghost" onClick={() => setShow((s) => !s)}>
-              {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </Button>
-            <Button size="icon" variant="ghost" onClick={() => copy(server.ingest_secret)}><Copy className="h-4 w-4" /></Button>
-          </div>
+        <div className="space-y-5">
+          {/* Step 1 — JAR */}
+          <section className="space-y-2">
+            <h4 className="text-sm font-semibold flex items-center gap-2">
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">1</span>
+              Download the plugin JAR
+            </h4>
+            {jarUrl ? (
+              <div className="flex items-center gap-2 flex-wrap">
+                <Button asChild variant="default" size="sm">
+                  <a href={jarUrl} download="CarnageConsoleBridge.jar">
+                    <Download className="h-4 w-4 mr-1" /> Download JAR
+                  </a>
+                </Button>
+                {jarMeta && (
+                  <span className="text-xs text-muted-foreground">
+                    {(jarMeta.size / 1024).toFixed(0)} KB · updated {new Date(jarMeta.updated).toLocaleString()}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                No JAR uploaded yet.{isOwner ? " Upload one below." : " Ask an owner to upload it."}
+              </p>
+            )}
+            {isOwner && (
+              <div className="flex items-center gap-2">
+                <input ref={fileInputRef} type="file" accept=".jar" onChange={onUpload} className="hidden" />
+                <Button variant="outline" size="sm" disabled={uploading} onClick={() => fileInputRef.current?.click()}>
+                  <Upload className="h-4 w-4 mr-1" /> {uploading ? "Uploading…" : jarUrl ? "Replace JAR" : "Upload JAR"}
+                </Button>
+                <span className="text-xs text-muted-foreground">Owner only · max 50&nbsp;MB</span>
+              </div>
+            )}
+          </section>
 
-          <Textarea
-            readOnly
-            className="font-mono text-xs h-40"
-            value={
-`endpoint: ${BRIDGE_URL}
-server-slug: ${server.slug}
-server-secret: ${server.ingest_secret}
-poll-interval-ms: 500
-log-batch-ms: 1000`
-            }
-          />
-          <p className="text-xs text-muted-foreground">
-            The plugin source is in the <code>mc-bridge-plugin/</code> folder of this repo.
-            Build with <code>mvn package</code> and copy the resulting JAR.
-          </p>
+          {/* Step 2 — drop in plugins */}
+          <section className="space-y-1">
+            <h4 className="text-sm font-semibold flex items-center gap-2">
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">2</span>
+              Drop the JAR into your server
+            </h4>
+            <p className="text-xs text-muted-foreground">
+              Stop the server → copy the JAR into <code>plugins/</code> → start the server once so it generates
+              <code> plugins/CarnageConsoleBridge/config.yml</code> → stop the server again.
+            </p>
+          </section>
 
-          <div className="flex justify-end">
+          {/* Step 3 — config */}
+          <section className="space-y-2">
+            <h4 className="text-sm font-semibold flex items-center gap-2">
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">3</span>
+              Paste this config.yml, then restart
+            </h4>
+
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Label className="w-28 text-xs">Endpoint</Label>
+                <Input readOnly value={BRIDGE_URL} className="font-mono text-xs h-8" />
+                <Button size="icon" variant="ghost" onClick={() => copy(BRIDGE_URL)}><Copy className="h-4 w-4" /></Button>
+              </div>
+              <div className="flex items-center gap-2">
+                <Label className="w-28 text-xs">Server slug</Label>
+                <Input readOnly value={server.slug} className="font-mono text-xs h-8" />
+                <Button size="icon" variant="ghost" onClick={() => copy(server.slug)}><Copy className="h-4 w-4" /></Button>
+              </div>
+              <div className="flex items-center gap-2">
+                <Label className="w-28 text-xs">Ingest secret</Label>
+                <Input readOnly type={show ? "text" : "password"} value={server.ingest_secret} className="font-mono text-xs h-8" />
+                <Button size="icon" variant="ghost" onClick={() => setShow((s) => !s)}>
+                  {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+                <Button size="icon" variant="ghost" onClick={() => copy(server.ingest_secret, "Secret copied")}><Copy className="h-4 w-4" /></Button>
+              </div>
+            </div>
+
+            <div className="relative">
+              <Textarea readOnly className="font-mono text-xs h-44 pr-12" value={configYaml} />
+              <Button
+                size="sm"
+                variant="secondary"
+                className="absolute top-2 right-2"
+                onClick={() => copy(configYaml, "config.yml copied")}
+              >
+                <Copy className="h-3.5 w-3.5 mr-1" /> Copy
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              After restart, the dot next to this server turns green within ~5 seconds and live logs stream into the Console tab.
+            </p>
+          </section>
+
+          <div className="flex justify-end border-t pt-3">
             <Button variant="destructive" size="sm" onClick={onRotate}>
               <RefreshCw className="h-4 w-4 mr-1" /> Rotate secret
             </Button>
