@@ -440,7 +440,7 @@ const ServersTab = ({ servers, reload }: { servers: Server[]; reload: () => void
               <div className="flex items-center gap-1 text-xs">
                 <Switch checked={s.enabled} onCheckedChange={() => toggle(s)} /> Enabled
               </div>
-              <ServerInstallDialog server={s} onRotate={() => rotate(s)} />
+              <ServerInstallDialog server={s} onRotate={() => rotate(s)} isOwner={true} />
               <Button variant="ghost" size="sm" onClick={() => remove(s)}>
                 <Trash2 className="h-4 w-4" />
               </Button>
