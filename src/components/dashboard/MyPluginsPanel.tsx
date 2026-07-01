@@ -182,6 +182,8 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       jar_size: p.jar_size,
       screenshots: p.screenshots ?? [],
       published: p.published,
+      pricing: (p.price ?? 0) > 0 ? "paid" : "free",
+      price: p.price != null ? String(p.price) : "0",
     });
     setOpen(true);
   };
