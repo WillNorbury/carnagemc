@@ -199,7 +199,7 @@ const PluginSettings = () => {
     }
     toast.success("Saved");
     if (cleanSlug && cleanSlug !== key) {
-      navigate(`/plugins/${cleanSlug}/settings`, { replace: true });
+      navigate(`/plugin/${cleanSlug}/settings`, { replace: true });
     }
     setPlugin({ ...plugin, name: name.trim(), slug: cleanSlug || null, description: description.trim() || null, icon_url: iconUrl, published });
   };
