@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useAuth } from "@/lib/auth";
-import logoAsset from "@/assets/carnagemc-logo.png.asset.json";
+import logoAsset from "public/favicon.ico";
 const logo = logoAsset.url;
 import {
   Home,
@@ -144,9 +144,7 @@ const discoverGroup: NavGroup = {
   id: "discover",
   label: "Discover",
   icon: Compass,
-  items: [
-    { to: "/plugins", label: "Plugins", icon: Puzzle },
-  ],
+  items: [{ to: "/plugins", label: "Plugins", icon: Puzzle }],
 };
 
 const weatherGroup: NavGroup = {
