@@ -273,7 +273,7 @@ const PluginSettings = () => {
         <main className="container max-w-4xl py-16 text-center">
           <h1 className="font-display text-2xl font-bold mb-2">Plugin not found</h1>
           <Button asChild variant="outline" className="mt-4">
-            <Link to="/discover/plugins">Browse plugins</Link>
+            <Link to="/plugins">Browse plugins</Link>
           </Button>
         </main>
         <Footer />

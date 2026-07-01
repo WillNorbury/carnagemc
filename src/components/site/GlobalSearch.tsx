@@ -37,7 +37,7 @@ const PAGES: Hit[] = [
   { id: "p-staff", type: "page", title: "Staff", to: "/staff", icon: ShieldCheck },
   { id: "p-vote", type: "page", title: "Vote", to: "/vote", icon: VoteIcon },
   { id: "p-rules", type: "page", title: "Rules", to: "/rules", icon: ScrollText },
-  { id: "p-plugins", type: "page", title: "Plugins", to: "/discover/plugins", icon: Puzzle },
+  { id: "p-plugins", type: "page", title: "Plugins", to: "/plugins", icon: Puzzle },
   { id: "p-features", type: "page", title: "Features", to: "/features", icon: Sparkles },
   { id: "p-faq", type: "page", title: "FAQ", to: "/faq", icon: HelpCircle },
   { id: "p-events", type: "page", title: "Events", to: "/events", icon: Calendar },

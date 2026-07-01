@@ -100,7 +100,7 @@ const Shell = () => {
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/admin/announcements" element={<Navigate to="/admin?tab=news" replace />} />
                   <Route path="/admin/*" element={<AdminTabRedirect />} />
-                  <Route path="/discover/mods" element={<Mods />} />
+                  <Route path="/mods" element={<Mods />} />
                   <Route path="/mod/:slug" element={<ModDetail />} />
                   <Route path="/mod-tiers" element={<ModTiers />} />
                   <Route path="/changelog" element={<Changelog />} />
@@ -124,24 +124,24 @@ const Shell = () => {
                   <Route path="/users" element={<Users />} />
                   <Route path="/user/:slug" element={<UserProfile />} />
                   <Route path="/org/:slug" element={<OrgProfile />} />
-                  <Route path="/discover/plugins" element={<Plugins />} />
-                  <Route path="/discover/plugins/:shortId" element={<PluginDetail />} />
+                  <Route path="/plugins" element={<Plugins />} />
+                  <Route path="/plugins/:shortId" element={<PluginDetail />} />
                   <Route path="/plugin/:slug" element={<PluginDetail />} />
                   <Route path="/plugins/:slug/settings" element={<PluginSettings />} />
                   <Route path="/plugin/:slug/settings" element={<PluginSettings />} />
                   <Route path="/plugins/:slug" element={<PluginDetail />} />
-                  <Route path="/discover/resource-packs" element={<ResourcePacks />} />
+                  <Route path="/resource-packs" element={<ResourcePacks />} />
                   <Route path="/resource-pack/:slug" element={<DiscoverItemDetail urlKind="resource-pack" />} />
-                  <Route path="/discover/data-packs" element={<DataPacks />} />
+                  <Route path="/data-packs" element={<DataPacks />} />
                   <Route path="/data-pack/:slug" element={<DiscoverItemDetail urlKind="data-pack" />} />
-                  <Route path="/discover/shaders" element={<Shaders />} />
+                  <Route path="/shaders" element={<Shaders />} />
                   <Route path="/shader/:slug" element={<DiscoverItemDetail urlKind="shader" />} />
-                  <Route path="/discover/modpacks" element={<Modpacks />} />
+                  <Route path="/modpacks" element={<Modpacks />} />
                   <Route path="/modpack/:slug" element={<DiscoverItemDetail urlKind="modpack" />} />
-                  <Route path="/discover/servers" element={<Servers />} />
+                  <Route path="/servers" element={<Servers />} />
                   <Route path="/server/:slug" element={<DiscoverItemDetail urlKind="server" />} />
-                  <Route path="/discover/skripts" element={<Skripts />} />
-                  <Route path="/discover/skripts/new" element={<SkriptUpload />} />
+                  <Route path="/skripts" element={<Skripts />} />
+                  <Route path="/skripts/new" element={<SkriptUpload />} />
                   <Route path="/skript/:slug" element={<DiscoverItemDetail urlKind="skript" />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/wishlist" element={<Wishlist />} />

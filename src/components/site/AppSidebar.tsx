@@ -148,14 +148,14 @@ const discoverGroup: NavGroup = {
   label: "Discover",
   icon: Compass,
   items: [
-    { to: "/discover/mods", label: "Mods", icon: Boxes },
-    { to: "/discover/plugins", label: "Plugins", icon: Puzzle },
-    { to: "/discover/modpacks", label: "Modpacks", icon: Package },
-    { to: "/discover/resource-packs", label: "Resource Packs", icon: Layers },
-    { to: "/discover/data-packs", label: "Data Packs", icon: Database },
-    { to: "/discover/shaders", label: "Shaders", icon: Sun },
-    { to: "/discover/servers", label: "Servers", icon: ServerIcon },
-    { to: "/discover/skripts", label: "Skripts", icon: FileCode },
+    { to: "/mods", label: "Mods", icon: Boxes },
+    { to: "/plugins", label: "Plugins", icon: Puzzle },
+    { to: "/modpacks", label: "Modpacks", icon: Package },
+    { to: "/resource-packs", label: "Resource Packs", icon: Layers },
+    { to: "/data-packs", label: "Data Packs", icon: Database },
+    { to: "/shaders", label: "Shaders", icon: Sun },
+    { to: "/servers", label: "Servers", icon: ServerIcon },
+    { to: "/skripts", label: "Skripts", icon: FileCode },
   ],
 };
 

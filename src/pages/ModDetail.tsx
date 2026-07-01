@@ -213,7 +213,7 @@ const ModDetail = () => {
       <Navbar />
       <main className="container pt-28 pb-16 max-w-6xl">
         <Button variant="ghost" size="sm" asChild className="mb-4">
-          <Link to="/discover/mods">
+          <Link to="/mods">
             <ArrowLeft className="h-4 w-4 mr-1" /> Back to mods
           </Link>
         </Button>

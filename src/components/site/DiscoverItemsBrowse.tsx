@@ -73,14 +73,14 @@ const getServerIp = (it: DiscoverItem): string | null => {
 };
 
 const DISCOVER_TABS = [
-  { label: "Mods", to: "/discover/mods" },
-  { label: "Resource Packs", to: "/discover/resource-packs" },
-  { label: "Data Packs", to: "/discover/data-packs" },
-  { label: "Shaders", to: "/discover/shaders" },
-  { label: "Modpacks", to: "/discover/modpacks" },
-  { label: "Plugins", to: "/discover/plugins" },
-  { label: "Skripts", to: "/discover/skripts" },
-  { label: "Servers", to: "/discover/servers" },
+  { label: "Mods", to: "/mods" },
+  { label: "Resource Packs", to: "/resource-packs" },
+  { label: "Data Packs", to: "/data-packs" },
+  { label: "Shaders", to: "/shaders" },
+  { label: "Modpacks", to: "/modpacks" },
+  { label: "Plugins", to: "/plugins" },
+  { label: "Skripts", to: "/skripts" },
+  { label: "Servers", to: "/servers" },
 ];
 
 const timeAgo = (iso: string) => {

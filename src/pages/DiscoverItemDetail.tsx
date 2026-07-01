@@ -58,37 +58,37 @@ const KIND_META: Record<
   "resource-pack": {
     kind: "resource_pack",
     label: "Resource Pack",
-    browseTo: "/discover/resource-packs",
+    browseTo: "/resource-packs",
     browseLabel: "Resource Packs",
   },
   "data-pack": {
     kind: "data_pack",
     label: "Data Pack",
-    browseTo: "/discover/data-packs",
+    browseTo: "/data-packs",
     browseLabel: "Data Packs",
   },
   shader: {
     kind: "shader",
     label: "Shader",
-    browseTo: "/discover/shaders",
+    browseTo: "/shaders",
     browseLabel: "Shaders",
   },
   modpack: {
     kind: "modpack",
     label: "Modpack",
-    browseTo: "/discover/modpacks",
+    browseTo: "/modpacks",
     browseLabel: "Modpacks",
   },
   server: {
     kind: "server",
     label: "Server",
-    browseTo: "/discover/servers",
+    browseTo: "/servers",
     browseLabel: "Servers",
   },
   skript: {
     kind: "skript",
     label: "Skript",
-    browseTo: "/discover/skripts",
+    browseTo: "/skripts",
     browseLabel: "Skripts",
   },
 };

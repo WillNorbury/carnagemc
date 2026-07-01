@@ -7,13 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Search, Sparkles } from "lucide-react";
 
 const DISCOVER_TABS = [
-  { label: "Mods", to: "/discover/mods", enabled: true },
-  { label: "Resource Packs", to: "/discover/resource-packs", enabled: true },
-  { label: "Data Packs", to: "/discover/data-packs", enabled: true },
-  { label: "Shaders", to: "/discover/shaders", enabled: true },
-  { label: "Modpacks", to: "/discover/modpacks", enabled: true },
-  { label: "Plugins", to: "/discover/plugins", enabled: true },
-  { label: "Servers", to: "/discover/servers", enabled: true },
+  { label: "Mods", to: "/mods", enabled: true },
+  { label: "Resource Packs", to: "/resource-packs", enabled: true },
+  { label: "Data Packs", to: "/data-packs", enabled: true },
+  { label: "Shaders", to: "/shaders", enabled: true },
+  { label: "Modpacks", to: "/modpacks", enabled: true },
+  { label: "Plugins", to: "/plugins", enabled: true },
+  { label: "Servers", to: "/servers", enabled: true },
 ];
 
 type Section = { title: string; items: string[] };
