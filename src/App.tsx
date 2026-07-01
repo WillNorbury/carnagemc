@@ -125,11 +125,22 @@ const Shell = () => {
                   <Route path="/user/:slug" element={<UserProfile />} />
                   <Route path="/org/:slug" element={<OrgProfile />} />
                   <Route path="/plugins" element={<Plugins />} />
-                  <Route path="/plugins/:shortId" element={<PluginDetail />} />
                   <Route path="/plugin/:slug" element={<PluginDetail />} />
+                  <Route path="/plugins/:slug" element={<PluginDetail />} />
                   <Route path="/plugins/:slug/settings" element={<PluginSettings />} />
                   <Route path="/plugin/:slug/settings" element={<PluginSettings />} />
-                  <Route path="/plugins/:slug" element={<PluginDetail />} />
+                  {/* Legacy /discover/* → new root paths */}
+                  <Route path="/discover" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/discover/plugins" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/discover/plugins/:shortId" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/discover/mods" element={<Navigate to="/mods" replace />} />
+                  <Route path="/discover/resource-packs" element={<Navigate to="/resource-packs" replace />} />
+                  <Route path="/discover/data-packs" element={<Navigate to="/data-packs" replace />} />
+                  <Route path="/discover/shaders" element={<Navigate to="/shaders" replace />} />
+                  <Route path="/discover/modpacks" element={<Navigate to="/modpacks" replace />} />
+                  <Route path="/discover/servers" element={<Navigate to="/servers" replace />} />
+                  <Route path="/discover/skripts" element={<Navigate to="/skripts" replace />} />
+                  <Route path="/discover/skripts/new" element={<Navigate to="/skripts/new" replace />} />
                   <Route path="/resource-packs" element={<ResourcePacks />} />
                   <Route path="/resource-pack/:slug" element={<DiscoverItemDetail urlKind="resource-pack" />} />
                   <Route path="/data-packs" element={<DataPacks />} />
