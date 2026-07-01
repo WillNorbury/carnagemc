@@ -60,6 +60,7 @@ type Plugin = {
   jar_size: number | null;
   screenshots: string[];
   published: boolean;
+  price: number | null;
 };
 
 type FormState = {
@@ -80,6 +81,8 @@ type FormState = {
   jar_size: number | null;
   screenshots: string[];
   published: boolean;
+  pricing: "free" | "paid";
+  price: string;
 };
 
 const EMPTY: FormState = {
@@ -100,6 +103,8 @@ const EMPTY: FormState = {
   jar_size: null,
   screenshots: [],
   published: true,
+  pricing: "free",
+  price: "0",
 };
 
 const slugify = (s: string) =>
@@ -177,6 +182,8 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       jar_size: p.jar_size,
       screenshots: p.screenshots ?? [],
       published: p.published,
+      pricing: (p.price ?? 0) > 0 ? "paid" : "free",
+      price: p.price != null ? String(p.price) : "0",
     });
     setOpen(true);
   };
@@ -280,6 +287,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       jar_size: form.jar_size,
       screenshots: form.screenshots,
       published: form.published,
+      price: form.pricing === "paid" ? Math.max(0, Number(form.price) || 0) : 0,
     };
 
     let error;
@@ -481,6 +489,44 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
                 />
               </div>
             </div>
+
+            <div className="rounded-md border border-border p-3">
+              <Label className="mb-2 block">Pricing *</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, pricing: "free", price: "0" })}
+                  className={`rounded-md border p-3 text-left transition ${form.pricing === "free" ? "border-primary bg-primary/10" : "border-border hover:border-primary/40"}`}
+                >
+                  <div className="font-display font-bold text-sm">Free</div>
+                  <div className="text-xs text-muted-foreground">Anyone can download at no cost.</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, pricing: "paid" })}
+                  className={`rounded-md border p-3 text-left transition ${form.pricing === "paid" ? "border-primary bg-primary/10" : "border-border hover:border-primary/40"}`}
+                >
+                  <div className="font-display font-bold text-sm">Paid</div>
+                  <div className="text-xs text-muted-foreground">Users must purchase to download.</div>
+                </button>
+              </div>
+              {form.pricing === "paid" && (
+                <div className="mt-3 grid sm:grid-cols-[160px_1fr] gap-3 items-end">
+                  <div>
+                    <Label htmlFor="p-price">Price (USD) *</Label>
+                    <Input
+                      id="p-price"
+                      inputMode="decimal"
+                      value={form.price}
+                      onChange={(e) => setForm({ ...form, price: e.target.value })}
+                      placeholder="4.99"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">Buyers will be charged this amount at checkout.</p>
+                </div>
+              )}
+            </div>
+
 
             <div>
               <Label htmlFor="p-slug">URL slug</Label>

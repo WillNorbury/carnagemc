@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Loader2, User as UserIcon, FileText, LifeBuoy, ClipboardList, Link2, ExternalLink, CheckCircle2, Flame, Vote as VoteIcon, Trophy, ShoppingCart, Heart, Package, FileCode, Plus, Puzzle, Boxes } from "lucide-react";
 import MyPluginsPanel from "@/components/dashboard/MyPluginsPanel";
 import MyDiscoverItemsPanel from "@/components/dashboard/MyDiscoverItemsPanel";
+import MySkriptsPanel from "@/components/dashboard/MySkriptsPanel";
 import SkriptUploadForm from "@/components/dashboard/SkriptUploadForm";
 import { useCart } from "@/lib/cart";
 
@@ -283,7 +284,9 @@ const Dashboard = () => {
         {/* My Stuff */}
         <h2 className="font-display text-2xl font-black mb-3 mt-2">My Stuff</h2>
         <MyPluginsPanel userId={user!.id} />
+        <MySkriptsPanel userId={user!.id} />
         <MyDiscoverItemsPanel userId={user!.id} />
+
 
         {/* Create */}
         <Card id="create-skript" className="p-6 mb-6 scroll-mt-24">
