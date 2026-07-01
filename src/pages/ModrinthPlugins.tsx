@@ -165,14 +165,19 @@ export default function ModrinthPlugins() {
                       </Badge>
                     ))}
                   </div>
-                  <div className="mt-4">
+                  <div className="mt-4 grid grid-cols-2 gap-2">
+                    <Button asChild size="sm" className="w-full">
+                      <Link to={`/modrinth-plugins/${p.project_id}`}>
+                        View details
+                      </Link>
+                    </Button>
                     <Button asChild size="sm" variant="outline" className="w-full">
                       <a
                         href={`https://modrinth.com/plugin/${p.slug}`}
                         target="_blank"
                         rel="noreferrer"
                       >
-                        View on Modrinth <ExternalLink className="h-3 w-3 ml-1" />
+                        Modrinth <ExternalLink className="h-3 w-3 ml-1" />
                       </a>
                     </Button>
                   </div>
