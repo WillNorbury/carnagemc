@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useAuth } from "@/lib/auth";
-import logoAsset from "public/favicon.ico";
+import logoAsset from "@/assets/carnagemc-logo.png.assets.jcon";
 const logo = logoAsset.url;
 import {
   Home,
