@@ -203,6 +203,45 @@ src/
 
 ---
 
+## `data/plugins.json`
+
+A committed snapshot of every **published** row from the `plugins` table, so the plugin catalog is visible directly on GitHub (not only in the live database).
+
+**Shape:**
+
+```json
+{
+  "generatedAt": "2026-07-01T00:00:00Z",
+  "count": 15,
+  "plugins": [
+    { "id": "...", "slug": "advancedrtp", "name": "AdvancedRTP", "version": "2.0.3", ... }
+  ]
+}
+```
+
+Internal storage paths (`jar_path`) are stripped; public download URLs (`download_url`) are kept.
+
+**How it stays in sync**
+
+The file is a manual export, not live data. Regenerate it whenever plugins are added, edited, or unpublished:
+
+- Ask the assistant: *"Regenerate data/plugins.json"*, or
+- Run against the backend:
+
+  ```sql
+  SELECT jsonb_pretty(jsonb_build_object(
+    'generatedAt', to_jsonb(now()),
+    'count', count(*),
+    'plugins', COALESCE(jsonb_agg(to_jsonb(p) - 'jar_path' ORDER BY p.name), '[]'::jsonb)
+  ))
+  FROM (SELECT * FROM public.plugins WHERE published = true) p;
+  ```
+
+  Save the output to `data/plugins.json`. The live source of truth remains the `plugins` table at `/plugins` and `/admin?tab=plugins`.
+
+---
+
+
 ## Custom Domains
 
 The project is deployed with multiple custom domains pointing to the same build:
