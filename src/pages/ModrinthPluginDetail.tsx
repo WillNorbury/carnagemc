@@ -245,7 +245,10 @@ export default function ModrinthPluginDetail() {
             Support & Links
           </h2>
           <PluginSupportBadges
-            loaders={project.loaders}
+            loaders={Array.from(new Set([
+              ...(project.loaders ?? []),
+              ...versions.flatMap((v) => v.loaders ?? []),
+            ].map((l) => l.toLowerCase())))}
             discordUrl={project.discord_url}
             sourceUrl={project.source_url}
             wikiUrl={project.wiki_url}
