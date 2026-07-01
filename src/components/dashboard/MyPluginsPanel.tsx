@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import PluginVersionsDialog from "./PluginVersionsDialog";
 import { MultiTagInput } from "@/components/ui/multi-tag-input";
+import FoliaBadge, { supportsFolia } from "@/components/site/FoliaBadge";
 
 
 type Plugin = {
