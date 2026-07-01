@@ -74,7 +74,7 @@ import { PermissionsTab } from "@/components/admin/PermissionsTab";
 import { MaintenanceTab } from "@/pages/AdminMaintenance";
 import AdminFaqsPage from "@/pages/AdminFaqs";
 import AdminEventsPage from "@/pages/AdminEvents";
-import AdminModsPage from "@/pages/AdminMods";
+
 import QuizAdminSection from "@/components/admin/QuizAdminSection";
 import { ReportsAdminSection } from "@/components/admin/ReportsAdminSection";
 import { PunishmentsAdminSection } from "@/components/admin/PunishmentsAdminSection";
