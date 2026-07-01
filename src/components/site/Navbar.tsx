@@ -5,17 +5,14 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/auth";
 import logoAsset from "@/assets/carnagemc-logo.png.asset.json";
 const logo = logoAsset.url;
-import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download, ShoppingCart, Heart } from "lucide-react";
+import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
 import { ThemeToggle } from "./ThemeToggle";
 import { NotificationsBell } from "./NotificationsBell";
-import { useCart } from "@/lib/cart";
-import { Badge } from "@/components/ui/badge";
 
 const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
   const nav = useNavigate();
-  const { cart, wishlist } = useCart();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
