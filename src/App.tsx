@@ -54,10 +54,6 @@ import QuizListPage from "./pages/Quiz.tsx";
 import QuizTake from "./pages/QuizTake.tsx";
 import QuizResult from "./pages/QuizResult.tsx";
 import QuizLeaderboard from "./pages/QuizLeaderboard.tsx";
-import Cart from "./pages/Cart.tsx";
-import Wishlist from "./pages/Wishlist.tsx";
-import Orders from "./pages/Orders.tsx";
-import { CartProvider } from "./lib/cart.tsx";
 import TornadoDeaths from "./pages/TornadoDeaths.tsx";
 import Punishments from "./pages/Punishments.tsx";
 
