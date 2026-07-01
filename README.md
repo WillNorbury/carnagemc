@@ -2,6 +2,9 @@
 
 The official website for **CarnageMC** — a Minecraft Lifesteal & Economy server.
 
+**Version:** Unversioned rolling release — changes are tracked by date in the [Changelog](/changelog) and `public/release-notes.json` rather than a semver number. `package.json` intentionally stays at `0.0.0`.
+
+
 **Live URLs:**
 - [carnagemc.lovable.app](https://carnagemc.lovable.app)
 - [xylomc.net](https://xylomc.net)
