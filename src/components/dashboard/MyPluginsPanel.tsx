@@ -60,6 +60,7 @@ type Plugin = {
   jar_size: number | null;
   screenshots: string[];
   published: boolean;
+  price: number | null;
 };
 
 type FormState = {
