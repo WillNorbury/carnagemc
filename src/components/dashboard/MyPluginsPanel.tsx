@@ -80,6 +80,8 @@ type FormState = {
   jar_size: number | null;
   screenshots: string[];
   published: boolean;
+  pricing: "free" | "paid";
+  price: string;
 };
 
 const EMPTY: FormState = {
@@ -100,6 +102,8 @@ const EMPTY: FormState = {
   jar_size: null,
   screenshots: [],
   published: true,
+  pricing: "free",
+  price: "0",
 };
 
 const slugify = (s: string) =>
