@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import { useAuth } from "@/lib/auth";
 import { Pencil } from "lucide-react";
 import Navbar from "@/components/site/Navbar";
@@ -431,8 +434,23 @@ const PluginDetail = () => {
 
                 <Card className="p-6">
                   {tab === "description" && (
-                    <div className="prose prose-invert max-w-none whitespace-pre-wrap text-sm leading-relaxed text-foreground/90">
-                      {plugin.long_description || plugin.description || (
+                    <div className="prose prose-invert prose-sm max-w-none text-foreground/90 prose-img:rounded-lg prose-a:text-primary">
+                      {plugin.long_description || plugin.description ? (
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          rehypePlugins={[rehypeRaw]}
+                          components={{
+                            a: ({ node, ...props }) => (
+                              <a {...props} target="_blank" rel="noreferrer noopener" />
+                            ),
+                            img: ({ node, ...props }) => (
+                              <img {...props} loading="lazy" className="rounded-lg max-w-full h-auto" />
+                            ),
+                          }}
+                        >
+                          {plugin.long_description || plugin.description || ""}
+                        </ReactMarkdown>
+                      ) : (
                         <span className="text-muted-foreground">No description provided.</span>
                       )}
                     </div>
