@@ -229,12 +229,6 @@ const Admin = () => {
           {section === "maintenance" && <MaintenanceTab />}
           {section === "faqs" && <AdminFaqsPage />}
           {section === "events" && <AdminEventsPage />}
-          {section === "mods" && <AdminModsPage />}
-          {section === "resource-packs" && <DiscoverItemsAdminTab kind="resource_pack" />}
-          {section === "data-packs" && <DiscoverItemsAdminTab kind="data_pack" />}
-          {section === "shaders" && <DiscoverItemsAdminTab kind="shader" />}
-          {section === "modpacks" && <DiscoverItemsAdminTab kind="modpack" />}
-          {section === "servers" && <DiscoverItemsAdminTab kind="server" />}
           {section === "ban-appeals" && <BanAppealsAdminSection />}
           {section === "wiki" && <WikiAdminSection />}
           {section === "gallery" && <GalleryAdminSection />}
