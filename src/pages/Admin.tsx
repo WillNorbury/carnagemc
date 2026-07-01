@@ -116,12 +116,6 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   maintenance: { title: "Maintenance", description: "Update the maintenance page content, branding, and allowlist." },
   faqs: { title: "FAQs", description: "Manage frequently asked questions." },
   events: { title: "Events", description: "Schedule and manage server events." },
-  mods: { title: "Mods", description: "Add, edit, and remove mods." },
-  "resource-packs": { title: "Resource Packs", description: "Manage discoverable resource packs." },
-  "data-packs": { title: "Data Packs", description: "Manage discoverable data packs." },
-  shaders: { title: "Shaders", description: "Manage discoverable shaders." },
-  modpacks: { title: "Modpacks", description: "Manage discoverable modpacks." },
-  servers: { title: "Servers", description: "Manage discoverable servers." },
   "bot-dashboard": {
     title: "Discord Bot — Dashboard",
     description: "Status and overview of the CarnageMC Discord bot.",
