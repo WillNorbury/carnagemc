@@ -1,9 +1,9 @@
-# XyloMC Website
+# CarnageMC Website
 
-The official website for **XyloMC** — a Minecraft Lifesteal & Economy server.
+The official website for **CarnageMC** — a Minecraft Lifesteal & Economy server.
 
 **Live URLs:**
-- [xylomc.lovable.app](https://xylomc.lovable.app)
+- [carnagemc.lovable.app](https://carnagemc.lovable.app)
 - [xylomc.net](https://xylomc.net)
 - [carnagemc.net](https://carnagemc.net)
 - [alsnetwork.fun](https://alsnetwork.fun)
@@ -50,7 +50,6 @@ The official website for **XyloMC** — a Minecraft Lifesteal & Economy server.
 | **Events** | `/events` | Server events calendar |
 | **Changelog** | `/changelog` | Server update changelog |
 | **Apply** | `/apply` | Staff/builder/content creator applications |
-| **Mods** | `/mods` | Public mod downloads (`.jar` files) with loader/version/tags filtering |
 | **Link Account** | `/link-account` | Discord account linking flow |
 | **Auth** | `/auth` | Sign up / Log in |
 
@@ -79,7 +78,6 @@ Role-based access control. Admin users see an **Admin** button in the navbar.
 | **FAQs** | Manage FAQ entries (questions, answers, categories) |
 | **Events** | Create and manage server events |
 | **Maintenance** | Toggle maintenance mode and set a custom message |
-| **Mods** | Upload `.jar` mod files, set loader/MC version/tags, feature/publish them, or link external download URLs |
 | **Discord Bot — Dashboard** | Bot status and overview (owner-only) |
 | **Discord Bot — Management** | Configure commands and bot integration (owner-only) |
 
