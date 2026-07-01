@@ -217,12 +217,38 @@ const SkriptUploadForm = ({ successHref = "/discover/skripts", onSuccess, compac
         <Textarea rows={6} value={f.long_description} onChange={(e) => setF({ ...f, long_description: e.target.value })} maxLength={8000} placeholder="Features, install steps, commands, permissions…" />
       </div>
 
-      <div className="grid sm:grid-cols-3 gap-3">
-        <div>
-          <Label>Price (USD)</Label>
-          <Input inputMode="decimal" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value })} placeholder="0" />
-          <p className="text-xs text-muted-foreground mt-1">0 = Free</p>
+      <div className="rounded-md border border-border p-3">
+        <Label className="mb-2 block">Pricing *</Label>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setPricing("free")}
+            className={`rounded-md border p-3 text-left transition ${pricing === "free" ? "border-primary bg-primary/10" : "border-border hover:border-primary/40"}`}
+          >
+            <div className="font-display font-bold text-sm">Free</div>
+            <div className="text-xs text-muted-foreground">Anyone can download for free.</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => setPricing("paid")}
+            className={`rounded-md border p-3 text-left transition ${pricing === "paid" ? "border-primary bg-primary/10" : "border-border hover:border-primary/40"}`}
+          >
+            <div className="font-display font-bold text-sm">Paid</div>
+            <div className="text-xs text-muted-foreground">Users must purchase to download.</div>
+          </button>
         </div>
+        {pricing === "paid" && (
+          <div className="mt-3 grid sm:grid-cols-[160px_1fr] gap-3 items-end">
+            <div>
+              <Label>Price (USD) *</Label>
+              <Input inputMode="decimal" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value })} placeholder="4.99" />
+            </div>
+            <p className="text-xs text-muted-foreground">Buyers will be charged this amount at checkout.</p>
+          </div>
+        )}
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-3">
         <div>
           <Label>Category</Label>
           <Input value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })} placeholder="Economy" />
