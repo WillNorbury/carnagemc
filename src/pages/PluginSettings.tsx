@@ -301,7 +301,7 @@ const PluginSettings = () => {
 
   const updatePlugin = async (patch: Record<string, any>, successMsg = "Saved") => {
     setSaving(true);
-    const { error } = await supabase.from("plugins").update(patch).eq("id", plugin.id);
+    const { error } = await supabase.from("plugins").update(patch as any).eq("id", plugin.id);
     setSaving(false);
     if (error) {
       toast.error(error.message);
