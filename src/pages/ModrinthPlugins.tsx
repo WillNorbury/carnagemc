@@ -4,7 +4,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Download, ExternalLink, Search } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Loader2, Download, ExternalLink, Search, X } from "lucide-react";
+
+const LOADERS = ["paper", "spigot", "bukkit", "purpur", "folia", "velocity", "waterfall", "bungeecord", "sponge"];
+
 
 type ModrinthHit = {
   project_id: string;
