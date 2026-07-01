@@ -59,9 +59,6 @@ import {
   Brain,
   ShieldQuestion,
   MailPlus,
-  ShoppingCart,
-  Heart,
-  Receipt,
   Tornado,
   FileCode,
 } from "lucide-react";
@@ -175,9 +172,6 @@ const accountGroup: NavGroup = {
     { to: "/profile", label: "Profile", icon: UserIcon },
     { to: "/tickets", label: "Tickets", icon: Ticket },
     { to: "/link-account", label: "Link Account", icon: Link2 },
-    { to: "/cart", label: "Cart", icon: ShoppingCart },
-    { to: "/wishlist", label: "Wishlist", icon: Heart },
-    { to: "/orders", label: "Orders", icon: Receipt },
   ],
 };
 

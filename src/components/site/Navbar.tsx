@@ -5,17 +5,14 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/auth";
 import logoAsset from "@/assets/carnagemc-logo.png.asset.json";
 const logo = logoAsset.url;
-import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download, ShoppingCart, Heart } from "lucide-react";
+import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
 import { ThemeToggle } from "./ThemeToggle";
 import { NotificationsBell } from "./NotificationsBell";
-import { useCart } from "@/lib/cart";
-import { Badge } from "@/components/ui/badge";
 
 const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
   const nav = useNavigate();
-  const { cart, wishlist } = useCart();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -47,22 +44,6 @@ const Navbar = () => {
 
         <div className="flex items-center gap-1">
           <GlobalSearch />
-          <Button variant="ghost" size="icon" onClick={() => nav("/wishlist")} title="Wishlist" className="relative">
-            <Heart className="h-4 w-4" />
-            {wishlist.length > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px] leading-none">
-                {wishlist.length}
-              </Badge>
-            )}
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => nav("/cart")} title="Cart" className="relative">
-            <ShoppingCart className="h-4 w-4" />
-            {cart.length > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px] leading-none">
-                {cart.length}
-              </Badge>
-            )}
-          </Button>
           <NotificationsBell />
           <ThemeToggle />
           {user && (
