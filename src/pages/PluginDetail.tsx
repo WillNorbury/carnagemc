@@ -441,6 +441,14 @@ const PluginDetail = () => {
                   {tab === "description" && (
                     <div className="prose prose-invert prose-sm max-w-none text-foreground/90 prose-img:rounded-lg prose-a:text-primary">
                       {platforms.includes("folia") && <FoliaBanner />}
+                      <PluginSupportBadges
+                        platforms={platforms}
+                        discordUrl={plugin.discord_url}
+                        sourceUrl={plugin.source_url}
+                        wikiUrl={null}
+                        issuesUrl={plugin.issues_url}
+                        websiteUrl={plugin.website_url}
+                      />
                       {plugin.long_description || plugin.description ? (
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
