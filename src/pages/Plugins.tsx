@@ -284,6 +284,7 @@ const Plugins = () => {
                                 {p.name}
                               </h3>
                               {p.featured && <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />}
+                              {supportsFolia(platforms, p.tags) && <FoliaBadge />}
                             </div>
                             {username && (
                               <div className="text-xs text-muted-foreground truncate">
