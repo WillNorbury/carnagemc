@@ -140,6 +140,62 @@ export default function ModrinthPlugins() {
         <Button type="submit">Search</Button>
       </form>
 
+      <div className="flex flex-wrap items-center gap-2 mb-6">
+        <Select
+          value={loader}
+          onValueChange={(v) => {
+            setPage(0);
+            setLoader(v);
+          }}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Loader" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="any">Any loader</SelectItem>
+            {LOADERS.map((l) => (
+              <SelectItem key={l} value={l} className="capitalize">
+                {l}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={mcVersion}
+          onValueChange={(v) => {
+            setPage(0);
+            setMcVersion(v);
+          }}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="MC version" />
+          </SelectTrigger>
+          <SelectContent className="max-h-80">
+            <SelectItem value="any">Any MC version</SelectItem>
+            {gameVersions.map((g) => (
+              <SelectItem key={g} value={g}>
+                MC {g}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {(loader !== "any" || mcVersion !== "any") && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setLoader("any");
+              setMcVersion("any");
+              setPage(0);
+            }}
+          >
+            <X className="h-4 w-4 mr-1" /> Clear filters
+          </Button>
+        )}
+      </div>
+
       {loading && (
         <div className="flex items-center justify-center py-20 text-muted-foreground">
           <Loader2 className="h-6 w-6 animate-spin mr-2" /> Loading plugins…
