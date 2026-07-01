@@ -124,7 +124,7 @@ const items: NavItem[] = [
 
   { kind: "link", id: "faqs", icon: HelpCircle, label: "FAQs" },
   { kind: "link", id: "events", icon: Calendar, label: "Events" },
-  { kind: "link", id: "mods", icon: Boxes, label: "Mods" },
+  
   { kind: "link", id: "maintenance", icon: Wrench, label: "Maintenance" },
   { kind: "link", id: "ban-appeals", icon: Gavel, label: "Ban Appeals" },
   { kind: "link", id: "punishments", icon: ShieldCheck, label: "Punishments" },
