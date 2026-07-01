@@ -113,7 +113,7 @@ export default function MySkriptsPanel({ userId }: { userId: string }) {
                 <div className="flex items-center gap-1 shrink-0">
                   {s.published && s.slug && (
                     <Button asChild size="icon" variant="ghost" aria-label="View">
-                      <Link to={`/discover/skripts/${s.slug}`}>
+                      <Link to={`/skript/${s.slug}`}>
                         <ExternalLink className="h-4 w-4" />
                       </Link>
                     </Button>
