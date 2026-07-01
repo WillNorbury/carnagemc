@@ -42,8 +42,11 @@ const PAGE_SIZE = 24;
 export default function ModrinthPlugins() {
   const [query, setQuery] = useState("");
   const [input, setInput] = useState("");
+  const [loader, setLoader] = useState<string>("any");
+  const [mcVersion, setMcVersion] = useState<string>("any");
   const [page, setPage] = useState(0);
   const [data, setData] = useState<SearchResp | null>(null);
+  const [gameVersions, setGameVersions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,15 +54,28 @@ export default function ModrinthPlugins() {
     document.title = "Modrinth Plugins — CarnageMC";
   }, []);
 
+  // Load MC game versions (releases only)
+  useEffect(() => {
+    fetch("https://api.modrinth.com/v2/tag/game_version")
+      .then((r) => r.json())
+      .then((v: Array<{ version: string; version_type: string }>) => {
+        setGameVersions(v.filter((g) => g.version_type === "release").map((g) => g.version));
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
+    const facets: string[][] = [["project_type:plugin"]];
+    if (loader !== "any") facets.push([`categories:${loader}`]);
+    if (mcVersion !== "any") facets.push([`versions:${mcVersion}`]);
     const params = new URLSearchParams({
       limit: String(PAGE_SIZE),
       offset: String(page * PAGE_SIZE),
       index: "relevance",
-      facets: JSON.stringify([["project_type:plugin"]]),
+      facets: JSON.stringify(facets),
     });
     if (query.trim()) params.set("query", query.trim());
     fetch(`https://api.modrinth.com/v2/search?${params.toString()}`)
@@ -79,7 +95,7 @@ export default function ModrinthPlugins() {
     return () => {
       cancelled = true;
     };
-  }, [query, page]);
+  }, [query, page, loader, mcVersion]);
 
   const totalPages = useMemo(
     () => (data ? Math.ceil(Math.min(data.total_hits, 10000) / PAGE_SIZE) : 0),
