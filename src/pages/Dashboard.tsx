@@ -34,7 +34,6 @@ type Application = {
 
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
-  const { cart, wishlist, orders } = useCart();
   const navigate = useNavigate();
   const [mcUsername, setMcUsername] = useState("");
   const [savedMc, setSavedMc] = useState("");
