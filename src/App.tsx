@@ -128,6 +128,7 @@ const Shell = () => {
                   <Route path="/discover/plugins/:shortId" element={<PluginDetail />} />
                   <Route path="/plugin/:slug" element={<PluginDetail />} />
                   <Route path="/plugins/:slug/settings" element={<PluginSettings />} />
+                  <Route path="/plugin/:slug/settings" element={<PluginSettings />} />
                   <Route path="/plugins/:slug" element={<PluginDetail />} />
                   <Route path="/discover/resource-packs" element={<ResourcePacks />} />
                   <Route path="/resource-pack/:slug" element={<DiscoverItemDetail urlKind="resource-pack" />} />
