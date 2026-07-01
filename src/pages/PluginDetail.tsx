@@ -26,6 +26,7 @@ import { Gamepad2, ChevronDown, Search, KeyRound, Info } from "lucide-react";
 import ItemReviews from "@/components/site/ItemReviews";
 import ReportDialog from "@/components/site/ReportDialog";
 import FoliaBanner from "@/components/site/FoliaBanner";
+import PluginSupportBadges from "@/components/site/PluginSupportBadges";
 import {
   ArrowLeft,
   Bookmark,
