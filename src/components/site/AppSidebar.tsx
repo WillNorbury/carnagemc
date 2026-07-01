@@ -144,7 +144,9 @@ const discoverGroup: NavGroup = {
   id: "discover",
   label: "Discover",
   icon: Compass,
-  items: [{ to: "/plugins", label: "Plugins", icon: Puzzle }],
+  items: [
+    { to: "/plugins", label: "Plugins", icon: Puzzle },
+  ],
 };
 
 const weatherGroup: NavGroup = {
