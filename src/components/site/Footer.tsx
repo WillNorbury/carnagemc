@@ -79,7 +79,10 @@ const Footer = () => (
     </div>
     <div className="border-t border-border/50 py-5 text-center text-xs text-muted-foreground tracking-wider">
       © {new Date().getFullYear()} CarnageMC — All rights reserved. Not affiliated with Mojang or Microsoft.
+      <span className="mx-2 opacity-40">•</span>
+      <span className="font-mono">v{__APP_VERSION__}</span>
     </div>
+
   </footer>
 );
 
