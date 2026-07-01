@@ -64,7 +64,10 @@ type Plugin = {
   jar_size: number | null;
   screenshots: string[];
   user_id: string | null;
-
+  website_url?: string | null;
+  source_url?: string | null;
+  issues_url?: string | null;
+  discord_url?: string | null;
 };
 
 
