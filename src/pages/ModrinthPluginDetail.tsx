@@ -145,7 +145,12 @@ export default function ModrinthPluginDetail() {
               <Badge key={c} variant="secondary">{c}</Badge>
             ))}
           </div>
-          {project.loaders?.includes("folia") && <FoliaBanner />}
+          {(() => {
+            const loaderSet = new Set<string>();
+            (project.loaders ?? []).forEach((l) => loaderSet.add(l.toLowerCase()));
+            versions.forEach((v) => v.loaders?.forEach((l) => loaderSet.add(l.toLowerCase())));
+            return loaderSet.has("folia") ? <FoliaBanner /> : null;
+          })()}
           <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-1">
               <Download className="h-4 w-4" /> {project.downloads.toLocaleString()}
