@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Puzzle, Search, Sparkles, Clock, Filter, X } from "lucide-react";
+import FoliaBadge, { supportsFolia } from "@/components/site/FoliaBadge";
 
 type Plugin = {
   id: string;
@@ -283,6 +284,7 @@ const Plugins = () => {
                                 {p.name}
                               </h3>
                               {p.featured && <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />}
+                              {supportsFolia(platforms, p.tags) && <FoliaBadge />}
                             </div>
                             {username && (
                               <div className="text-xs text-muted-foreground truncate">
