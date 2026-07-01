@@ -1,0 +1,1 @@
+CREATE POLICY "Users can delete own opt-out" ON public.news_email_opt_outs FOR DELETE TO authenticated USING (user_id = auth.uid());
