@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Gamepad2, ChevronDown, Search, KeyRound, Info } from "lucide-react";
 import ItemReviews from "@/components/site/ItemReviews";
 import ReportDialog from "@/components/site/ReportDialog";
+import FoliaBanner from "@/components/site/FoliaBanner";
 import {
   ArrowLeft,
   Bookmark,
@@ -435,6 +436,7 @@ const PluginDetail = () => {
                 <Card className="p-6">
                   {tab === "description" && (
                     <div className="prose prose-invert prose-sm max-w-none text-foreground/90 prose-img:rounded-lg prose-a:text-primary">
+                      {platforms.includes("folia") && <FoliaBanner />}
                       {plugin.long_description || plugin.description ? (
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}

@@ -6,6 +6,7 @@ import rehypeRaw from "rehype-raw";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import FoliaBanner from "@/components/site/FoliaBanner";
 import {
   Select,
   SelectContent,
@@ -143,6 +144,7 @@ export default function ModrinthPluginDetail() {
               <Badge key={c} variant="secondary">{c}</Badge>
             ))}
           </div>
+          {project.loaders?.includes("folia") && <FoliaBanner />}
           <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-1">
               <Download className="h-4 w-4" /> {project.downloads.toLocaleString()}
