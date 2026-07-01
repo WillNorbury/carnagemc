@@ -14,9 +14,6 @@ import { roleLabel, type AppRole } from "@/lib/roles";
 import { toast } from "sonner";
 import { Loader2, User as UserIcon, FileText, LifeBuoy, ClipboardList, Link2, ExternalLink, CheckCircle2, Flame, Vote as VoteIcon, Trophy, ShoppingCart, Heart, Package, FileCode, Plus, Puzzle, Boxes } from "lucide-react";
 import MyPluginsPanel from "@/components/dashboard/MyPluginsPanel";
-import MyDiscoverItemsPanel from "@/components/dashboard/MyDiscoverItemsPanel";
-import MySkriptsPanel from "@/components/dashboard/MySkriptsPanel";
-import SkriptUploadForm from "@/components/dashboard/SkriptUploadForm";
 import { useCart } from "@/lib/cart";
 
 type Streaks = {
