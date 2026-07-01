@@ -59,9 +59,6 @@ import {
   Brain,
   ShieldQuestion,
   MailPlus,
-  ShoppingCart,
-  Heart,
-  Receipt,
   Tornado,
   FileCode,
 } from "lucide-react";
