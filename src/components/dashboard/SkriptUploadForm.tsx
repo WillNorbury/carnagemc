@@ -78,6 +78,7 @@ const SkriptUploadForm = ({ successHref = "/discover/skripts", onSuccess, compac
 
   const reset = () => {
     setFile(null);
+    setPricing("free");
     setF({
       name: "", version: "", description: "", long_description: "",
       category: "Utility", tags: "", price: "0", skript_version: "2.9",
