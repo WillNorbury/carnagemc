@@ -92,7 +92,8 @@ const SkriptUploadForm = ({ successHref = "/discover/skripts", onSuccess, compac
       toast.error("Please attach a .sk file");
       return;
     }
-    const parsed = formSchema.safeParse({ ...f, price: f.price || "0" });
+    const priceForSubmit = pricing === "free" ? "0" : (f.price || "0");
+    const parsed = formSchema.safeParse({ ...f, price: priceForSubmit });
     if (!parsed.success) {
       const first = Object.values(parsed.error.flatten().fieldErrors).flat()[0];
       toast.error(first ?? "Please check the form");
