@@ -110,7 +110,8 @@ const Shell = () => {
                   <Route path="/users" element={<Users />} />
                   <Route path="/user/:slug" element={<UserProfile />} />
                   <Route path="/org/:slug" element={<OrgProfile />} />
-                  <Route path="/plugins" element={<Plugins />} />
+                 <Route path="/plugins" element={<Plugins />} />
+                 <Route path="/modrinth-plugins" element={<ModrinthPlugins />} />
                   <Route path="/plugin/:slug" element={<PluginDetail />} />
                   <Route path="/plugins/:slug" element={<PluginDetail />} />
                   <Route path="/plugins/:slug/settings" element={<PluginSettings />} />
