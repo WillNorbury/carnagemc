@@ -62,7 +62,6 @@ import { GalleryAdminSection } from "@/components/admin/GalleryAdminSection";
 import { ContactAdminSection } from "@/components/admin/ContactAdminSection";
 import { EmailTestSection } from "@/components/admin/EmailTestSection";
 import { ApplyTypesAdminSection } from "@/components/admin/ApplyTypesAdminSection";
-import { DiscoverItemsAdminTab } from "@/components/admin/DiscoverItemsAdminTab";
 import { StatCard } from "@/components/admin/StatCard";
 import { CustomRolesManager, type CustomRole } from "@/components/admin/CustomRolesManager";
 import { ALL_ROLES, roleLabel, isStaffRole, type AppRole } from "@/lib/roles";
