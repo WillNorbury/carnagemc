@@ -44,6 +44,7 @@ const SkriptUploadForm = ({ successHref = "/discover/skripts", onSuccess, compac
   const fileRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [pricing, setPricing] = useState<"free" | "paid">("free");
   const [f, setF] = useState({
     name: "",
     version: "",
