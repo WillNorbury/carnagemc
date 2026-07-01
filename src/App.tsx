@@ -139,9 +139,9 @@ const Shell = () => {
                   <Route path="/skripts" element={<Navigate to="/plugins" replace />} />
                   <Route path="/skripts/new" element={<Navigate to="/plugins" replace />} />
                   <Route path="/skript/:slug" element={<Navigate to="/plugins" replace />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/wishlist" element={<Wishlist />} />
-                  <Route path="/orders" element={<Orders />} />
+                  <Route path="/cart" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/wishlist" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/orders" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/features" element={<Features />} />
                   <Route path="/features/:slug" element={<FeatureDetail />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
