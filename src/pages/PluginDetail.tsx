@@ -338,7 +338,7 @@ const PluginDetail = () => {
                     asChild
                     className="bg-emerald-600 hover:bg-emerald-600/90 text-white rounded-full px-5"
                   >
-                    <Link to={`/plugins/${plugin.slug ?? plugin.short_id}/settings`}>
+                    <Link to={`/plugin/${plugin.slug ?? plugin.short_id}/settings`}>
                       <Pencil className="h-4 w-4 mr-1.5" /> Edit project
                     </Link>
                   </Button>
