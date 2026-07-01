@@ -220,9 +220,9 @@ export default function ModrinthPluginDetail() {
               {selected.changelog && (
                 <details className="text-sm">
                   <summary className="cursor-pointer font-medium">Changelog</summary>
-                  <pre className="mt-2 p-3 rounded bg-muted whitespace-pre-wrap text-xs">
-                    {selected.changelog}
-                  </pre>
+                  <div className="mt-2 p-3 rounded bg-muted prose prose-sm dark:prose-invert max-w-none">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{selected.changelog}</ReactMarkdown>
+                  </div>
                 </details>
               )}
             </div>
