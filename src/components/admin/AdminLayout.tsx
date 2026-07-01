@@ -68,12 +68,6 @@ export type AdminSection =
   | "maintenance"
   | "faqs"
   | "events"
-  | "mods"
-  | "resource-packs"
-  | "data-packs"
-  | "shaders"
-  | "modpacks"
-  | "servers"
   | "ban-appeals"
   | "wiki"
   | "gallery"
@@ -122,11 +116,6 @@ const items: NavItem[] = [
   { kind: "link", id: "tickets", icon: Ticket, label: "Support Tickets" },
   { kind: "link", id: "logs", icon: ScrollText, label: "Admin Logs" },
   { kind: "link", id: "plugins", icon: Puzzle, label: "Plugins" },
-  { kind: "link", id: "resource-packs", icon: Package, label: "Resource Packs" },
-  { kind: "link", id: "data-packs", icon: Database, label: "Data Packs" },
-  { kind: "link", id: "shaders", icon: Sun, label: "Shaders" },
-  { kind: "link", id: "modpacks", icon: Layers, label: "Modpacks" },
-  { kind: "link", id: "servers", icon: Globe, label: "Servers" },
   { kind: "link", id: "changelog", icon: Zap, label: "Changelog" },
   { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
   { kind: "link", id: "apply", icon: ClipboardList, label: "Apply (types)" },
@@ -135,7 +124,7 @@ const items: NavItem[] = [
 
   { kind: "link", id: "faqs", icon: HelpCircle, label: "FAQs" },
   { kind: "link", id: "events", icon: Calendar, label: "Events" },
-  { kind: "link", id: "mods", icon: Boxes, label: "Mods" },
+  
   { kind: "link", id: "maintenance", icon: Wrench, label: "Maintenance" },
   { kind: "link", id: "ban-appeals", icon: Gavel, label: "Ban Appeals" },
   { kind: "link", id: "punishments", icon: ShieldCheck, label: "Punishments" },

@@ -36,18 +36,10 @@ import FeatureDetail from "./pages/FeatureDetail.tsx";
 import Leaderboard from "./pages/Leaderboard.tsx";
 import Faq from "./pages/Faq.tsx";
 import Events from "./pages/Events.tsx";
-import Mods from "./pages/Mods.tsx";
-import ModDetail from "./pages/ModDetail.tsx";
-import ModTiers from "./pages/ModTiers.tsx";
 import { MaintenanceGate } from "./components/site/MaintenanceGate.tsx";
 import OrgProfile from "./pages/OrgProfile.tsx";
 import Install from "./pages/Install.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import ResourcePacks from "./pages/ResourcePacks.tsx";
-import DataPacks from "./pages/DataPacks.tsx";
-import Shaders from "./pages/Shaders.tsx";
-import Modpacks from "./pages/Modpacks.tsx";
-import Servers from "./pages/Servers.tsx";
 import Status from "./pages/Status.tsx";
 import StatusIncident from "./pages/StatusIncident.tsx";
 import BanAppeals from "./pages/BanAppeals.tsx";
@@ -62,9 +54,6 @@ import QuizListPage from "./pages/Quiz.tsx";
 import QuizTake from "./pages/QuizTake.tsx";
 import QuizResult from "./pages/QuizResult.tsx";
 import QuizLeaderboard from "./pages/QuizLeaderboard.tsx";
-import DiscoverItemDetail from "./pages/DiscoverItemDetail.tsx";
-import Skripts from "./pages/Skripts.tsx";
-import SkriptUpload from "./pages/SkriptUpload.tsx";
 import Cart from "./pages/Cart.tsx";
 import Wishlist from "./pages/Wishlist.tsx";
 import Orders from "./pages/Orders.tsx";
@@ -100,9 +89,9 @@ const Shell = () => {
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/admin/announcements" element={<Navigate to="/admin?tab=news" replace />} />
                   <Route path="/admin/*" element={<AdminTabRedirect />} />
-                  <Route path="/mods" element={<Mods />} />
-                  <Route path="/mod/:slug" element={<ModDetail />} />
-                  <Route path="/mod-tiers" element={<ModTiers />} />
+                  <Route path="/mods" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/mod/:slug" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/mod-tiers" element={<Navigate to="/plugins" replace />} />
                   <Route path="/changelog" element={<Changelog />} />
                   <Route path="/changelog/:slug" element={<ChangelogEntry />} />
                   <Route path="/release-notes" element={<ReleaseNotes />} />
@@ -141,19 +130,19 @@ const Shell = () => {
                   <Route path="/discover/servers" element={<Navigate to="/servers" replace />} />
                   <Route path="/discover/skripts" element={<Navigate to="/skripts" replace />} />
                   <Route path="/discover/skripts/new" element={<Navigate to="/skripts/new" replace />} />
-                  <Route path="/resource-packs" element={<ResourcePacks />} />
-                  <Route path="/resource-pack/:slug" element={<DiscoverItemDetail urlKind="resource-pack" />} />
-                  <Route path="/data-packs" element={<DataPacks />} />
-                  <Route path="/data-pack/:slug" element={<DiscoverItemDetail urlKind="data-pack" />} />
-                  <Route path="/shaders" element={<Shaders />} />
-                  <Route path="/shader/:slug" element={<DiscoverItemDetail urlKind="shader" />} />
-                  <Route path="/modpacks" element={<Modpacks />} />
-                  <Route path="/modpack/:slug" element={<DiscoverItemDetail urlKind="modpack" />} />
-                  <Route path="/servers" element={<Servers />} />
-                  <Route path="/server/:slug" element={<DiscoverItemDetail urlKind="server" />} />
-                  <Route path="/skripts" element={<Skripts />} />
-                  <Route path="/skripts/new" element={<SkriptUpload />} />
-                  <Route path="/skript/:slug" element={<DiscoverItemDetail urlKind="skript" />} />
+                  <Route path="/resource-packs" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/resource-pack/:slug" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/data-packs" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/data-pack/:slug" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/shaders" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/shader/:slug" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/modpacks" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/modpack/:slug" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/servers" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/server/:slug" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/skripts" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/skripts/new" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/skript/:slug" element={<Navigate to="/plugins" replace />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/wishlist" element={<Wishlist />} />
                   <Route path="/orders" element={<Orders />} />

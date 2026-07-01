@@ -50,7 +50,7 @@ const Cart = () => {
             <ShoppingCart className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
             <p className="text-muted-foreground mb-4">Your cart is empty.</p>
             <Button asChild>
-              <Link to="/skripts">
+              <Link to="/plugins">
                 Browse skripts <ArrowRight className="h-4 w-4 ml-1" />
               </Link>
             </Button>

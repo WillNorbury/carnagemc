@@ -62,7 +62,6 @@ import { GalleryAdminSection } from "@/components/admin/GalleryAdminSection";
 import { ContactAdminSection } from "@/components/admin/ContactAdminSection";
 import { EmailTestSection } from "@/components/admin/EmailTestSection";
 import { ApplyTypesAdminSection } from "@/components/admin/ApplyTypesAdminSection";
-import { DiscoverItemsAdminTab } from "@/components/admin/DiscoverItemsAdminTab";
 import { StatCard } from "@/components/admin/StatCard";
 import { CustomRolesManager, type CustomRole } from "@/components/admin/CustomRolesManager";
 import { ALL_ROLES, roleLabel, isStaffRole, type AppRole } from "@/lib/roles";
@@ -74,7 +73,7 @@ import { PermissionsTab } from "@/components/admin/PermissionsTab";
 import { MaintenanceTab } from "@/pages/AdminMaintenance";
 import AdminFaqsPage from "@/pages/AdminFaqs";
 import AdminEventsPage from "@/pages/AdminEvents";
-import AdminModsPage from "@/pages/AdminMods";
+
 import QuizAdminSection from "@/components/admin/QuizAdminSection";
 import { ReportsAdminSection } from "@/components/admin/ReportsAdminSection";
 import { PunishmentsAdminSection } from "@/components/admin/PunishmentsAdminSection";
@@ -116,12 +115,6 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   maintenance: { title: "Maintenance", description: "Update the maintenance page content, branding, and allowlist." },
   faqs: { title: "FAQs", description: "Manage frequently asked questions." },
   events: { title: "Events", description: "Schedule and manage server events." },
-  mods: { title: "Mods", description: "Add, edit, and remove mods." },
-  "resource-packs": { title: "Resource Packs", description: "Manage discoverable resource packs." },
-  "data-packs": { title: "Data Packs", description: "Manage discoverable data packs." },
-  shaders: { title: "Shaders", description: "Manage discoverable shaders." },
-  modpacks: { title: "Modpacks", description: "Manage discoverable modpacks." },
-  servers: { title: "Servers", description: "Manage discoverable servers." },
   "bot-dashboard": {
     title: "Discord Bot — Dashboard",
     description: "Status and overview of the CarnageMC Discord bot.",
@@ -229,12 +222,6 @@ const Admin = () => {
           {section === "maintenance" && <MaintenanceTab />}
           {section === "faqs" && <AdminFaqsPage />}
           {section === "events" && <AdminEventsPage />}
-          {section === "mods" && <AdminModsPage />}
-          {section === "resource-packs" && <DiscoverItemsAdminTab kind="resource_pack" />}
-          {section === "data-packs" && <DiscoverItemsAdminTab kind="data_pack" />}
-          {section === "shaders" && <DiscoverItemsAdminTab kind="shader" />}
-          {section === "modpacks" && <DiscoverItemsAdminTab kind="modpack" />}
-          {section === "servers" && <DiscoverItemsAdminTab kind="server" />}
           {section === "ban-appeals" && <BanAppealsAdminSection />}
           {section === "wiki" && <WikiAdminSection />}
           {section === "gallery" && <GalleryAdminSection />}
