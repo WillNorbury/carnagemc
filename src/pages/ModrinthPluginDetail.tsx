@@ -232,11 +232,23 @@ export default function ModrinthPluginDetail() {
 
       {project.body && (
         <Card>
-          <CardContent className="p-4">
-            <h2 className="text-lg font-semibold mb-2">About</h2>
-            <pre className="whitespace-pre-wrap text-sm text-muted-foreground font-sans">
-              {project.body}
-            </pre>
+          <CardContent className="p-6">
+            <h2 className="text-lg font-semibold mb-4">About</h2>
+            <div className="prose prose-sm dark:prose-invert max-w-none prose-img:rounded-lg prose-a:text-primary prose-headings:scroll-mt-20">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  a: ({ node, ...props }) => (
+                    <a {...props} target="_blank" rel="noreferrer noopener" />
+                  ),
+                  img: ({ node, ...props }) => (
+                    <img {...props} loading="lazy" className="rounded-lg max-w-full h-auto" />
+                  ),
+                }}
+              >
+                {project.body}
+              </ReactMarkdown>
+            </div>
           </CardContent>
         </Card>
       )}
