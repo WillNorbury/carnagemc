@@ -44,22 +44,6 @@ const Navbar = () => {
 
         <div className="flex items-center gap-1">
           <GlobalSearch />
-          <Button variant="ghost" size="icon" onClick={() => nav("/wishlist")} title="Wishlist" className="relative">
-            <Heart className="h-4 w-4" />
-            {wishlist.length > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px] leading-none">
-                {wishlist.length}
-              </Badge>
-            )}
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => nav("/cart")} title="Cart" className="relative">
-            <ShoppingCart className="h-4 w-4" />
-            {cart.length > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px] leading-none">
-                {cart.length}
-              </Badge>
-            )}
-          </Button>
           <NotificationsBell />
           <ThemeToggle />
           {user && (
