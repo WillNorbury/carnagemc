@@ -145,7 +145,12 @@ export default function ModrinthPluginDetail() {
               <Badge key={c} variant="secondary">{c}</Badge>
             ))}
           </div>
-          {project.loaders?.includes("folia") && <FoliaBanner />}
+          {(() => {
+            const loaderSet = new Set<string>();
+            (project.loaders ?? []).forEach((l) => loaderSet.add(l.toLowerCase()));
+            versions.forEach((v) => v.loaders?.forEach((l) => loaderSet.add(l.toLowerCase())));
+            return loaderSet.has("folia") ? <FoliaBanner /> : null;
+          })()}
           <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-1">
               <Download className="h-4 w-4" /> {project.downloads.toLocaleString()}
@@ -240,7 +245,10 @@ export default function ModrinthPluginDetail() {
             Support & Links
           </h2>
           <PluginSupportBadges
-            loaders={project.loaders}
+            loaders={Array.from(new Set([
+              ...(project.loaders ?? []),
+              ...versions.flatMap((v) => v.loaders ?? []),
+            ].map((l) => l.toLowerCase())))}
             discordUrl={project.discord_url}
             sourceUrl={project.source_url}
             wikiUrl={project.wiki_url}
