@@ -287,6 +287,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       jar_size: form.jar_size,
       screenshots: form.screenshots,
       published: form.published,
+      price: form.pricing === "paid" ? Math.max(0, Number(form.price) || 0) : 0,
     };
 
     let error;
