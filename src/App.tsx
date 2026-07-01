@@ -130,19 +130,19 @@ const Shell = () => {
                   <Route path="/discover/servers" element={<Navigate to="/servers" replace />} />
                   <Route path="/discover/skripts" element={<Navigate to="/skripts" replace />} />
                   <Route path="/discover/skripts/new" element={<Navigate to="/skripts/new" replace />} />
-                  <Route path="/resource-packs" element={<ResourcePacks />} />
-                  <Route path="/resource-pack/:slug" element={<DiscoverItemDetail urlKind="resource-pack" />} />
-                  <Route path="/data-packs" element={<DataPacks />} />
-                  <Route path="/data-pack/:slug" element={<DiscoverItemDetail urlKind="data-pack" />} />
-                  <Route path="/shaders" element={<Shaders />} />
-                  <Route path="/shader/:slug" element={<DiscoverItemDetail urlKind="shader" />} />
-                  <Route path="/modpacks" element={<Modpacks />} />
-                  <Route path="/modpack/:slug" element={<DiscoverItemDetail urlKind="modpack" />} />
-                  <Route path="/servers" element={<Servers />} />
-                  <Route path="/server/:slug" element={<DiscoverItemDetail urlKind="server" />} />
-                  <Route path="/skripts" element={<Skripts />} />
-                  <Route path="/skripts/new" element={<SkriptUpload />} />
-                  <Route path="/skript/:slug" element={<DiscoverItemDetail urlKind="skript" />} />
+                  <Route path="/resource-packs" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/resource-pack/:slug" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/data-packs" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/data-pack/:slug" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/shaders" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/shader/:slug" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/modpacks" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/modpack/:slug" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/servers" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/server/:slug" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/skripts" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/skripts/new" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/skript/:slug" element={<Navigate to="/plugins" replace />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/wishlist" element={<Wishlist />} />
                   <Route path="/orders" element={<Orders />} />
