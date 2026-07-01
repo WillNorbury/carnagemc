@@ -183,9 +183,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <CartProvider>
-            <Shell />
-          </CartProvider>
+          <Shell />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
