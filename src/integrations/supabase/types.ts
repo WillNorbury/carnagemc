@@ -1504,13 +1504,16 @@ export type Database = {
           category: string | null
           created_at: string
           description: string | null
+          discord_url: string | null
           download_url: string | null
           featured: boolean
           icon_url: string | null
           id: string
+          issues_url: string | null
           jar_filename: string | null
           jar_path: string | null
           jar_size: number | null
+          license: string | null
           long_description: string | null
           mc_versions: string[]
           name: string
@@ -1522,23 +1525,28 @@ export type Database = {
           screenshots: string[]
           short_id: string
           slug: string | null
+          source_url: string | null
           tags: string[]
           updated_at: string
           user_id: string | null
           version: string | null
+          website_url: string | null
         }
         Insert: {
           author?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
+          discord_url?: string | null
           download_url?: string | null
           featured?: boolean
           icon_url?: string | null
           id?: string
+          issues_url?: string | null
           jar_filename?: string | null
           jar_path?: string | null
           jar_size?: number | null
+          license?: string | null
           long_description?: string | null
           mc_versions?: string[]
           name: string
@@ -1550,23 +1558,28 @@ export type Database = {
           screenshots?: string[]
           short_id?: string
           slug?: string | null
+          source_url?: string | null
           tags?: string[]
           updated_at?: string
           user_id?: string | null
           version?: string | null
+          website_url?: string | null
         }
         Update: {
           author?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
+          discord_url?: string | null
           download_url?: string | null
           featured?: boolean
           icon_url?: string | null
           id?: string
+          issues_url?: string | null
           jar_filename?: string | null
           jar_path?: string | null
           jar_size?: number | null
+          license?: string | null
           long_description?: string | null
           mc_versions?: string[]
           name?: string
@@ -1578,10 +1591,12 @@ export type Database = {
           screenshots?: string[]
           short_id?: string
           slug?: string | null
+          source_url?: string | null
           tags?: string[]
           updated_at?: string
           user_id?: string | null
           version?: string | null
+          website_url?: string | null
         }
         Relationships: [
           {
