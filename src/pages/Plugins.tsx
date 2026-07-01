@@ -33,13 +33,7 @@ type Plugin = {
 type CreatorProfile = { display_name: string | null; mc_username: string | null };
 
 const DISCOVER_TABS = [
-  { label: "Mods", to: "/mods", enabled: true },
-  { label: "Resource Packs", to: "/resource-packs", enabled: true },
-  { label: "Data Packs", to: "/data-packs", enabled: true },
-  { label: "Shaders", to: "/shaders", enabled: true },
-  { label: "Modpacks", to: "/modpacks", enabled: true },
   { label: "Plugins", to: "/plugins", enabled: true },
-  { label: "Servers", to: "/servers", enabled: true },
 ];
 
 const CATEGORIES = [
