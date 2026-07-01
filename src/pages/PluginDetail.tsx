@@ -26,6 +26,7 @@ import { Gamepad2, ChevronDown, Search, KeyRound, Info } from "lucide-react";
 import ItemReviews from "@/components/site/ItemReviews";
 import ReportDialog from "@/components/site/ReportDialog";
 import FoliaBanner from "@/components/site/FoliaBanner";
+import PluginSupportBadges from "@/components/site/PluginSupportBadges";
 import {
   ArrowLeft,
   Bookmark,
@@ -64,7 +65,10 @@ type Plugin = {
   jar_size: number | null;
   screenshots: string[];
   user_id: string | null;
-
+  website_url?: string | null;
+  source_url?: string | null;
+  issues_url?: string | null;
+  discord_url?: string | null;
 };
 
 
@@ -437,6 +441,14 @@ const PluginDetail = () => {
                   {tab === "description" && (
                     <div className="prose prose-invert prose-sm max-w-none text-foreground/90 prose-img:rounded-lg prose-a:text-primary">
                       {platforms.includes("folia") && <FoliaBanner />}
+                      <PluginSupportBadges
+                        platforms={platforms}
+                        discordUrl={plugin.discord_url}
+                        sourceUrl={plugin.source_url}
+                        wikiUrl={null}
+                        issuesUrl={plugin.issues_url}
+                        websiteUrl={plugin.website_url}
+                      />
                       {plugin.long_description || plugin.description ? (
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}

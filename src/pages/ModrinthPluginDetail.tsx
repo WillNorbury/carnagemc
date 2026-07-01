@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import FoliaBanner from "@/components/site/FoliaBanner";
+import PluginSupportBadges from "@/components/site/PluginSupportBadges";
 import {
   Select,
   SelectContent,
@@ -232,6 +233,23 @@ export default function ModrinthPluginDetail() {
           )}
         </CardContent>
       </Card>
+
+      <Card className="mb-6">
+        <CardContent className="p-4">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+            Support & Links
+          </h2>
+          <PluginSupportBadges
+            loaders={project.loaders}
+            discordUrl={project.discord_url}
+            sourceUrl={project.source_url}
+            wikiUrl={project.wiki_url}
+            issuesUrl={project.issues_url}
+            className=""
+          />
+        </CardContent>
+      </Card>
+
 
       {project.body && (
         <Card>
