@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -218,9 +220,9 @@ export default function ModrinthPluginDetail() {
               {selected.changelog && (
                 <details className="text-sm">
                   <summary className="cursor-pointer font-medium">Changelog</summary>
-                  <pre className="mt-2 p-3 rounded bg-muted whitespace-pre-wrap text-xs">
-                    {selected.changelog}
-                  </pre>
+                  <div className="mt-2 p-3 rounded bg-muted prose prose-sm dark:prose-invert max-w-none">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{selected.changelog}</ReactMarkdown>
+                  </div>
                 </details>
               )}
             </div>
@@ -230,11 +232,23 @@ export default function ModrinthPluginDetail() {
 
       {project.body && (
         <Card>
-          <CardContent className="p-4">
-            <h2 className="text-lg font-semibold mb-2">About</h2>
-            <pre className="whitespace-pre-wrap text-sm text-muted-foreground font-sans">
-              {project.body}
-            </pre>
+          <CardContent className="p-6">
+            <h2 className="text-lg font-semibold mb-4">About</h2>
+            <div className="prose prose-sm dark:prose-invert max-w-none prose-img:rounded-lg prose-a:text-primary prose-headings:scroll-mt-20">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  a: ({ node, ...props }) => (
+                    <a {...props} target="_blank" rel="noreferrer noopener" />
+                  ),
+                  img: ({ node, ...props }) => (
+                    <img {...props} loading="lazy" className="rounded-lg max-w-full h-auto" />
+                  ),
+                }}
+              >
+                {project.body}
+              </ReactMarkdown>
+            </div>
           </CardContent>
         </Card>
       )}
