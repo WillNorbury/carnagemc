@@ -5,7 +5,7 @@ const Skripts = () => (
     kind="skript"
     title="Skripts"
     searchPlaceholder="Search skripts (.sk)..."
-    createHref="/discover/skripts/new"
+    createHref="/skripts/new"
     createLabel="Upload skript"
     filterGroups={[
       {

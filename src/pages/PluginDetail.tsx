@@ -273,7 +273,7 @@ const PluginDetail = () => {
       <Navbar />
       <main className="container pt-28 pb-16 max-w-6xl">
         <Button variant="ghost" size="sm" asChild className="mb-4">
-          <Link to="/discover/plugins">
+          <Link to="/plugins">
             <ArrowLeft className="h-4 w-4 mr-1" /> Back to plugins
           </Link>
         </Button>

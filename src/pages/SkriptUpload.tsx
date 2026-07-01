@@ -17,7 +17,7 @@ const SkriptUpload = () => {
   }, []);
 
   useEffect(() => {
-    if (!loading && !user) navigate("/auth?next=/discover/skripts/new", { replace: true });
+    if (!loading && !user) navigate("/auth?next=/skripts/new", { replace: true });
   }, [loading, user, navigate]);
 
   return (
@@ -26,7 +26,7 @@ const SkriptUpload = () => {
       <main className="container pt-24 pb-16 max-w-3xl">
         <div className="mb-6 flex items-center justify-between">
           <Button asChild variant="ghost" size="sm">
-            <Link to="/discover/skripts">
+            <Link to="/skripts">
               <ArrowLeft className="h-4 w-4 mr-1" /> Back to Skripts
             </Link>
           </Button>
@@ -48,7 +48,7 @@ const SkriptUpload = () => {
         </div>
 
         <Card className="p-6">
-          <SkriptUploadForm successHref="/discover/skripts" />
+          <SkriptUploadForm successHref="/skripts" />
         </Card>
       </main>
       <Footer />

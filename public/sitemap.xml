@@ -81,37 +81,37 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://carnagemc.net/discover/mods</loc>
+    <loc>https://carnagemc.net/mods</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://carnagemc.net/discover/plugins</loc>
+    <loc>https://carnagemc.net/plugins</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://carnagemc.net/discover/resource-packs</loc>
+    <loc>https://carnagemc.net/resource-packs</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://carnagemc.net/discover/data-packs</loc>
+    <loc>https://carnagemc.net/data-packs</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://carnagemc.net/discover/shaders</loc>
+    <loc>https://carnagemc.net/shaders</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://carnagemc.net/discover/modpacks</loc>
+    <loc>https://carnagemc.net/modpacks</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://carnagemc.net/discover/servers</loc>
+    <loc>https://carnagemc.net/servers</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>

@@ -30,7 +30,7 @@ const formSchema = z.object({
 });
 
 type Props = {
-  /** Where to go after a successful publish. Defaults to /discover/skripts */
+  /** Where to go after a successful publish. Defaults to /skripts */
   successHref?: string;
   /** Called after a successful publish (e.g. to refresh a parent list). */
   onSuccess?: () => void;
@@ -38,7 +38,7 @@ type Props = {
   compact?: boolean;
 };
 
-const SkriptUploadForm = ({ successHref = "/discover/skripts", onSuccess, compact }: Props) => {
+const SkriptUploadForm = ({ successHref = "/skripts", onSuccess, compact }: Props) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);

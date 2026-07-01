@@ -188,7 +188,7 @@ const ModTiers = () => {
           </div>
         )}
         <div className="flex-1 min-w-0">
-          <Link to="/discover/mods" className="font-display font-semibold truncate hover:text-primary block">
+          <Link to="/mods" className="font-display font-semibold truncate hover:text-primary block">
             {m.name}
           </Link>
           <div className="flex items-center gap-2 mt-0.5">
