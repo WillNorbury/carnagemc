@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -221,7 +222,7 @@ export default function ModrinthPluginDetail() {
                 <details className="text-sm">
                   <summary className="cursor-pointer font-medium">Changelog</summary>
                   <div className="mt-2 p-3 rounded bg-muted prose prose-sm dark:prose-invert max-w-none">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{selected.changelog}</ReactMarkdown>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{selected.changelog}</ReactMarkdown>
                   </div>
                 </details>
               )}
@@ -237,6 +238,7 @@ export default function ModrinthPluginDetail() {
             <div className="prose prose-sm dark:prose-invert max-w-none prose-img:rounded-lg prose-a:text-primary prose-headings:scroll-mt-20">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
                 components={{
                   a: ({ node, ...props }) => (
                     <a {...props} target="_blank" rel="noreferrer noopener" />
