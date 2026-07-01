@@ -284,7 +284,9 @@ const Dashboard = () => {
         {/* My Stuff */}
         <h2 className="font-display text-2xl font-black mb-3 mt-2">My Stuff</h2>
         <MyPluginsPanel userId={user!.id} />
+        <MySkriptsPanel userId={user!.id} />
         <MyDiscoverItemsPanel userId={user!.id} />
+
 
         {/* Create */}
         <Card id="create-skript" className="p-6 mb-6 scroll-mt-24">
