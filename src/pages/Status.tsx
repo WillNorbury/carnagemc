@@ -18,9 +18,12 @@ import {
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
-type Range = 90;
+type Range = 90 | 180;
 
-const RANGES: { label: string; value: Range }[] = [{ label: "90 days", value: 90 }];
+const RANGES: { label: string; value: Range }[] = [
+  { label: "90 days", value: 90 },
+  { label: "180 days", value: 180 },
+];
 
 const DEFAULT_SERVICES: { key: string; name: string; desc: string; url: string }[] = [
   { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
