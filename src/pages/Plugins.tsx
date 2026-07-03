@@ -160,24 +160,28 @@ const Plugins = () => {
         {/* Featured */}
         {featured.length > 0 && (
           <section className="mb-10">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <h2 className="font-display font-bold text-lg">Featured</h2>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="h-6 w-1 rounded-full bg-gradient-to-b from-orange-400 to-rose-600" />
+                <Sparkles className="h-4 w-4 text-orange-400" />
+                <h2 className="font-display font-bold text-lg uppercase tracking-wider">Featured</h2>
+              </div>
             </div>
             <div className="grid md:grid-cols-3 gap-3">
               {featured.map((p) => (
                 <Link key={p.id} to={`/plugin/${p.slug ?? p.short_id}`}>
-                  <Card className="p-4 h-full hover:border-primary/60 hover:shadow-elegant transition group">
-                    <div className="flex gap-3 items-start">
+                  <Card className="relative p-4 h-full overflow-hidden border-orange-500/20 bg-gradient-to-br from-card via-card to-orange-500/5 hover:border-orange-500/60 hover:shadow-[0_0_30px_-8px_hsl(24_95%_53%/0.35)] transition group">
+                    <div className="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-orange-400 via-orange-500 to-rose-600 opacity-70 group-hover:opacity-100 transition" />
+                    <div className="flex gap-3 items-start pl-2">
                       {p.icon_url ? (
-                        <img src={p.icon_url} alt="" className="h-12 w-12 rounded-md border border-border object-cover" />
+                        <img src={p.icon_url} alt="" className="h-12 w-12 rounded-md border border-orange-500/30 object-cover" />
                       ) : (
-                        <div className="h-12 w-12 rounded-md bg-primary/10 border border-primary/30 flex items-center justify-center">
-                          <Puzzle className="h-6 w-6 text-primary" />
+                        <div className="h-12 w-12 rounded-md bg-orange-500/10 border border-orange-500/30 flex items-center justify-center">
+                          <Puzzle className="h-6 w-6 text-orange-400" />
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <div className="font-display font-semibold group-hover:text-primary transition truncate">{p.name}</div>
+                        <div className="font-display font-semibold group-hover:text-orange-300 transition truncate">{p.name}</div>
                         {p.description && (
                           <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{p.description}</p>
                         )}
@@ -189,6 +193,7 @@ const Plugins = () => {
             </div>
           </section>
         )}
+
 
         <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
           {/* Sidebar */}
