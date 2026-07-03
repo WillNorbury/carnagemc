@@ -424,21 +424,25 @@ const PluginDetail = () => {
             {/* Body: tabs + sidebar */}
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 mt-6">
               <div>
-                <div className="flex items-center gap-1 mb-4">
+                <div className="flex items-center gap-1 mb-4 border-b border-border/60">
                   {tabs.map((t) => (
                     <button
                       key={t.id}
                       onClick={() => setTab(t.id)}
-                      className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${
+                      className={`relative px-4 py-2.5 text-sm font-semibold uppercase tracking-wider transition-colors ${
                         tab === t.id
-                          ? "bg-primary/15 text-primary"
+                          ? "text-orange-300"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       {t.label}
+                      {tab === t.id && (
+                        <span className="absolute inset-x-2 -bottom-px h-0.5 bg-gradient-to-r from-orange-400 to-rose-500 rounded-full" />
+                      )}
                     </button>
                   ))}
                 </div>
+
 
                 <Card className="p-6">
                   {tab === "description" && (
