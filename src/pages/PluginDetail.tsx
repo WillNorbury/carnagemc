@@ -297,145 +297,152 @@ const PluginDetail = () => {
 
         {plugin && (
           <>
-            {/* Header */}
-            <div className="flex items-start gap-5 pb-6 border-b border-border">
-              {plugin.icon_url ? (
-                <img
-                  src={plugin.icon_url}
-                  alt=""
-                  className="h-24 w-24 rounded-lg object-cover border border-border shrink-0 bg-card"
-                />
-              ) : (
-                <div className="h-24 w-24 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0">
-                  <Puzzle className="h-12 w-12 text-primary" />
-                </div>
-              )}
-
-              <div className="flex-1 min-w-0">
-                <h1 className="text-3xl md:text-4xl font-display font-bold leading-tight">
-                  {plugin.name}
-                </h1>
-                {plugin.description && (
-                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2 max-w-2xl">
-                    {plugin.description}
-                  </p>
-                )}
-                <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground flex-wrap">
-                  <span className="flex items-center gap-1.5">
-                    <Download className="h-4 w-4" /> 0
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Heart className="h-4 w-4" /> 0
-                  </span>
-                  {plugin.category && (
-                    <Badge variant="secondary" className="rounded-full">
-                      {plugin.category}
-                    </Badge>
-                  )}
-                  {plugin.tags?.slice(0, 2).map((t) => (
-                    <Badge key={t} variant="secondary" className="rounded-full">
-                      {t}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                {plugin && user && (plugin.user_id === user.id || isAdmin) && (
-                  <Button
-                    asChild
-                    className="bg-emerald-600 hover:bg-emerald-600/90 text-white rounded-full px-5"
-                  >
-                    <Link to={`/plugin/${plugin.slug ?? plugin.short_id}/settings`}>
-                      <Pencil className="h-4 w-4 mr-1.5" /> Edit project
-                    </Link>
-                  </Button>
-                )}
-                {latestDownloadUrl ? (
-                  <Button onClick={handleDownload} className="bg-primary hover:bg-primary/90 rounded-full px-5">
-                    <Download className="h-4 w-4 mr-1.5" /> Download
-                  </Button>
-                ) : (
-                  <Button disabled className="rounded-full px-5">Unavailable</Button>
-                )}
-
-
-                <Button
-                  variant={liked ? "default" : "outline"}
-                  size="icon"
-                  className="rounded-full h-10 w-10"
-                  aria-label="Like"
-                  onClick={() => setLiked((v) => !v)}
-                >
-                  <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
-                </Button>
-                <Button
-                  variant={saved ? "default" : "outline"}
-                  size="icon"
-                  className="rounded-full h-10 w-10"
-                  aria-label="Save"
-                  onClick={() => setSaved((v) => !v)}
-                >
-                  <Bookmark className={`h-4 w-4 ${saved ? "fill-current" : ""}`} />
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full h-10 w-10" aria-label="More">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={copyLink}>
-                      <LinkIcon className="h-4 w-4 mr-2" /> Copy link
-                    </DropdownMenuItem>
-                    {latestDownloadUrl && (
-                      <DropdownMenuItem onClick={handleDownload}>
-                        <Download className="h-4 w-4 mr-2" /> Download jar
-                      </DropdownMenuItem>
-                    )}
-
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onSelect={(e) => {
-                        e.preventDefault();
-                        setReportOpen(true);
-                      }}
-                      className="text-destructive focus:text-destructive"
-                    >
-                      <Flag className="h-4 w-4 mr-2" /> Report plugin
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                {plugin && (
-                  <ReportDialog
-                    targetType="plugin"
-                    targetId={plugin.id}
-                    targetLabel={plugin.name}
-                    open={reportOpen}
-                    onOpenChange={setReportOpen}
+            {/* Header — forge slab */}
+            <div className="relative rounded-3xl border border-orange-500/25 bg-[radial-gradient(ellipse_at_top_right,hsl(24_95%_53%/0.18),transparent_60%),linear-gradient(135deg,hsl(var(--card))_0%,hsl(var(--background))_100%)] p-6 md:p-8 overflow-hidden">
+              <div className="absolute -top-16 -left-16 h-56 w-56 rounded-full bg-orange-500/15 blur-3xl pointer-events-none" />
+              <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent" />
+              <div className="relative flex items-start gap-5 flex-wrap md:flex-nowrap">
+                {plugin.icon_url ? (
+                  <img
+                    src={plugin.icon_url}
+                    alt=""
+                    className="h-24 w-24 rounded-xl object-cover border border-orange-500/30 shrink-0 bg-card shadow-[0_0_25px_-8px_hsl(24_95%_53%/0.4)]"
                   />
+                ) : (
+                  <div className="h-24 w-24 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0">
+                    <Puzzle className="h-12 w-12 text-orange-400" />
+                  </div>
                 )}
+
+                <div className="flex-1 min-w-0">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/40 bg-orange-500/10 px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-widest text-orange-300 mb-2">
+                    <Puzzle className="h-3 w-3" /> Plugin
+                    {plugin.version && <span className="text-orange-200/70">· v{plugin.version}</span>}
+                  </div>
+                  <h1 className="text-3xl md:text-5xl font-display font-black leading-[1.05] tracking-tight">
+                    {plugin.name}
+                  </h1>
+                  {plugin.description && (
+                    <p className="text-sm md:text-base text-muted-foreground mt-2 line-clamp-2 max-w-2xl">
+                      {plugin.description}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground flex-wrap">
+                    <span className="flex items-center gap-1.5 font-mono"><Download className="h-4 w-4" /> 0</span>
+                    <span className="flex items-center gap-1.5 font-mono"><Heart className="h-4 w-4" /> 0</span>
+                    {plugin.category && (
+                      <Badge variant="secondary" className="rounded-full">{plugin.category}</Badge>
+                    )}
+                    {plugin.tags?.slice(0, 2).map((t) => (
+                      <Badge key={t} variant="secondary" className="rounded-full">{t}</Badge>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  {plugin && user && (plugin.user_id === user.id || isAdmin) && (
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="rounded-full px-5 border-emerald-500/50 text-emerald-300 hover:bg-emerald-500/10 hover:text-emerald-200"
+                    >
+                      <Link to={`/plugin/${plugin.slug ?? plugin.short_id}/settings`}>
+                        <Pencil className="h-4 w-4 mr-1.5" /> Edit
+                      </Link>
+                    </Button>
+                  )}
+                  {latestDownloadUrl ? (
+                    <Button
+                      onClick={handleDownload}
+                      className="rounded-full px-6 bg-gradient-to-br from-orange-500 to-rose-600 hover:from-orange-400 hover:to-rose-500 text-white shadow-[0_0_20px_-4px_hsl(24_95%_53%/0.6)] border-0"
+                    >
+                      <Download className="h-4 w-4 mr-1.5" /> Download
+                    </Button>
+                  ) : (
+                    <Button disabled className="rounded-full px-5">Unavailable</Button>
+                  )}
+
+                  <Button
+                    variant={liked ? "default" : "outline"}
+                    size="icon"
+                    className="rounded-full h-10 w-10"
+                    aria-label="Like"
+                    onClick={() => setLiked((v) => !v)}
+                  >
+                    <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
+                  </Button>
+                  <Button
+                    variant={saved ? "default" : "outline"}
+                    size="icon"
+                    className="rounded-full h-10 w-10"
+                    aria-label="Save"
+                    onClick={() => setSaved((v) => !v)}
+                  >
+                    <Bookmark className={`h-4 w-4 ${saved ? "fill-current" : ""}`} />
+                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="rounded-full h-10 w-10" aria-label="More">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={copyLink}>
+                        <LinkIcon className="h-4 w-4 mr-2" /> Copy link
+                      </DropdownMenuItem>
+                      {latestDownloadUrl && (
+                        <DropdownMenuItem onClick={handleDownload}>
+                          <Download className="h-4 w-4 mr-2" /> Download jar
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          setReportOpen(true);
+                        }}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Flag className="h-4 w-4 mr-2" /> Report plugin
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  {plugin && (
+                    <ReportDialog
+                      targetType="plugin"
+                      targetId={plugin.id}
+                      targetLabel={plugin.name}
+                      open={reportOpen}
+                      onOpenChange={setReportOpen}
+                    />
+                  )}
+                </div>
               </div>
             </div>
+
 
             {/* Body: tabs + sidebar */}
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 mt-6">
               <div>
-                <div className="flex items-center gap-1 mb-4">
+                <div className="flex items-center gap-1 mb-4 border-b border-border/60">
                   {tabs.map((t) => (
                     <button
                       key={t.id}
                       onClick={() => setTab(t.id)}
-                      className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${
+                      className={`relative px-4 py-2.5 text-sm font-semibold uppercase tracking-wider transition-colors ${
                         tab === t.id
-                          ? "bg-primary/15 text-primary"
+                          ? "text-orange-300"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       {t.label}
+                      {tab === t.id && (
+                        <span className="absolute inset-x-2 -bottom-px h-0.5 bg-gradient-to-r from-orange-400 to-rose-500 rounded-full" />
+                      )}
                     </button>
                   ))}
                 </div>
+
 
                 <Card className="p-6">
                   {tab === "description" && (
