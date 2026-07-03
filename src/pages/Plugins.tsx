@@ -130,58 +130,43 @@ const Plugins = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <main className="container pt-24 pb-16">
-        {/* Hero — forge band */}
-        <div className="relative mb-10 rounded-3xl border border-orange-500/30 bg-[radial-gradient(ellipse_at_top_left,hsl(var(--primary)/0.25),transparent_60%),linear-gradient(135deg,hsl(var(--card))_0%,hsl(var(--background))_100%)] p-8 md:p-14 overflow-hidden">
-          <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-orange-500/20 blur-3xl" />
-          <div className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-rose-600/10 blur-3xl" />
-          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-orange-500/60 to-transparent" />
+        {/* Hero */}
+        <div className="relative mb-10 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-card/60 to-transparent p-8 md:p-12 overflow-hidden">
+          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-primary/20 blur-3xl" />
           <div className="relative">
-            <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/40 bg-orange-500/10 px-3 py-1 text-xs font-mono uppercase tracking-widest text-orange-300 mb-5">
-              <Puzzle className="h-3 w-3" /> Forge · Plugin Directory
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary mb-4">
+              <Puzzle className="h-3 w-3" /> Plugin Directory
             </div>
-            <h1 className="font-display text-5xl md:text-7xl font-black tracking-tight mb-4 leading-[0.95]">
-              Forged for the{" "}
-              <span className="bg-gradient-to-br from-orange-300 via-orange-500 to-rose-600 bg-clip-text text-transparent">
-                network
-              </span>
+            <h1 className="font-display text-4xl md:text-5xl font-black tracking-tight mb-3">
+              Discover <span className="text-gradient">plugins</span>
             </h1>
-            <p className="text-muted-foreground max-w-xl text-base md:text-lg">
-              Battle-tested plugins built and curated for the CarnageMC network — hammered into shape by the community.
+            <p className="text-muted-foreground max-w-xl">
+              Explore community-made and official plugins built for the CarnageMC network.
             </p>
-            <div className="mt-6 flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-muted-foreground">
-              <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> {plugins.length} live</span>
-              <span>·</span>
-              <span>{featured.length} featured</span>
-            </div>
           </div>
         </div>
-
 
         {/* Featured */}
         {featured.length > 0 && (
           <section className="mb-10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="h-6 w-1 rounded-full bg-gradient-to-b from-orange-400 to-rose-600" />
-                <Sparkles className="h-4 w-4 text-orange-400" />
-                <h2 className="font-display font-bold text-lg uppercase tracking-wider">Featured</h2>
-              </div>
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <h2 className="font-display font-bold text-lg">Featured</h2>
             </div>
             <div className="grid md:grid-cols-3 gap-3">
               {featured.map((p) => (
                 <Link key={p.id} to={`/plugin/${p.slug ?? p.short_id}`}>
-                  <Card className="relative p-4 h-full overflow-hidden border-orange-500/20 bg-gradient-to-br from-card via-card to-orange-500/5 hover:border-orange-500/60 hover:shadow-[0_0_30px_-8px_hsl(24_95%_53%/0.35)] transition group">
-                    <div className="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-orange-400 via-orange-500 to-rose-600 opacity-70 group-hover:opacity-100 transition" />
-                    <div className="flex gap-3 items-start pl-2">
+                  <Card className="p-4 h-full hover:border-primary/60 hover:shadow-elegant transition group">
+                    <div className="flex gap-3 items-start">
                       {p.icon_url ? (
-                        <img src={p.icon_url} alt="" className="h-12 w-12 rounded-md border border-orange-500/30 object-cover" />
+                        <img src={p.icon_url} alt="" className="h-12 w-12 rounded-md border border-border object-cover" />
                       ) : (
-                        <div className="h-12 w-12 rounded-md bg-orange-500/10 border border-orange-500/30 flex items-center justify-center">
-                          <Puzzle className="h-6 w-6 text-orange-400" />
+                        <div className="h-12 w-12 rounded-md bg-primary/10 border border-primary/30 flex items-center justify-center">
+                          <Puzzle className="h-6 w-6 text-primary" />
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <div className="font-display font-semibold group-hover:text-orange-300 transition truncate">{p.name}</div>
+                        <div className="font-display font-semibold group-hover:text-primary transition truncate">{p.name}</div>
                         {p.description && (
                           <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{p.description}</p>
                         )}
@@ -193,7 +178,6 @@ const Plugins = () => {
             </div>
           </section>
         )}
-
 
         <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
           {/* Sidebar */}
@@ -281,32 +265,31 @@ const Plugins = () => {
 
                   return (
                     <Link key={p.id} to={`/plugin/${p.slug ?? p.short_id}`}>
-                      <Card className="relative p-4 h-full overflow-hidden hover:border-orange-500/50 hover:shadow-[0_0_25px_-10px_hsl(24_95%_53%/0.4)] transition group">
-                        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent opacity-0 group-hover:opacity-100 transition" />
+                      <Card className="p-4 h-full hover:border-primary/50 hover:shadow-elegant transition group">
                         <div className="flex gap-3">
                           {p.icon_url ? (
                             <img
                               src={p.icon_url}
                               alt=""
-                              className="h-14 w-14 rounded-md object-cover border border-border group-hover:border-orange-500/40 shrink-0 transition"
+                              className="h-14 w-14 rounded-md object-cover border border-border shrink-0"
                             />
                           ) : (
-                            <div className="h-14 w-14 rounded-md bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0">
-                              <Puzzle className="h-7 w-7 text-orange-400" />
+                            <div className="h-14 w-14 rounded-md bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0">
+                              <Puzzle className="h-7 w-7 text-primary" />
                             </div>
                           )}
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-display font-semibold group-hover:text-orange-300 transition truncate">
+                              <h3 className="font-display font-semibold group-hover:text-primary transition truncate">
                                 {p.name}
                               </h3>
-                              {p.featured && <Sparkles className="h-3.5 w-3.5 text-orange-400 shrink-0" />}
+                              {p.featured && <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />}
                               {supportsFolia(platforms, p.tags) && <FoliaBadge />}
                             </div>
                             {username && (
                               <div className="text-xs text-muted-foreground truncate">
                                 by <span className="text-foreground/80">{username}</span>
-                                {p.version && <span className="ml-1.5 font-mono opacity-70">v{p.version}</span>}
+                                {p.version && <span className="ml-1.5 opacity-70">v{p.version}</span>}
                               </div>
                             )}
                             {p.description && (
@@ -328,15 +311,14 @@ const Plugins = () => {
                                 </Badge>
                               ))}
                             </div>
-                            <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-2 font-mono">
+                            <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-2">
                               <Clock className="h-3 w-3" />
-                              {timeAgo(p.updated_at)}
+                              Updated {timeAgo(p.updated_at)}
                             </div>
                           </div>
                         </div>
                       </Card>
                     </Link>
-
                   );
                 })}
               </div>
