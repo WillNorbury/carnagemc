@@ -281,31 +281,32 @@ const Plugins = () => {
 
                   return (
                     <Link key={p.id} to={`/plugin/${p.slug ?? p.short_id}`}>
-                      <Card className="p-4 h-full hover:border-primary/50 hover:shadow-elegant transition group">
+                      <Card className="relative p-4 h-full overflow-hidden hover:border-orange-500/50 hover:shadow-[0_0_25px_-10px_hsl(24_95%_53%/0.4)] transition group">
+                        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent opacity-0 group-hover:opacity-100 transition" />
                         <div className="flex gap-3">
                           {p.icon_url ? (
                             <img
                               src={p.icon_url}
                               alt=""
-                              className="h-14 w-14 rounded-md object-cover border border-border shrink-0"
+                              className="h-14 w-14 rounded-md object-cover border border-border group-hover:border-orange-500/40 shrink-0 transition"
                             />
                           ) : (
-                            <div className="h-14 w-14 rounded-md bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0">
-                              <Puzzle className="h-7 w-7 text-primary" />
+                            <div className="h-14 w-14 rounded-md bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0">
+                              <Puzzle className="h-7 w-7 text-orange-400" />
                             </div>
                           )}
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-display font-semibold group-hover:text-primary transition truncate">
+                              <h3 className="font-display font-semibold group-hover:text-orange-300 transition truncate">
                                 {p.name}
                               </h3>
-                              {p.featured && <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />}
+                              {p.featured && <Sparkles className="h-3.5 w-3.5 text-orange-400 shrink-0" />}
                               {supportsFolia(platforms, p.tags) && <FoliaBadge />}
                             </div>
                             {username && (
                               <div className="text-xs text-muted-foreground truncate">
                                 by <span className="text-foreground/80">{username}</span>
-                                {p.version && <span className="ml-1.5 opacity-70">v{p.version}</span>}
+                                {p.version && <span className="ml-1.5 font-mono opacity-70">v{p.version}</span>}
                               </div>
                             )}
                             {p.description && (
@@ -327,14 +328,15 @@ const Plugins = () => {
                                 </Badge>
                               ))}
                             </div>
-                            <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-2">
+                            <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-2 font-mono">
                               <Clock className="h-3 w-3" />
-                              Updated {timeAgo(p.updated_at)}
+                              {timeAgo(p.updated_at)}
                             </div>
                           </div>
                         </div>
                       </Card>
                     </Link>
+
                   );
                 })}
               </div>
