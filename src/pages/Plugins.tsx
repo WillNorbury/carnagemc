@@ -130,21 +130,32 @@ const Plugins = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <main className="container pt-24 pb-16">
-        {/* Hero */}
-        <div className="relative mb-10 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-card/60 to-transparent p-8 md:p-12 overflow-hidden">
-          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-primary/20 blur-3xl" />
+        {/* Hero — forge band */}
+        <div className="relative mb-10 rounded-3xl border border-orange-500/30 bg-[radial-gradient(ellipse_at_top_left,hsl(var(--primary)/0.25),transparent_60%),linear-gradient(135deg,hsl(var(--card))_0%,hsl(var(--background))_100%)] p-8 md:p-14 overflow-hidden">
+          <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-orange-500/20 blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-rose-600/10 blur-3xl" />
+          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-orange-500/60 to-transparent" />
           <div className="relative">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary mb-4">
-              <Puzzle className="h-3 w-3" /> Plugin Directory
+            <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/40 bg-orange-500/10 px-3 py-1 text-xs font-mono uppercase tracking-widest text-orange-300 mb-5">
+              <Puzzle className="h-3 w-3" /> Forge · Plugin Directory
             </div>
-            <h1 className="font-display text-4xl md:text-5xl font-black tracking-tight mb-3">
-              Discover <span className="text-gradient">plugins</span>
+            <h1 className="font-display text-5xl md:text-7xl font-black tracking-tight mb-4 leading-[0.95]">
+              Forged for the{" "}
+              <span className="bg-gradient-to-br from-orange-300 via-orange-500 to-rose-600 bg-clip-text text-transparent">
+                network
+              </span>
             </h1>
-            <p className="text-muted-foreground max-w-xl">
-              Explore community-made and official plugins built for the CarnageMC network.
+            <p className="text-muted-foreground max-w-xl text-base md:text-lg">
+              Battle-tested plugins built and curated for the CarnageMC network — hammered into shape by the community.
             </p>
+            <div className="mt-6 flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-muted-foreground">
+              <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> {plugins.length} live</span>
+              <span>·</span>
+              <span>{featured.length} featured</span>
+            </div>
           </div>
         </div>
+
 
         {/* Featured */}
         {featured.length > 0 && (
