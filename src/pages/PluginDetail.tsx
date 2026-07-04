@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import { useAuth } from "@/lib/auth";
 import { Pencil } from "lucide-react";
 import Navbar from "@/components/site/Navbar";
@@ -22,6 +25,8 @@ import { Input } from "@/components/ui/input";
 import { Gamepad2, ChevronDown, Search, KeyRound, Info } from "lucide-react";
 import ItemReviews from "@/components/site/ItemReviews";
 import ReportDialog from "@/components/site/ReportDialog";
+import FoliaBanner from "@/components/site/FoliaBanner";
+import PluginSupportBadges from "@/components/site/PluginSupportBadges";
 import {
   ArrowLeft,
   Bookmark,
@@ -60,7 +65,10 @@ type Plugin = {
   jar_size: number | null;
   screenshots: string[];
   user_id: string | null;
-
+  website_url?: string | null;
+  source_url?: string | null;
+  issues_url?: string | null;
+  discord_url?: string | null;
 };
 
 
@@ -289,150 +297,181 @@ const PluginDetail = () => {
 
         {plugin && (
           <>
-            {/* Header */}
-            <div className="flex items-start gap-5 pb-6 border-b border-border">
-              {plugin.icon_url ? (
-                <img
-                  src={plugin.icon_url}
-                  alt=""
-                  className="h-24 w-24 rounded-lg object-cover border border-border shrink-0 bg-card"
-                />
-              ) : (
-                <div className="h-24 w-24 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0">
-                  <Puzzle className="h-12 w-12 text-primary" />
-                </div>
-              )}
-
-              <div className="flex-1 min-w-0">
-                <h1 className="text-3xl md:text-4xl font-display font-bold leading-tight">
-                  {plugin.name}
-                </h1>
-                {plugin.description && (
-                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2 max-w-2xl">
-                    {plugin.description}
-                  </p>
-                )}
-                <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground flex-wrap">
-                  <span className="flex items-center gap-1.5">
-                    <Download className="h-4 w-4" /> 0
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Heart className="h-4 w-4" /> 0
-                  </span>
-                  {plugin.category && (
-                    <Badge variant="secondary" className="rounded-full">
-                      {plugin.category}
-                    </Badge>
-                  )}
-                  {plugin.tags?.slice(0, 2).map((t) => (
-                    <Badge key={t} variant="secondary" className="rounded-full">
-                      {t}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                {plugin && user && (plugin.user_id === user.id || isAdmin) && (
-                  <Button
-                    asChild
-                    className="bg-emerald-600 hover:bg-emerald-600/90 text-white rounded-full px-5"
-                  >
-                    <Link to={`/plugin/${plugin.slug ?? plugin.short_id}/settings`}>
-                      <Pencil className="h-4 w-4 mr-1.5" /> Edit project
-                    </Link>
-                  </Button>
-                )}
-                {latestDownloadUrl ? (
-                  <Button onClick={handleDownload} className="bg-primary hover:bg-primary/90 rounded-full px-5">
-                    <Download className="h-4 w-4 mr-1.5" /> Download
-                  </Button>
-                ) : (
-                  <Button disabled className="rounded-full px-5">Unavailable</Button>
-                )}
-
-
-                <Button
-                  variant={liked ? "default" : "outline"}
-                  size="icon"
-                  className="rounded-full h-10 w-10"
-                  aria-label="Like"
-                  onClick={() => setLiked((v) => !v)}
-                >
-                  <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
-                </Button>
-                <Button
-                  variant={saved ? "default" : "outline"}
-                  size="icon"
-                  className="rounded-full h-10 w-10"
-                  aria-label="Save"
-                  onClick={() => setSaved((v) => !v)}
-                >
-                  <Bookmark className={`h-4 w-4 ${saved ? "fill-current" : ""}`} />
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full h-10 w-10" aria-label="More">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={copyLink}>
-                      <LinkIcon className="h-4 w-4 mr-2" /> Copy link
-                    </DropdownMenuItem>
-                    {latestDownloadUrl && (
-                      <DropdownMenuItem onClick={handleDownload}>
-                        <Download className="h-4 w-4 mr-2" /> Download jar
-                      </DropdownMenuItem>
-                    )}
-
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onSelect={(e) => {
-                        e.preventDefault();
-                        setReportOpen(true);
-                      }}
-                      className="text-destructive focus:text-destructive"
-                    >
-                      <Flag className="h-4 w-4 mr-2" /> Report plugin
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                {plugin && (
-                  <ReportDialog
-                    targetType="plugin"
-                    targetId={plugin.id}
-                    targetLabel={plugin.name}
-                    open={reportOpen}
-                    onOpenChange={setReportOpen}
+            {/* Header — forge slab */}
+            <div className="relative rounded-3xl border border-orange-500/25 bg-[radial-gradient(ellipse_at_top_right,hsl(24_95%_53%/0.18),transparent_60%),linear-gradient(135deg,hsl(var(--card))_0%,hsl(var(--background))_100%)] p-6 md:p-8 overflow-hidden">
+              <div className="absolute -top-16 -left-16 h-56 w-56 rounded-full bg-orange-500/15 blur-3xl pointer-events-none" />
+              <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent" />
+              <div className="relative flex items-start gap-5 flex-wrap md:flex-nowrap">
+                {plugin.icon_url ? (
+                  <img
+                    src={plugin.icon_url}
+                    alt=""
+                    className="h-24 w-24 rounded-xl object-cover border border-orange-500/30 shrink-0 bg-card shadow-[0_0_25px_-8px_hsl(24_95%_53%/0.4)]"
                   />
+                ) : (
+                  <div className="h-24 w-24 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0">
+                    <Puzzle className="h-12 w-12 text-orange-400" />
+                  </div>
                 )}
+
+                <div className="flex-1 min-w-0">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/40 bg-orange-500/10 px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-widest text-orange-300 mb-2">
+                    <Puzzle className="h-3 w-3" /> Plugin
+                    {plugin.version && <span className="text-orange-200/70">· v{plugin.version}</span>}
+                  </div>
+                  <h1 className="text-3xl md:text-5xl font-display font-black leading-[1.05] tracking-tight">
+                    {plugin.name}
+                  </h1>
+                  {plugin.description && (
+                    <p className="text-sm md:text-base text-muted-foreground mt-2 line-clamp-2 max-w-2xl">
+                      {plugin.description}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground flex-wrap">
+                    <span className="flex items-center gap-1.5 font-mono"><Download className="h-4 w-4" /> 0</span>
+                    <span className="flex items-center gap-1.5 font-mono"><Heart className="h-4 w-4" /> 0</span>
+                    {plugin.category && (
+                      <Badge variant="secondary" className="rounded-full">{plugin.category}</Badge>
+                    )}
+                    {plugin.tags?.slice(0, 2).map((t) => (
+                      <Badge key={t} variant="secondary" className="rounded-full">{t}</Badge>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  {plugin && user && (plugin.user_id === user.id || isAdmin) && (
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="rounded-full px-5 border-emerald-500/50 text-emerald-300 hover:bg-emerald-500/10 hover:text-emerald-200"
+                    >
+                      <Link to={`/plugin/${plugin.slug ?? plugin.short_id}/settings`}>
+                        <Pencil className="h-4 w-4 mr-1.5" /> Edit
+                      </Link>
+                    </Button>
+                  )}
+                  {latestDownloadUrl ? (
+                    <Button
+                      onClick={handleDownload}
+                      className="rounded-full px-6 bg-gradient-to-br from-orange-500 to-rose-600 hover:from-orange-400 hover:to-rose-500 text-white shadow-[0_0_20px_-4px_hsl(24_95%_53%/0.6)] border-0"
+                    >
+                      <Download className="h-4 w-4 mr-1.5" /> Download
+                    </Button>
+                  ) : (
+                    <Button disabled className="rounded-full px-5">Unavailable</Button>
+                  )}
+
+                  <Button
+                    variant={liked ? "default" : "outline"}
+                    size="icon"
+                    className="rounded-full h-10 w-10"
+                    aria-label="Like"
+                    onClick={() => setLiked((v) => !v)}
+                  >
+                    <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
+                  </Button>
+                  <Button
+                    variant={saved ? "default" : "outline"}
+                    size="icon"
+                    className="rounded-full h-10 w-10"
+                    aria-label="Save"
+                    onClick={() => setSaved((v) => !v)}
+                  >
+                    <Bookmark className={`h-4 w-4 ${saved ? "fill-current" : ""}`} />
+                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="rounded-full h-10 w-10" aria-label="More">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={copyLink}>
+                        <LinkIcon className="h-4 w-4 mr-2" /> Copy link
+                      </DropdownMenuItem>
+                      {latestDownloadUrl && (
+                        <DropdownMenuItem onClick={handleDownload}>
+                          <Download className="h-4 w-4 mr-2" /> Download jar
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          setReportOpen(true);
+                        }}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Flag className="h-4 w-4 mr-2" /> Report plugin
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  {plugin && (
+                    <ReportDialog
+                      targetType="plugin"
+                      targetId={plugin.id}
+                      targetLabel={plugin.name}
+                      open={reportOpen}
+                      onOpenChange={setReportOpen}
+                    />
+                  )}
+                </div>
               </div>
             </div>
+
 
             {/* Body: tabs + sidebar */}
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 mt-6">
               <div>
-                <div className="flex items-center gap-1 mb-4">
+                <div className="flex items-center gap-1 mb-4 border-b border-border/60">
                   {tabs.map((t) => (
                     <button
                       key={t.id}
                       onClick={() => setTab(t.id)}
-                      className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${
+                      className={`relative px-4 py-2.5 text-sm font-semibold uppercase tracking-wider transition-colors ${
                         tab === t.id
-                          ? "bg-primary/15 text-primary"
+                          ? "text-orange-300"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       {t.label}
+                      {tab === t.id && (
+                        <span className="absolute inset-x-2 -bottom-px h-0.5 bg-gradient-to-r from-orange-400 to-rose-500 rounded-full" />
+                      )}
                     </button>
                   ))}
                 </div>
 
+
                 <Card className="p-6">
                   {tab === "description" && (
-                    <div className="prose prose-invert max-w-none whitespace-pre-wrap text-sm leading-relaxed text-foreground/90">
-                      {plugin.long_description || plugin.description || (
+                    <div className="prose prose-invert prose-sm max-w-none text-foreground/90 prose-img:rounded-lg prose-a:text-primary">
+                      {platforms.includes("folia") && <FoliaBanner />}
+                      <PluginSupportBadges
+                        platforms={platforms}
+                        discordUrl={plugin.discord_url}
+                        sourceUrl={plugin.source_url}
+                        wikiUrl={null}
+                        issuesUrl={plugin.issues_url}
+                        websiteUrl={plugin.website_url}
+                      />
+                      {plugin.long_description || plugin.description ? (
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          rehypePlugins={[rehypeRaw]}
+                          components={{
+                            a: ({ node, ...props }) => (
+                              <a {...props} target="_blank" rel="noreferrer noopener" />
+                            ),
+                            img: ({ node, ...props }) => (
+                              <img {...props} loading="lazy" className="rounded-lg max-w-full h-auto" />
+                            ),
+                          }}
+                        >
+                          {plugin.long_description || plugin.description || ""}
+                        </ReactMarkdown>
+                      ) : (
                         <span className="text-muted-foreground">No description provided.</span>
                       )}
                     </div>
@@ -647,30 +686,49 @@ const PluginDetail = () => {
       </Dialog>
 
       <Dialog open={downloadOpen} onOpenChange={setDownloadOpen}>
-        <DialogContent className="max-w-md bg-card border-border">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2.5 text-lg">
-              {plugin?.icon_url ? (
-                <img src={plugin.icon_url} alt="" className="h-7 w-7 rounded-md object-cover border border-border" />
-              ) : (
-                <div className="h-7 w-7 rounded-md bg-primary/15 border border-primary/30 flex items-center justify-center">
-                  <Puzzle className="h-4 w-4 text-primary" />
+        <DialogContent className="max-w-md bg-card border-primary/30 overflow-hidden p-0">
+          {/* Forge header slab */}
+          <div className="relative px-5 pt-5 pb-4 border-b border-primary/20 overflow-hidden">
+            <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ background: "var(--gradient-fire)" }} />
+            <div className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-primary/25 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-20 -left-10 h-40 w-40 rounded-full bg-orange-500/20 blur-3xl pointer-events-none" />
+            <DialogHeader className="relative">
+              <div className="text-[10px] uppercase tracking-[0.28em] text-primary font-bold mb-2 flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                Forge Download
+              </div>
+              <DialogTitle className="flex items-center gap-3 text-lg">
+                {plugin?.icon_url ? (
+                  <img src={plugin.icon_url} alt="" className="h-10 w-10 rounded-md object-cover border border-primary/40 shadow-[0_0_20px_rgba(249,115,22,0.25)]" />
+                ) : (
+                  <div className="h-10 w-10 rounded-md bg-primary/15 border border-primary/40 flex items-center justify-center shadow-[0_0_20px_rgba(249,115,22,0.25)]">
+                    <Puzzle className="h-5 w-5 text-primary" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <div className="truncate font-display font-black">{plugin?.name}</div>
+                  {plugin?.version && (
+                    <div className="text-[11px] font-mono text-muted-foreground truncate">v{plugin.version}</div>
+                  )}
                 </div>
-              )}
-              <span>Download {plugin?.name}</span>
-            </DialogTitle>
-          </DialogHeader>
+              </DialogTitle>
+            </DialogHeader>
+          </div>
 
-          <div className="space-y-3 pt-1">
-            <div className="rounded-md border border-border bg-background/40 overflow-hidden">
+          <div className="space-y-3 px-5 pb-5 pt-4">
+            {/* Game version */}
+            <div className="rounded-md border border-border bg-background/60 overflow-hidden transition-colors hover:border-primary/40">
               <button
                 type="button"
                 onClick={() => setVersionOpen((v) => !v)}
-                className="w-full flex items-center justify-between px-3 py-2.5 text-sm hover:bg-accent/40 transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2.5 text-sm hover:bg-primary/5 transition-colors"
               >
-                <span className="flex items-center gap-2 text-foreground/90">
-                  <Gamepad2 className="h-4 w-4 text-muted-foreground" />
-                  {selectedVersion ? `Game version: ${selectedVersion}` : "Select game version"}
+                <span className="flex items-center gap-2 text-foreground/90 min-w-0">
+                  <Gamepad2 className="h-4 w-4 text-primary shrink-0" />
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Game</span>
+                  <span className="font-mono font-semibold truncate">
+                    {selectedVersion ?? "Select version"}
+                  </span>
                 </span>
                 <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${versionOpen ? "rotate-180" : ""}`} />
               </button>
@@ -704,10 +762,10 @@ const PluginDetail = () => {
                               setSelectedVersion(v);
                               setVersionOpen(false);
                             }}
-                            className={`w-full text-left px-3 py-1.5 rounded text-sm transition-colors ${
+                            className={`w-full text-left px-3 py-1.5 rounded text-sm font-mono transition-colors ${
                               selectedVersion === v
-                                ? "bg-primary/15 text-primary"
-                                : "hover:bg-accent/50 text-foreground/85"
+                                ? "bg-primary/15 text-primary border border-primary/30"
+                                : "hover:bg-primary/5 text-foreground/85 border border-transparent"
                             }`}
                           >
                             {v}
@@ -719,20 +777,24 @@ const PluginDetail = () => {
               )}
             </div>
 
-            <div className="rounded-md border border-border bg-background/40 overflow-hidden">
+            {/* Platform */}
+            <div className="rounded-md border border-border bg-background/60 overflow-hidden transition-colors hover:border-primary/40">
               <button
                 type="button"
                 onClick={() => setPlatformOpen((v) => !v)}
                 disabled={platforms.length === 0}
-                className="w-full flex items-center justify-between px-3 py-2.5 text-sm hover:bg-accent/40 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-between px-3 py-2.5 text-sm hover:bg-primary/5 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <span className="flex items-center gap-2 text-foreground/90">
-                  <KeyRound className="h-4 w-4 text-muted-foreground" />
-                  {selectedPlatform
-                    ? `Platform: ${PLATFORM_LABELS[selectedPlatform] ?? selectedPlatform}`
-                    : platforms.length === 0
-                      ? "Platform: Unknown"
-                      : "Select platform"}
+                <span className="flex items-center gap-2 text-foreground/90 min-w-0">
+                  <KeyRound className="h-4 w-4 text-primary shrink-0" />
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Platform</span>
+                  <span className="font-semibold truncate">
+                    {selectedPlatform
+                      ? PLATFORM_LABELS[selectedPlatform] ?? selectedPlatform
+                      : platforms.length === 0
+                        ? "Unknown"
+                        : "Select"}
+                  </span>
                 </span>
                 {platforms.length > 0 && (
                   <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${platformOpen ? "rotate-180" : ""}`} />
@@ -750,8 +812,8 @@ const PluginDetail = () => {
                       }}
                       className={`w-full text-left px-3 py-1.5 rounded text-sm transition-colors ${
                         selectedPlatform === p
-                          ? "bg-primary/15 text-primary"
-                          : "hover:bg-accent/50 text-foreground/85"
+                          ? "bg-primary/15 text-primary border border-primary/30"
+                          : "hover:bg-primary/5 text-foreground/85 border border-transparent"
                       }`}
                     >
                       {PLATFORM_LABELS[p] ?? p}
@@ -761,24 +823,33 @@ const PluginDetail = () => {
               )}
             </div>
 
-            <div className="rounded-md border border-border bg-background/40 px-3 py-2 flex items-center gap-2 text-sm">
-              <Info className="h-4 w-4 text-muted-foreground shrink-0" />
-              <span className="text-muted-foreground truncate font-mono">
-                {plugin ? buildJarName(plugin, selectedPlatform) : ""}
-              </span>
+            {/* Filename preview */}
+            <div className="rounded-md border border-primary/20 bg-primary/5 px-3 py-2.5 flex items-center gap-2 text-sm">
+              <Info className="h-4 w-4 text-primary shrink-0" />
+              <div className="min-w-0 flex-1">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Filename</div>
+                <div className="font-mono text-xs truncate text-foreground/90">
+                  {plugin ? buildJarName(plugin, selectedPlatform) : ""}
+                </div>
+              </div>
             </div>
 
-            <Button
-              onClick={() => {
-                doDownload();
-                setDownloadOpen(false);
-              }}
-              disabled={!latestDownloadUrl}
-              className="w-full bg-primary hover:bg-primary/90"
-            >
-              <Download className="h-4 w-4 mr-1.5" />
-              Download {plugin?.version ? `v${plugin.version}` : "jar"}
-            </Button>
+            {/* Glowing forge CTA */}
+            <div className="relative group pt-1">
+              <div className="absolute -inset-0.5 rounded-md opacity-70 group-hover:opacity-100 blur-md transition-opacity"
+                   style={{ background: "var(--gradient-fire)" }} />
+              <Button
+                onClick={() => {
+                  doDownload();
+                  setDownloadOpen(false);
+                }}
+                disabled={!latestDownloadUrl}
+                className="relative w-full font-display font-bold tracking-wide bg-primary hover:bg-primary/90 shadow-[0_8px_30px_-8px_rgba(249,115,22,0.6)]"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Forge & Download {plugin?.version ? `v${plugin.version}` : "jar"}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

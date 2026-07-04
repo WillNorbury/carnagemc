@@ -1,9 +1,12 @@
-# XyloMC Website
+# CarnageMC Website
 
-The official website for **XyloMC** — a Minecraft Lifesteal & Economy server.
+The official website for **CarnageMC** — a Minecraft Lifesteal & Economy server.
+
+**Version:** Unversioned rolling release — changes are tracked by date in the [Changelog](/changelog) and `public/release-notes.json` rather than a semver number. `package.json` intentionally stays at `0.0.0`.
+
 
 **Live URLs:**
-- [xylomc.lovable.app](https://xylomc.lovable.app)
+- [carnagemc.lovable.app](https://carnagemc.lovable.app)
 - [xylomc.net](https://xylomc.net)
 - [carnagemc.net](https://carnagemc.net)
 - [alsnetwork.fun](https://alsnetwork.fun)
@@ -50,7 +53,6 @@ The official website for **XyloMC** — a Minecraft Lifesteal & Economy server.
 | **Events** | `/events` | Server events calendar |
 | **Changelog** | `/changelog` | Server update changelog |
 | **Apply** | `/apply` | Staff/builder/content creator applications |
-| **Mods** | `/mods` | Public mod downloads (`.jar` files) with loader/version/tags filtering |
 | **Link Account** | `/link-account` | Discord account linking flow |
 | **Auth** | `/auth` | Sign up / Log in |
 
@@ -79,7 +81,6 @@ Role-based access control. Admin users see an **Admin** button in the navbar.
 | **FAQs** | Manage FAQ entries (questions, answers, categories) |
 | **Events** | Create and manage server events |
 | **Maintenance** | Toggle maintenance mode and set a custom message |
-| **Mods** | Upload `.jar` mod files, set loader/MC version/tags, feature/publish them, or link external download URLs |
 | **Discord Bot — Dashboard** | Bot status and overview (owner-only) |
 | **Discord Bot — Management** | Configure commands and bot integration (owner-only) |
 
@@ -201,6 +202,45 @@ src/
 ```
 
 ---
+
+## `data/plugins.json`
+
+A committed snapshot of every **published** row from the `plugins` table, so the plugin catalog is visible directly on GitHub (not only in the live database).
+
+**Shape:**
+
+```json
+{
+  "generatedAt": "2026-07-01T00:00:00Z",
+  "count": 15,
+  "plugins": [
+    { "id": "...", "slug": "advancedrtp", "name": "AdvancedRTP", "version": "2.0.3", ... }
+  ]
+}
+```
+
+Internal storage paths (`jar_path`) are stripped; public download URLs (`download_url`) are kept.
+
+**How it stays in sync**
+
+The file is a manual export, not live data. Regenerate it whenever plugins are added, edited, or unpublished:
+
+- Ask the assistant: *"Regenerate data/plugins.json"*, or
+- Run against the backend:
+
+  ```sql
+  SELECT jsonb_pretty(jsonb_build_object(
+    'generatedAt', to_jsonb(now()),
+    'count', count(*),
+    'plugins', COALESCE(jsonb_agg(to_jsonb(p) - 'jar_path' ORDER BY p.name), '[]'::jsonb)
+  ))
+  FROM (SELECT * FROM public.plugins WHERE published = true) p;
+  ```
+
+  Save the output to `data/plugins.json`. The live source of truth remains the `plugins` table at `/plugins` and `/admin?tab=plugins`.
+
+---
+
 
 ## Custom Domains
 
