@@ -1,13 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import FoliaBanner from "@/components/site/FoliaBanner";
-import PluginSupportBadges from "@/components/site/PluginSupportBadges";
 import {
   Select,
   SelectContent,
@@ -145,12 +140,6 @@ export default function ModrinthPluginDetail() {
               <Badge key={c} variant="secondary">{c}</Badge>
             ))}
           </div>
-          {(() => {
-            const loaderSet = new Set<string>();
-            (project.loaders ?? []).forEach((l) => loaderSet.add(l.toLowerCase()));
-            versions.forEach((v) => v.loaders?.forEach((l) => loaderSet.add(l.toLowerCase())));
-            return loaderSet.has("folia") ? <FoliaBanner /> : null;
-          })()}
           <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-1">
               <Download className="h-4 w-4" /> {project.downloads.toLocaleString()}
@@ -229,9 +218,9 @@ export default function ModrinthPluginDetail() {
               {selected.changelog && (
                 <details className="text-sm">
                   <summary className="cursor-pointer font-medium">Changelog</summary>
-                  <div className="mt-2 p-3 rounded bg-muted prose prose-sm dark:prose-invert max-w-none">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{selected.changelog}</ReactMarkdown>
-                  </div>
+                  <pre className="mt-2 p-3 rounded bg-muted whitespace-pre-wrap text-xs">
+                    {selected.changelog}
+                  </pre>
                 </details>
               )}
             </div>
@@ -239,46 +228,13 @@ export default function ModrinthPluginDetail() {
         </CardContent>
       </Card>
 
-      <Card className="mb-6">
-        <CardContent className="p-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-            Support & Links
-          </h2>
-          <PluginSupportBadges
-            loaders={Array.from(new Set([
-              ...(project.loaders ?? []),
-              ...versions.flatMap((v) => v.loaders ?? []),
-            ].map((l) => l.toLowerCase())))}
-            discordUrl={project.discord_url}
-            sourceUrl={project.source_url}
-            wikiUrl={project.wiki_url}
-            issuesUrl={project.issues_url}
-            className=""
-          />
-        </CardContent>
-      </Card>
-
-
       {project.body && (
         <Card>
-          <CardContent className="p-6">
-            <h2 className="text-lg font-semibold mb-4">About</h2>
-            <div className="prose prose-sm dark:prose-invert max-w-none prose-img:rounded-lg prose-a:text-primary prose-headings:scroll-mt-20">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw]}
-                components={{
-                  a: ({ node, ...props }) => (
-                    <a {...props} target="_blank" rel="noreferrer noopener" />
-                  ),
-                  img: ({ node, ...props }) => (
-                    <img {...props} loading="lazy" className="rounded-lg max-w-full h-auto" />
-                  ),
-                }}
-              >
-                {project.body}
-              </ReactMarkdown>
-            </div>
+          <CardContent className="p-4">
+            <h2 className="text-lg font-semibold mb-2">About</h2>
+            <pre className="whitespace-pre-wrap text-sm text-muted-foreground font-sans">
+              {project.body}
+            </pre>
           </CardContent>
         </Card>
       )}

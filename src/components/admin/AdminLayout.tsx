@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import logoAsset from "@/assets/carnagemc-logo.png.asset.json";
+import logoAsset from "@/assets/havocsmp-logo.png.asset.json";
 const logo = logoAsset.url;
 import { ThemeToggle } from "@/components/site/ThemeToggle";
 import { LiveClock } from "@/components/admin/LiveClock";

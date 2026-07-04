@@ -5,37 +5,24 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import {
-  Activity,
-  CheckCircle2,
-  AlertTriangle,
-  XCircle,
-  HelpCircle,
-  RefreshCw,
-  Timer,
-  ChevronRight,
-} from "lucide-react";
+import { Activity, CheckCircle2, AlertTriangle, XCircle, HelpCircle, RefreshCw, Timer, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
-type Range = 90 | 180;
+type Range = 1 | 7 | 30;
 
 const RANGES: { label: string; value: Range }[] = [
-  { label: "90 days", value: 90 },
-  { label: "180 days", value: 180 },
+  { label: "1 day", value: 1 },
+  { label: "7 days", value: 7 },
+  { label: "30 days", value: 30 },
 ];
 
 const DEFAULT_SERVICES: { key: string; name: string; desc: string; url: string }[] = [
   { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
-  { key: "minecraft", name: "Minecraft Server", desc: "mc.carnagemc.net", url: "" },
+  { key: "minecraft", name: "Minecraft Server", desc: "carnagemc.net", url: "" },
   { key: "api", name: "API & Database", desc: "Backend services", url: "" },
   { key: "panel", name: "Panel", desc: "panel.voxelnode.dev", url: "" },
-  {
-    key: "discord",
-    name: "Discord Server",
-    desc: "https://discord.gg/wD6K3nr2MG",
-    url: "https://discord.carnagemc.net",
-  },
+  { key: "discord", name: "Discord Server", desc: "https://discord.gg/wD6K3nr2MG", url: "" },
   { key: "portfolio", name: "Portfolio", desc: "portfolio.carnagemc.net", url: "https://portfolio.carnagemc.net" },
 ];
 
@@ -110,7 +97,7 @@ const DayGrid = ({ days, byDay }: { days: number; byDay: Map<string, { pct: numb
 };
 
 const Status = () => {
-  const [range, setRange] = useState<Range>(90);
+  const [range, setRange] = useState<Range>(30);
   const [rows, setRows] = useState<DailyRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -120,16 +107,7 @@ const Status = () => {
   const [pageSubtitle, setPageSubtitle] = useState("Live uptime — automated checks every 5 minutes.");
   const [pageFootnote, setPageFootnote] = useState("");
   const [services, setServices] = useState(DEFAULT_SERVICES);
-  const [incidents, setIncidents] = useState<
-    Array<{
-      id: string;
-      incident_number: number;
-      service_key: string;
-      opened_at: string;
-      closed_at: string | null;
-      last_error: string | null;
-    }>
-  >([]);
+  const [incidents, setIncidents] = useState<Array<{ id: string; incident_number: number; service_key: string; opened_at: string; closed_at: string | null; last_error: string | null }>>([]);
 
   useEffect(() => {
     document.title = "Status — CarnageMC";
@@ -407,7 +385,8 @@ const Status = () => {
                   const durMin = Math.max(
                     1,
                     Math.round(
-                      ((i.closed_at ? new Date(i.closed_at).getTime() : Date.now()) - new Date(i.opened_at).getTime()) /
+                      ((i.closed_at ? new Date(i.closed_at).getTime() : Date.now()) -
+                        new Date(i.opened_at).getTime()) /
                         60000,
                     ),
                   );
@@ -442,6 +421,7 @@ const Status = () => {
               </Card>
             </div>
           )}
+
 
           <p className="text-center text-xs text-muted-foreground mt-8">
             Legend:

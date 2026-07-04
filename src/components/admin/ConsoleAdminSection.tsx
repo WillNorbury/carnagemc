@@ -385,23 +385,16 @@ const ServersTab = ({ servers, reload }: { servers: Server[]; reload: () => void
     if (!name.trim() || !slug.trim()) {
       toast({ title: "Name and slug required", variant: "destructive" }); return;
     }
-    const { data: userRes } = await supabase.auth.getUser();
-    const uid = userRes.user?.id;
-    if (!uid) {
-      toast({ title: "Not signed in", variant: "destructive" }); return;
-    }
     const { error } = await supabase.from("mc_servers").insert({
       name: name.trim(),
       slug: slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-"),
       description: description.trim() || null,
-      created_by: uid,
     });
     if (error) { toast({ title: "Failed", description: error.message, variant: "destructive" }); return; }
     setName(""); setSlug(""); setDescription("");
     toast({ title: "Server added" });
     reload();
   };
-
 
   const toggle = async (s: Server) => {
     await supabase.from("mc_servers").update({ enabled: !s.enabled }).eq("id", s.id);
