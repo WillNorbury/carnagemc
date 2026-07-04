@@ -686,30 +686,49 @@ const PluginDetail = () => {
       </Dialog>
 
       <Dialog open={downloadOpen} onOpenChange={setDownloadOpen}>
-        <DialogContent className="max-w-md bg-card border-border">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2.5 text-lg">
-              {plugin?.icon_url ? (
-                <img src={plugin.icon_url} alt="" className="h-7 w-7 rounded-md object-cover border border-border" />
-              ) : (
-                <div className="h-7 w-7 rounded-md bg-primary/15 border border-primary/30 flex items-center justify-center">
-                  <Puzzle className="h-4 w-4 text-primary" />
+        <DialogContent className="max-w-md bg-card border-primary/30 overflow-hidden p-0">
+          {/* Forge header slab */}
+          <div className="relative px-5 pt-5 pb-4 border-b border-primary/20 overflow-hidden">
+            <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ background: "var(--gradient-fire)" }} />
+            <div className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-primary/25 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-20 -left-10 h-40 w-40 rounded-full bg-orange-500/20 blur-3xl pointer-events-none" />
+            <DialogHeader className="relative">
+              <div className="text-[10px] uppercase tracking-[0.28em] text-primary font-bold mb-2 flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                Forge Download
+              </div>
+              <DialogTitle className="flex items-center gap-3 text-lg">
+                {plugin?.icon_url ? (
+                  <img src={plugin.icon_url} alt="" className="h-10 w-10 rounded-md object-cover border border-primary/40 shadow-[0_0_20px_rgba(249,115,22,0.25)]" />
+                ) : (
+                  <div className="h-10 w-10 rounded-md bg-primary/15 border border-primary/40 flex items-center justify-center shadow-[0_0_20px_rgba(249,115,22,0.25)]">
+                    <Puzzle className="h-5 w-5 text-primary" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <div className="truncate font-display font-black">{plugin?.name}</div>
+                  {plugin?.version && (
+                    <div className="text-[11px] font-mono text-muted-foreground truncate">v{plugin.version}</div>
+                  )}
                 </div>
-              )}
-              <span>Download {plugin?.name}</span>
-            </DialogTitle>
-          </DialogHeader>
+              </DialogTitle>
+            </DialogHeader>
+          </div>
 
-          <div className="space-y-3 pt-1">
-            <div className="rounded-md border border-border bg-background/40 overflow-hidden">
+          <div className="space-y-3 px-5 pb-5 pt-4">
+            {/* Game version */}
+            <div className="rounded-md border border-border bg-background/60 overflow-hidden transition-colors hover:border-primary/40">
               <button
                 type="button"
                 onClick={() => setVersionOpen((v) => !v)}
-                className="w-full flex items-center justify-between px-3 py-2.5 text-sm hover:bg-accent/40 transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2.5 text-sm hover:bg-primary/5 transition-colors"
               >
-                <span className="flex items-center gap-2 text-foreground/90">
-                  <Gamepad2 className="h-4 w-4 text-muted-foreground" />
-                  {selectedVersion ? `Game version: ${selectedVersion}` : "Select game version"}
+                <span className="flex items-center gap-2 text-foreground/90 min-w-0">
+                  <Gamepad2 className="h-4 w-4 text-primary shrink-0" />
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Game</span>
+                  <span className="font-mono font-semibold truncate">
+                    {selectedVersion ?? "Select version"}
+                  </span>
                 </span>
                 <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${versionOpen ? "rotate-180" : ""}`} />
               </button>
@@ -743,10 +762,10 @@ const PluginDetail = () => {
                               setSelectedVersion(v);
                               setVersionOpen(false);
                             }}
-                            className={`w-full text-left px-3 py-1.5 rounded text-sm transition-colors ${
+                            className={`w-full text-left px-3 py-1.5 rounded text-sm font-mono transition-colors ${
                               selectedVersion === v
-                                ? "bg-primary/15 text-primary"
-                                : "hover:bg-accent/50 text-foreground/85"
+                                ? "bg-primary/15 text-primary border border-primary/30"
+                                : "hover:bg-primary/5 text-foreground/85 border border-transparent"
                             }`}
                           >
                             {v}
@@ -758,20 +777,24 @@ const PluginDetail = () => {
               )}
             </div>
 
-            <div className="rounded-md border border-border bg-background/40 overflow-hidden">
+            {/* Platform */}
+            <div className="rounded-md border border-border bg-background/60 overflow-hidden transition-colors hover:border-primary/40">
               <button
                 type="button"
                 onClick={() => setPlatformOpen((v) => !v)}
                 disabled={platforms.length === 0}
-                className="w-full flex items-center justify-between px-3 py-2.5 text-sm hover:bg-accent/40 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-between px-3 py-2.5 text-sm hover:bg-primary/5 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <span className="flex items-center gap-2 text-foreground/90">
-                  <KeyRound className="h-4 w-4 text-muted-foreground" />
-                  {selectedPlatform
-                    ? `Platform: ${PLATFORM_LABELS[selectedPlatform] ?? selectedPlatform}`
-                    : platforms.length === 0
-                      ? "Platform: Unknown"
-                      : "Select platform"}
+                <span className="flex items-center gap-2 text-foreground/90 min-w-0">
+                  <KeyRound className="h-4 w-4 text-primary shrink-0" />
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Platform</span>
+                  <span className="font-semibold truncate">
+                    {selectedPlatform
+                      ? PLATFORM_LABELS[selectedPlatform] ?? selectedPlatform
+                      : platforms.length === 0
+                        ? "Unknown"
+                        : "Select"}
+                  </span>
                 </span>
                 {platforms.length > 0 && (
                   <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${platformOpen ? "rotate-180" : ""}`} />
@@ -789,8 +812,8 @@ const PluginDetail = () => {
                       }}
                       className={`w-full text-left px-3 py-1.5 rounded text-sm transition-colors ${
                         selectedPlatform === p
-                          ? "bg-primary/15 text-primary"
-                          : "hover:bg-accent/50 text-foreground/85"
+                          ? "bg-primary/15 text-primary border border-primary/30"
+                          : "hover:bg-primary/5 text-foreground/85 border border-transparent"
                       }`}
                     >
                       {PLATFORM_LABELS[p] ?? p}
@@ -800,24 +823,33 @@ const PluginDetail = () => {
               )}
             </div>
 
-            <div className="rounded-md border border-border bg-background/40 px-3 py-2 flex items-center gap-2 text-sm">
-              <Info className="h-4 w-4 text-muted-foreground shrink-0" />
-              <span className="text-muted-foreground truncate font-mono">
-                {plugin ? buildJarName(plugin, selectedPlatform) : ""}
-              </span>
+            {/* Filename preview */}
+            <div className="rounded-md border border-primary/20 bg-primary/5 px-3 py-2.5 flex items-center gap-2 text-sm">
+              <Info className="h-4 w-4 text-primary shrink-0" />
+              <div className="min-w-0 flex-1">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Filename</div>
+                <div className="font-mono text-xs truncate text-foreground/90">
+                  {plugin ? buildJarName(plugin, selectedPlatform) : ""}
+                </div>
+              </div>
             </div>
 
-            <Button
-              onClick={() => {
-                doDownload();
-                setDownloadOpen(false);
-              }}
-              disabled={!latestDownloadUrl}
-              className="w-full bg-primary hover:bg-primary/90"
-            >
-              <Download className="h-4 w-4 mr-1.5" />
-              Download {plugin?.version ? `v${plugin.version}` : "jar"}
-            </Button>
+            {/* Glowing forge CTA */}
+            <div className="relative group pt-1">
+              <div className="absolute -inset-0.5 rounded-md opacity-70 group-hover:opacity-100 blur-md transition-opacity"
+                   style={{ background: "var(--gradient-fire)" }} />
+              <Button
+                onClick={() => {
+                  doDownload();
+                  setDownloadOpen(false);
+                }}
+                disabled={!latestDownloadUrl}
+                className="relative w-full font-display font-bold tracking-wide bg-primary hover:bg-primary/90 shadow-[0_8px_30px_-8px_rgba(249,115,22,0.6)]"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Forge & Download {plugin?.version ? `v${plugin.version}` : "jar"}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
