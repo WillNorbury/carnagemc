@@ -110,7 +110,7 @@ const DayGrid = ({ days, byDay }: { days: number; byDay: Map<string, { pct: numb
 };
 
 const Status = () => {
-  const [range, setRange] = useState<Range>(30);
+  const [range, setRange] = useState<Range>(90);
   const [rows, setRows] = useState<DailyRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
