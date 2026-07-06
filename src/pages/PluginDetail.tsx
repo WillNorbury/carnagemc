@@ -807,28 +807,37 @@ const PluginDetail = () => {
                   <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${platformOpen ? "rotate-180" : ""}`} />
                 )}
               </button>
-              {platformOpen && platforms.length > 0 && (
-                <div className="border-t border-border max-h-56 overflow-y-auto p-2 space-y-1">
-                  {platforms.map((p) => (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => {
-                        setSelectedPlatform(p);
-                        setPlatformOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 rounded text-sm transition-colors ${
-                        selectedPlatform === p
-                          ? "bg-primary/15 text-primary border border-primary/30"
-                          : "hover:bg-primary/5 text-foreground/85 border border-transparent"
-                      }`}
-                    >
-                      {PLATFORM_LABELS[p] ?? p}
-                    </button>
-                  ))}
+              <div
+                className={`grid transition-all duration-300 ease-out ${
+                  platformOpen && platforms.length > 0
+                    ? "grid-rows-[1fr] opacity-100"
+                    : "grid-rows-[0fr] opacity-0"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <div className="border-t border-border max-h-56 overflow-y-auto p-2 space-y-1">
+                    {platforms.map((p) => (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => {
+                          setSelectedPlatform(p);
+                          setPlatformOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-1.5 rounded text-sm transition-colors ${
+                          selectedPlatform === p
+                            ? "bg-primary/15 text-primary border border-primary/30"
+                            : "hover:bg-primary/5 text-foreground/85 border border-transparent"
+                        }`}
+                      >
+                        {PLATFORM_LABELS[p] ?? p}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
+
 
             {/* Filename preview */}
             <div className="rounded-md border border-primary/20 bg-primary/5 px-3 py-2.5 flex items-center gap-2 text-sm">
