@@ -733,48 +733,55 @@ const PluginDetail = () => {
                 <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${versionOpen ? "rotate-180" : ""}`} />
               </button>
 
-              {versionOpen && (
-                <div className="border-t border-border">
-                  {mcVersions.length > 4 && (
-                    <div className="p-2">
-                      <div className="relative">
-                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                        <Input
-                          value={versionQuery}
-                          onChange={(e) => setVersionQuery(e.target.value)}
-                          placeholder="Search game versions..."
-                          className="h-8 pl-8 text-sm bg-background/60"
-                        />
+              <div
+                className={`grid transition-all duration-300 ease-out ${
+                  versionOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <div className="border-t border-border">
+                    {mcVersions.length > 4 && (
+                      <div className="p-2">
+                        <div className="relative">
+                          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                          <Input
+                            value={versionQuery}
+                            onChange={(e) => setVersionQuery(e.target.value)}
+                            placeholder="Search game versions..."
+                            className="h-8 pl-8 text-sm bg-background/60"
+                          />
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  <div className="max-h-56 overflow-y-auto px-2 pb-2 pt-2 space-y-1">
-                    {mcVersions.length === 0 ? (
-                      <div className="px-3 py-2 text-xs text-muted-foreground">No supported versions listed.</div>
-                    ) : (
-                      mcVersions
-                        .filter((v) => v.toLowerCase().includes(versionQuery.toLowerCase()))
-                        .map((v) => (
-                          <button
-                            key={v}
-                            type="button"
-                            onClick={() => {
-                              setSelectedVersion(v);
-                              setVersionOpen(false);
-                            }}
-                            className={`w-full text-left px-3 py-1.5 rounded text-sm font-mono transition-colors ${
-                              selectedVersion === v
-                                ? "bg-primary/15 text-primary border border-primary/30"
-                                : "hover:bg-primary/5 text-foreground/85 border border-transparent"
-                            }`}
-                          >
-                            {v}
-                          </button>
-                        ))
                     )}
+                    <div className="max-h-56 overflow-y-auto px-2 pb-2 pt-2 space-y-1">
+                      {mcVersions.length === 0 ? (
+                        <div className="px-3 py-2 text-xs text-muted-foreground">No supported versions listed.</div>
+                      ) : (
+                        mcVersions
+                          .filter((v) => v.toLowerCase().includes(versionQuery.toLowerCase()))
+                          .map((v) => (
+                            <button
+                              key={v}
+                              type="button"
+                              onClick={() => {
+                                setSelectedVersion(v);
+                                setVersionOpen(false);
+                              }}
+                              className={`w-full text-left px-3 py-1.5 rounded text-sm font-mono transition-colors ${
+                                selectedVersion === v
+                                  ? "bg-primary/15 text-primary border border-primary/30"
+                                  : "hover:bg-primary/5 text-foreground/85 border border-transparent"
+                              }`}
+                            >
+                              {v}
+                            </button>
+                          ))
+                      )}
+                    </div>
                   </div>
                 </div>
-              )}
+              </div>
+
             </div>
 
             {/* Platform */}
