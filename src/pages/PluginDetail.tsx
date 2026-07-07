@@ -380,8 +380,12 @@ const PluginDetail = () => {
                     </p>
                   )}
                   <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground flex-wrap">
-                    <span className="flex items-center gap-1.5 font-mono"><Download className="h-4 w-4" /> 0</span>
-                    <span className="flex items-center gap-1.5 font-mono"><Heart className="h-4 w-4" /> 0</span>
+                    <span className="flex items-center gap-1.5 font-mono">
+                      <Download className="h-4 w-4" /> {downloadCount.toLocaleString()}
+                    </span>
+                    <span className="flex items-center gap-1.5 font-mono">
+                      <Heart className={`h-4 w-4 ${saved ? "fill-rose-400 text-rose-400" : ""}`} /> {favoriteCount.toLocaleString()}
+                    </span>
                     {plugin.category && (
                       <Badge variant="secondary" className="rounded-full">{plugin.category}</Badge>
                     )}
