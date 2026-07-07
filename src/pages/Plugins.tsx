@@ -338,6 +338,7 @@ const Plugins = () => {
                 className="h-11 bg-card border border-border rounded-md px-3 text-sm text-foreground"
               >
                 <option value="featured">Featured first</option>
+                <option value="downloads">Most downloaded</option>
                 <option value="updated">Recently updated</option>
                 <option value="name">Name (A–Z)</option>
               </select>
