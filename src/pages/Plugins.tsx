@@ -147,11 +147,18 @@ const Plugins = () => {
       res = [...res].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
     } else if (sortBy === "name") {
       res = [...res].sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === "downloads") {
+      res = [...res].sort((a, b) => (downloads[b.id]?.total ?? 0) - (downloads[a.id]?.total ?? 0));
     }
     return res;
-  }, [plugins, q, activeCats, sortBy]);
+  }, [plugins, q, activeCats, sortBy, downloads]);
 
   const featured = plugins.filter((p) => p.featured).slice(0, 3);
+  const trending = trendingIds
+    .map((id) => plugins.find((p) => p.id === id))
+    .filter(Boolean) as Plugin[];
+  const fmt = (n: number) =>
+    n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : String(n);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
