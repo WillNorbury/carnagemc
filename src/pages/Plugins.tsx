@@ -414,9 +414,16 @@ const Plugins = () => {
                                 </Badge>
                               ))}
                             </div>
-                            <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-2 font-mono">
-                              <Clock className="h-3 w-3" />
-                              {timeAgo(p.updated_at)}
+                            <div className="flex items-center gap-3 text-[11px] text-muted-foreground mt-2 font-mono">
+                              <span className="inline-flex items-center gap-1">
+                                <Download className="h-3 w-3" /> {fmt(downloads[p.id]?.total ?? 0)}
+                              </span>
+                              <span className="inline-flex items-center gap-1">
+                                <Heart className="h-3 w-3" /> {fmt(favorites[p.id] ?? 0)}
+                              </span>
+                              <span className="inline-flex items-center gap-1">
+                                <Clock className="h-3 w-3" /> {timeAgo(p.updated_at)}
+                              </span>
                             </div>
                           </div>
                         </div>
