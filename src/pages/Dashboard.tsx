@@ -14,6 +14,7 @@ import { roleLabel, type AppRole } from "@/lib/roles";
 import { toast } from "sonner";
 import { Loader2, User as UserIcon, FileText, LifeBuoy, ClipboardList, Link2, ExternalLink, CheckCircle2, Flame, Vote as VoteIcon, Trophy, FileCode, Plus, Puzzle, Boxes } from "lucide-react";
 import MyPluginsPanel from "@/components/dashboard/MyPluginsPanel";
+import MyFavoritePluginsPanel from "@/components/dashboard/MyFavoritePluginsPanel";
 
 type Streaks = {
   login_streak: number;
