@@ -421,9 +421,9 @@ const PluginDetail = () => {
                   <Button
                     variant={liked ? "default" : "outline"}
                     size="icon"
-                    className="rounded-full h-10 w-10"
-                    aria-label="Like"
-                    onClick={() => setLiked((v) => !v)}
+                    className={`rounded-full h-10 w-10 ${liked ? "bg-rose-500 hover:bg-rose-500/90 text-white border-rose-500" : ""}`}
+                    aria-label={liked ? "Unfavorite" : "Favorite"}
+                    onClick={toggleFavorite}
                   >
                     <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
                   </Button>
@@ -431,8 +431,8 @@ const PluginDetail = () => {
                     variant={saved ? "default" : "outline"}
                     size="icon"
                     className="rounded-full h-10 w-10"
-                    aria-label="Save"
-                    onClick={() => setSaved((v) => !v)}
+                    aria-label={saved ? "Remove bookmark" : "Bookmark"}
+                    onClick={toggleFavorite}
                   >
                     <Bookmark className={`h-4 w-4 ${saved ? "fill-current" : ""}`} />
                   </Button>
