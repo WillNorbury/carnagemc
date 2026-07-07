@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Puzzle, Search, Sparkles, Clock, Filter, X } from "lucide-react";
+import { Puzzle, Search, Sparkles, Clock, Filter, X, Download, TrendingUp, Heart } from "lucide-react";
 import FoliaBadge, { supportsFolia } from "@/components/site/FoliaBadge";
 
 type Plugin = {
