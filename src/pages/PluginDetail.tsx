@@ -288,6 +288,7 @@ const PluginDetail = () => {
     } catch {
       window.open(url, "_blank", "noopener");
     }
+    trackDownload();
   };
 
   const doDownload = async () => {
