@@ -1451,6 +1451,61 @@ export type Database = {
         }
         Relationships: []
       }
+      plugin_downloads: {
+        Row: {
+          created_at: string
+          id: string
+          plugin_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plugin_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plugin_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plugin_downloads_plugin_id_fkey"
+            columns: ["plugin_id"]
+            isOneToOne: false
+            referencedRelation: "plugins"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plugin_favorites: {
+        Row: {
+          created_at: string
+          plugin_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          plugin_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          plugin_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plugin_favorites_plugin_id_fkey"
+            columns: ["plugin_id"]
+            isOneToOne: false
+            referencedRelation: "plugins"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plugin_versions: {
         Row: {
           changelog: string | null
@@ -2482,6 +2537,30 @@ export type Database = {
           preferences: Json
         }[]
       }
+      get_my_recent_plugin_downloads: {
+        Args: { _limit?: number }
+        Returns: {
+          download_count: number
+          last_downloaded: string
+          plugin_id: string
+        }[]
+      }
+      get_plugin_download_counts: {
+        Args: { _plugin_ids?: string[] }
+        Returns: {
+          last_30d: number
+          last_7d: number
+          plugin_id: string
+          total: number
+        }[]
+      }
+      get_plugin_favorite_counts: {
+        Args: { _plugin_ids?: string[] }
+        Returns: {
+          plugin_id: string
+          total: number
+        }[]
+      }
       get_quiz_leaderboard: {
         Args: { _limit?: number; _slug: string }
         Returns: {
@@ -2510,6 +2589,13 @@ export type Database = {
           user_id: string
           vote_best: number
           vote_streak: number
+        }[]
+      }
+      get_trending_plugins: {
+        Args: { _days?: number; _limit?: number }
+        Returns: {
+          downloads: number
+          plugin_id: string
         }[]
       }
       get_uptime_daily: {
@@ -2563,6 +2649,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      record_plugin_download: {
+        Args: { _plugin_id: string }
+        Returns: undefined
+      }
       record_vote_streak: {
         Args: never
         Returns: {
@@ -2590,6 +2680,7 @@ export type Database = {
         Args: { _answers: Json; _duration_seconds: number; _quiz_id: string }
         Returns: string
       }
+      toggle_plugin_favorite: { Args: { _plugin_id: string }; Returns: boolean }
     }
     Enums: {
       app_role:

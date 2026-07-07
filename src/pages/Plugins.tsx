@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Puzzle, Search, Sparkles, Clock, Filter, X } from "lucide-react";
+import { Puzzle, Search, Sparkles, Clock, Filter, X, Download, TrendingUp, Heart } from "lucide-react";
 import FoliaBadge, { supportsFolia } from "@/components/site/FoliaBadge";
 
 type Plugin = {
@@ -62,13 +62,18 @@ const timeAgo = (iso: string) => {
   return `${Math.floor(d / 365)}y ago`;
 };
 
+type Counts = { total: number; last_7d: number };
+
 const Plugins = () => {
   const [plugins, setPlugins] = useState<Plugin[]>([]);
   const [creators, setCreators] = useState<Record<string, CreatorProfile>>({});
+  const [downloads, setDownloads] = useState<Record<string, Counts>>({});
+  const [favorites, setFavorites] = useState<Record<string, number>>({});
+  const [trendingIds, setTrendingIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [activeCats, setActiveCats] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState<"featured" | "updated" | "name">("featured");
+  const [sortBy, setSortBy] = useState<"featured" | "updated" | "name" | "downloads">("featured");
 
   useEffect(() => {
     document.title = "Plugins — CarnageMC";
@@ -82,17 +87,39 @@ const Plugins = () => {
       const rows = (data ?? []) as Plugin[];
       setPlugins(rows);
       const ids = Array.from(new Set(rows.map((r) => r.user_id).filter(Boolean) as string[]));
-      if (ids.length) {
-        const { data: profs } = await supabase
-          .from("profiles")
-          .select("id, display_name, mc_username")
-          .in("id", ids);
-        const map: Record<string, CreatorProfile> = {};
-        (profs ?? []).forEach((p: any) => {
-          map[p.id] = { display_name: p.display_name, mc_username: p.mc_username };
-        });
-        setCreators(map);
-      }
+      const pluginIds = rows.map((r) => r.id);
+
+      const [profRes, dlRes, favRes, trendRes]: any = await Promise.all([
+        ids.length
+          ? supabase.from("profiles").select("id, display_name, mc_username").in("id", ids)
+          : Promise.resolve({ data: [] }),
+        pluginIds.length
+          ? supabase.rpc("get_plugin_download_counts" as any, { _plugin_ids: pluginIds })
+          : Promise.resolve({ data: [] }),
+        pluginIds.length
+          ? supabase.rpc("get_plugin_favorite_counts" as any, { _plugin_ids: pluginIds })
+          : Promise.resolve({ data: [] }),
+        supabase.rpc("get_trending_plugins" as any, { _days: 7, _limit: 6 }),
+      ]);
+
+      const map: Record<string, CreatorProfile> = {};
+      (profRes.data ?? []).forEach((p: any) => {
+        map[p.id] = { display_name: p.display_name, mc_username: p.mc_username };
+      });
+      setCreators(map);
+
+      const dl: Record<string, Counts> = {};
+      (dlRes.data ?? []).forEach((r: any) => {
+        dl[r.plugin_id] = { total: Number(r.total) || 0, last_7d: Number(r.last_7d) || 0 };
+      });
+      setDownloads(dl);
+
+      const fv: Record<string, number> = {};
+      (favRes.data ?? []).forEach((r: any) => { fv[r.plugin_id] = Number(r.total) || 0; });
+      setFavorites(fv);
+
+      setTrendingIds(((trendRes.data ?? []) as any[]).map((r) => r.plugin_id));
+
       setLoading(false);
     })();
   }, []);
@@ -120,11 +147,18 @@ const Plugins = () => {
       res = [...res].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
     } else if (sortBy === "name") {
       res = [...res].sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === "downloads") {
+      res = [...res].sort((a, b) => (downloads[b.id]?.total ?? 0) - (downloads[a.id]?.total ?? 0));
     }
     return res;
-  }, [plugins, q, activeCats, sortBy]);
+  }, [plugins, q, activeCats, sortBy, downloads]);
 
   const featured = plugins.filter((p) => p.featured).slice(0, 3);
+  const trending = trendingIds
+    .map((id) => plugins.find((p) => p.id === id))
+    .filter(Boolean) as Plugin[];
+  const fmt = (n: number) =>
+    n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : String(n);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -194,6 +228,57 @@ const Plugins = () => {
           </section>
         )}
 
+        {/* Trending — most downloaded last 7 days */}
+        {trending.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="h-6 w-1 rounded-full bg-gradient-to-b from-rose-500 to-orange-400" />
+                <TrendingUp className="h-4 w-4 text-rose-400" />
+                <h2 className="font-display font-bold text-lg uppercase tracking-wider">Trending · 7d</h2>
+              </div>
+              <span className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
+                Most downloaded
+              </span>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {trending.map((p, i) => (
+                <Link key={p.id} to={`/plugin/${p.slug ?? p.short_id}`}>
+                  <Card className="relative p-4 h-full overflow-hidden border-rose-500/20 hover:border-rose-500/60 hover:shadow-[0_0_25px_-10px_hsl(346_87%_50%/0.5)] transition group">
+                    <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-rose-500/10 blur-2xl" />
+                    <div className="relative flex gap-3">
+                      <div className="flex flex-col items-center justify-center w-8">
+                        <span className="font-display font-black text-2xl bg-gradient-to-br from-rose-400 to-orange-400 bg-clip-text text-transparent">
+                          {i + 1}
+                        </span>
+                      </div>
+                      {p.icon_url ? (
+                        <img src={p.icon_url} alt="" className="h-12 w-12 rounded-md object-cover border border-border shrink-0" />
+                      ) : (
+                        <div className="h-12 w-12 rounded-md bg-rose-500/10 border border-rose-500/30 flex items-center justify-center shrink-0">
+                          <Puzzle className="h-6 w-6 text-rose-400" />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="font-display font-semibold group-hover:text-rose-300 transition truncate">{p.name}</div>
+                        <div className="text-[11px] font-mono text-muted-foreground mt-0.5 flex items-center gap-2">
+                          <span className="inline-flex items-center gap-1 text-rose-300">
+                            <Download className="h-3 w-3" /> {fmt(downloads[p.id]?.last_7d ?? 0)} this week
+                          </span>
+                          <span>·</span>
+                          <span>{fmt(downloads[p.id]?.total ?? 0)} total</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+
+
 
         <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
           {/* Sidebar */}
@@ -253,6 +338,7 @@ const Plugins = () => {
                 className="h-11 bg-card border border-border rounded-md px-3 text-sm text-foreground"
               >
                 <option value="featured">Featured first</option>
+                <option value="downloads">Most downloaded</option>
                 <option value="updated">Recently updated</option>
                 <option value="name">Name (A–Z)</option>
               </select>
@@ -328,9 +414,16 @@ const Plugins = () => {
                                 </Badge>
                               ))}
                             </div>
-                            <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-2 font-mono">
-                              <Clock className="h-3 w-3" />
-                              {timeAgo(p.updated_at)}
+                            <div className="flex items-center gap-3 text-[11px] text-muted-foreground mt-2 font-mono">
+                              <span className="inline-flex items-center gap-1">
+                                <Download className="h-3 w-3" /> {fmt(downloads[p.id]?.total ?? 0)}
+                              </span>
+                              <span className="inline-flex items-center gap-1">
+                                <Heart className="h-3 w-3" /> {fmt(favorites[p.id] ?? 0)}
+                              </span>
+                              <span className="inline-flex items-center gap-1">
+                                <Clock className="h-3 w-3" /> {timeAgo(p.updated_at)}
+                              </span>
                             </div>
                           </div>
                         </div>
