@@ -62,13 +62,18 @@ const timeAgo = (iso: string) => {
   return `${Math.floor(d / 365)}y ago`;
 };
 
+type Counts = { total: number; last_7d: number };
+
 const Plugins = () => {
   const [plugins, setPlugins] = useState<Plugin[]>([]);
   const [creators, setCreators] = useState<Record<string, CreatorProfile>>({});
+  const [downloads, setDownloads] = useState<Record<string, Counts>>({});
+  const [favorites, setFavorites] = useState<Record<string, number>>({});
+  const [trendingIds, setTrendingIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [activeCats, setActiveCats] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState<"featured" | "updated" | "name">("featured");
+  const [sortBy, setSortBy] = useState<"featured" | "updated" | "name" | "downloads">("featured");
 
   useEffect(() => {
     document.title = "Plugins — CarnageMC";
@@ -82,17 +87,39 @@ const Plugins = () => {
       const rows = (data ?? []) as Plugin[];
       setPlugins(rows);
       const ids = Array.from(new Set(rows.map((r) => r.user_id).filter(Boolean) as string[]));
-      if (ids.length) {
-        const { data: profs } = await supabase
-          .from("profiles")
-          .select("id, display_name, mc_username")
-          .in("id", ids);
-        const map: Record<string, CreatorProfile> = {};
-        (profs ?? []).forEach((p: any) => {
-          map[p.id] = { display_name: p.display_name, mc_username: p.mc_username };
-        });
-        setCreators(map);
-      }
+      const pluginIds = rows.map((r) => r.id);
+
+      const [profRes, dlRes, favRes, trendRes]: any = await Promise.all([
+        ids.length
+          ? supabase.from("profiles").select("id, display_name, mc_username").in("id", ids)
+          : Promise.resolve({ data: [] }),
+        pluginIds.length
+          ? supabase.rpc("get_plugin_download_counts" as any, { _plugin_ids: pluginIds })
+          : Promise.resolve({ data: [] }),
+        pluginIds.length
+          ? supabase.rpc("get_plugin_favorite_counts" as any, { _plugin_ids: pluginIds })
+          : Promise.resolve({ data: [] }),
+        supabase.rpc("get_trending_plugins" as any, { _days: 7, _limit: 6 }),
+      ]);
+
+      const map: Record<string, CreatorProfile> = {};
+      (profRes.data ?? []).forEach((p: any) => {
+        map[p.id] = { display_name: p.display_name, mc_username: p.mc_username };
+      });
+      setCreators(map);
+
+      const dl: Record<string, Counts> = {};
+      (dlRes.data ?? []).forEach((r: any) => {
+        dl[r.plugin_id] = { total: Number(r.total) || 0, last_7d: Number(r.last_7d) || 0 };
+      });
+      setDownloads(dl);
+
+      const fv: Record<string, number> = {};
+      (favRes.data ?? []).forEach((r: any) => { fv[r.plugin_id] = Number(r.total) || 0; });
+      setFavorites(fv);
+
+      setTrendingIds(((trendRes.data ?? []) as any[]).map((r) => r.plugin_id));
+
       setLoading(false);
     })();
   }, []);
