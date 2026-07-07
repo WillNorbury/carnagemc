@@ -168,17 +168,65 @@ const PluginDetail = () => {
       }
       if (!data) setNotFound(true);
       else {
-        setPlugin(data as Plugin);
-        document.title = `${(data as Plugin).name} — Plugin — CarnageMC`;
-        const { data: vs } = await (supabase.from("plugin_versions" as any) as any)
-          .select("*")
-          .eq("plugin_id", (data as Plugin).id)
-          .order("created_at", { ascending: false });
-        setVersions((vs ?? []) as PluginVersion[]);
+        const p = data as Plugin;
+        setPlugin(p);
+        document.title = `${p.name} — Plugin — CarnageMC`;
+        const [vsRes, dlRes, favRes, myFavRes]: any = await Promise.all([
+          (supabase.from("plugin_versions" as any) as any)
+            .select("*")
+            .eq("plugin_id", p.id)
+            .order("created_at", { ascending: false }),
+          supabase.rpc("get_plugin_download_counts" as any, { _plugin_ids: [p.id] }),
+          supabase.rpc("get_plugin_favorite_counts" as any, { _plugin_ids: [p.id] }),
+          user
+            ? (supabase.from("plugin_favorites" as any) as any)
+                .select("plugin_id")
+                .eq("user_id", user.id)
+                .eq("plugin_id", p.id)
+                .maybeSingle()
+            : Promise.resolve({ data: null }),
+        ]);
+        setVersions((vsRes.data ?? []) as PluginVersion[]);
+        setDownloadCount(Number((dlRes.data?.[0]?.total) ?? 0));
+        setFavoriteCount(Number((favRes.data?.[0]?.total) ?? 0));
+        setSaved(!!myFavRes.data);
+        setLiked(!!myFavRes.data);
       }
       setLoading(false);
     })();
-  }, [key]);
+  }, [key, user]);
+
+  const toggleFavorite = async () => {
+    if (!plugin) return;
+    if (!user) {
+      toast.error("Sign in to favorite plugins");
+      return;
+    }
+    const nextSaved = !saved;
+    setSaved(nextSaved);
+    setLiked(nextSaved);
+    setFavoriteCount((n) => Math.max(0, n + (nextSaved ? 1 : -1)));
+    const { data, error } = await (supabase.rpc as any)("toggle_plugin_favorite", { _plugin_id: plugin.id });
+    if (error) {
+      // revert
+      setSaved(!nextSaved);
+      setLiked(!nextSaved);
+      setFavoriteCount((n) => Math.max(0, n + (nextSaved ? -1 : 1)));
+      toast.error("Could not update favorite");
+    } else {
+      // sync from server truth
+      const isFav = !!data;
+      setSaved(isFav);
+      setLiked(isFav);
+    }
+  };
+
+  const trackDownload = () => {
+    if (!plugin) return;
+    (supabase.rpc as any)("record_plugin_download", { _plugin_id: plugin.id }).then(() => {
+      setDownloadCount((n) => n + 1);
+    });
+  };
 
   const resolveVersionUrl = (v: PluginVersion) => {
     if (v.download_url) return v.download_url;
