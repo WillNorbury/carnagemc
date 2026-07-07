@@ -146,6 +146,8 @@ const PluginDetail = () => {
   const [tab, setTab] = useState<Tab>("description");
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [downloadCount, setDownloadCount] = useState(0);
+  const [favoriteCount, setFavoriteCount] = useState(0);
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [downloadOpen, setDownloadOpen] = useState(false);
   const [versionOpen, setVersionOpen] = useState(false);
