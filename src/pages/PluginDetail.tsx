@@ -309,6 +309,7 @@ const PluginDetail = () => {
     } catch {
       window.open(latestDownloadUrl, "_blank", "noopener");
     }
+    trackDownload();
   };
 
   const handleDownload = () => {
