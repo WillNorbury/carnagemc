@@ -228,6 +228,57 @@ const Plugins = () => {
           </section>
         )}
 
+        {/* Trending — most downloaded last 7 days */}
+        {trending.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="h-6 w-1 rounded-full bg-gradient-to-b from-rose-500 to-orange-400" />
+                <TrendingUp className="h-4 w-4 text-rose-400" />
+                <h2 className="font-display font-bold text-lg uppercase tracking-wider">Trending · 7d</h2>
+              </div>
+              <span className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
+                Most downloaded
+              </span>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {trending.map((p, i) => (
+                <Link key={p.id} to={`/plugin/${p.slug ?? p.short_id}`}>
+                  <Card className="relative p-4 h-full overflow-hidden border-rose-500/20 hover:border-rose-500/60 hover:shadow-[0_0_25px_-10px_hsl(346_87%_50%/0.5)] transition group">
+                    <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-rose-500/10 blur-2xl" />
+                    <div className="relative flex gap-3">
+                      <div className="flex flex-col items-center justify-center w-8">
+                        <span className="font-display font-black text-2xl bg-gradient-to-br from-rose-400 to-orange-400 bg-clip-text text-transparent">
+                          {i + 1}
+                        </span>
+                      </div>
+                      {p.icon_url ? (
+                        <img src={p.icon_url} alt="" className="h-12 w-12 rounded-md object-cover border border-border shrink-0" />
+                      ) : (
+                        <div className="h-12 w-12 rounded-md bg-rose-500/10 border border-rose-500/30 flex items-center justify-center shrink-0">
+                          <Puzzle className="h-6 w-6 text-rose-400" />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="font-display font-semibold group-hover:text-rose-300 transition truncate">{p.name}</div>
+                        <div className="text-[11px] font-mono text-muted-foreground mt-0.5 flex items-center gap-2">
+                          <span className="inline-flex items-center gap-1 text-rose-300">
+                            <Download className="h-3 w-3" /> {fmt(downloads[p.id]?.last_7d ?? 0)} this week
+                          </span>
+                          <span>·</span>
+                          <span>{fmt(downloads[p.id]?.total ?? 0)} total</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+
+
 
         <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
           {/* Sidebar */}
