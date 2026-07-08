@@ -60,6 +60,7 @@ import QuizResult from "./pages/QuizResult.tsx";
 import QuizLeaderboard from "./pages/QuizLeaderboard.tsx";
 import TornadoDeaths from "./pages/TornadoDeaths.tsx";
 import Punishments from "./pages/Punishments.tsx";
+import StaffChat from "./pages/StaffChat.tsx";
 
 
 const queryClient = new QueryClient();
