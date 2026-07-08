@@ -174,6 +174,8 @@ const Shell = () => {
                   <Route path="/weather/tornado-deaths" element={<TornadoDeaths />} />
                   <Route path="/punishments" element={<Punishments />} />
                   <Route path="/punishments/:player" element={<Punishments />} />
+                  <Route path="/staffchat" element={<StaffChat />} />
+                  <Route path="/staff-chat" element={<Navigate to="/staffchat" replace />} />
                   
                   <Route path="*" element={<NotFound />} />
           </Routes>
