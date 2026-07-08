@@ -299,7 +299,7 @@ export function AppSidebar() {
             </SidebarGroupContent>
             <SidebarGroupContent>
               <SidebarMenu>
-                {renderItem({ to: "https://staffchat.carnagemc.net", label: "StaffChat", icon: Link2 })}
+                {renderItem({ to: "/staffchat", label: "StaffChat", icon: Link2 })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
