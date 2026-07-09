@@ -297,10 +297,7 @@ export function AppSidebar() {
               <SidebarMenu>{renderItem({ to: "/admin", label: "Admin", icon: Shield })}</SidebarMenu>
             </SidebarGroupContent>
             <SidebarGroupContent>
-              <SidebarMenu>
-                {renderItem({ to: "/staffchat", label: "StaffChat", icon: Link2 })}
-                {renderItem({ to: "/fire-market", label: "Fire Market", icon: Link2 })}
-              </SidebarMenu>
+              <SidebarMenu>{renderItem({ to: "/staffchat", label: "StaffChat", icon: Link2 })}</SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         )}
