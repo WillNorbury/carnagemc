@@ -199,6 +199,7 @@ Deno.serve(async (req) => {
       queued,
       failed: errors.length,
       errors: errors.slice(0, 10),
+      discord,
     })
   } catch (e) {
     return json({ ok: false, error: (e as Error).message }, 500)
