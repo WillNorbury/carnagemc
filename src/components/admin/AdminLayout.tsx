@@ -176,7 +176,7 @@ export const AdminLayout = ({
       return canSee("bot-dashboard") || canSee("bot-management");
     }
     if (it.kind === "link") {
-      if (it.id === "permissions" || it.id === "bot-dashboard" || it.id === "bot-management" || it.id === "console") {
+      if (it.id === "permissions" || it.id === "bot-dashboard" || it.id === "bot-management" || it.id === "console" || it.id === "mysql") {
         // Owner-only sections (also gated by their permission key).
         if (!isOwner) return false;
       }
