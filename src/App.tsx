@@ -61,6 +61,7 @@ import QuizLeaderboard from "./pages/QuizLeaderboard.tsx";
 import TornadoDeaths from "./pages/TornadoDeaths.tsx";
 import Punishments from "./pages/Punishments.tsx";
 import StaffChat from "./pages/StaffChat.tsx";
+import FireMarket from "./pages/FireMarket.tsx";
 
 
 const queryClient = new QueryClient();
@@ -176,6 +177,8 @@ const Shell = () => {
                   <Route path="/punishments/:player" element={<Punishments />} />
                   <Route path="/staffchat" element={<StaffChat />} />
                   <Route path="/staff-chat" element={<Navigate to="/staffchat" replace />} />
+                  <Route path="/fire-market" element={<FireMarket />} />
+                  <Route path="/firemarket" element={<Navigate to="/fire-market" replace />} />
                   
                   <Route path="*" element={<NotFound />} />
           </Routes>
