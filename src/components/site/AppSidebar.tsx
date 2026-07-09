@@ -74,6 +74,7 @@ const websiteGroup: NavGroup = {
   items: [
     { to: "https://portfolio.carnagemc.net", label: "Portfolio", icon: Link2 },
     { to: "https://panel.voxelnode.dev", label: "VoxelNode", icon: Link2 },
+    { to: "/fire-market", label: "Fire Market", icon: Link2 },
   ],
 };
 
@@ -144,9 +145,7 @@ const discoverGroup: NavGroup = {
   id: "discover",
   label: "Discover",
   icon: Compass,
-  items: [
-    { to: "/plugins", label: "Plugins", icon: Puzzle },
-  ],
+  items: [{ to: "/plugins", label: "Plugins", icon: Puzzle }],
 };
 
 const weatherGroup: NavGroup = {
