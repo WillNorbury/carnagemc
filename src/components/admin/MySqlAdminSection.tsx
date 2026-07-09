@@ -40,7 +40,7 @@ const SqlBlock = ({ code }: { code: string }) => (
   </div>
 );
 
-const SNIPPETS: { title: string; desc: string; sql: string }[] = [
+const SNIPPETS: { title: string; desc?: string; sql: string }[] = [
   {
     title: "Look up a player's active bans",
     desc: "Replace <UUID> with the player's UUID (no dashes may or may not be stored — check your schema).",
