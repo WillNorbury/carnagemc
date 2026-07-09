@@ -313,6 +313,7 @@ export type Database = {
           category: string
           content: string
           created_at: string
+          discord_posted_at: string | null
           entry_date: string
           id: string
           published: boolean
@@ -324,6 +325,7 @@ export type Database = {
           category?: string
           content: string
           created_at?: string
+          discord_posted_at?: string | null
           entry_date?: string
           id?: string
           published?: boolean
@@ -335,6 +337,7 @@ export type Database = {
           category?: string
           content?: string
           created_at?: string
+          discord_posted_at?: string | null
           entry_date?: string
           id?: string
           published?: boolean
