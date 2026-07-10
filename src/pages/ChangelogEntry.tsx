@@ -100,7 +100,7 @@ const ChangelogEntry = () => {
               </div>
               <h1 className="font-display text-3xl md:text-4xl font-black mb-6">{entry.title}</h1>
               <div className="prose prose-invert max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-code:text-accent">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{entry.content}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{entry.content}</ReactMarkdown>
               </div>
             </Card>
           )}
