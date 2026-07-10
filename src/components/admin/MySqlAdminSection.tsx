@@ -250,18 +250,21 @@ export const MySqlAdminSection = () => {
             {!result && (
               <p className="text-sm text-muted-foreground">Run a query to see results here.</p>
             )}
-            {result && !result.ok && (
-              <div className="border border-destructive/40 bg-destructive/5 rounded-md p-3 text-sm">
-                <div className="font-semibold text-destructive mb-1">MySQL error</div>
-                <div className="font-mono text-xs whitespace-pre-wrap">{result.error}</div>
-                {(result.code || result.sqlState) && (
-                  <div className="text-xs text-muted-foreground mt-2">
-                    {result.code && <>code: <code>{result.code}</code> </>}
-                    {result.sqlState && <>sqlState: <code>{result.sqlState}</code></>}
-                  </div>
-                )}
-              </div>
-            )}
+            {result && result.ok === false && (() => {
+              const err = result as Extract<RunResult, { ok: false }>;
+              return (
+                <div className="border border-destructive/40 bg-destructive/5 rounded-md p-3 text-sm">
+                  <div className="font-semibold text-destructive mb-1">MySQL error</div>
+                  <div className="font-mono text-xs whitespace-pre-wrap">{err.error}</div>
+                  {(err.code || err.sqlState) && (
+                    <div className="text-xs text-muted-foreground mt-2">
+                      {err.code && <>code: <code>{err.code}</code> </>}
+                      {err.sqlState && <>sqlState: <code>{err.sqlState}</code></>}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
             {result?.ok && result.kind === "write" && (
               <div className="border rounded-md p-3 text-sm space-y-1">
                 <div className="font-semibold">Write OK ({result.durationMs}ms)</div>
