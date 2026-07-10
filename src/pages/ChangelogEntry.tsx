@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { Card } from "@/components/ui/card";
