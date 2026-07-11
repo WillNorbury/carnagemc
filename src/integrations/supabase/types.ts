@@ -949,6 +949,39 @@ export type Database = {
         }
         Relationships: []
       }
+      litebans_mysql_config: {
+        Row: {
+          database: string
+          host: string
+          id: boolean
+          password: string
+          port: number
+          updated_at: string
+          updated_by: string | null
+          username: string
+        }
+        Insert: {
+          database: string
+          host: string
+          id?: boolean
+          password: string
+          port?: number
+          updated_at?: string
+          updated_by?: string | null
+          username: string
+        }
+        Update: {
+          database?: string
+          host?: string
+          id?: boolean
+          password?: string
+          port?: number
+          updated_at?: string
+          updated_by?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
       mc_console_commands: {
         Row: {
           command: string
