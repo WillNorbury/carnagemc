@@ -93,6 +93,23 @@ export default function Store() {
       .then(({ data }) => setItems((data as Item[]) ?? []));
   }, []);
 
+  // Scroll to #cart when hash is present (also after items load so section exists).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const scrollToCart = () => {
+      if (window.location.hash !== "#cart") return;
+      const el = document.getElementById("cart");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+    scrollToCart();
+    const t = window.setTimeout(scrollToCart, 250);
+    window.addEventListener("hashchange", scrollToCart);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("hashchange", scrollToCart);
+    };
+  }, [items]);
+
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return items.filter((it) => {
