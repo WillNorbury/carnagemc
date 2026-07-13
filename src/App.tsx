@@ -178,10 +178,11 @@ const Shell = () => {
                   <Route path="/punishments/:player" element={<Punishments />} />
                   <Route path="/staffchat" element={<StaffChat />} />
                   <Route path="/staff-chat" element={<Navigate to="/staffchat" replace />} />
-                  <Route path="/fire-market" element={<FireMarket />} />
-                  <Route path="/firemarket" element={<Navigate to="/fire-market" replace />} />
-                  
-                  <Route path="*" element={<NotFound />} />
+                   <Route path="/fire-market" element={<FireMarket />} />
+                   <Route path="/firemarket" element={<Navigate to="/fire-market" replace />} />
+                   <Route path="/discord" element={<Discord />} />
+                   
+                   <Route path="*" element={<NotFound />} />
           </Routes>
         </SidebarInset>
       </SidebarProvider>
