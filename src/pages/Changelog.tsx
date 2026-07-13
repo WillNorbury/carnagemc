@@ -434,6 +434,7 @@ const Changelog = () => {
           )}
         </div>
       </main>
+      <Lightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
       <Footer />
     </div>
   );
