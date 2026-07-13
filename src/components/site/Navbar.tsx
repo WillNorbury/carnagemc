@@ -51,7 +51,7 @@ const Navbar = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => nav("/store")}
+            onClick={() => nav("/store#cart")}
             title="Cart"
             aria-label={`Cart (${cartCount} item${cartCount === 1 ? "" : "s"})`}
             className="relative"
