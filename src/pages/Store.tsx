@@ -553,6 +553,12 @@ export default function Store() {
                   >
                     CHANGELOG
                   </Link>
+                  <a
+                    href="#cart"
+                    className="text-xs font-mono text-[#9ca3af] hover:text-[#ff5722] tracking-widest transition"
+                  >
+                    CART ({cart.count})
+                  </a>
                   <Link
                     to="/wiki/ranks-carnage"
                     className="text-xs font-mono text-[#ff5722] hover:text-white tracking-widest transition"
