@@ -46,6 +46,7 @@ import Install from "./pages/Install.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Status from "./pages/Status.tsx";
 import StatusIncident from "./pages/StatusIncident.tsx";
+import ServersStatus from "./pages/ServersStatus.tsx";
 import BanAppeals from "./pages/BanAppeals.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
 import Subscribe from "./pages/Subscribe.tsx";
@@ -159,6 +160,7 @@ const Shell = () => {
                   <Route path="/install" element={<Install />} />
                   <Route path="/status" element={<Status />} />
                   <Route path="/status/:number" element={<StatusIncident />} />
+                  <Route path="/servers-status" element={<ServersStatus />} />
                   <Route path="/appeal" element={<BanAppeals />} />
                   <Route path="/unsubscribe" element={<Unsubscribe />} />
                   <Route path="/subscribe" element={<Subscribe />} />
