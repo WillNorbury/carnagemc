@@ -76,7 +76,24 @@ export default function Store() {
   const [q, setQ] = useState("");
   const [activeCat, setActiveCat] = useState<string>("all");
   const cart = useCart();
+  const { user } = useAuth();
+  const nav = useNavigate();
   const [justAdded, setJustAdded] = useState<string | null>(null);
+  const [checkingOut, setCheckingOut] = useState(false);
+  const cartRef = useRef<HTMLElement | null>(null);
+
+  const scrollToCart = () => {
+    const el = cartRef.current ?? document.getElementById("cart");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      // Fallback: retry once after items load
+      window.setTimeout(() => {
+        const retry = document.getElementById("cart");
+        if (retry) retry.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+    }
+  };
 
   useEffect(() => {
     supabase
