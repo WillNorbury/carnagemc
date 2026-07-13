@@ -176,7 +176,6 @@ const AdminFaqs = () => {
             ))
           )}
         </div>
-      </div>
     </div>
   );
 };
