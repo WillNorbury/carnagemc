@@ -526,6 +526,7 @@ export default function Store() {
               {/* Cart summary */}
               <section
                 id="cart"
+                ref={cartRef}
                 className="md:col-span-12 mt-8 scroll-mt-24 bg-[#12121a] border border-white/10"
               >
                 <div className="flex items-center gap-4 px-6 py-4 border-b border-white/5">
