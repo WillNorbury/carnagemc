@@ -129,15 +129,8 @@ const AdminEvents = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6 md:p-10">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div>
-          <Button variant="ghost" size="sm" asChild className="mb-2">
-            <Link to="/admin"><ArrowLeft className="h-4 w-4 mr-1" /> Back to admin</Link>
-          </Button>
-          <h1 className="text-3xl font-bold">Events</h1>
-          <p className="text-muted-foreground">Manage tournaments, drops, and community events.</p>
-        </div>
+    <div className="space-y-6">
+
 
         <Card className="p-6 space-y-4">
           <h2 className="font-display font-bold text-lg">{editing ? "Edit Event" : "Create Event"}</h2>
