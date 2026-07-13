@@ -316,6 +316,7 @@ export type Database = {
           discord_posted_at: string | null
           entry_date: string
           id: string
+          image_url: string | null
           published: boolean
           title: string
           updated_at: string
@@ -328,6 +329,7 @@ export type Database = {
           discord_posted_at?: string | null
           entry_date?: string
           id?: string
+          image_url?: string | null
           published?: boolean
           title: string
           updated_at?: string
@@ -340,6 +342,7 @@ export type Database = {
           discord_posted_at?: string | null
           entry_date?: string
           id?: string
+          image_url?: string | null
           published?: boolean
           title?: string
           updated_at?: string
