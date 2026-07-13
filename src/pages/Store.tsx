@@ -356,13 +356,11 @@ export default function Store() {
                           </p>
                         )}
                       </div>
-                      <div className="flex items-center justify-between mt-4">
+                      <div className="flex items-center justify-between mt-4 gap-3">
                         <span className="text-lg font-bold font-['Space_Grotesk']">
                           {formatPrice(it.price, it.currency)}
                         </span>
-                        <span className="text-xs font-mono text-[#ff5722] tracking-widest">
-                          {it.badge || catName(it.category_id).toUpperCase()}
-                        </span>
+                        <AddToCartButton it={it} />
                       </div>
                     </ItemLink>
                   ))}
