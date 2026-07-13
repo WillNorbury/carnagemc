@@ -146,6 +146,61 @@ export default function Store() {
       <div className={className}>{children}</div>
     );
 
+  const handleAdd = (it: Item) => {
+    cart.add({
+      id: it.id,
+      name: it.name,
+      price: it.price,
+      currency: it.currency,
+      image_url: it.image_url,
+      external_url: it.external_url,
+    });
+    setJustAdded(it.id);
+    window.setTimeout(() => {
+      setJustAdded((cur) => (cur === it.id ? null : cur));
+    }, 1400);
+  };
+
+  const AddToCartButton = ({
+    it,
+    size = "sm",
+  }: {
+    it: Item;
+    size?: "sm" | "lg";
+  }) => {
+    const added = justAdded === it.id;
+    const base =
+      size === "lg"
+        ? "px-5 py-2.5 text-xs"
+        : "px-3 py-1.5 text-[11px]";
+    return (
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleAdd(it);
+        }}
+        className={`${base} font-mono tracking-widest uppercase inline-flex items-center gap-2 border transition ${
+          added
+            ? "bg-emerald-500/20 border-emerald-400/60 text-emerald-300"
+            : "bg-[#ff5722] border-[#ff5722] text-white hover:bg-[#ff5722]/90"
+        }`}
+        aria-label={`Add ${it.name} to cart`}
+      >
+        {added ? (
+          <>
+            <Check className="w-3.5 h-3.5" /> Added
+          </>
+        ) : (
+          <>
+            <ShoppingCart className="w-3.5 h-3.5" /> Add
+          </>
+        )}
+      </button>
+    );
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
       <Helmet>
