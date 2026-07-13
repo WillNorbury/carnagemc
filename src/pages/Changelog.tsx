@@ -186,11 +186,21 @@ const Changelog = () => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/70 to-transparent z-10" />
                   {featured.image_url ? (
-                    <img
-                      src={featured.image_url}
-                      alt=""
-                      className="absolute inset-0 w-full h-full object-cover opacity-70 z-0 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
-                    />
+                    <>
+                      <img
+                        src={featured.image_url}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover opacity-70 z-0 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
+                      />
+                      <button
+                        type="button"
+                        onClick={openLightbox(featured.image_url)}
+                        aria-label="View image"
+                        className="absolute top-4 left-4 z-30 w-9 h-9 grid place-items-center bg-black/60 border border-white/20 text-white opacity-0 group-hover:opacity-100 hover:bg-[#ff5722] hover:border-[#ff5722] transition"
+                      >
+                        <Maximize2 className="w-4 h-4" />
+                      </button>
+                    </>
                   ) : (
                     <div
                       className="absolute inset-0 opacity-30 z-0"
