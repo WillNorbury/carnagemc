@@ -190,6 +190,7 @@ const Shell = () => {
                    <Route path="/fire-market" element={<FireMarket />} />
                    <Route path="/firemarket" element={<Navigate to="/fire-market" replace />} />
                    <Route path="/discord" element={<Discord />} />
+                   <Route path="/store" element={<Store />} />
                    
                    <Route path="*" element={<NotFound />} />
           </Routes>
