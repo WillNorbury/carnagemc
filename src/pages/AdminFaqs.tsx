@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { Navigate, Link } from "react-router-dom";
-import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { confirm } from "@/lib/confirm";
-import { ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 
 type Faq = {
   id: string;
@@ -24,14 +22,12 @@ type Faq = {
 const blank = { question: "", answer: "", category: "general", sort_order: 0, published: true };
 
 const AdminFaqs = () => {
-  const { user, isAdmin, loading } = useAuth();
   const [items, setItems] = useState<Faq[]>([]);
   const [editing, setEditing] = useState<Faq | null>(null);
   const [form, setForm] = useState(blank);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    document.title = "FAQs — Admin · CarnageMC";
     load();
   }, []);
 
@@ -43,8 +39,6 @@ const AdminFaqs = () => {
     setItems((data as Faq[]) ?? []);
   };
 
-  if (loading) return null;
-  if (!user || !isAdmin) return <Navigate to="/" replace />;
 
   const startEdit = (f: Faq) => {
     setEditing(f);
@@ -99,17 +93,8 @@ const AdminFaqs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6 md:p-10">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <Button variant="ghost" size="sm" asChild className="mb-2">
-              <Link to="/admin"><ArrowLeft className="h-4 w-4 mr-1" /> Back to admin</Link>
-            </Button>
-            <h1 className="text-3xl font-bold">FAQs</h1>
-            <p className="text-muted-foreground">Manage the public help center.</p>
-          </div>
-        </div>
+    <div className="space-y-6">
+
 
         <Card className="p-6 space-y-4">
           <h2 className="font-display font-bold text-lg">{editing ? "Edit FAQ" : "Create FAQ"}</h2>
@@ -191,7 +176,6 @@ const AdminFaqs = () => {
             ))
           )}
         </div>
-      </div>
     </div>
   );
 };

@@ -131,27 +131,15 @@ export const NewsAnnouncementsTab = () => {
         published: existing?.published ?? true,
       };
 
-      const { data: saved, error } = isEdit
-        ? await supabase.from("news").update(payload).eq("id", editingId!).select("id, published").maybeSingle()
-        : await supabase.from("news").insert(payload).select("id, published").maybeSingle();
+      const { error } = isEdit
+        ? await supabase.from("news").update(payload).eq("id", editingId!)
+        : await supabase.from("news").insert(payload);
       if (error) throw error;
-      toast.success(isEdit ? "Announcement updated" : "Announcement published");
-
-      // Auto-send to all subscribers when newly publishing (not on edits of already-published posts)
-      if (!isEdit && saved?.id && saved.published) {
-        try {
-          const { data: res, error: invErr } = await supabase.functions.invoke("notify-news", {
-            body: { newsId: saved.id },
-          });
-          if (invErr || !(res as any)?.ok) {
-            toast.error(`Email broadcast failed: ${(res as any)?.error || invErr?.message}`);
-          } else {
-            toast.success(`Emailed ${(res as any).queued}/${(res as any).total} subscribers`);
-          }
-        } catch (e: any) {
-          toast.error(`Email broadcast failed: ${e?.message}`);
-        }
-      }
+      toast.success(
+        isEdit
+          ? "Announcement updated"
+          : "Announcement published — use the Send button to email subscribers",
+      );
 
       resetForm();
       load();
