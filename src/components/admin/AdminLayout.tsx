@@ -114,6 +114,7 @@ const items: NavItem[] = [
   { kind: "link", id: "news", icon: Newspaper, label: "News" },
   { kind: "link", id: "content", icon: FileText, label: "Site Content" },
   { kind: "link", id: "status", icon: Server, label: "Server Status" },
+  { kind: "link", id: "servers-status", icon: Server, label: "Servers (Public Status)" },
   { kind: "link", id: "alerts", icon: Activity, label: "Alert Settings" },
   { kind: "link", id: "tickets", icon: Ticket, label: "Support Tickets" },
   { kind: "link", id: "logs", icon: ScrollText, label: "Admin Logs" },
