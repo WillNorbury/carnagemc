@@ -318,14 +318,16 @@ export default function Store() {
                         {heroItem.description}
                       </p>
                     )}
-                    <div className="flex items-center gap-4 text-xs font-mono text-[#ff5722] uppercase tracking-widest">
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-[#ff5722] uppercase tracking-widest">
                       <span className="text-2xl md:text-3xl font-bold font-['Space_Grotesk'] not-italic normal-case tracking-normal text-white">
                         {formatPrice(heroItem.price, heroItem.currency)}
                       </span>
-                      <div className="h-px w-12 bg-[#ff5722] group-hover:w-20 transition-all" />
-                      <span className="inline-flex items-center gap-1">
-                        Get it <ExternalLink className="w-3 h-3" />
-                      </span>
+                      <AddToCartButton it={heroItem} size="lg" />
+                      {heroItem.external_url && (
+                        <span className="inline-flex items-center gap-1">
+                          Get it <ExternalLink className="w-3 h-3" />
+                        </span>
+                      )}
                     </div>
                   </div>
                 </ItemLink>
