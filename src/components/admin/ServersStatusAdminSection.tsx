@@ -116,16 +116,35 @@ const ServersStatusAdminSection = () => {
     load();
   };
 
+  const [refreshing, setRefreshing] = useState(false);
+  const refreshNow = async () => {
+    setRefreshing(true);
+    const { data, error } = await supabase.functions.invoke("refresh-server-status");
+    setRefreshing(false);
+    if (error) return toast.error(error.message);
+    const n = Array.isArray((data as { updated?: unknown[] })?.updated)
+      ? (data as { updated: unknown[] }).updated.length
+      : 0;
+    toast.success(`Refreshed ${n} server${n === 1 ? "" : "s"} from mcsrvstat.us`);
+    load();
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center gap-3 flex-wrap">
         <p className="text-sm text-muted-foreground">
-          Public /servers-status page reads these rows. TPS &amp; uptime are manual overrides.
+          Servers with an IP auto-update every minute from mcsrvstat.us (online, players, MOTD, uptime). TPS is manual — mcsrvstat doesn't expose it.
         </p>
-        <Button onClick={() => setCreating(empty())} disabled={!!creating}>
-          <Plus className="h-4 w-4 mr-1" /> Add server
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={refreshNow} disabled={refreshing}>
+            <RefreshCw className={`h-4 w-4 mr-1 ${refreshing ? "animate-spin" : ""}`} /> Refresh now
+          </Button>
+          <Button onClick={() => setCreating(empty())} disabled={!!creating}>
+            <Plus className="h-4 w-4 mr-1" /> Add server
+          </Button>
+        </div>
       </div>
+
 
       {creating && (
         <Card className="p-6 space-y-4 border-primary/40">
