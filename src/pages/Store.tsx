@@ -115,18 +115,17 @@ export default function Store() {
   // Scroll to #cart when hash is present (also after items load so section exists).
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const scrollToCart = () => {
-      if (window.location.hash !== "#cart") return;
-      const el = document.getElementById("cart");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    const onHash = () => {
+      if (window.location.hash === "#cart") scrollToCart();
     };
-    scrollToCart();
-    const t = window.setTimeout(scrollToCart, 250);
-    window.addEventListener("hashchange", scrollToCart);
+    onHash();
+    const t = window.setTimeout(onHash, 250);
+    window.addEventListener("hashchange", onHash);
     return () => {
       window.clearTimeout(t);
-      window.removeEventListener("hashchange", scrollToCart);
+      window.removeEventListener("hashchange", onHash);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
 
   const filtered = useMemo(() => {
