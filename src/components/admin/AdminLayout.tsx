@@ -82,7 +82,8 @@ export type AdminSection =
   | "punishments"
   | "console"
   | "mysql"
-  | "servers-status";
+  | "servers-status"
+  | "store";
 
 type NavItem =
   | { kind: "link"; id: AdminSection; icon: any; label: string }
