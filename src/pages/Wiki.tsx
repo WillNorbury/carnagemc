@@ -1,11 +1,31 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { Helmet } from "react-helmet-async";
+import Navbar from "@/components/site/Navbar";
+import Footer from "@/components/site/Footer";
+import { BookOpen, Command, Award, Scale, Users, MessageCircle, LifeBuoy, FileText } from "lucide-react";
 
-type Article = { id: string; slug: string; title: string; category: string | null; excerpt: string | null };
+type Article = {
+  id: string;
+  slug: string;
+  title: string;
+  category: string | null;
+  excerpt: string | null;
+  updated_at?: string | null;
+};
+
+const iconFor = (title: string) => {
+  const t = title.toLowerCase();
+  if (t.includes("command")) return Command;
+  if (t.includes("rank") || t.includes("perk")) return Award;
+  if (t.includes("ban") || t.includes("appeal") || t.includes("rule")) return Scale;
+  if (t.includes("staff") || t.includes("apply")) return Users;
+  if (t.includes("vote") || t.includes("reward")) return Award;
+  if (t.includes("support") || t.includes("help")) return LifeBuoy;
+  if (t.includes("discord")) return MessageCircle;
+  return FileText;
+};
 
 export default function Wiki() {
   const [items, setItems] = useState<Article[]>([]);
@@ -14,53 +34,255 @@ export default function Wiki() {
   useEffect(() => {
     supabase
       .from("wiki_articles")
-      .select("id, slug, title, category, excerpt")
+      .select("id, slug, title, category, excerpt, updated_at")
       .eq("published", true)
       .order("sort_order", { ascending: true })
       .order("title", { ascending: true })
       .then(({ data }) => setItems((data as Article[]) ?? []));
   }, []);
 
-  const grouped = useMemo(() => {
-    const filtered = items.filter((a) =>
-      !q || a.title.toLowerCase().includes(q.toLowerCase()) || (a.excerpt ?? "").toLowerCase().includes(q.toLowerCase())
+  const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    if (!needle) return items;
+    return items.filter(
+      (a) =>
+        a.title.toLowerCase().includes(needle) ||
+        (a.excerpt ?? "").toLowerCase().includes(needle) ||
+        (a.category ?? "").toLowerCase().includes(needle),
     );
+  }, [items, q]);
+
+  const featured = filtered[0];
+  const sideArticles = filtered.slice(1, 3);
+  const referenceArticles = filtered.slice(3, 7);
+  const rest = filtered.slice(7);
+
+  const restByCategory = useMemo(() => {
     const g: Record<string, Article[]> = {};
-    for (const a of filtered) {
-      const c = a.category || "General";
+    for (const a of rest) {
+      const c = a.category || "More";
       (g[c] ||= []).push(a);
     }
     return g;
-  }, [items, q]);
+  }, [rest]);
+
+  const relative = (iso?: string | null) => {
+    if (!iso) return "";
+    const d = new Date(iso).getTime();
+    const diff = Date.now() - d;
+    const days = Math.floor(diff / 86_400_000);
+    if (days < 1) return "Updated today";
+    if (days === 1) return "Updated 1 day ago";
+    if (days < 30) return `Updated ${days} days ago`;
+    const months = Math.floor(days / 30);
+    return `Updated ${months} month${months === 1 ? "" : "s"} ago`;
+  };
 
   return (
-    <main className="container mx-auto p-6 max-w-5xl space-y-6">
+    <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
       <Helmet>
-        <title>Wiki</title>
-        <meta name="description" content="Server wiki: guides, mechanics, commands and how-tos." />
+        <title>Wiki — CarnageMC Knowledge Hub</title>
+        <meta
+          name="description"
+          content="CarnageMC wiki: guides, mechanics, commands, ranks, appeals and community how-tos."
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap"
+          rel="stylesheet"
+        />
       </Helmet>
-      <header className="space-y-3">
-        <h1 className="text-3xl font-bold">Wiki</h1>
-        <Input placeholder="Search articles..." value={q} onChange={(e) => setQ(e.target.value)} className="max-w-md" />
-      </header>
-      {Object.keys(grouped).length === 0 && <p className="text-muted-foreground">No articles yet.</p>}
-      {Object.entries(grouped).map(([cat, arr]) => (
-        <section key={cat} className="space-y-3">
-          <h2 className="text-xl font-semibold">{cat}</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {arr.map((a) => (
-              <Link key={a.id} to={`/wiki/${a.slug}`}>
-                <Card className="hover:border-primary transition-colors h-full">
-                  <CardContent className="p-4">
-                    <div className="font-medium">{a.title}</div>
-                    {a.excerpt && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{a.excerpt}</p>}
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+      <Navbar />
+      <main className="flex-1 w-full font-['Inter']">
+        <div className="max-w-6xl w-full mx-auto px-4 md:px-8 py-10 md:py-14 flex flex-col gap-12">
+          {/* Header & Search */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
+            <div className="space-y-2">
+              <span className="text-[#ff5722] font-mono text-sm tracking-widest uppercase">
+                Knowledge Hub
+              </span>
+              <h1 className="text-6xl md:text-8xl font-bold font-['Space_Grotesk'] tracking-tighter italic">
+                WIKI
+              </h1>
+            </div>
+            <div className="relative group max-w-md w-full">
+              <div className="absolute -inset-0.5 bg-[#ff5722] opacity-20 blur-sm group-focus-within:opacity-40 transition pointer-events-none" />
+              <input
+                type="text"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Search the archives..."
+                className="relative w-full bg-[#1a1a24] border border-white/10 px-6 py-4 rounded-none focus:outline-none focus:border-[#ff5722] text-lg font-['Space_Grotesk'] tracking-wide text-slate-100 placeholder:text-[#5f6472]"
+              />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#ff5722] font-mono text-xs opacity-50 hidden sm:block">
+                [/]
+              </div>
+            </div>
           </div>
-        </section>
-      ))}
-    </main>
+
+          {filtered.length === 0 ? (
+            <p className="text-[#9ca3af]">
+              {items.length === 0 ? "No articles yet." : "No articles match your search."}
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+              {/* Featured */}
+              {featured && (
+                <Link
+                  to={`/wiki/${featured.slug}`}
+                  className="md:col-span-8 group relative bg-[#1a1a24] overflow-hidden min-h-[320px] md:min-h-[380px] flex flex-col justify-end p-8 border border-white/5 hover:border-[#ff5722]/40 transition-colors"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-transparent to-transparent z-10" />
+                  <div
+                    className="absolute inset-0 opacity-30 z-0"
+                    style={{
+                      background:
+                        "radial-gradient(circle at 20% 30%, rgba(255,87,34,0.35), transparent 55%)",
+                    }}
+                  />
+                  <div className="absolute top-0 right-0 p-4 z-20">
+                    <span className="bg-[#ff5722] text-white text-[10px] font-bold px-2 py-1 tracking-widest uppercase">
+                      {featured.category || "Featured"}
+                    </span>
+                  </div>
+                  <div className="relative z-20 space-y-4">
+                    <h2 className="text-4xl md:text-5xl font-bold font-['Space_Grotesk'] leading-none group-hover:text-[#ff5722] transition-colors">
+                      {featured.title}
+                    </h2>
+                    {featured.excerpt && (
+                      <p className="text-[#9ca3af] max-w-md line-clamp-2">{featured.excerpt}</p>
+                    )}
+                    <div className="flex items-center gap-4 text-xs font-mono text-[#ff5722] uppercase tracking-widest">
+                      <span>Read Entry</span>
+                      <div className="h-px w-12 bg-[#ff5722] group-hover:w-20 transition-all" />
+                    </div>
+                  </div>
+                </Link>
+              )}
+
+              {/* Sidebar */}
+              {sideArticles.length > 0 && (
+                <div className="md:col-span-4 flex flex-col gap-6">
+                  {sideArticles.map((a, i) => (
+                    <Link
+                      key={a.id}
+                      to={`/wiki/${a.slug}`}
+                      className={`bg-[#1a1a24] p-6 border-l-4 flex flex-col justify-between min-h-[180px] hover:bg-[#23232f] transition-all group ${
+                        i === 0 ? "border-[#ff5722]" : "border-white/10 hover:border-[#ff5722]"
+                      }`}
+                    >
+                      <h3 className="text-xl font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                        {a.title}
+                      </h3>
+                      {a.excerpt && (
+                        <p className="text-[#9ca3af] text-sm mb-4 line-clamp-2">{a.excerpt}</p>
+                      )}
+                      <span className="text-xs font-mono text-[#9ca3af]">
+                        {a.category ? a.category.toUpperCase() : relative(a.updated_at)}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* Reference row */}
+              {referenceArticles.length > 0 && (
+                <div className="md:col-span-12 mt-8">
+                  <div className="flex items-center gap-4 mb-6">
+                    <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
+                      Reference Material
+                    </h2>
+                    <div className="flex-1 h-px bg-white/5" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {referenceArticles.map((a) => {
+                      const Icon = iconFor(a.title);
+                      return (
+                        <Link
+                          key={a.id}
+                          to={`/wiki/${a.slug}`}
+                          className="p-6 bg-[#1a1a24] border border-white/5 hover:border-[#ff5722]/30 transition group"
+                        >
+                          <div className="text-[#ff5722] mb-4">
+                            <Icon className="w-6 h-6" strokeWidth={1.5} />
+                          </div>
+                          <h4 className="font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                            {a.title}
+                          </h4>
+                          {a.excerpt && (
+                            <p className="text-sm text-[#9ca3af] mt-1 line-clamp-2">{a.excerpt}</p>
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Remaining sections by category */}
+              {Object.entries(restByCategory).map(([cat, arr]) => (
+                <div key={cat} className="md:col-span-12 mt-4">
+                  <div className="flex items-center gap-4 mb-6">
+                    <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
+                      {cat}
+                    </h2>
+                    <div className="flex-1 h-px bg-white/5" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {arr.map((a) => (
+                      <Link
+                        key={a.id}
+                        to={`/wiki/${a.slug}`}
+                        className="p-6 bg-[#1a1a24] border border-white/5 hover:border-[#ff5722]/30 transition group"
+                      >
+                        <h4 className="font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                          {a.title}
+                        </h4>
+                        {a.excerpt && (
+                          <p className="text-sm text-[#9ca3af] mt-1 line-clamp-2">{a.excerpt}</p>
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {/* Footer strip */}
+              <div className="md:col-span-12 flex flex-col md:flex-row gap-4 items-center justify-between mt-6 pt-6 border-t border-white/5">
+                <div className="flex flex-wrap gap-6 md:gap-8">
+                  <Link
+                    to="/support"
+                    className="text-xs font-mono text-[#9ca3af] hover:text-[#ff5722] tracking-widest transition"
+                  >
+                    GETTING SUPPORT
+                  </Link>
+                  <Link
+                    to="/discord"
+                    className="text-xs font-mono text-[#9ca3af] hover:text-[#ff5722] tracking-widest transition"
+                  >
+                    DISCORD HUB
+                  </Link>
+                  <Link
+                    to="/changelog"
+                    className="text-xs font-mono text-[#9ca3af] hover:text-[#ff5722] tracking-widest transition"
+                  >
+                    LATEST UPDATES
+                  </Link>
+                  <Link
+                    to="/servers-status"
+                    className="text-xs font-mono text-[#9ca3af] hover:text-[#ff5722] tracking-widest transition"
+                  >
+                    SERVER STATUS
+                  </Link>
+                </div>
+                <div className="text-[10px] text-white/20 font-mono flex items-center gap-2">
+                  <BookOpen className="w-3 h-3" /> CARNAGEMC ARCHIVE
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+      <Footer />
+    </div>
   );
 }
