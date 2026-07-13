@@ -226,25 +226,38 @@ const Changelog = () => {
                       <Link
                         key={e.id}
                         to={`/changelog/${changelogSlug(e.title)}`}
-                        className={`bg-[#1a1a24] p-6 border-l-4 flex flex-col justify-between min-h-[180px] hover:bg-[#23232f] transition-all group ${
+                        className={`bg-[#1a1a24] border-l-4 flex flex-col justify-between min-h-[180px] hover:bg-[#23232f] transition-all group overflow-hidden ${
                           i === 0
                             ? "border-[#ff5722]"
                             : "border-white/10 hover:border-[#ff5722]"
                         }`}
                       >
-                        <div>
-                          <div className="text-[10px] font-mono text-[#ff5722] tracking-widest uppercase mb-2">
-                            {meta.label}
-                            {e.version ? ` · v${e.version}` : ""}
+                        {e.image_url && (
+                          <div className="relative h-24 overflow-hidden">
+                            <img
+                              src={e.image_url}
+                              alt=""
+                              loading="lazy"
+                              className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a24] to-transparent" />
                           </div>
-                          <h3 className="text-xl font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
-                            {e.title}
-                          </h3>
-                          <p className="text-[#9ca3af] text-sm mt-2 line-clamp-2">{e.content}</p>
+                        )}
+                        <div className="p-6 flex flex-col justify-between flex-1">
+                          <div>
+                            <div className="text-[10px] font-mono text-[#ff5722] tracking-widest uppercase mb-2">
+                              {meta.label}
+                              {e.version ? ` · v${e.version}` : ""}
+                            </div>
+                            <h3 className="text-xl font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                              {e.title}
+                            </h3>
+                            <p className="text-[#9ca3af] text-sm mt-2 line-clamp-2">{e.content}</p>
+                          </div>
+                          <span className="text-xs font-mono text-[#9ca3af] mt-4">
+                            {fmtDate(e.entry_date)}
+                          </span>
                         </div>
-                        <span className="text-xs font-mono text-[#9ca3af] mt-4">
-                          {fmtDate(e.entry_date)}
-                        </span>
                       </Link>
                     );
                   })}
