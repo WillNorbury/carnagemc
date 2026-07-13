@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { confirm } from "@/lib/confirm";
-import { ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Plus, Pencil, Trash2 } from "lucide-react";
 
 type Faq = {
   id: string;
