@@ -82,6 +82,7 @@ import { SendEmailAdminSection } from "@/components/admin/SendEmailAdminSection"
 import { EmailDiagnosticsSection } from "@/components/admin/EmailDiagnosticsSection";
 import { ApplicationStatusEmailEditor } from "@/components/admin/ApplicationStatusEmailEditor";
 import { MySqlAdminSection } from "@/components/admin/MySqlAdminSection";
+import ServersStatusAdminSection from "@/components/admin/ServersStatusAdminSection";
 
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
