@@ -13,8 +13,10 @@ import {
   Plus,
   ArrowRight,
   Radio,
+  Maximize2,
 } from "lucide-react";
 import { changelogSlug } from "@/lib/changelog-slug";
+import Lightbox from "@/components/site/Lightbox";
 
 type Entry = {
   id: string;
