@@ -23,6 +23,7 @@ type Entry = {
   category: string;
   version: string | null;
   entry_date: string;
+  image_url: string | null;
 };
 
 const CATEGORIES: { key: string; label: string; icon: any }[] = [
@@ -46,7 +47,7 @@ const Changelog = () => {
   useEffect(() => {
     supabase
       .from("changelog_entries")
-      .select("id,title,content,category,version,entry_date")
+      .select("id,title,content,category,version,entry_date,image_url")
       .eq("published", true)
       .order("entry_date", { ascending: false })
       .then(({ data }) => {
@@ -174,14 +175,22 @@ const Changelog = () => {
                   to={`/changelog/${changelogSlug(featured.title)}`}
                   className="md:col-span-8 group relative bg-[#1a1a24] overflow-hidden min-h-[320px] md:min-h-[380px] flex flex-col justify-end p-8 border border-white/5 hover:border-[#ff5722]/40 transition-colors"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-transparent to-transparent z-10" />
-                  <div
-                    className="absolute inset-0 opacity-30 z-0"
-                    style={{
-                      background:
-                        "radial-gradient(circle at 20% 30%, rgba(255,87,34,0.35), transparent 55%)",
-                    }}
-                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/70 to-transparent z-10" />
+                  {featured.image_url ? (
+                    <img
+                      src={featured.image_url}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-cover opacity-70 z-0 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
+                    />
+                  ) : (
+                    <div
+                      className="absolute inset-0 opacity-30 z-0"
+                      style={{
+                        background:
+                          "radial-gradient(circle at 20% 30%, rgba(255,87,34,0.35), transparent 55%)",
+                      }}
+                    />
+                  )}
                   <div className="absolute top-0 right-0 p-4 z-20 flex gap-2 items-center">
                     {featured.version && (
                       <span className="bg-black/40 border border-white/10 text-white text-[10px] font-mono px-2 py-1 tracking-widest uppercase">
@@ -217,25 +226,38 @@ const Changelog = () => {
                       <Link
                         key={e.id}
                         to={`/changelog/${changelogSlug(e.title)}`}
-                        className={`bg-[#1a1a24] p-6 border-l-4 flex flex-col justify-between min-h-[180px] hover:bg-[#23232f] transition-all group ${
+                        className={`bg-[#1a1a24] border-l-4 flex flex-col justify-between min-h-[180px] hover:bg-[#23232f] transition-all group overflow-hidden ${
                           i === 0
                             ? "border-[#ff5722]"
                             : "border-white/10 hover:border-[#ff5722]"
                         }`}
                       >
-                        <div>
-                          <div className="text-[10px] font-mono text-[#ff5722] tracking-widest uppercase mb-2">
-                            {meta.label}
-                            {e.version ? ` · v${e.version}` : ""}
+                        {e.image_url && (
+                          <div className="relative h-24 overflow-hidden">
+                            <img
+                              src={e.image_url}
+                              alt=""
+                              loading="lazy"
+                              className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a24] to-transparent" />
                           </div>
-                          <h3 className="text-xl font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
-                            {e.title}
-                          </h3>
-                          <p className="text-[#9ca3af] text-sm mt-2 line-clamp-2">{e.content}</p>
+                        )}
+                        <div className="p-6 flex flex-col justify-between flex-1">
+                          <div>
+                            <div className="text-[10px] font-mono text-[#ff5722] tracking-widest uppercase mb-2">
+                              {meta.label}
+                              {e.version ? ` · v${e.version}` : ""}
+                            </div>
+                            <h3 className="text-xl font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                              {e.title}
+                            </h3>
+                            <p className="text-[#9ca3af] text-sm mt-2 line-clamp-2">{e.content}</p>
+                          </div>
+                          <span className="text-xs font-mono text-[#9ca3af] mt-4">
+                            {fmtDate(e.entry_date)}
+                          </span>
                         </div>
-                        <span className="text-xs font-mono text-[#9ca3af] mt-4">
-                          {fmtDate(e.entry_date)}
-                        </span>
                       </Link>
                     );
                   })}
@@ -259,22 +281,35 @@ const Changelog = () => {
                         <Link
                           key={e.id}
                           to={`/changelog/${changelogSlug(e.title)}`}
-                          className="p-6 bg-[#1a1a24] border border-white/5 hover:border-[#ff5722]/30 transition group"
+                          className="bg-[#1a1a24] border border-white/5 hover:border-[#ff5722]/30 transition group overflow-hidden flex flex-col"
                         >
-                          <div className="text-[#ff5722] mb-4 flex items-center justify-between">
-                            <Icon className="w-6 h-6" strokeWidth={1.5} />
-                            {e.version && (
-                              <span className="text-[10px] font-mono text-[#9ca3af] tracking-widest">
-                                v{e.version}
-                              </span>
-                            )}
-                          </div>
-                          <h4 className="font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
-                            {e.title}
-                          </h4>
-                          <p className="text-sm text-[#9ca3af] mt-1 line-clamp-2">{e.content}</p>
-                          <div className="text-[10px] font-mono text-[#5f6472] mt-3 tracking-widest uppercase">
-                            {fmtDate(e.entry_date)}
+                          {e.image_url && (
+                            <div className="relative h-32 overflow-hidden">
+                              <img
+                                src={e.image_url}
+                                alt=""
+                                loading="lazy"
+                                className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a24] via-transparent to-transparent" />
+                            </div>
+                          )}
+                          <div className="p-6 flex flex-col flex-1">
+                            <div className="text-[#ff5722] mb-4 flex items-center justify-between">
+                              <Icon className="w-6 h-6" strokeWidth={1.5} />
+                              {e.version && (
+                                <span className="text-[10px] font-mono text-[#9ca3af] tracking-widest">
+                                  v{e.version}
+                                </span>
+                              )}
+                            </div>
+                            <h4 className="font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                              {e.title}
+                            </h4>
+                            <p className="text-sm text-[#9ca3af] mt-1 line-clamp-2">{e.content}</p>
+                            <div className="text-[10px] font-mono text-[#5f6472] mt-3 tracking-widest uppercase">
+                              {fmtDate(e.entry_date)}
+                            </div>
                           </div>
                         </Link>
                       );
