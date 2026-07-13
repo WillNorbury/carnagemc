@@ -65,6 +65,7 @@ import TornadoDeaths from "./pages/TornadoDeaths.tsx";
 import Punishments from "./pages/Punishments.tsx";
 import StaffChat from "./pages/StaffChat.tsx";
 import FireMarket from "./pages/FireMarket.tsx";
+import Store from "./pages/Store.tsx";
 
 
 const queryClient = new QueryClient();
