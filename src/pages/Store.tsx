@@ -417,6 +417,121 @@ export default function Store() {
                 );
               })}
 
+              {/* Cart summary */}
+              <section
+                id="cart"
+                className="md:col-span-12 mt-8 scroll-mt-24 bg-[#12121a] border border-white/10"
+              >
+                <div className="flex items-center gap-4 px-6 py-4 border-b border-white/5">
+                  <ShoppingCart className="w-4 h-4 text-[#ff5722]" strokeWidth={1.75} />
+                  <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
+                    Your Cart
+                  </h2>
+                  <span className="text-xs font-mono text-[#9ca3af] tracking-widest">
+                    {cart.count} {cart.count === 1 ? "ITEM" : "ITEMS"}
+                  </span>
+                  <div className="flex-1 h-px bg-white/5" />
+                  {cart.items.length > 0 && (
+                    <button
+                      onClick={() => cart.clear()}
+                      className="text-[10px] font-mono uppercase tracking-widest text-[#9ca3af] hover:text-[#ff5722] transition inline-flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3 h-3" /> Clear
+                    </button>
+                  )}
+                </div>
+
+                {cart.items.length === 0 ? (
+                  <div className="px-6 py-10 text-center text-[#9ca3af] font-mono text-xs tracking-widest uppercase">
+                    Your cart is empty — pick something above.
+                  </div>
+                ) : (
+                  <>
+                    <ul className="divide-y divide-white/5">
+                      {cart.items.map((ci) => (
+                        <li
+                          key={ci.id}
+                          className="flex items-center gap-4 px-6 py-4"
+                        >
+                          <div className="w-12 h-12 shrink-0 bg-[#1a1a24] border border-white/5 overflow-hidden flex items-center justify-center">
+                            {ci.image_url ? (
+                              <img
+                                src={ci.image_url}
+                                alt={ci.name}
+                                loading="lazy"
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Package className="w-5 h-5 text-[#ff5722]" strokeWidth={1.5} />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-bold font-['Space_Grotesk'] truncate">
+                              {ci.name}
+                            </div>
+                            <div className="text-xs text-[#9ca3af] font-mono">
+                              {formatPrice(ci.price, ci.currency)} each
+                            </div>
+                          </div>
+                          <div className="inline-flex items-center border border-white/10">
+                            <button
+                              type="button"
+                              aria-label={`Decrease ${ci.name}`}
+                              onClick={() => cart.setQty(ci.id, ci.quantity - 1)}
+                              className="w-8 h-8 grid place-items-center text-[#9ca3af] hover:text-[#ff5722] hover:bg-white/5"
+                            >
+                              <Minus className="w-3.5 h-3.5" />
+                            </button>
+                            <span className="w-10 text-center font-mono text-sm tabular-nums">
+                              {ci.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              aria-label={`Increase ${ci.name}`}
+                              onClick={() => cart.setQty(ci.id, ci.quantity + 1)}
+                              className="w-8 h-8 grid place-items-center text-[#9ca3af] hover:text-[#ff5722] hover:bg-white/5"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          <div className="w-24 text-right font-bold font-['Space_Grotesk'] tabular-nums">
+                            {formatMoney(
+                              (Number(ci.price) || 0) * ci.quantity,
+                              (ci.currency || "USD").toUpperCase(),
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            aria-label={`Remove ${ci.name}`}
+                            onClick={() => cart.remove(ci.id)}
+                            className="text-[#9ca3af] hover:text-[#ff5722] transition"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-6 py-5 border-t border-white/5 bg-[#0f0f16]">
+                      <div className="flex items-baseline gap-3">
+                        <span className="text-xs font-mono uppercase tracking-widest text-[#9ca3af]">
+                          Subtotal
+                        </span>
+                        <span className="text-2xl font-bold font-['Space_Grotesk'] tabular-nums">
+                          {formatMoney(cart.subtotal, cart.currency)}
+                        </span>
+                      </div>
+                      <Link
+                        to="/support"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff5722] hover:bg-[#ff5722]/90 text-white text-xs font-mono tracking-widest uppercase transition"
+                      >
+                        Checkout <ExternalLink className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
+                  </>
+                )}
+              </section>
+
+
               {/* Footer strip */}
               <div className="md:col-span-12 flex flex-col md:flex-row gap-4 items-center justify-between mt-6 pt-6 border-t border-white/5">
                 <div className="flex flex-wrap gap-6 md:gap-8">
