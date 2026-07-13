@@ -80,11 +80,13 @@ const AdminTabRedirect = () => {
 const Shell = () => {
   const { pathname } = useLocation();
   const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
+  const isWiki = pathname === "/wiki" || pathname.startsWith("/wiki/");
+  const hideSidebar = isAdmin || isWiki;
   return (
     <MaintenanceGate>
       <SidebarProvider>
-        {!isAdmin && <AppSidebar />}
-        {!isAdmin && <SwipeToOpenSidebar />}
+        {!hideSidebar && <AppSidebar />}
+        {!hideSidebar && <SwipeToOpenSidebar />}
         <SidebarInset>
           <Routes>
                   <Route path="/" element={<Index />} />
