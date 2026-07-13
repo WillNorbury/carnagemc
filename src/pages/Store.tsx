@@ -196,6 +196,61 @@ export default function Store() {
     }, 1400);
   };
 
+  const handleCheckout = async () => {
+    if (cart.items.length === 0) {
+      toast.error("Your cart is empty.");
+      return;
+    }
+    if (!user) {
+      toast.message("Sign in to checkout — we'll open a support ticket with your order.");
+      nav("/auth?next=/store%23cart");
+      return;
+    }
+    setCheckingOut(true);
+    const lines = cart.items.map(
+      (ci) =>
+        `• ${ci.name} × ${ci.quantity} — ${formatMoney(
+          (Number(ci.price) || 0) * ci.quantity,
+          (ci.currency || cart.currency || "USD").toUpperCase(),
+        )}`,
+    );
+    const subject = `Store order — ${cart.count} item${cart.count === 1 ? "" : "s"} (${formatMoney(
+      cart.subtotal,
+      cart.currency,
+    )})`;
+    const body = [
+      "New store checkout submitted via the website.",
+      "",
+      "Items:",
+      ...lines,
+      "",
+      `Subtotal: ${formatMoney(cart.subtotal, cart.currency)}`,
+      "",
+      "Staff: please reply with payment instructions or fulfillment status.",
+    ].join("\n");
+
+    const { data, error } = await supabase
+      .from("support_tickets")
+      .insert({
+        subject,
+        body,
+        category: "Store & Payments",
+        priority: "normal",
+        user_id: user.id,
+      })
+      .select("id")
+      .single();
+    setCheckingOut(false);
+    if (error) {
+      toast.error(error.message || "Could not create ticket.");
+      return;
+    }
+    cart.clear();
+    toast.success("Order sent — a support ticket has been created.");
+    nav(`/tickets?ticket=${data.id}`);
+  };
+
+
   const AddToCartButton = ({
     it,
     size = "sm",
