@@ -404,15 +404,11 @@ export default function Store() {
                               </p>
                             )}
                           </div>
-                          <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                          <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5 gap-3">
                             <span className="font-bold font-['Space_Grotesk']">
                               {formatPrice(it.price, it.currency)}
                             </span>
-                            {it.external_url && (
-                              <span className="text-xs font-mono text-[#ff5722] tracking-widest inline-flex items-center gap-1">
-                                BUY <ExternalLink className="w-3 h-3" />
-                              </span>
-                            )}
+                            <AddToCartButton it={it} />
                           </div>
                         </ItemLink>
                       ))}
