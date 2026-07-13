@@ -13,6 +13,7 @@ import { useCart } from "@/lib/cart";
 
 const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
+  const { count: cartCount } = useCart();
   const nav = useNavigate();
   const [scrolled, setScrolled] = useState(false);
 
