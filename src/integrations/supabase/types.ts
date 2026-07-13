@@ -1061,6 +1061,48 @@ export type Database = {
           },
         ]
       }
+      mc_public_servers: {
+        Row: {
+          ip: string | null
+          motd: string | null
+          name: string
+          online: boolean
+          players_max: number
+          players_online: number
+          slug: string
+          sort_order: number
+          tps: number
+          updated_at: string
+          uptime_pct: number
+        }
+        Insert: {
+          ip?: string | null
+          motd?: string | null
+          name: string
+          online?: boolean
+          players_max?: number
+          players_online?: number
+          slug: string
+          sort_order?: number
+          tps?: number
+          updated_at?: string
+          uptime_pct?: number
+        }
+        Update: {
+          ip?: string | null
+          motd?: string | null
+          name?: string
+          online?: boolean
+          players_max?: number
+          players_online?: number
+          slug?: string
+          sort_order?: number
+          tps?: number
+          updated_at?: string
+          uptime_pct?: number
+        }
+        Relationships: []
+      }
       mc_servers: {
         Row: {
           created_at: string
