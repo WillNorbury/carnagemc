@@ -48,6 +48,21 @@ const Navbar = () => {
           <GlobalSearch />
           <NotificationsBell />
           <ThemeToggle />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => nav("/store")}
+            title="Cart"
+            aria-label={`Cart (${cartCount} item${cartCount === 1 ? "" : "s"})`}
+            className="relative"
+          >
+            <ShoppingCart className="h-4 w-4" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-[18px] text-center shadow">
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            )}
+          </Button>
           {user && (
             <Button variant="ghost" size="sm" onClick={() => nav("/dashboard")} className="hidden sm:inline-flex">
               <LayoutDashboard className="h-4 w-4 sm:mr-1" />
