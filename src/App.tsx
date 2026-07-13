@@ -210,7 +210,9 @@ const App = () => (
 
       <BrowserRouter>
         <AuthProvider>
-          <Shell />
+          <CartProvider>
+            <Shell />
+          </CartProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
