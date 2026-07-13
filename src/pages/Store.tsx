@@ -73,6 +73,8 @@ export default function Store() {
   const [items, setItems] = useState<Item[]>([]);
   const [q, setQ] = useState("");
   const [activeCat, setActiveCat] = useState<string>("all");
+  const cart = useCart();
+  const [justAdded, setJustAdded] = useState<string | null>(null);
 
   useEffect(() => {
     supabase
