@@ -135,6 +135,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   console: { title: "Owner Console", description: "Terminal-style admin console. Type `help` for available commands." },
   mysql: { title: "LiteBans MySQL", description: "Connect and edit the LiteBans database directly. Use with caution." },
   "servers-status": { title: "Servers (Public Status)", description: "Edit the per-server cards on /servers-status: players, TPS, uptime, IP, and MOTD." },
+  store: { title: "Store", description: "Manage the categories and items shown on /store." },
 };
 
 const Admin = () => {
