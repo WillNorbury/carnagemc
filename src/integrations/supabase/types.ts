@@ -2690,6 +2690,10 @@ export type Database = {
         }[]
       }
       is_current_user_admin: { Args: never; Returns: boolean }
+      is_org_member: {
+        Args: { _org_id: string; _user_id: string }
+        Returns: boolean
+      }
       mc_server_rotate_secret: { Args: { _server_id: string }; Returns: string }
       move_to_dlq: {
         Args: {
