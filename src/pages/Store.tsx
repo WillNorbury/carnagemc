@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
@@ -92,6 +92,23 @@ export default function Store() {
       .order("sort_order", { ascending: true })
       .then(({ data }) => setItems((data as Item[]) ?? []));
   }, []);
+
+  // Scroll to #cart when hash is present (also after items load so section exists).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const scrollToCart = () => {
+      if (window.location.hash !== "#cart") return;
+      const el = document.getElementById("cart");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+    scrollToCart();
+    const t = window.setTimeout(scrollToCart, 250);
+    window.addEventListener("hashchange", scrollToCart);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("hashchange", scrollToCart);
+    };
+  }, [items]);
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
