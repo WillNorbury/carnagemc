@@ -319,6 +319,14 @@ const Changelog = () => {
                                 className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a24] via-transparent to-transparent" />
+                              <button
+                                type="button"
+                                onClick={openLightbox(e.image_url)}
+                                aria-label="View image"
+                                className="absolute top-2 right-2 z-10 w-8 h-8 grid place-items-center bg-black/60 border border-white/20 text-white opacity-0 group-hover:opacity-100 hover:bg-[#ff5722] hover:border-[#ff5722] transition"
+                              >
+                                <Maximize2 className="w-3.5 h-3.5" />
+                              </button>
                             </div>
                           )}
                           <div className="p-6 flex flex-col flex-1">
