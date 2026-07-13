@@ -52,6 +52,7 @@ import Unsubscribe from "./pages/Unsubscribe.tsx";
 import Subscribe from "./pages/Subscribe.tsx";
 import Wiki from "./pages/Wiki.tsx";
 import WikiArticle from "./pages/WikiArticle.tsx";
+import WikiMore from "./pages/WikiMore.tsx";
 import Gallery from "./pages/Gallery.tsx";
 import Contact from "./pages/Contact.tsx";
 import Trust from "./pages/Trust.tsx";
@@ -168,6 +169,7 @@ const Shell = () => {
                   <Route path="/subscribe" element={<Subscribe />} />
                   <Route path="/ban-appeals" element={<Navigate to="/appeal" replace />} />
                   <Route path="/wiki" element={<Wiki />} />
+                  <Route path="/wiki/more" element={<WikiMore />} />
                   <Route path="/wiki/:slug" element={<WikiArticle />} />
                   <Route path="/gallery" element={<Gallery />} />
                   <Route path="/contact" element={<Contact />} />
