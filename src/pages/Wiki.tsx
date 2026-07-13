@@ -273,6 +273,12 @@ export default function Wiki() {
                   >
                     SERVER STATUS
                   </Link>
+                  <Link
+                    to="/wiki/more"
+                    className="text-xs font-mono text-[#ff5722] hover:text-white tracking-widest transition"
+                  >
+                    MORE WIKI
+                  </Link>
                 </div>
                 <div className="text-[10px] text-white/20 font-mono flex items-center gap-2">
                   <BookOpen className="w-3 h-3" /> CARNAGEMC ARCHIVE
