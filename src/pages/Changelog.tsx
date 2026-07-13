@@ -23,6 +23,7 @@ type Entry = {
   category: string;
   version: string | null;
   entry_date: string;
+  image_url: string | null;
 };
 
 const CATEGORIES: { key: string; label: string; icon: any }[] = [
