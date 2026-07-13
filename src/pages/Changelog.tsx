@@ -175,14 +175,22 @@ const Changelog = () => {
                   to={`/changelog/${changelogSlug(featured.title)}`}
                   className="md:col-span-8 group relative bg-[#1a1a24] overflow-hidden min-h-[320px] md:min-h-[380px] flex flex-col justify-end p-8 border border-white/5 hover:border-[#ff5722]/40 transition-colors"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-transparent to-transparent z-10" />
-                  <div
-                    className="absolute inset-0 opacity-30 z-0"
-                    style={{
-                      background:
-                        "radial-gradient(circle at 20% 30%, rgba(255,87,34,0.35), transparent 55%)",
-                    }}
-                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/70 to-transparent z-10" />
+                  {featured.image_url ? (
+                    <img
+                      src={featured.image_url}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-cover opacity-70 z-0 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
+                    />
+                  ) : (
+                    <div
+                      className="absolute inset-0 opacity-30 z-0"
+                      style={{
+                        background:
+                          "radial-gradient(circle at 20% 30%, rgba(255,87,34,0.35), transparent 55%)",
+                      }}
+                    />
+                  )}
                   <div className="absolute top-0 right-0 p-4 z-20 flex gap-2 items-center">
                     {featured.version && (
                       <span className="bg-black/40 border border-white/10 text-white text-[10px] font-mono px-2 py-1 tracking-widest uppercase">
