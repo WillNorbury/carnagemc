@@ -45,6 +45,13 @@ const Changelog = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
   const [q, setQ] = useState("");
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  const openLightbox = (src: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLightboxSrc(src);
+  };
 
   useEffect(() => {
     supabase
