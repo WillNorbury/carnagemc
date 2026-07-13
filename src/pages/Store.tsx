@@ -3,8 +3,10 @@ import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart, formatMoney } from "@/lib/cart";
+import { useAuth } from "@/lib/auth";
+import { toast } from "sonner";
 import {
   ShoppingBag,
   ShoppingCart,
