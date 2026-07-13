@@ -47,7 +47,7 @@ const Changelog = () => {
   useEffect(() => {
     supabase
       .from("changelog_entries")
-      .select("id,title,content,category,version,entry_date")
+      .select("id,title,content,category,version,entry_date,image_url")
       .eq("published", true)
       .order("entry_date", { ascending: false })
       .then(({ data }) => {
