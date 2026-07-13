@@ -82,7 +82,8 @@ export type AdminSection =
   | "punishments"
   | "console"
   | "mysql"
-  | "servers-status";
+  | "servers-status"
+  | "store";
 
 type NavItem =
   | { kind: "link"; id: AdminSection; icon: any; label: string }
@@ -120,6 +121,7 @@ const items: NavItem[] = [
   { kind: "link", id: "logs", icon: ScrollText, label: "Admin Logs" },
   { kind: "link", id: "plugins", icon: Puzzle, label: "Plugins" },
   { kind: "link", id: "changelog", icon: Zap, label: "Changelog" },
+  { kind: "link", id: "store", icon: Package, label: "Store" },
   { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
   { kind: "link", id: "apply", icon: ClipboardList, label: "Apply (types)" },
   { kind: "link", id: "features", icon: Sparkles, label: "Features" },

@@ -65,6 +65,7 @@ import TornadoDeaths from "./pages/TornadoDeaths.tsx";
 import Punishments from "./pages/Punishments.tsx";
 import StaffChat from "./pages/StaffChat.tsx";
 import FireMarket from "./pages/FireMarket.tsx";
+import Store from "./pages/Store.tsx";
 
 
 const queryClient = new QueryClient();
@@ -82,7 +83,9 @@ const Shell = () => {
   const { pathname } = useLocation();
   const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
   const isWiki = pathname === "/wiki" || pathname.startsWith("/wiki/");
-  const hideSidebar = isAdmin || isWiki;
+  const isStore = pathname === "/store" || pathname.startsWith("/store/");
+  const isChangelog = pathname === "/changelog" || pathname.startsWith("/changelog/");
+  const hideSidebar = isAdmin || isWiki || isStore || isChangelog;
   return (
     <MaintenanceGate>
       <SidebarProvider>
@@ -187,6 +190,7 @@ const Shell = () => {
                    <Route path="/fire-market" element={<FireMarket />} />
                    <Route path="/firemarket" element={<Navigate to="/fire-market" replace />} />
                    <Route path="/discord" element={<Discord />} />
+                   <Route path="/store" element={<Store />} />
                    
                    <Route path="*" element={<NotFound />} />
           </Routes>
