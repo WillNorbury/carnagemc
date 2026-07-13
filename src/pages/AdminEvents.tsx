@@ -46,14 +46,12 @@ const blank = () => ({
 });
 
 const AdminEvents = () => {
-  const { user, isAdmin, loading } = useAuth();
   const [items, setItems] = useState<Event[]>([]);
   const [editing, setEditing] = useState<Event | null>(null);
   const [form, setForm] = useState(blank());
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    document.title = "Events — Admin · CarnageMC";
     load();
   }, []);
 
@@ -64,8 +62,6 @@ const AdminEvents = () => {
     setItems((data as Event[]) ?? []);
   };
 
-  if (loading) return null;
-  if (!user || !isAdmin) return <Navigate to="/" replace />;
 
   const startEdit = (e: Event) => {
     setEditing(e);
