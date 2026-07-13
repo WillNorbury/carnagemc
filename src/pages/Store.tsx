@@ -317,17 +317,33 @@ export default function Store() {
                 STORE
               </h1>
             </div>
-            <div className="relative group max-w-md w-full">
-              <div className="absolute -inset-0.5 bg-[#ff5722] opacity-20 blur-sm group-focus-within:opacity-40 transition pointer-events-none" />
-              <input
-                type="text"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Search the store..."
-                className="relative w-full bg-[#1a1a24] border border-white/10 px-6 py-4 rounded-none focus:outline-none focus:border-[#ff5722] text-lg font-['Space_Grotesk'] tracking-wide text-slate-100 placeholder:text-[#5f6472]"
-              />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#ff5722] font-mono text-xs opacity-50 hidden sm:block">
-                [/]
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+              <button
+                type="button"
+                onClick={scrollToCart}
+                className="inline-flex items-center justify-center gap-2 px-4 py-3 border border-[#ff5722]/60 text-[#ff5722] hover:bg-[#ff5722] hover:text-white text-xs font-mono tracking-widest uppercase transition relative"
+                aria-label={`Open cart (${cart.count} items)`}
+              >
+                <ShoppingCart className="w-4 h-4" strokeWidth={1.75} />
+                Open Cart
+                {cart.count > 0 && (
+                  <span className="ml-1 min-w-[20px] h-5 px-1.5 grid place-items-center bg-[#ff5722] text-white text-[10px] font-bold leading-none">
+                    {cart.count > 99 ? "99+" : cart.count}
+                  </span>
+                )}
+              </button>
+              <div className="relative group max-w-md w-full">
+                <div className="absolute -inset-0.5 bg-[#ff5722] opacity-20 blur-sm group-focus-within:opacity-40 transition pointer-events-none" />
+                <input
+                  type="text"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Search the store..."
+                  className="relative w-full bg-[#1a1a24] border border-white/10 px-6 py-4 rounded-none focus:outline-none focus:border-[#ff5722] text-lg font-['Space_Grotesk'] tracking-wide text-slate-100 placeholder:text-[#5f6472]"
+                />
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#ff5722] font-mono text-xs opacity-50 hidden sm:block">
+                  [/]
+                </div>
               </div>
             </div>
           </div>
