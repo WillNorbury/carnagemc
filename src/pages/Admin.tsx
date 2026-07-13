@@ -240,6 +240,7 @@ const Admin = () => {
           {section === "bot-management" && (isOwner ? <BotManagementSection /> : denied)}
           {section === "console" && (isOwner ? <ConsoleAdminSection /> : denied)}
           {section === "mysql" && (isOwner ? <MySqlAdminSection /> : denied)}
+          {section === "servers-status" && <ServersStatusAdminSection />}
         </>
       )}
     </AdminLayout>
