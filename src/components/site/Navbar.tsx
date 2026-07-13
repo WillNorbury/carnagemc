@@ -5,13 +5,15 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/auth";
 import logoAsset from "@/assets/carnagemc-logo.png.asset.json";
 const logo = logoAsset.url;
-import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download } from "lucide-react";
+import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download, ShoppingCart } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
 import { ThemeToggle } from "./ThemeToggle";
 import { NotificationsBell } from "./NotificationsBell";
+import { useCart } from "@/lib/cart";
 
 const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
+  const { count: cartCount } = useCart();
   const nav = useNavigate();
   const [scrolled, setScrolled] = useState(false);
 
@@ -46,6 +48,21 @@ const Navbar = () => {
           <GlobalSearch />
           <NotificationsBell />
           <ThemeToggle />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => nav("/store")}
+            title="Cart"
+            aria-label={`Cart (${cartCount} item${cartCount === 1 ? "" : "s"})`}
+            className="relative"
+          >
+            <ShoppingCart className="h-4 w-4" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-[18px] text-center shadow">
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            )}
+          </Button>
           {user && (
             <Button variant="ghost" size="sm" onClick={() => nav("/dashboard")} className="hidden sm:inline-flex">
               <LayoutDashboard className="h-4 w-4 sm:mr-1" />

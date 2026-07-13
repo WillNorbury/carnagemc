@@ -9,6 +9,7 @@ import { SwipeToOpenSidebar } from "@/components/site/SwipeToOpenSidebar";
 import { UpdatePrompt } from "@/components/site/UpdatePrompt";
 
 import { AuthProvider } from "@/lib/auth";
+import { CartProvider } from "@/lib/cart";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
@@ -209,7 +210,9 @@ const App = () => (
 
       <BrowserRouter>
         <AuthProvider>
-          <Shell />
+          <CartProvider>
+            <Shell />
+          </CartProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

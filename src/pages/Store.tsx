@@ -4,8 +4,10 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
+import { useCart, formatMoney } from "@/lib/cart";
 import {
   ShoppingBag,
+  ShoppingCart,
   Sparkles,
   Zap,
   Package,
@@ -14,6 +16,10 @@ import {
   Flame,
   Star,
   ExternalLink,
+  Plus,
+  Minus,
+  Trash2,
+  Check,
 } from "lucide-react";
 
 type Category = {
@@ -67,6 +73,8 @@ export default function Store() {
   const [items, setItems] = useState<Item[]>([]);
   const [q, setQ] = useState("");
   const [activeCat, setActiveCat] = useState<string>("all");
+  const cart = useCart();
+  const [justAdded, setJustAdded] = useState<string | null>(null);
 
   useEffect(() => {
     supabase
@@ -137,6 +145,61 @@ export default function Store() {
     ) : (
       <div className={className}>{children}</div>
     );
+
+  const handleAdd = (it: Item) => {
+    cart.add({
+      id: it.id,
+      name: it.name,
+      price: it.price,
+      currency: it.currency,
+      image_url: it.image_url,
+      external_url: it.external_url,
+    });
+    setJustAdded(it.id);
+    window.setTimeout(() => {
+      setJustAdded((cur) => (cur === it.id ? null : cur));
+    }, 1400);
+  };
+
+  const AddToCartButton = ({
+    it,
+    size = "sm",
+  }: {
+    it: Item;
+    size?: "sm" | "lg";
+  }) => {
+    const added = justAdded === it.id;
+    const base =
+      size === "lg"
+        ? "px-5 py-2.5 text-xs"
+        : "px-3 py-1.5 text-[11px]";
+    return (
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleAdd(it);
+        }}
+        className={`${base} font-mono tracking-widest uppercase inline-flex items-center gap-2 border transition ${
+          added
+            ? "bg-emerald-500/20 border-emerald-400/60 text-emerald-300"
+            : "bg-[#ff5722] border-[#ff5722] text-white hover:bg-[#ff5722]/90"
+        }`}
+        aria-label={`Add ${it.name} to cart`}
+      >
+        {added ? (
+          <>
+            <Check className="w-3.5 h-3.5" /> Added
+          </>
+        ) : (
+          <>
+            <ShoppingCart className="w-3.5 h-3.5" /> Add
+          </>
+        )}
+      </button>
+    );
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
@@ -255,14 +318,16 @@ export default function Store() {
                         {heroItem.description}
                       </p>
                     )}
-                    <div className="flex items-center gap-4 text-xs font-mono text-[#ff5722] uppercase tracking-widest">
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-[#ff5722] uppercase tracking-widest">
                       <span className="text-2xl md:text-3xl font-bold font-['Space_Grotesk'] not-italic normal-case tracking-normal text-white">
                         {formatPrice(heroItem.price, heroItem.currency)}
                       </span>
-                      <div className="h-px w-12 bg-[#ff5722] group-hover:w-20 transition-all" />
-                      <span className="inline-flex items-center gap-1">
-                        Get it <ExternalLink className="w-3 h-3" />
-                      </span>
+                      <AddToCartButton it={heroItem} size="lg" />
+                      {heroItem.external_url && (
+                        <span className="inline-flex items-center gap-1">
+                          Get it <ExternalLink className="w-3 h-3" />
+                        </span>
+                      )}
                     </div>
                   </div>
                 </ItemLink>
@@ -291,13 +356,11 @@ export default function Store() {
                           </p>
                         )}
                       </div>
-                      <div className="flex items-center justify-between mt-4">
+                      <div className="flex items-center justify-between mt-4 gap-3">
                         <span className="text-lg font-bold font-['Space_Grotesk']">
                           {formatPrice(it.price, it.currency)}
                         </span>
-                        <span className="text-xs font-mono text-[#ff5722] tracking-widest">
-                          {it.badge || catName(it.category_id).toUpperCase()}
-                        </span>
+                        <AddToCartButton it={it} />
                       </div>
                     </ItemLink>
                   ))}
@@ -341,15 +404,11 @@ export default function Store() {
                               </p>
                             )}
                           </div>
-                          <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                          <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5 gap-3">
                             <span className="font-bold font-['Space_Grotesk']">
                               {formatPrice(it.price, it.currency)}
                             </span>
-                            {it.external_url && (
-                              <span className="text-xs font-mono text-[#ff5722] tracking-widest inline-flex items-center gap-1">
-                                BUY <ExternalLink className="w-3 h-3" />
-                              </span>
-                            )}
+                            <AddToCartButton it={it} />
                           </div>
                         </ItemLink>
                       ))}
@@ -357,6 +416,121 @@ export default function Store() {
                   </div>
                 );
               })}
+
+              {/* Cart summary */}
+              <section
+                id="cart"
+                className="md:col-span-12 mt-8 scroll-mt-24 bg-[#12121a] border border-white/10"
+              >
+                <div className="flex items-center gap-4 px-6 py-4 border-b border-white/5">
+                  <ShoppingCart className="w-4 h-4 text-[#ff5722]" strokeWidth={1.75} />
+                  <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
+                    Your Cart
+                  </h2>
+                  <span className="text-xs font-mono text-[#9ca3af] tracking-widest">
+                    {cart.count} {cart.count === 1 ? "ITEM" : "ITEMS"}
+                  </span>
+                  <div className="flex-1 h-px bg-white/5" />
+                  {cart.items.length > 0 && (
+                    <button
+                      onClick={() => cart.clear()}
+                      className="text-[10px] font-mono uppercase tracking-widest text-[#9ca3af] hover:text-[#ff5722] transition inline-flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3 h-3" /> Clear
+                    </button>
+                  )}
+                </div>
+
+                {cart.items.length === 0 ? (
+                  <div className="px-6 py-10 text-center text-[#9ca3af] font-mono text-xs tracking-widest uppercase">
+                    Your cart is empty — pick something above.
+                  </div>
+                ) : (
+                  <>
+                    <ul className="divide-y divide-white/5">
+                      {cart.items.map((ci) => (
+                        <li
+                          key={ci.id}
+                          className="flex items-center gap-4 px-6 py-4"
+                        >
+                          <div className="w-12 h-12 shrink-0 bg-[#1a1a24] border border-white/5 overflow-hidden flex items-center justify-center">
+                            {ci.image_url ? (
+                              <img
+                                src={ci.image_url}
+                                alt={ci.name}
+                                loading="lazy"
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Package className="w-5 h-5 text-[#ff5722]" strokeWidth={1.5} />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-bold font-['Space_Grotesk'] truncate">
+                              {ci.name}
+                            </div>
+                            <div className="text-xs text-[#9ca3af] font-mono">
+                              {formatPrice(ci.price, ci.currency)} each
+                            </div>
+                          </div>
+                          <div className="inline-flex items-center border border-white/10">
+                            <button
+                              type="button"
+                              aria-label={`Decrease ${ci.name}`}
+                              onClick={() => cart.setQty(ci.id, ci.quantity - 1)}
+                              className="w-8 h-8 grid place-items-center text-[#9ca3af] hover:text-[#ff5722] hover:bg-white/5"
+                            >
+                              <Minus className="w-3.5 h-3.5" />
+                            </button>
+                            <span className="w-10 text-center font-mono text-sm tabular-nums">
+                              {ci.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              aria-label={`Increase ${ci.name}`}
+                              onClick={() => cart.setQty(ci.id, ci.quantity + 1)}
+                              className="w-8 h-8 grid place-items-center text-[#9ca3af] hover:text-[#ff5722] hover:bg-white/5"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          <div className="w-24 text-right font-bold font-['Space_Grotesk'] tabular-nums">
+                            {formatMoney(
+                              (Number(ci.price) || 0) * ci.quantity,
+                              (ci.currency || "USD").toUpperCase(),
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            aria-label={`Remove ${ci.name}`}
+                            onClick={() => cart.remove(ci.id)}
+                            className="text-[#9ca3af] hover:text-[#ff5722] transition"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-6 py-5 border-t border-white/5 bg-[#0f0f16]">
+                      <div className="flex items-baseline gap-3">
+                        <span className="text-xs font-mono uppercase tracking-widest text-[#9ca3af]">
+                          Subtotal
+                        </span>
+                        <span className="text-2xl font-bold font-['Space_Grotesk'] tabular-nums">
+                          {formatMoney(cart.subtotal, cart.currency)}
+                        </span>
+                      </div>
+                      <Link
+                        to="/support"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff5722] hover:bg-[#ff5722]/90 text-white text-xs font-mono tracking-widest uppercase transition"
+                      >
+                        Checkout <ExternalLink className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
+                  </>
+                )}
+              </section>
+
 
               {/* Footer strip */}
               <div className="md:col-span-12 flex flex-col md:flex-row gap-4 items-center justify-between mt-6 pt-6 border-t border-white/5">
@@ -379,6 +553,12 @@ export default function Store() {
                   >
                     CHANGELOG
                   </Link>
+                  <a
+                    href="#cart"
+                    className="text-xs font-mono text-[#9ca3af] hover:text-[#ff5722] tracking-widest transition"
+                  >
+                    CART ({cart.count})
+                  </a>
                   <Link
                     to="/wiki/ranks-carnage"
                     className="text-xs font-mono text-[#ff5722] hover:text-white tracking-widest transition"
