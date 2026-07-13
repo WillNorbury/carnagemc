@@ -24,7 +24,7 @@ const Features = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <SEO
         title="Features — CarnageMC"
-        description="Explore every system that powers CarnageMC: lifesteal PvP, custom enchants, player economy, ranked seasons, weekly events, and more."
+        description="Explore CarnageMC's servers and systems: Survival (S1), Lifesteal (Development), weekly events, lag-free gameplay, and more."
         path="/features"
       />
       <Navbar />
@@ -37,7 +37,7 @@ const Features = () => {
             Built for <span className="text-gradient">Legends</span>
           </h1>
           <p className="text-muted-foreground md:text-lg">
-            Every system, every detail — engineered to make your gameplay matter.
+            Survival (S1) is live, Lifesteal is in development, and every system is tuned for competitive, community-first gameplay.
           </p>
         </header>
 
