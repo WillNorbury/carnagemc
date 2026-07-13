@@ -83,6 +83,7 @@ import { EmailDiagnosticsSection } from "@/components/admin/EmailDiagnosticsSect
 import { ApplicationStatusEmailEditor } from "@/components/admin/ApplicationStatusEmailEditor";
 import { MySqlAdminSection } from "@/components/admin/MySqlAdminSection";
 import ServersStatusAdminSection from "@/components/admin/ServersStatusAdminSection";
+import { StoreAdminSection } from "@/components/admin/StoreAdminSection";
 
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
