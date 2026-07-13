@@ -22,14 +22,12 @@ type Faq = {
 const blank = { question: "", answer: "", category: "general", sort_order: 0, published: true };
 
 const AdminFaqs = () => {
-  const { user, isAdmin, loading } = useAuth();
   const [items, setItems] = useState<Faq[]>([]);
   const [editing, setEditing] = useState<Faq | null>(null);
   const [form, setForm] = useState(blank);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    document.title = "FAQs — Admin · CarnageMC";
     load();
   }, []);
 
@@ -41,8 +39,6 @@ const AdminFaqs = () => {
     setItems((data as Faq[]) ?? []);
   };
 
-  if (loading) return null;
-  if (!user || !isAdmin) return <Navigate to="/" replace />;
 
   const startEdit = (f: Faq) => {
     setEditing(f);
