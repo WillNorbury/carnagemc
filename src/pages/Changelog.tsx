@@ -13,8 +13,10 @@ import {
   Plus,
   ArrowRight,
   Radio,
+  Maximize2,
 } from "lucide-react";
 import { changelogSlug } from "@/lib/changelog-slug";
+import Lightbox from "@/components/site/Lightbox";
 
 type Entry = {
   id: string;
@@ -43,6 +45,13 @@ const Changelog = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
   const [q, setQ] = useState("");
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  const openLightbox = (src: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLightboxSrc(src);
+  };
 
   useEffect(() => {
     supabase
@@ -177,11 +186,21 @@ const Changelog = () => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/70 to-transparent z-10" />
                   {featured.image_url ? (
-                    <img
-                      src={featured.image_url}
-                      alt=""
-                      className="absolute inset-0 w-full h-full object-cover opacity-70 z-0 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
-                    />
+                    <>
+                      <img
+                        src={featured.image_url}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover opacity-70 z-0 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
+                      />
+                      <button
+                        type="button"
+                        onClick={openLightbox(featured.image_url)}
+                        aria-label="View image"
+                        className="absolute top-4 left-4 z-30 w-9 h-9 grid place-items-center bg-black/60 border border-white/20 text-white opacity-0 group-hover:opacity-100 hover:bg-[#ff5722] hover:border-[#ff5722] transition"
+                      >
+                        <Maximize2 className="w-4 h-4" />
+                      </button>
+                    </>
                   ) : (
                     <div
                       className="absolute inset-0 opacity-30 z-0"
@@ -241,6 +260,14 @@ const Changelog = () => {
                               className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a24] to-transparent" />
+                            <button
+                              type="button"
+                              onClick={openLightbox(e.image_url)}
+                              aria-label="View image"
+                              className="absolute top-2 right-2 z-10 w-8 h-8 grid place-items-center bg-black/60 border border-white/20 text-white opacity-0 group-hover:opacity-100 hover:bg-[#ff5722] hover:border-[#ff5722] transition"
+                            >
+                              <Maximize2 className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         )}
                         <div className="p-6 flex flex-col justify-between flex-1">
@@ -292,6 +319,14 @@ const Changelog = () => {
                                 className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a24] via-transparent to-transparent" />
+                              <button
+                                type="button"
+                                onClick={openLightbox(e.image_url)}
+                                aria-label="View image"
+                                className="absolute top-2 right-2 z-10 w-8 h-8 grid place-items-center bg-black/60 border border-white/20 text-white opacity-0 group-hover:opacity-100 hover:bg-[#ff5722] hover:border-[#ff5722] transition"
+                              >
+                                <Maximize2 className="w-3.5 h-3.5" />
+                              </button>
                             </div>
                           )}
                           <div className="p-6 flex flex-col flex-1">
@@ -399,6 +434,7 @@ const Changelog = () => {
           )}
         </div>
       </main>
+      <Lightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
       <Footer />
     </div>
   );
