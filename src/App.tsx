@@ -46,6 +46,7 @@ import Install from "./pages/Install.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Status from "./pages/Status.tsx";
 import StatusIncident from "./pages/StatusIncident.tsx";
+import ServersStatus from "./pages/ServersStatus.tsx";
 import BanAppeals from "./pages/BanAppeals.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
 import Subscribe from "./pages/Subscribe.tsx";
