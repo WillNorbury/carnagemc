@@ -3,8 +3,10 @@ import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart, formatMoney } from "@/lib/cart";
+import { useAuth } from "@/lib/auth";
+import { toast } from "sonner";
 import {
   ShoppingBag,
   ShoppingCart,
@@ -74,7 +76,24 @@ export default function Store() {
   const [q, setQ] = useState("");
   const [activeCat, setActiveCat] = useState<string>("all");
   const cart = useCart();
+  const { user } = useAuth();
+  const nav = useNavigate();
   const [justAdded, setJustAdded] = useState<string | null>(null);
+  const [checkingOut, setCheckingOut] = useState(false);
+  const cartRef = useRef<HTMLElement | null>(null);
+
+  const scrollToCart = () => {
+    const el = cartRef.current ?? document.getElementById("cart");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      // Fallback: retry once after items load
+      window.setTimeout(() => {
+        const retry = document.getElementById("cart");
+        if (retry) retry.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+    }
+  };
 
   useEffect(() => {
     supabase
@@ -96,18 +115,17 @@ export default function Store() {
   // Scroll to #cart when hash is present (also after items load so section exists).
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const scrollToCart = () => {
-      if (window.location.hash !== "#cart") return;
-      const el = document.getElementById("cart");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    const onHash = () => {
+      if (window.location.hash === "#cart") scrollToCart();
     };
-    scrollToCart();
-    const t = window.setTimeout(scrollToCart, 250);
-    window.addEventListener("hashchange", scrollToCart);
+    onHash();
+    const t = window.setTimeout(onHash, 250);
+    window.addEventListener("hashchange", onHash);
     return () => {
       window.clearTimeout(t);
-      window.removeEventListener("hashchange", scrollToCart);
+      window.removeEventListener("hashchange", onHash);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
 
   const filtered = useMemo(() => {
@@ -178,6 +196,61 @@ export default function Store() {
     }, 1400);
   };
 
+  const handleCheckout = async () => {
+    if (cart.items.length === 0) {
+      toast.error("Your cart is empty.");
+      return;
+    }
+    if (!user) {
+      toast.message("Sign in to checkout — we'll open a support ticket with your order.");
+      nav("/auth?next=/store%23cart");
+      return;
+    }
+    setCheckingOut(true);
+    const lines = cart.items.map(
+      (ci) =>
+        `• ${ci.name} × ${ci.quantity} — ${formatMoney(
+          (Number(ci.price) || 0) * ci.quantity,
+          (ci.currency || cart.currency || "USD").toUpperCase(),
+        )}`,
+    );
+    const subject = `Store order — ${cart.count} item${cart.count === 1 ? "" : "s"} (${formatMoney(
+      cart.subtotal,
+      cart.currency,
+    )})`;
+    const body = [
+      "New store checkout submitted via the website.",
+      "",
+      "Items:",
+      ...lines,
+      "",
+      `Subtotal: ${formatMoney(cart.subtotal, cart.currency)}`,
+      "",
+      "Staff: please reply with payment instructions or fulfillment status.",
+    ].join("\n");
+
+    const { data, error } = await supabase
+      .from("support_tickets")
+      .insert({
+        subject,
+        body,
+        category: "Store & Payments",
+        priority: "normal",
+        user_id: user.id,
+      })
+      .select("id")
+      .single();
+    setCheckingOut(false);
+    if (error) {
+      toast.error(error.message || "Could not create ticket.");
+      return;
+    }
+    cart.clear();
+    toast.success("Order sent — a support ticket has been created.");
+    nav(`/tickets?ticket=${data.id}`);
+  };
+
+
   const AddToCartButton = ({
     it,
     size = "sm",
@@ -244,17 +317,33 @@ export default function Store() {
                 STORE
               </h1>
             </div>
-            <div className="relative group max-w-md w-full">
-              <div className="absolute -inset-0.5 bg-[#ff5722] opacity-20 blur-sm group-focus-within:opacity-40 transition pointer-events-none" />
-              <input
-                type="text"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Search the store..."
-                className="relative w-full bg-[#1a1a24] border border-white/10 px-6 py-4 rounded-none focus:outline-none focus:border-[#ff5722] text-lg font-['Space_Grotesk'] tracking-wide text-slate-100 placeholder:text-[#5f6472]"
-              />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#ff5722] font-mono text-xs opacity-50 hidden sm:block">
-                [/]
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+              <button
+                type="button"
+                onClick={scrollToCart}
+                className="inline-flex items-center justify-center gap-2 px-4 py-3 border border-[#ff5722]/60 text-[#ff5722] hover:bg-[#ff5722] hover:text-white text-xs font-mono tracking-widest uppercase transition relative"
+                aria-label={`Open cart (${cart.count} items)`}
+              >
+                <ShoppingCart className="w-4 h-4" strokeWidth={1.75} />
+                Open Cart
+                {cart.count > 0 && (
+                  <span className="ml-1 min-w-[20px] h-5 px-1.5 grid place-items-center bg-[#ff5722] text-white text-[10px] font-bold leading-none">
+                    {cart.count > 99 ? "99+" : cart.count}
+                  </span>
+                )}
+              </button>
+              <div className="relative group max-w-md w-full">
+                <div className="absolute -inset-0.5 bg-[#ff5722] opacity-20 blur-sm group-focus-within:opacity-40 transition pointer-events-none" />
+                <input
+                  type="text"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Search the store..."
+                  className="relative w-full bg-[#1a1a24] border border-white/10 px-6 py-4 rounded-none focus:outline-none focus:border-[#ff5722] text-lg font-['Space_Grotesk'] tracking-wide text-slate-100 placeholder:text-[#5f6472]"
+                />
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#ff5722] font-mono text-xs opacity-50 hidden sm:block">
+                  [/]
+                </div>
               </div>
             </div>
           </div>
@@ -437,6 +526,7 @@ export default function Store() {
               {/* Cart summary */}
               <section
                 id="cart"
+                ref={cartRef}
                 className="md:col-span-12 mt-8 scroll-mt-24 bg-[#12121a] border border-white/10"
               >
                 <div className="flex items-center gap-4 px-6 py-4 border-b border-white/5">
@@ -537,12 +627,15 @@ export default function Store() {
                           {formatMoney(cart.subtotal, cart.currency)}
                         </span>
                       </div>
-                      <Link
-                        to="/support"
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff5722] hover:bg-[#ff5722]/90 text-white text-xs font-mono tracking-widest uppercase transition"
+                      <button
+                        type="button"
+                        onClick={handleCheckout}
+                        disabled={checkingOut}
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff5722] hover:bg-[#ff5722]/90 disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-mono tracking-widest uppercase transition"
                       >
-                        Checkout <ExternalLink className="w-3.5 h-3.5" />
-                      </Link>
+                        {checkingOut ? "Sending..." : "Checkout"}
+                        <ShoppingCart className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </>
                 )}
