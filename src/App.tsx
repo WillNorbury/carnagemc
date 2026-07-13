@@ -83,7 +83,9 @@ const Shell = () => {
   const { pathname } = useLocation();
   const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
   const isWiki = pathname === "/wiki" || pathname.startsWith("/wiki/");
-  const hideSidebar = isAdmin || isWiki;
+  const isStore = pathname === "/store" || pathname.startsWith("/store/");
+  const isChangelog = pathname === "/changelog" || pathname.startsWith("/changelog/");
+  const hideSidebar = isAdmin || isWiki || isStore || isChangelog;
   return (
     <MaintenanceGate>
       <SidebarProvider>
