@@ -52,6 +52,7 @@ import Unsubscribe from "./pages/Unsubscribe.tsx";
 import Subscribe from "./pages/Subscribe.tsx";
 import Wiki from "./pages/Wiki.tsx";
 import WikiArticle from "./pages/WikiArticle.tsx";
+import WikiMore from "./pages/WikiMore.tsx";
 import Gallery from "./pages/Gallery.tsx";
 import Contact from "./pages/Contact.tsx";
 import Trust from "./pages/Trust.tsx";
