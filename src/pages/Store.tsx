@@ -4,8 +4,10 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
+import { useCart, formatMoney } from "@/lib/cart";
 import {
   ShoppingBag,
+  ShoppingCart,
   Sparkles,
   Zap,
   Package,
@@ -14,6 +16,10 @@ import {
   Flame,
   Star,
   ExternalLink,
+  Plus,
+  Minus,
+  Trash2,
+  Check,
 } from "lucide-react";
 
 type Category = {
