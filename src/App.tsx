@@ -34,6 +34,7 @@ import Changelog from "./pages/Changelog.tsx";
 import ChangelogEntry from "./pages/ChangelogEntry.tsx";
 import ReleaseNotes from "./pages/ReleaseNotes.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import MeStatus from "./pages/MeStatus.tsx";
 import LinkAccount from "./pages/LinkAccount.tsx";
 import Apply from "./pages/Apply.tsx";
 import Features from "./pages/Features.tsx";
