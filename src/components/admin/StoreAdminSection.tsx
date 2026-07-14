@@ -68,30 +68,105 @@ const emptyItem: Omit<Item, "id"> = {
   published: true,
 };
 
+type Coupon = {
+  id: string;
+  code: string;
+  description: string | null;
+  discount_type: "percent" | "fixed";
+  discount_value: number;
+  currency: string | null;
+  min_subtotal: number;
+  max_uses: number | null;
+  uses_count: number;
+  starts_at: string | null;
+  expires_at: string | null;
+  active: boolean;
+};
+
+const emptyCoupon: Omit<Coupon, "id" | "uses_count"> = {
+  code: "",
+  description: "",
+  discount_type: "percent",
+  discount_value: 10,
+  currency: "USD",
+  min_subtotal: 0,
+  max_uses: null,
+  starts_at: null,
+  expires_at: null,
+  active: true,
+};
+
 const ICON_OPTIONS = ["Package", "Sparkles", "Zap", "Coins", "Award", "Flame", "Star", "ShoppingBag"];
 
 export function StoreAdminSection() {
   const [cats, setCats] = useState<Category[]>([]);
   const [items, setItems] = useState<Item[]>([]);
-  const [tab, setTab] = useState<"items" | "categories">("items");
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [tab, setTab] = useState<"items" | "categories" | "coupons">("items");
   const [editingCat, setEditingCat] = useState<
     Category | (Omit<Category, "id"> & { id?: string }) | null
   >(null);
   const [editingItem, setEditingItem] = useState<
     Item | (Omit<Item, "id"> & { id?: string }) | null
   >(null);
+  const [editingCoupon, setEditingCoupon] = useState<
+    Coupon | (Omit<Coupon, "id" | "uses_count"> & { id?: string; uses_count?: number }) | null
+  >(null);
 
   async function load() {
-    const [{ data: c }, { data: i }] = await Promise.all([
+    const [{ data: c }, { data: i }, { data: cp }] = await Promise.all([
       supabase.from("store_categories").select("*").order("sort_order").order("name"),
       supabase.from("store_items").select("*").order("sort_order").order("name"),
+      supabase.from("store_coupons").select("*").order("created_at", { ascending: false }),
     ]);
     setCats((c as Category[]) ?? []);
     setItems((i as Item[]) ?? []);
+    setCoupons((cp as Coupon[]) ?? []);
   }
   useEffect(() => {
     load();
   }, []);
+
+  async function saveCoupon() {
+    if (!editingCoupon) return;
+    const cp = editingCoupon;
+    const code = cp.code.trim().toUpperCase();
+    if (!code) return toast.error("Code required");
+    const value = Number(cp.discount_value);
+    if (!(value >= 0)) return toast.error("Discount value must be ≥ 0");
+    if (cp.discount_type === "percent" && value > 100)
+      return toast.error("Percent must be ≤ 100");
+    const payload = {
+      code,
+      description: cp.description || null,
+      discount_type: cp.discount_type,
+      discount_value: value,
+      currency: (cp.currency || "USD").toUpperCase(),
+      min_subtotal: Number(cp.min_subtotal) || 0,
+      max_uses: cp.max_uses == null || cp.max_uses === ("" as any) ? null : Number(cp.max_uses),
+      starts_at: cp.starts_at || null,
+      expires_at: cp.expires_at || null,
+      active: !!cp.active,
+    };
+    if ("id" in cp && cp.id) {
+      const { error } = await supabase.from("store_coupons").update(payload).eq("id", cp.id);
+      if (error) return toast.error(error.message);
+    } else {
+      const { error } = await supabase.from("store_coupons").insert([payload]);
+      if (error) return toast.error(error.message);
+    }
+    toast.success("Coupon saved");
+    setEditingCoupon(null);
+    load();
+  }
+
+  async function removeCoupon(cp: Coupon) {
+    if (!confirm(`Delete coupon "${cp.code}"?`)) return;
+    const { error } = await supabase.from("store_coupons").delete().eq("id", cp.id);
+    if (error) return toast.error(error.message);
+    load();
+  }
+
 
   async function saveCat() {
     if (!editingCat) return;
@@ -176,6 +251,12 @@ export function StoreAdminSection() {
           onClick={() => setTab("categories")}
         >
           Categories ({cats.length})
+        </Button>
+        <Button
+          variant={tab === "coupons" ? "default" : "outline"}
+          onClick={() => setTab("coupons")}
+        >
+          Coupons ({coupons.length})
         </Button>
       </div>
 
@@ -472,6 +553,227 @@ export function StoreAdminSection() {
               ))}
               {cats.length === 0 && (
                 <p className="p-4 text-muted-foreground">No categories yet.</p>
+              )}
+            </CardContent>
+          </Card>
+        </>
+      )}
+
+      {tab === "coupons" && (
+        <>
+          <div className="flex justify-end">
+            <Button onClick={() => setEditingCoupon({ ...emptyCoupon })}>
+              <Plus className="h-4 w-4 mr-1" /> New coupon
+            </Button>
+          </div>
+
+          {editingCoupon && (
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  {"id" in editingCoupon && editingCoupon.id ? "Edit" : "New"} coupon
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <div>
+                    <Label>Code</Label>
+                    <Input
+                      value={editingCoupon.code}
+                      onChange={(e) =>
+                        setEditingCoupon({ ...editingCoupon, code: e.target.value.toUpperCase() })
+                      }
+                      placeholder="LAUNCH10"
+                      className="font-mono uppercase"
+                    />
+                  </div>
+                  <div>
+                    <Label>Discount type</Label>
+                    <Select
+                      value={editingCoupon.discount_type}
+                      onValueChange={(v) =>
+                        setEditingCoupon({
+                          ...editingCoupon,
+                          discount_type: v as "percent" | "fixed",
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percent">Percent (%)</SelectItem>
+                        <SelectItem value="fixed">Fixed amount</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>
+                      Discount value{" "}
+                      {editingCoupon.discount_type === "percent" ? "(%)" : `(${editingCoupon.currency || "USD"})`}
+                    </Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={editingCoupon.discount_value}
+                      onChange={(e) =>
+                        setEditingCoupon({
+                          ...editingCoupon,
+                          discount_value: Number(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Currency</Label>
+                    <Input
+                      value={editingCoupon.currency ?? "USD"}
+                      onChange={(e) =>
+                        setEditingCoupon({ ...editingCoupon, currency: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Min. subtotal to apply</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={editingCoupon.min_subtotal}
+                      onChange={(e) =>
+                        setEditingCoupon({
+                          ...editingCoupon,
+                          min_subtotal: Number(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Max uses (blank = unlimited)</Label>
+                    <Input
+                      type="number"
+                      value={editingCoupon.max_uses ?? ""}
+                      onChange={(e) =>
+                        setEditingCoupon({
+                          ...editingCoupon,
+                          max_uses: e.target.value === "" ? null : Number(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Starts at (optional)</Label>
+                    <Input
+                      type="datetime-local"
+                      value={
+                        editingCoupon.starts_at
+                          ? new Date(editingCoupon.starts_at).toISOString().slice(0, 16)
+                          : ""
+                      }
+                      onChange={(e) =>
+                        setEditingCoupon({
+                          ...editingCoupon,
+                          starts_at: e.target.value ? new Date(e.target.value).toISOString() : null,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Expires at (optional)</Label>
+                    <Input
+                      type="datetime-local"
+                      value={
+                        editingCoupon.expires_at
+                          ? new Date(editingCoupon.expires_at).toISOString().slice(0, 16)
+                          : ""
+                      }
+                      onChange={(e) =>
+                        setEditingCoupon({
+                          ...editingCoupon,
+                          expires_at: e.target.value ? new Date(e.target.value).toISOString() : null,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label>Description (optional)</Label>
+                  <Textarea
+                    rows={2}
+                    value={editingCoupon.description ?? ""}
+                    onChange={(e) =>
+                      setEditingCoupon({ ...editingCoupon, description: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={editingCoupon.active}
+                    onCheckedChange={(v) => setEditingCoupon({ ...editingCoupon, active: v })}
+                  />
+                  <span>Active</span>
+                </div>
+                <div className="flex gap-2">
+                  <Button onClick={saveCoupon}>Save</Button>
+                  <Button variant="outline" onClick={() => setEditingCoupon(null)}>
+                    Cancel
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          <Card>
+            <CardContent className="p-0 divide-y">
+              {coupons.map((cp) => {
+                const expired = cp.expires_at && new Date(cp.expires_at) < new Date();
+                const maxed = cp.max_uses != null && cp.uses_count >= cp.max_uses;
+                return (
+                  <div key={cp.id} className="flex items-center justify-between p-3 gap-3">
+                    <div className="min-w-0">
+                      <div className="font-mono font-semibold truncate">
+                        {cp.code}{" "}
+                        {!cp.active && (
+                          <span className="text-xs text-muted-foreground">(inactive)</span>
+                        )}
+                        {expired && (
+                          <span className="ml-2 text-[10px] uppercase tracking-widest text-destructive">
+                            expired
+                          </span>
+                        )}
+                        {maxed && (
+                          <span className="ml-2 text-[10px] uppercase tracking-widest text-destructive">
+                            maxed
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate">
+                        {cp.discount_type === "percent"
+                          ? `${cp.discount_value}% off`
+                          : `${(cp.currency ?? "USD").toUpperCase()} ${Number(cp.discount_value).toFixed(2)} off`}
+                        {cp.min_subtotal > 0
+                          ? ` · min ${(cp.currency ?? "USD").toUpperCase()} ${Number(cp.min_subtotal).toFixed(2)}`
+                          : ""}
+                        {" · "}
+                        {cp.uses_count}
+                        {cp.max_uses != null ? `/${cp.max_uses}` : ""} uses
+                        {cp.expires_at
+                          ? ` · exp ${new Date(cp.expires_at).toLocaleDateString()}`
+                          : ""}
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="ghost" onClick={() => setEditingCoupon(cp)}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => removeCoupon(cp)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+              {coupons.length === 0 && (
+                <p className="p-4 text-muted-foreground">No coupons yet.</p>
               )}
             </CardContent>
           </Card>

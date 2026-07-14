@@ -291,6 +291,44 @@ export default function Store() {
     );
   };
 
+  const CouponInput = () => {
+    const [code, setCode] = useState("");
+    return (
+      <div className="flex items-center gap-2">
+        <input
+          type="text"
+          value={code}
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+          onKeyDown={async (e) => {
+            if (e.key === "Enter") {
+              const ok = await cart.applyCoupon(code);
+              if (ok) {
+                setCode("");
+                toast.success("Coupon applied");
+              }
+            }
+          }}
+          placeholder="COUPON CODE"
+          className="bg-[#1a1a24] border border-white/10 focus:border-[#ff5722] focus:outline-none px-3 py-2 text-xs font-mono tracking-widest uppercase text-slate-100 placeholder:text-[#5f6472] w-48"
+        />
+        <button
+          type="button"
+          onClick={async () => {
+            const ok = await cart.applyCoupon(code);
+            if (ok) {
+              setCode("");
+              toast.success("Coupon applied");
+            }
+          }}
+          disabled={cart.applyingCoupon || !code.trim()}
+          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition disabled:opacity-50"
+        >
+          {cart.applyingCoupon ? "…" : "Apply"}
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
       <Helmet>
@@ -618,24 +656,76 @@ export default function Store() {
                         </li>
                       ))}
                     </ul>
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-6 py-5 border-t border-white/5 bg-[#0f0f16]">
-                      <div className="flex items-baseline gap-3">
-                        <span className="text-xs font-mono uppercase tracking-widest text-[#9ca3af]">
-                          Subtotal
-                        </span>
-                        <span className="text-2xl font-bold font-['Space_Grotesk'] tabular-nums">
-                          {formatMoney(cart.subtotal, cart.currency)}
-                        </span>
+                    <div className="flex flex-col gap-4 px-6 py-5 border-t border-white/5 bg-[#0f0f16]">
+                      {/* Coupon row */}
+                      <div className="flex flex-col md:flex-row md:items-center gap-3">
+                        {cart.coupon ? (
+                          <div className="flex items-center gap-3 border border-[#ff5722]/50 bg-[#ff5722]/5 px-3 py-2">
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-[#ff5722]">
+                              Coupon
+                            </span>
+                            <span className="font-mono font-bold text-sm">{cart.coupon.code}</span>
+                            <span className="text-xs text-[#9ca3af]">
+                              {cart.coupon.discount_type === "percent"
+                                ? `${cart.coupon.discount_value}% off`
+                                : `${formatMoney(cart.coupon.discount_value, cart.currency)} off`}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={cart.clearCoupon}
+                              className="ml-2 text-[#9ca3af] hover:text-[#ff5722]"
+                              aria-label="Remove coupon"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ) : (
+                          <CouponInput />
+                        )}
+                        {cart.couponError && (
+                          <span className="text-xs text-red-400 font-mono">{cart.couponError}</span>
+                        )}
                       </div>
-                      <button
-                        type="button"
-                        onClick={handleCheckout}
-                        disabled={checkingOut}
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff5722] hover:bg-[#ff5722]/90 disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-mono tracking-widest uppercase transition"
-                      >
-                        {checkingOut ? "Sending..." : "Checkout"}
-                        <ShoppingCart className="w-3.5 h-3.5" />
-                      </button>
+
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div className="flex flex-col gap-1 text-sm">
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs font-mono uppercase tracking-widest text-[#9ca3af] w-24">
+                              Subtotal
+                            </span>
+                            <span className="tabular-nums font-mono">
+                              {formatMoney(cart.subtotal, cart.currency)}
+                            </span>
+                          </div>
+                          {cart.discount > 0 && (
+                            <div className="flex items-center gap-3 text-[#ff5722]">
+                              <span className="text-xs font-mono uppercase tracking-widest w-24">
+                                Discount
+                              </span>
+                              <span className="tabular-nums font-mono">
+                                −{formatMoney(cart.discount, cart.currency)}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs font-mono uppercase tracking-widest text-[#9ca3af] w-24">
+                              Total
+                            </span>
+                            <span className="text-2xl font-bold font-['Space_Grotesk'] tabular-nums">
+                              {formatMoney(cart.total, cart.currency)}
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleCheckout}
+                          disabled={checkingOut}
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff5722] hover:bg-[#ff5722]/90 disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-mono tracking-widest uppercase transition"
+                        >
+                          {checkingOut ? "Sending..." : "Checkout"}
+                          <ShoppingCart className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </>
                 )}

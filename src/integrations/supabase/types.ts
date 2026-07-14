@@ -2110,6 +2110,57 @@ export type Database = {
         }
         Relationships: []
       }
+      store_coupons: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          currency: string
+          description: string | null
+          discount_type: string
+          discount_value: number
+          expires_at: string | null
+          id: string
+          max_uses: number | null
+          min_subtotal: number
+          starts_at: string | null
+          updated_at: string
+          uses_count: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          max_uses?: number | null
+          min_subtotal?: number
+          starts_at?: string | null
+          updated_at?: string
+          uses_count?: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          max_uses?: number | null
+          min_subtotal?: number
+          starts_at?: string | null
+          updated_at?: string
+          uses_count?: number
+        }
+        Relationships: []
+      }
       store_items: {
         Row: {
           badge: string | null
