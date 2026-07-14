@@ -558,6 +558,227 @@ export function StoreAdminSection() {
           </Card>
         </>
       )}
+
+      {tab === "coupons" && (
+        <>
+          <div className="flex justify-end">
+            <Button onClick={() => setEditingCoupon({ ...emptyCoupon })}>
+              <Plus className="h-4 w-4 mr-1" /> New coupon
+            </Button>
+          </div>
+
+          {editingCoupon && (
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  {"id" in editingCoupon && editingCoupon.id ? "Edit" : "New"} coupon
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <div>
+                    <Label>Code</Label>
+                    <Input
+                      value={editingCoupon.code}
+                      onChange={(e) =>
+                        setEditingCoupon({ ...editingCoupon, code: e.target.value.toUpperCase() })
+                      }
+                      placeholder="LAUNCH10"
+                      className="font-mono uppercase"
+                    />
+                  </div>
+                  <div>
+                    <Label>Discount type</Label>
+                    <Select
+                      value={editingCoupon.discount_type}
+                      onValueChange={(v) =>
+                        setEditingCoupon({
+                          ...editingCoupon,
+                          discount_type: v as "percent" | "fixed",
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percent">Percent (%)</SelectItem>
+                        <SelectItem value="fixed">Fixed amount</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>
+                      Discount value{" "}
+                      {editingCoupon.discount_type === "percent" ? "(%)" : `(${editingCoupon.currency || "USD"})`}
+                    </Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={editingCoupon.discount_value}
+                      onChange={(e) =>
+                        setEditingCoupon({
+                          ...editingCoupon,
+                          discount_value: Number(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Currency</Label>
+                    <Input
+                      value={editingCoupon.currency ?? "USD"}
+                      onChange={(e) =>
+                        setEditingCoupon({ ...editingCoupon, currency: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Min. subtotal to apply</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={editingCoupon.min_subtotal}
+                      onChange={(e) =>
+                        setEditingCoupon({
+                          ...editingCoupon,
+                          min_subtotal: Number(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Max uses (blank = unlimited)</Label>
+                    <Input
+                      type="number"
+                      value={editingCoupon.max_uses ?? ""}
+                      onChange={(e) =>
+                        setEditingCoupon({
+                          ...editingCoupon,
+                          max_uses: e.target.value === "" ? null : Number(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Starts at (optional)</Label>
+                    <Input
+                      type="datetime-local"
+                      value={
+                        editingCoupon.starts_at
+                          ? new Date(editingCoupon.starts_at).toISOString().slice(0, 16)
+                          : ""
+                      }
+                      onChange={(e) =>
+                        setEditingCoupon({
+                          ...editingCoupon,
+                          starts_at: e.target.value ? new Date(e.target.value).toISOString() : null,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Expires at (optional)</Label>
+                    <Input
+                      type="datetime-local"
+                      value={
+                        editingCoupon.expires_at
+                          ? new Date(editingCoupon.expires_at).toISOString().slice(0, 16)
+                          : ""
+                      }
+                      onChange={(e) =>
+                        setEditingCoupon({
+                          ...editingCoupon,
+                          expires_at: e.target.value ? new Date(e.target.value).toISOString() : null,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label>Description (optional)</Label>
+                  <Textarea
+                    rows={2}
+                    value={editingCoupon.description ?? ""}
+                    onChange={(e) =>
+                      setEditingCoupon({ ...editingCoupon, description: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={editingCoupon.active}
+                    onCheckedChange={(v) => setEditingCoupon({ ...editingCoupon, active: v })}
+                  />
+                  <span>Active</span>
+                </div>
+                <div className="flex gap-2">
+                  <Button onClick={saveCoupon}>Save</Button>
+                  <Button variant="outline" onClick={() => setEditingCoupon(null)}>
+                    Cancel
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          <Card>
+            <CardContent className="p-0 divide-y">
+              {coupons.map((cp) => {
+                const expired = cp.expires_at && new Date(cp.expires_at) < new Date();
+                const maxed = cp.max_uses != null && cp.uses_count >= cp.max_uses;
+                return (
+                  <div key={cp.id} className="flex items-center justify-between p-3 gap-3">
+                    <div className="min-w-0">
+                      <div className="font-mono font-semibold truncate">
+                        {cp.code}{" "}
+                        {!cp.active && (
+                          <span className="text-xs text-muted-foreground">(inactive)</span>
+                        )}
+                        {expired && (
+                          <span className="ml-2 text-[10px] uppercase tracking-widest text-destructive">
+                            expired
+                          </span>
+                        )}
+                        {maxed && (
+                          <span className="ml-2 text-[10px] uppercase tracking-widest text-destructive">
+                            maxed
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate">
+                        {cp.discount_type === "percent"
+                          ? `${cp.discount_value}% off`
+                          : `${(cp.currency ?? "USD").toUpperCase()} ${Number(cp.discount_value).toFixed(2)} off`}
+                        {cp.min_subtotal > 0
+                          ? ` · min ${(cp.currency ?? "USD").toUpperCase()} ${Number(cp.min_subtotal).toFixed(2)}`
+                          : ""}
+                        {" · "}
+                        {cp.uses_count}
+                        {cp.max_uses != null ? `/${cp.max_uses}` : ""} uses
+                        {cp.expires_at
+                          ? ` · exp ${new Date(cp.expires_at).toLocaleDateString()}`
+                          : ""}
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="ghost" onClick={() => setEditingCoupon(cp)}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => removeCoupon(cp)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+              {coupons.length === 0 && (
+                <p className="p-4 text-muted-foreground">No coupons yet.</p>
+              )}
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   );
 }
