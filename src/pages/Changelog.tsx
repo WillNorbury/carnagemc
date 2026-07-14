@@ -142,8 +142,28 @@ const Changelog = () => {
             </div>
           </div>
 
+          {/* Notification channels */}
+          <div className="-mt-6 flex flex-wrap items-center gap-2 text-[11px] font-mono uppercase tracking-widest">
+            <span className="text-[#5f6472]">Broadcast on:</span>
+            <span className="inline-flex items-center gap-1.5 border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1">
+              <Globe className="w-3 h-3" strokeWidth={1.5} /> Website
+              <span className="ml-1 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            </span>
+            <span className="inline-flex items-center gap-1.5 border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1">
+              <Mail className="w-3 h-3" strokeWidth={1.5} /> Email subscribers
+              <span className="ml-1 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            </span>
+            <span
+              className="inline-flex items-center gap-1.5 border border-white/10 bg-white/5 text-[#9ca3af] px-2.5 py-1 line-through decoration-[#ff5722]/60"
+              title="Automatic Discord posts are disabled — updates are sent manually."
+            >
+              <MessageSquareOff className="w-3 h-3" strokeWidth={1.5} /> Discord (manual only)
+            </span>
+          </div>
+
           {/* Category filter chips */}
           <div className="flex flex-wrap gap-2 -mt-4">
+
             <button
               onClick={() => setFilter("all")}
               className={`px-4 py-2 text-xs font-mono tracking-widest uppercase border transition ${
