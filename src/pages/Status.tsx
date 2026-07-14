@@ -652,7 +652,8 @@ const Status = () => {
 
       {/* SERVICE DETAIL DIALOG */}
       <Dialog open={!!detailKey} onOpenChange={(o) => !o && setDetailKey(null)}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl w-[calc(100vw-2rem)] max-h-[85vh] overflow-y-auto overflow-x-hidden">
+
           {(() => {
             if (!detailKey) return null;
             const svc = services.find((s) => s.key === detailKey);
@@ -687,22 +688,23 @@ const Status = () => {
             return (
               <>
                 <DialogHeader>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap pr-6">
                     <span className="h-3 w-3 rounded-full shrink-0" style={{ background: accent, boxShadow: `0 0 10px ${accent}` }} />
-                    <DialogTitle className="font-display text-2xl">{svc.name}</DialogTitle>
-                    <Badge variant="secondary" className="ml-auto" style={{ color: accent, borderColor: `${accent}55` }}>
+                    <DialogTitle className="font-display text-2xl min-w-0 break-words">{svc.name}</DialogTitle>
+                    <Badge variant="secondary" className="ml-auto shrink-0" style={{ color: accent, borderColor: `${accent}55` }}>
                       {statusLabel}
                     </Badge>
                   </div>
-                  <DialogDescription className="flex items-center gap-2 pt-1">
-                    {svc.desc}
+                  <DialogDescription className="flex items-center gap-2 pt-1 flex-wrap break-words">
+                    <span className="truncate max-w-full">{svc.desc}</span>
                     {svc.url && (
-                      <a href={svc.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
+                      <a href={svc.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline shrink-0">
                         Visit <ExternalLink className="h-3 w-3" />
                       </a>
                     )}
                   </DialogDescription>
                 </DialogHeader>
+
 
                 {/* KPI grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
@@ -732,17 +734,18 @@ const Status = () => {
                     </div>
                     <div className="text-[10px] text-muted-foreground">recent history</div>
                   </Card>
-                  <Card className="p-3">
+                  <Card className="p-3 min-w-0">
                     <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
                       <Clock className="h-3 w-3" /> Last check
                     </div>
-                    <div className="font-display text-sm font-bold">
+                    <div className="font-display text-sm font-bold truncate">
                       {lastCheck ? new Date(lastCheck.checked_at).toLocaleTimeString() : "—"}
                     </div>
-                    <div className="text-[10px] text-muted-foreground">
+                    <div className="text-[10px] text-muted-foreground truncate">
                       {lastCheck ? (lastCheck.is_up ? `Up · HTTP ${lastCheck.status_code ?? "—"}` : `Down · ${lastCheck.error ?? "error"}`) : "no data"}
                     </div>
                   </Card>
+
                 </div>
 
                 {/* Day breakdown */}
@@ -779,28 +782,31 @@ const Status = () => {
                   ) : detailChecks.length === 0 ? (
                     <div className="text-xs text-muted-foreground">No recent checks recorded.</div>
                   ) : (
-                    <Card className="divide-y divide-border max-h-56 overflow-y-auto">
+                    <Card className="divide-y divide-border max-h-56 overflow-y-auto overflow-x-hidden">
                       {detailChecks.map((c, idx) => (
-                        <div key={idx} className="px-3 py-2 flex items-center gap-2 text-xs">
+                        <div key={idx} className="px-3 py-2 flex items-center gap-2 text-xs min-w-0">
                           {c.is_up ? (
                             <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
                           ) : (
                             <XCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
                           )}
-                          <span className="font-mono text-muted-foreground shrink-0">
-                            {new Date(c.checked_at).toLocaleString()}
-                          </span>
-                          <span className="flex-1 truncate">
-                            {c.is_up ? "Up" : "Down"}
-                            {c.status_code != null ? ` · HTTP ${c.status_code}` : ""}
-                            {c.error ? ` · ${c.error}` : ""}
-                          </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-mono text-muted-foreground truncate text-[10px]">
+                              {new Date(c.checked_at).toLocaleString()}
+                            </div>
+                            <div className="truncate">
+                              {c.is_up ? "Up" : "Down"}
+                              {c.status_code != null ? ` · HTTP ${c.status_code}` : ""}
+                              {c.error ? ` · ${c.error}` : ""}
+                            </div>
+                          </div>
                           {c.latency_ms != null && (
                             <span className="font-mono text-muted-foreground shrink-0">{c.latency_ms}ms</span>
                           )}
                         </div>
                       ))}
                     </Card>
+
                   )}
                 </div>
 
@@ -808,7 +814,7 @@ const Status = () => {
                 {svcIncidents.length > 0 && (
                   <div className="mt-5">
                     <div className="font-display font-bold text-sm mb-2">Incidents for {svc.name}</div>
-                    <Card className="divide-y divide-border">
+                    <Card className="divide-y divide-border overflow-x-hidden">
                       {svcIncidents.map((i) => {
                         const ongoing = !i.closed_at;
                         const durMin = Math.max(
@@ -822,11 +828,11 @@ const Status = () => {
                             key={i.id}
                             to={`/status/${i.incident_number}`}
                             onClick={() => setDetailKey(null)}
-                            className="flex items-center gap-2 px-3 py-2 hover:bg-muted/40 transition text-xs"
+                            className="flex items-center gap-2 px-3 py-2 hover:bg-muted/40 transition text-xs min-w-0"
                           >
                             <span className={`h-2 w-2 rounded-full shrink-0 ${ongoing ? "bg-destructive animate-pulse" : "bg-muted-foreground"}`} />
                             <span className="font-semibold shrink-0">#{i.incident_number}</span>
-                            <span className="text-muted-foreground truncate flex-1">
+                            <span className="text-muted-foreground truncate flex-1 min-w-0">
                               {new Date(i.opened_at).toLocaleString()} · {durMin < 60 ? `${durMin}m` : `${Math.floor(durMin / 60)}h ${durMin % 60}m`}
                               {i.last_error ? ` · ${i.last_error}` : ""}
                             </span>
@@ -835,6 +841,7 @@ const Status = () => {
                         );
                       })}
                     </Card>
+
                   </div>
                 )}
               </>
