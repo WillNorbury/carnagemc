@@ -522,16 +522,16 @@ const Status = () => {
                     Math.round(((incident.closed_at ? new Date(incident.closed_at).getTime() : Date.now()) - new Date(incident.opened_at).getTime()) / 60000),
                   );
                   return (
-                    <Link key={incident.id} to={`/status/${incident.incident_number}`} className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40">
-                      <span className={cn("h-2.5 w-2.5 rounded-full", ongoing ? "bg-destructive animate-pulse" : "bg-muted-foreground")} />
-                      <span className="min-w-0">
+                    <Link key={incident.id} to={`/status/${incident.incident_number}`} className="flex min-w-0 items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40">
+                      <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", ongoing ? "bg-destructive animate-pulse" : "bg-muted-foreground")} />
+                      <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-semibold">#{incident.incident_number} · {service?.name ?? incident.service_key}</span>
                         <span className="block truncate text-xs text-muted-foreground">
                           {formatDateTime(incident.opened_at)} · {duration < 60 ? `${duration}m` : `${Math.floor(duration / 60)}h ${duration % 60}m`}
                           {incident.last_error ? ` · ${incident.last_error}` : ""}
                         </span>
                       </span>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
                     </Link>
                   );
                 })}
@@ -629,14 +629,14 @@ const Status = () => {
                         Math.round(((incident.closed_at ? new Date(incident.closed_at).getTime() : Date.now()) - new Date(incident.opened_at).getTime()) / 60000),
                       );
                       return (
-                        <Link key={incident.id} to={`/status/${incident.incident_number}`} onClick={() => setDetailKey(null)} className="grid min-w-0 grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-2 px-3 py-2 text-xs transition-colors hover:bg-muted/40">
-                          <span className={cn("h-2 w-2 rounded-full", ongoing ? "bg-destructive animate-pulse" : "bg-muted-foreground")} />
-                          <span className="font-semibold">#{incident.incident_number}</span>
-                          <span className="min-w-0 truncate text-muted-foreground">
+                        <Link key={incident.id} to={`/status/${incident.incident_number}`} onClick={() => setDetailKey(null)} className="flex min-w-0 items-center gap-2 px-3 py-2 text-xs transition-colors hover:bg-muted/40">
+                          <span className={cn("h-2 w-2 shrink-0 rounded-full", ongoing ? "bg-destructive animate-pulse" : "bg-muted-foreground")} />
+                          <span className="shrink-0 font-semibold">#{incident.incident_number}</span>
+                          <span className="min-w-0 flex-1 truncate text-muted-foreground">
                             {formatDateTime(incident.opened_at)} · {duration < 60 ? `${duration}m` : `${Math.floor(duration / 60)}h ${duration % 60}m`}
                             {incident.last_error ? ` · ${incident.last_error}` : ""}
                           </span>
-                          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                          <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                         </Link>
                       );
                     })}
