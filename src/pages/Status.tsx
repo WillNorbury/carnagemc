@@ -734,17 +734,18 @@ const Status = () => {
                     </div>
                     <div className="text-[10px] text-muted-foreground">recent history</div>
                   </Card>
-                  <Card className="p-3">
+                  <Card className="p-3 min-w-0">
                     <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
                       <Clock className="h-3 w-3" /> Last check
                     </div>
-                    <div className="font-display text-sm font-bold">
+                    <div className="font-display text-sm font-bold truncate">
                       {lastCheck ? new Date(lastCheck.checked_at).toLocaleTimeString() : "—"}
                     </div>
-                    <div className="text-[10px] text-muted-foreground">
+                    <div className="text-[10px] text-muted-foreground truncate">
                       {lastCheck ? (lastCheck.is_up ? `Up · HTTP ${lastCheck.status_code ?? "—"}` : `Down · ${lastCheck.error ?? "error"}`) : "no data"}
                     </div>
                   </Card>
+
                 </div>
 
                 {/* Day breakdown */}
