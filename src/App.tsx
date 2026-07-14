@@ -10,6 +10,7 @@ import { UpdatePrompt } from "@/components/site/UpdatePrompt";
 
 import { AuthProvider } from "@/lib/auth";
 import { CartProvider } from "@/lib/cart";
+import { CartDrawer } from "@/components/site/CartDrawer";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
@@ -69,6 +70,7 @@ import StaffChat from "./pages/StaffChat.tsx";
 import FireMarket from "./pages/FireMarket.tsx";
 import Store from "./pages/Store.tsx";
 import StorePackage from "./pages/StorePackage.tsx";
+import Checkout from "./pages/Checkout.tsx";
 
 
 const queryClient = new QueryClient();
@@ -159,7 +161,7 @@ const Shell = () => {
                   <Route path="/skripts" element={<Navigate to="/plugins" replace />} />
                   <Route path="/skripts/new" element={<Navigate to="/plugins" replace />} />
                   <Route path="/skript/:slug" element={<Navigate to="/plugins" replace />} />
-                  <Route path="/cart" element={<Navigate to="/store" replace />} />
+                  <Route path="/cart" element={<Navigate to="/checkout" replace />} />
                   <Route path="/wishlist" element={<Navigate to="/plugins" replace />} />
                   <Route path="/orders" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/features" element={<Features />} />
@@ -196,6 +198,7 @@ const Shell = () => {
                    <Route path="/discord" element={<Discord />} />
                   <Route path="/store" element={<Store />} />
                   <Route path="/store/package/:id" element={<StorePackage />} />
+                  <Route path="/checkout" element={<Checkout />} />
                    
                    <Route path="*" element={<NotFound />} />
           </Routes>
@@ -216,6 +219,7 @@ const App = () => (
         <AuthProvider>
           <CartProvider>
             <Shell />
+            <CartDrawer />
           </CartProvider>
         </AuthProvider>
       </BrowserRouter>

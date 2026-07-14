@@ -1,6 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { CartDrawer } from "@/components/site/CartDrawer";
 
 export type CartItem = {
   id: string;
@@ -256,7 +255,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <CartContext.Provider value={value}>
       {children}
-      <CartDrawer />
     </CartContext.Provider>
   );
 };

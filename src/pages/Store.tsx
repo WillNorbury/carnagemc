@@ -717,11 +717,10 @@ export default function Store() {
                         </div>
                         <button
                           type="button"
-                          onClick={handleCheckout}
-                          disabled={checkingOut}
-                          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff5722] hover:bg-[#ff5722]/90 disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-mono tracking-widest uppercase transition"
+                          onClick={() => nav("/checkout")}
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff5722] hover:bg-[#ff5722]/90 text-white text-xs font-mono tracking-widest uppercase transition"
                         >
-                          {checkingOut ? "Sending..." : "Checkout"}
+                          Checkout
                           <ShoppingCart className="w-3.5 h-3.5" />
                         </button>
                       </div>
