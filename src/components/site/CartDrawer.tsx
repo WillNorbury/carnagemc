@@ -280,11 +280,13 @@ export function CartDrawer() {
                 <Trash2 className="h-4 w-4 mr-1" /> Clear
               </Button>
               <Button
-                onClick={handleCheckout}
-                disabled={checkingOut}
+                onClick={() => {
+                  cart.closeCart();
+                  nav("/checkout");
+                }}
                 className="flex-1"
               >
-                {checkingOut ? "Sending…" : "Checkout"}
+                Checkout
               </Button>
             </div>
           </div>
