@@ -10,6 +10,7 @@ import { UpdatePrompt } from "@/components/site/UpdatePrompt";
 
 import { AuthProvider } from "@/lib/auth";
 import { CartProvider } from "@/lib/cart";
+import { CartDrawer } from "@/components/site/CartDrawer";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
@@ -216,6 +217,7 @@ const App = () => (
         <AuthProvider>
           <CartProvider>
             <Shell />
+            <CartDrawer />
           </CartProvider>
         </AuthProvider>
       </BrowserRouter>
