@@ -86,6 +86,7 @@ const mainGroup: NavGroup = {
   items: [
     { to: "/", label: "Home", icon: Home },
     { to: "/news", label: "News", icon: Newspaper },
+    { to: "/store", label: "Store", icon: VoteIcon },
     { to: "/events", label: "Events", icon: Calendar },
     { to: "/changelog", label: "Changelog", icon: ClipboardList },
     { to: "/features", label: "Features", icon: Sparkles },
