@@ -521,7 +521,16 @@ const Status = () => {
               return (
                 <Card
                   key={s.key}
-                  className="group relative p-5 overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-lg"
+                  onClick={() => setDetailKey(s.key)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setDetailKey(s.key);
+                    }
+                  }}
+                  className="group relative p-5 overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-lg cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   style={{ borderColor: current === "up" ? undefined : `${accent}55` }}
                 >
                   <div
@@ -535,9 +544,11 @@ const Status = () => {
                           href={s.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-display font-bold hover:text-primary hover:underline"
+                          onClick={(e) => e.stopPropagation()}
+                          className="font-display font-bold hover:text-primary hover:underline inline-flex items-center gap-1"
                         >
                           {s.name}
+                          <ExternalLink className="h-3 w-3 opacity-60" />
                         </a>
                       ) : (
                         <div className="font-display font-bold">{s.name}</div>
@@ -555,12 +566,15 @@ const Status = () => {
                     <span className="font-mono font-bold text-sm normal-case tracking-normal" style={{ color: accent }}>
                       {pct !== null ? `${pct.toFixed(2)}%` : loading ? "…" : "—"}
                     </span>
-                    <span>Today</span>
+                    <span className="inline-flex items-center gap-1 group-hover:text-primary transition">
+                      Details <ChevronRight className="h-3 w-3" />
+                    </span>
                   </div>
                 </Card>
               );
             })}
           </div>
+
 
           {/* INCIDENTS */}
           {incidents.length > 0 && (
