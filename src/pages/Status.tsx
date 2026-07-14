@@ -814,7 +814,7 @@ const Status = () => {
                 {svcIncidents.length > 0 && (
                   <div className="mt-5">
                     <div className="font-display font-bold text-sm mb-2">Incidents for {svc.name}</div>
-                    <Card className="divide-y divide-border">
+                    <Card className="divide-y divide-border overflow-x-hidden">
                       {svcIncidents.map((i) => {
                         const ongoing = !i.closed_at;
                         const durMin = Math.max(
@@ -828,11 +828,11 @@ const Status = () => {
                             key={i.id}
                             to={`/status/${i.incident_number}`}
                             onClick={() => setDetailKey(null)}
-                            className="flex items-center gap-2 px-3 py-2 hover:bg-muted/40 transition text-xs"
+                            className="flex items-center gap-2 px-3 py-2 hover:bg-muted/40 transition text-xs min-w-0"
                           >
                             <span className={`h-2 w-2 rounded-full shrink-0 ${ongoing ? "bg-destructive animate-pulse" : "bg-muted-foreground"}`} />
                             <span className="font-semibold shrink-0">#{i.incident_number}</span>
-                            <span className="text-muted-foreground truncate flex-1">
+                            <span className="text-muted-foreground truncate flex-1 min-w-0">
                               {new Date(i.opened_at).toLocaleString()} · {durMin < 60 ? `${durMin}m` : `${Math.floor(durMin / 60)}h ${durMin % 60}m`}
                               {i.last_error ? ` · ${i.last_error}` : ""}
                             </span>
@@ -841,6 +841,7 @@ const Status = () => {
                         );
                       })}
                     </Card>
+
                   </div>
                 )}
               </>
