@@ -167,19 +167,11 @@ export default function Store() {
     it: Item;
     children: React.ReactNode;
     className?: string;
-  }) =>
-    it.external_url ? (
-      <a
-        href={it.external_url}
-        target="_blank"
-        rel="noreferrer noopener"
-        className={className}
-      >
-        {children}
-      </a>
-    ) : (
-      <div className={className}>{children}</div>
-    );
+  }) => (
+    <Link to={`/store/package/${it.id}`} className={className}>
+      {children}
+    </Link>
+  );
 
   const handleAdd = (it: Item) => {
     cart.add({
