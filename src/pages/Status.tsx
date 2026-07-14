@@ -1,51 +1,33 @@
 import { useEffect, useMemo, useState } from "react";
-import Navbar from "@/components/site/Navbar";
-import Footer from "@/components/site/Footer";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Link } from "react-router-dom";
 import {
   Activity,
-  CheckCircle2,
   AlertTriangle,
-  XCircle,
-  HelpCircle,
-  RefreshCw,
-  Timer,
+  ArrowUpRight,
+  CalendarDays,
+  CheckCircle2,
   ChevronRight,
-  Sparkles,
-  Zap,
-  ShieldCheck,
-  ExternalLink,
   Clock,
   Gauge,
-  CalendarDays,
+  HelpCircle,
+  RefreshCw,
+  ShieldCheck,
+  Timer,
+  XCircle,
+  Zap,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Navbar from "@/components/site/Navbar";
+import Footer from "@/components/site/Footer";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 
 type Range = 90 | 180;
-
-const RANGES: { label: string; value: Range }[] = [
-  { label: "90 days", value: 90 },
-  { label: "180 days", value: 180 },
-];
-
-const DEFAULT_SERVICES: { key: string; name: string; desc: string; url: string }[] = [
-  { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
-  { key: "minecraft", name: "Minecraft Server", desc: "mc.carnagemc.net", url: "" },
-  { key: "api", name: "API & Database", desc: "Backend services", url: "" },
-  { key: "panel", name: "Panel", desc: "panel.voxelnode.dev", url: "" },
-  {
-    key: "discord",
-    name: "Discord Server",
-    desc: "https://discord.gg/wD6K3nr2MG",
-    url: "https://discord.carnagemc.net",
-  },
-  { key: "portfolio", name: "Portfolio", desc: "portfolio.carnagemc.net", url: "https://portfolio.carnagemc.net" },
-];
+type DayStatus = "up" | "degraded" | "down" | "none";
 
 type DailyRow = {
   service_key: string;
@@ -54,108 +36,154 @@ type DailyRow = {
   up_checks: number;
   uptime_pct: number | null;
 };
-type DayStatus = "up" | "degraded" | "down" | "none";
 
-const formatDate = (d: Date) => d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+type Service = { key: string; name: string; desc: string; url: string };
+type Incident = {
+  id: string;
+  incident_number: number;
+  service_key: string;
+  opened_at: string;
+  closed_at: string | null;
+  last_error: string | null;
+};
+type Check = {
+  checked_at: string;
+  is_up: boolean;
+  latency_ms: number | null;
+  status_code: number | null;
+  error: string | null;
+};
+
+const RANGES: { label: string; value: Range }[] = [
+  { label: "90 days", value: 90 },
+  { label: "180 days", value: 180 },
+];
+
+const DEFAULT_SERVICES: Service[] = [
+  { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
+  { key: "minecraft", name: "Minecraft Server", desc: "mc.carnagemc.net", url: "" },
+  { key: "api", name: "API & Database", desc: "Backend services", url: "" },
+  { key: "panel", name: "Panel", desc: "panel.voxelnode.dev", url: "" },
+  { key: "discord", name: "Discord Server", desc: "https://discord.gg/wD6K3nr2MG", url: "https://discord.carnagemc.net" },
+  { key: "portfolio", name: "Portfolio", desc: "portfolio.carnagemc.net", url: "https://portfolio.carnagemc.net" },
+];
+
 const toDayKey = (d: Date) => d.toISOString().slice(0, 10);
+const formatDate = (d: Date) => d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+const formatDateTime = (value: string) => new Date(value).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 
 const statusFromPct = (pct: number | null, total: number): DayStatus => {
-  if (!total) return "none";
-  if (pct === null) return "none";
+  if (!total || pct === null) return "none";
   if (pct >= 99) return "up";
   if (pct >= 80) return "degraded";
   return "down";
 };
 
-const colorFor = (s: DayStatus) => {
-  switch (s) {
-    case "up":
-      return "bg-primary/80 hover:bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.5)]";
-    case "degraded":
-      return "bg-yellow-500/80 hover:bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.5)]";
-    case "down":
-      return "bg-destructive/80 hover:bg-destructive shadow-[0_0_8px_hsl(var(--destructive)/0.5)]";
-    default:
-      return "bg-muted/40 hover:bg-muted/60";
-  }
+const statusMeta: Record<DayStatus, { label: string; summary: string; tone: string; dot: string; text: string; border: string; icon: typeof CheckCircle2 }> = {
+  up: {
+    label: "Operational",
+    summary: "Systems are responding normally.",
+    tone: "bg-primary/10",
+    dot: "bg-primary",
+    text: "text-primary",
+    border: "border-primary/35",
+    icon: CheckCircle2,
+  },
+  degraded: {
+    label: "Degraded",
+    summary: "One or more checks are slower than expected.",
+    tone: "bg-accent/10",
+    dot: "bg-accent",
+    text: "text-accent",
+    border: "border-accent/35",
+    icon: AlertTriangle,
+  },
+  down: {
+    label: "Outage",
+    summary: "A service is currently failing checks.",
+    tone: "bg-destructive/10",
+    dot: "bg-destructive",
+    text: "text-destructive",
+    border: "border-destructive/35",
+    icon: XCircle,
+  },
+  none: {
+    label: "No data",
+    summary: "Checks are still being collected.",
+    tone: "bg-muted/40",
+    dot: "bg-muted-foreground",
+    text: "text-muted-foreground",
+    border: "border-border",
+    icon: HelpCircle,
+  },
 };
 
-const DayGrid = ({ days, byDay }: { days: number; byDay: Map<string, { pct: number | null; total: number }> }) => {
+const dayColor = (status: DayStatus) => {
+  if (status === "up") return "bg-primary/80";
+  if (status === "degraded") return "bg-accent/80";
+  if (status === "down") return "bg-destructive/80";
+  return "bg-muted/50";
+};
+
+const getUptime = (days?: Map<string, { pct: number | null; total: number }>) => {
+  let total = 0;
+  let up = 0;
+  if (days) {
+    for (const v of days.values()) {
+      total += v.total;
+      up += Math.round(((v.pct ?? 0) / 100) * v.total);
+    }
+  }
+  return total ? (100 * up) / total : null;
+};
+
+const DayGrid = ({ days, byDay }: { days: Range; byDay: Map<string, { pct: number | null; total: number }> }) => {
   const today = new Date();
-  const cells = Array.from({ length: days }, (_, i) => {
-    const d = new Date(today);
-    d.setUTCDate(today.getUTCDate() - (days - 1 - i));
-    const key = toDayKey(d);
+  const cells = Array.from({ length: days }, (_, index) => {
+    const date = new Date(today);
+    date.setUTCDate(today.getUTCDate() - (days - 1 - index));
+    const key = toDayKey(date);
     const rec = byDay.get(key);
     const status = statusFromPct(rec?.pct ?? null, rec?.total ?? 0);
-    return { d, key, status, pct: rec?.pct ?? null, total: rec?.total ?? 0 };
+    return { date, key, status, pct: rec?.pct ?? null, total: rec?.total ?? 0 };
   });
 
-  const sizeClass = days === 30 ? "h-7 flex-1 rounded-sm" : "h-6 flex-1 rounded-[2px]";
-  const gapClass = days === 30 ? "gap-1" : "gap-[2px]";
-
   return (
-    <div className={`flex ${gapClass} w-full`}>
-      {cells.map((c) => (
-        <div
-          key={c.key}
-          className={`${sizeClass} transition-all cursor-pointer ${colorFor(c.status)}`}
-          title={
-            c.total ? `${formatDate(c.d)} — ${c.pct?.toFixed(1)}% (${c.total} checks)` : `${formatDate(c.d)} — no data`
-          }
+    <div
+      className="grid w-full min-w-0 gap-px overflow-hidden rounded-sm"
+      style={{ gridTemplateColumns: `repeat(${days}, minmax(0, 1fr))` }}
+      aria-label={`${days} day uptime timeline`}
+    >
+      {cells.map((cell) => (
+        <span
+          key={cell.key}
+          className={cn("h-8 min-w-0 transition-opacity hover:opacity-80", dayColor(cell.status))}
+          title={cell.total ? `${formatDate(cell.date)} — ${cell.pct?.toFixed(1)}% (${cell.total} checks)` : `${formatDate(cell.date)} — no data`}
         />
       ))}
     </div>
   );
 };
 
-// Circular progress ring for overall uptime
-const UptimeRing = ({ pct, status }: { pct: number | null; status: DayStatus }) => {
-  const size = 180;
-  const stroke = 12;
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const val = pct ?? 0;
-  const offset = c - (val / 100) * c;
-  const ringColor =
-    status === "down"
-      ? "hsl(var(--destructive))"
-      : status === "degraded"
-        ? "rgb(234 179 8)"
-        : "hsl(var(--primary))";
+const StatusPill = ({ status, className }: { status: DayStatus; className?: string }) => {
+  const meta = statusMeta[status];
   return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
-        <defs>
-          <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor={ringColor} stopOpacity="1" />
-            <stop offset="100%" stopColor={ringColor} stopOpacity="0.4" />
-          </linearGradient>
-        </defs>
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="hsl(var(--muted))" strokeWidth={stroke} fill="none" opacity="0.25" />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          stroke="url(#ringGrad)"
-          strokeWidth={stroke}
-          strokeDasharray={c}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-          fill="none"
-          style={{ transition: "stroke-dashoffset 1s ease-out", filter: `drop-shadow(0 0 6px ${ringColor})` }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="font-display text-4xl font-black text-gradient leading-none">
-          {pct !== null ? `${pct.toFixed(2)}` : "—"}
-          <span className="text-xl">%</span>
-        </div>
-        <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mt-1">Uptime</div>
-      </div>
-    </div>
+    <Badge variant="outline" className={cn("gap-1.5 whitespace-nowrap", meta.border, meta.text, className)}>
+      <span className={cn("h-2 w-2 rounded-full", meta.dot, status !== "none" && "animate-pulse")} />
+      {meta.label}
+    </Badge>
   );
 };
+
+const MiniMetric = ({ icon: Icon, label, value }: { icon: typeof Activity; label: string; value: string | number }) => (
+  <div className="rounded-lg border border-border bg-card/70 p-4 min-w-0">
+    <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
+      <Icon className="h-3.5 w-3.5 shrink-0" />
+      <span className="truncate">{label}</span>
+    </div>
+    <div className="font-display text-2xl font-bold leading-none truncate">{value}</div>
+  </div>
+);
 
 const Status = () => {
   const [range, setRange] = useState<Range>(90);
@@ -167,65 +195,37 @@ const Status = () => {
   const [pageTitle, setPageTitle] = useState("CarnageMC Status");
   const [pageSubtitle, setPageSubtitle] = useState("Live uptime — automated checks every 5 minutes.");
   const [pageFootnote, setPageFootnote] = useState("");
-  const [services, setServices] = useState(DEFAULT_SERVICES);
-  const [incidents, setIncidents] = useState<
-    Array<{
-      id: string;
-      incident_number: number;
-      service_key: string;
-      opened_at: string;
-      closed_at: string | null;
-      last_error: string | null;
-    }>
-  >([]);
+  const [services, setServices] = useState<Service[]>(DEFAULT_SERVICES);
+  const [incidents, setIncidents] = useState<Incident[]>([]);
   const [detailKey, setDetailKey] = useState<string | null>(null);
-  const [detailChecks, setDetailChecks] = useState<
-    Array<{ checked_at: string; is_up: boolean; latency_ms: number | null; status_code: number | null; error: string | null }>
-  >([]);
+  const [detailChecks, setDetailChecks] = useState<Check[]>([]);
   const [detailLoading, setDetailLoading] = useState(false);
 
   useEffect(() => {
-    if (!detailKey) return;
-    setDetailLoading(true);
-    setDetailChecks([]);
-    supabase
-      .from("uptime_checks")
-      .select("checked_at, is_up, latency_ms, status_code, error")
-      .eq("service_key", detailKey)
-      .order("checked_at", { ascending: false })
-      .limit(30)
-      .then(({ data }) => {
-        setDetailChecks((data ?? []) as any);
-        setDetailLoading(false);
-      });
-  }, [detailKey]);
-
-  useEffect(() => {
     document.title = "Status — CarnageMC";
-    (async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
-      const { data } = await supabase
+      supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", user.id)
         .eq("role", "owner")
-        .maybeSingle();
-      setIsOwner(!!data);
-    })();
+        .maybeSingle()
+        .then(({ data }) => setIsOwner(!!data));
+    });
+
     supabase
       .from("site_content")
       .select("value")
       .eq("key", "status_page")
       .maybeSingle()
       .then(({ data }) => {
-        const v = (data?.value as any) ?? {};
-        if (v.title) setPageTitle(v.title);
-        if (v.subtitle) setPageSubtitle(v.subtitle);
-        if (typeof v.footnote === "string") setPageFootnote(v.footnote);
-        if (Array.isArray(v.services) && v.services.length) setServices(v.services);
+        const value = (data?.value as any) ?? {};
+        if (value.title) setPageTitle(value.title);
+        if (value.subtitle) setPageSubtitle(value.subtitle);
+        if (typeof value.footnote === "string") setPageFootnote(value.footnote);
+        if (Array.isArray(value.services) && value.services.length) setServices(value.services);
       });
   }, []);
 
@@ -233,12 +233,13 @@ const Status = () => {
     setLoading(true);
     const { data } = await supabase.rpc("get_uptime_daily", { _days: days });
     setRows((data ?? []) as DailyRow[]);
-    const { data: inc } = await supabase
+
+    const { data: incidentRows } = await supabase
       .from("uptime_incidents")
       .select("id, incident_number, service_key, opened_at, closed_at, last_error")
       .order("opened_at", { ascending: false })
       .limit(20);
-    setIncidents((inc ?? []) as any);
+    setIncidents((incidentRows ?? []) as Incident[]);
     setLoading(false);
   };
 
@@ -251,7 +252,7 @@ const Status = () => {
     try {
       await supabase.functions.invoke("uptime-check", { method: "POST" });
     } catch {
-      /* ignore */
+      // Manual refresh should not block the page if the check endpoint is unavailable.
     }
     await loadData(range);
     setRefreshing(false);
@@ -259,206 +260,150 @@ const Status = () => {
 
   useEffect(() => {
     if (autoInterval <= 0) return;
-    const id = setInterval(() => {
-      handleRefresh();
-    }, autoInterval * 60_000);
-    return () => clearInterval(id);
+    const id = window.setInterval(handleRefresh, autoInterval * 60_000);
+    return () => window.clearInterval(id);
   }, [autoInterval, range]);
 
+  useEffect(() => {
+    if (!detailKey) return;
+    setDetailLoading(true);
+    setDetailChecks([]);
+    supabase
+      .from("uptime_checks")
+      .select("checked_at, is_up, latency_ms, status_code, error")
+      .eq("service_key", detailKey)
+      .order("checked_at", { ascending: false })
+      .limit(30)
+      .then(({ data }) => {
+        setDetailChecks((data ?? []) as Check[]);
+        setDetailLoading(false);
+      });
+  }, [detailKey]);
+
   const byService = useMemo(() => {
-    const m = new Map<string, Map<string, { pct: number | null; total: number }>>();
-    for (const r of rows) {
-      if (!m.has(r.service_key)) m.set(r.service_key, new Map());
-      m.get(r.service_key)!.set(r.day, { pct: r.uptime_pct, total: Number(r.total_checks) });
+    const map = new Map<string, Map<string, { pct: number | null; total: number }>>();
+    for (const row of rows) {
+      if (!map.has(row.service_key)) map.set(row.service_key, new Map());
+      map.get(row.service_key)!.set(row.day, { pct: row.uptime_pct, total: Number(row.total_checks) });
     }
-    return m;
+    return map;
   }, [rows]);
 
   const overall = useMemo(() => {
-    let total = 0,
-      up = 0;
-    for (const r of rows) {
-      total += Number(r.total_checks);
-      up += Number(r.up_checks);
+    let total = 0;
+    let up = 0;
+    for (const row of rows) {
+      total += Number(row.total_checks);
+      up += Number(row.up_checks);
     }
-    if (!total) return null;
-    return (100 * up) / total;
+    return total ? (100 * up) / total : null;
   }, [rows]);
 
   const serviceCurrent: Record<string, DayStatus> = useMemo(() => {
     const today = toDayKey(new Date());
-    const out: Record<string, DayStatus> = {};
-    for (const s of services) {
-      const rec = byService.get(s.key)?.get(today);
-      out[s.key] = statusFromPct(rec?.pct ?? null, rec?.total ?? 0);
+    const result: Record<string, DayStatus> = {};
+    for (const service of services) {
+      const rec = byService.get(service.key)?.get(today);
+      result[service.key] = statusFromPct(rec?.pct ?? null, rec?.total ?? 0);
     }
-    return out;
+    return result;
   }, [byService, services]);
 
-  const worstNow: DayStatus = useMemo(() => {
-    const vals = Object.values(serviceCurrent);
-    if (vals.includes("down")) return "down";
-    if (vals.includes("degraded")) return "degraded";
-    if (vals.every((v) => v === "none")) return "none";
+  const currentStatus: DayStatus = useMemo(() => {
+    const values = Object.values(serviceCurrent);
+    if (values.includes("down")) return "down";
+    if (values.includes("degraded")) return "degraded";
+    if (values.every((value) => value === "none")) return "none";
     return "up";
   }, [serviceCurrent]);
 
-  const counts = useMemo(() => {
-    const c = { up: 0, degraded: 0, down: 0, none: 0 };
-    for (const s of services) c[serviceCurrent[s.key] ?? "none"]++;
-    return c;
+  const statusCounts = useMemo(() => {
+    const counts = { up: 0, degraded: 0, down: 0, none: 0 };
+    for (const service of services) counts[serviceCurrent[service.key] ?? "none"] += 1;
+    return counts;
   }, [serviceCurrent, services]);
 
-  const activeIncidents = incidents.filter((i) => !i.closed_at).length;
+  const activeIncidents = incidents.filter((incident) => !incident.closed_at).length;
+  const currentMeta = statusMeta[currentStatus];
+  const CurrentIcon = currentMeta.icon;
 
-  const banner = {
-    up: {
-      icon: CheckCircle2,
-      text: "All Systems Nominal",
-      sub: "Every service is humming along.",
-      ring: "hsl(var(--primary))",
-      chip: "border-primary/40 bg-primary/10 text-primary",
-    },
-    degraded: {
-      icon: AlertTriangle,
-      text: "Partial Degradation",
-      sub: "Some services are running slow.",
-      ring: "rgb(234 179 8)",
-      chip: "border-yellow-500/40 bg-yellow-500/10 text-yellow-500",
-    },
-    down: {
-      icon: XCircle,
-      text: "Active Outage",
-      sub: "Our team is on it.",
-      ring: "hsl(var(--destructive))",
-      chip: "border-destructive/40 bg-destructive/10 text-destructive",
-    },
-    none: {
-      icon: HelpCircle,
-      text: "Awaiting Data",
-      sub: "Warming up the sensors…",
-      ring: "hsl(var(--muted-foreground))",
-      chip: "border-border bg-muted/20 text-muted-foreground",
-    },
-  }[worstNow];
-  const BannerIcon = banner.icon;
+  const selectedService = detailKey ? services.find((service) => service.key === detailKey) : null;
+  const selectedDays = detailKey ? byService.get(detailKey) : undefined;
+  const selectedStatus = detailKey ? serviceCurrent[detailKey] ?? "none" : "none";
+  const selectedIncidents = detailKey ? incidents.filter((incident) => incident.service_key === detailKey) : [];
+  const selectedOpenIncidents = selectedIncidents.filter((incident) => !incident.closed_at).length;
+  const selectedUptime = getUptime(selectedDays);
+  const lastCheck = detailChecks[0];
+  const avgLatency = useMemo(() => {
+    const latencies = detailChecks.filter((check) => check.is_up && check.latency_ms != null).map((check) => check.latency_ms!);
+    return latencies.length ? Math.round(latencies.reduce((sum, value) => sum + value, 0) / latencies.length) : null;
+  }, [detailChecks]);
+
+  const daySummary = useMemo(() => {
+    const summary = { up: 0, degraded: 0, down: 0, none: 0 };
+    if (!selectedDays) return { ...summary, none: range };
+    for (const value of selectedDays.values()) summary[statusFromPct(value.pct, value.total)] += 1;
+    summary.none += Math.max(0, range - selectedDays.size);
+    return summary;
+  }, [selectedDays, range]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       <Navbar />
-      <main className="flex-1 pt-24 pb-16 relative overflow-hidden">
-        {/* Ambient glow backdrop */}
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-[520px] opacity-40 blur-3xl"
-          style={{
-            background: `radial-gradient(60% 60% at 50% 20%, ${banner.ring}, transparent 70%)`,
-          }}
-        />
-        <div className="pointer-events-none absolute inset-0 opacity-[0.035] [background-image:linear-gradient(hsl(var(--foreground))_1px,transparent_1px),linear-gradient(90deg,hsl(var(--foreground))_1px,transparent_1px)] [background-size:40px_40px]" />
+      <main className="flex-1 pt-24 pb-16 overflow-hidden">
+        <div className="container max-w-6xl px-4">
+          <section className="mb-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
+            <div className="min-w-0">
+              <Badge variant="outline" className={cn("mb-4 gap-2", currentMeta.border, currentMeta.text)}>
+                <span className={cn("h-2 w-2 rounded-full", currentMeta.dot, currentStatus !== "none" && "animate-pulse")} />
+                Live checks every 5 min
+              </Badge>
+              <h1 className="font-display text-4xl font-black leading-tight sm:text-6xl md:text-7xl break-words">
+                {pageTitle}
+              </h1>
+              <p className="mt-3 max-w-2xl text-sm sm:text-base text-muted-foreground">{pageSubtitle}</p>
+            </div>
 
-        <div className="container max-w-6xl px-4 relative">
-          {/* HERO */}
-          <div className="text-center mb-10">
-            <Badge variant="secondary" className={`mb-4 ${banner.chip} border`}>
-              <span className="relative flex h-2 w-2 mr-2">
-                <span
-                  className="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping"
-                  style={{ background: banner.ring }}
-                />
-                <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: banner.ring }} />
-              </span>
-              Live · Checks every 5 min
-            </Badge>
-            <h1 className="font-display text-5xl md:text-7xl font-black mb-4 tracking-tight">
-              {(() => {
-                const parts = pageTitle.trim().split(/\s+/);
-                if (parts.length <= 1) return <span className="text-gradient">{pageTitle}</span>;
-                const last = parts.pop();
-                return (
-                  <>
-                    {parts.join(" ")} <span className="text-gradient">{last}</span>
-                  </>
-                );
-              })()}
-            </h1>
-            <p className="text-muted-foreground max-w-xl mx-auto">{pageSubtitle}</p>
-          </div>
-
-          {/* BENTO HERO GRID */}
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-10">
-            {/* Big status card with ring */}
-            <Card
-              className="md:col-span-4 relative overflow-hidden p-8 border-primary/20"
-              style={{
-                background: `linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--card)) 60%, ${banner.ring}15 100%)`,
-              }}
-            >
-              <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-20 blur-3xl" style={{ background: banner.ring }} />
-              <div className="relative flex flex-col md:flex-row items-center gap-8">
-                <UptimeRing pct={overall} status={worstNow} />
-                <div className="flex-1 text-center md:text-left">
-                  <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border mb-3 ${banner.chip}`}>
-                    <BannerIcon className="h-3.5 w-3.5" />
-                    {banner.text}
-                  </div>
-                  <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">{banner.sub}</h2>
-                  <p className="text-sm text-muted-foreground">
-                    {overall !== null
-                      ? `Averaged across every service over the last ${range} days.`
-                      : "Collecting probes from around the network…"}
-                  </p>
+            <div className={cn("rounded-lg border p-5", currentMeta.border, currentMeta.tone)}>
+              <div className="flex items-start gap-3">
+                <div className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-lg", currentMeta.tone, currentMeta.text)}>
+                  <CurrentIcon className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <div className="font-display text-2xl font-bold leading-none">{overall !== null ? `${overall.toFixed(2)}%` : "—"}</div>
+                  <div className={cn("mt-2 text-sm font-semibold", currentMeta.text)}>{currentMeta.label}</div>
+                  <p className="mt-1 text-xs text-muted-foreground">{currentMeta.summary}</p>
                 </div>
               </div>
-            </Card>
-
-            {/* Mini stats stack */}
-            <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-1 gap-4">
-              <Card className="p-5 relative overflow-hidden group hover:border-primary/50 transition">
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(135deg, hsl(var(--primary)/0.08), transparent)" }} />
-                <div className="relative flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
-                    <ShieldCheck className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <div className="font-display text-2xl font-black leading-none">{counts.up}<span className="text-sm text-muted-foreground font-normal">/{services.length}</span></div>
-                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-1">Operational</div>
-                  </div>
-                </div>
-              </Card>
-              <Card className={`p-5 relative overflow-hidden ${activeIncidents > 0 ? "border-destructive/40" : ""}`}>
-                <div className="flex items-center gap-3">
-                  <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${activeIncidents > 0 ? "bg-destructive/15 text-destructive" : "bg-muted/40 text-muted-foreground"}`}>
-                    <Zap className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <div className="font-display text-2xl font-black leading-none">{activeIncidents}</div>
-                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-1">Active Incidents</div>
-                  </div>
-                </div>
-              </Card>
             </div>
-          </div>
+          </section>
 
-          {/* CONTROLS */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
-              <span className="uppercase tracking-widest">Timeline</span>
+          <section className="mb-8 grid gap-3 sm:grid-cols-3">
+            <MiniMetric icon={ShieldCheck} label="Services up" value={`${statusCounts.up}/${services.length}`} />
+            <MiniMetric icon={Zap} label="Active incidents" value={activeIncidents} />
+            <MiniMetric icon={Activity} label="Window" value={`${range} days`} />
+          </section>
+
+          <section className="mb-5 flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-display text-xl font-bold">Service history</h2>
+              <p className="text-sm text-muted-foreground">Select a row for recent checks, latency, and incident history.</p>
             </div>
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1.5 pr-2 mr-1 border-r border-border">
-                      <Timer className="h-3.5 w-3.5 text-muted-foreground" />
+                    <div className="flex items-center gap-1 rounded-lg border border-border p-1">
+                      <Timer className="ml-2 h-3.5 w-3.5 text-muted-foreground" />
                       {[0, 1, 5, 15].map((min) => (
                         <Button
                           key={min}
+                          type="button"
                           size="sm"
-                          variant={autoInterval === min ? "default" : "outline"}
+                          variant={autoInterval === min ? "default" : "ghost"}
                           onClick={() => isOwner && setAutoInterval(min)}
                           disabled={!isOwner}
-                          className="px-2.5"
+                          className="h-8 px-2.5"
                         >
                           {min === 0 ? "Off" : `${min}m`}
                         </Button>
@@ -467,386 +412,239 @@ const Status = () => {
                   </TooltipTrigger>
                   {!isOwner && (
                     <TooltipContent side="bottom">
-                      <p>Only owners can change auto-refresh settings.</p>
+                      <p>Only owners can change auto-refresh.</p>
                     </TooltipContent>
                   )}
                 </Tooltip>
               </TooltipProvider>
-              <Button size="sm" variant="outline" onClick={handleRefresh} disabled={refreshing} className="px-2.5">
-                <RefreshCw className={`h-3.5 w-3.5 sm:mr-1.5 ${refreshing ? "animate-spin" : ""}`} />
-                <span className="hidden sm:inline">{refreshing ? "Running…" : "Refresh"}</span>
+              <Button type="button" size="sm" variant="outline" onClick={handleRefresh} disabled={refreshing} className="h-10 px-3">
+                <RefreshCw className={cn("h-4 w-4 sm:mr-2", refreshing && "animate-spin")} />
+                <span className="hidden sm:inline">{refreshing ? "Running" : "Refresh"}</span>
               </Button>
-              {RANGES.map((r) => (
-                <Button
-                  key={r.value}
-                  size="sm"
-                  variant={range === r.value ? "default" : "outline"}
-                  onClick={() => setRange(r.value)}
-                  className="px-2.5"
-                >
-                  {r.label}
-                </Button>
-              ))}
+              <div className="flex items-center rounded-lg border border-border p-1">
+                {RANGES.map((item) => (
+                  <Button
+                    key={item.value}
+                    type="button"
+                    size="sm"
+                    variant={range === item.value ? "default" : "ghost"}
+                    onClick={() => setRange(item.value)}
+                    className="h-8 px-2.5"
+                  >
+                    {item.label}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
+          </section>
 
-          {/* SERVICE GRID */}
-          <div className="grid gap-4 md:grid-cols-2">
-            {services.map((s) => {
-              const current = serviceCurrent[s.key];
-              const days = byService.get(s.key);
-              let total = 0,
-                up = 0;
-              if (days)
-                for (const v of days.values()) {
-                  total += v.total;
-                  up += Math.round(((v.pct ?? 0) / 100) * v.total);
-                }
-              const pct = total ? (100 * up) / total : null;
-              const statusLabel = { up: "Operational", degraded: "Degraded", down: "Outage", none: "No data" }[current];
-              const accent =
-                current === "down"
-                  ? "hsl(var(--destructive))"
-                  : current === "degraded"
-                    ? "rgb(234 179 8)"
-                    : current === "up"
-                      ? "hsl(var(--primary))"
-                      : "hsl(var(--muted-foreground))";
-              const statusDotCls = {
-                up: "bg-primary animate-pulse",
-                degraded: "bg-yellow-500",
-                down: "bg-destructive animate-pulse",
-                none: "bg-muted-foreground",
-              }[current];
+          <section className="space-y-3">
+            {services.map((service) => {
+              const status = serviceCurrent[service.key] ?? "none";
+              const meta = statusMeta[status];
+              const days = byService.get(service.key) ?? new Map<string, { pct: number | null; total: number }>();
+              const uptime = getUptime(days);
               return (
                 <Card
-                  key={s.key}
-                  onClick={() => setDetailKey(s.key)}
+                  key={service.key}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setDetailKey(s.key);
+                  onClick={() => setDetailKey(service.key)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setDetailKey(service.key);
                     }
                   }}
-                  className="group relative p-5 overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-lg cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  style={{ borderColor: current === "up" ? undefined : `${accent}55` }}
+                  className={cn(
+                    "group min-w-0 cursor-pointer overflow-hidden p-4 transition-colors hover:border-primary/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                    meta.border,
+                  )}
                 >
-                  <div
-                    className="absolute left-0 top-0 h-full w-1 transition-all group-hover:w-1.5"
-                    style={{ background: accent, boxShadow: `0 0 12px ${accent}` }}
-                  />
-                  <div className="flex items-start justify-between gap-4 mb-4">
+                  <div className="grid min-w-0 gap-4 lg:grid-cols-[16rem_minmax(0,1fr)_8rem] lg:items-center">
                     <div className="min-w-0">
-                      {s.url ? (
-                        <a
-                          href={s.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="font-display font-bold hover:text-primary hover:underline inline-flex items-center gap-1"
-                        >
-                          {s.name}
-                          <ExternalLink className="h-3 w-3 opacity-60" />
-                        </a>
-                      ) : (
-                        <div className="font-display font-bold">{s.name}</div>
-                      )}
-                      <div className="text-xs text-muted-foreground truncate">{s.desc}</div>
+                      <div className="mb-1 flex min-w-0 items-center gap-2">
+                        <span className="font-display font-bold truncate">{service.name}</span>
+                        {service.url && (
+                          <a
+                            href={service.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(event) => event.stopPropagation()}
+                            aria-label={`Open ${service.name}`}
+                            className="shrink-0 text-muted-foreground transition-colors hover:text-primary"
+                          >
+                            <ArrowUpRight className="h-4 w-4" />
+                          </a>
+                        )}
+                      </div>
+                      <div className="truncate text-xs text-muted-foreground">{service.desc}</div>
                     </div>
-                    <Badge variant="secondary" className="border-border shrink-0">
-                      <span className={`h-2 w-2 rounded-full mr-1.5 ${statusDotCls}`} />
-                      {statusLabel}
-                    </Badge>
-                  </div>
-                  <DayGrid days={range} byDay={days ?? new Map()} />
-                  <div className="flex justify-between items-center text-[10px] uppercase tracking-widest text-muted-foreground mt-3">
-                    <span>{range}d ago</span>
-                    <span className="font-mono font-bold text-sm normal-case tracking-normal" style={{ color: accent }}>
-                      {pct !== null ? `${pct.toFixed(2)}%` : loading ? "…" : "—"}
-                    </span>
-                    <span className="inline-flex items-center gap-1 group-hover:text-primary transition">
-                      Details <ChevronRight className="h-3 w-3" />
-                    </span>
+
+                    <div className="min-w-0">
+                      <DayGrid days={range} byDay={days} />
+                      <div className="mt-2 flex items-center justify-between gap-3 text-[10px] uppercase tracking-widest text-muted-foreground">
+                        <span>{range}d ago</span>
+                        <span>today</span>
+                      </div>
+                    </div>
+
+                    <div className="flex min-w-0 items-center justify-between gap-3 lg:justify-end">
+                      <div className="text-left lg:text-right min-w-0">
+                        <div className={cn("font-display text-lg font-bold leading-none", meta.text)}>{uptime !== null ? `${uptime.toFixed(2)}%` : loading ? "…" : "—"}</div>
+                        <div className="mt-1 flex lg:justify-end">
+                          <StatusPill status={status} />
+                        </div>
+                      </div>
+                      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                    </div>
                   </div>
                 </Card>
               );
             })}
-          </div>
+          </section>
 
-
-          {/* INCIDENTS */}
           {incidents.length > 0 && (
-            <div className="mt-12">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="h-8 w-1 rounded-full bg-gradient-to-b from-primary to-primary/20" />
-                <h2 className="font-display text-2xl font-bold">Recent Incidents</h2>
-                <span className="text-xs text-muted-foreground">({incidents.length})</span>
+            <section className="mt-10">
+              <div className="mb-3 flex items-end justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-xl font-bold">Recent incidents</h2>
+                  <p className="text-sm text-muted-foreground">The latest monitored disruptions and resolutions.</p>
+                </div>
+                <Badge variant="outline">{incidents.length}</Badge>
               </div>
               <Card className="divide-y divide-border overflow-hidden">
-                {incidents.map((i) => {
-                  const svc = services.find((s) => s.key === i.service_key);
-                  const ongoing = !i.closed_at;
-                  const durMin = Math.max(
+                {incidents.map((incident) => {
+                  const service = services.find((item) => item.key === incident.service_key);
+                  const ongoing = !incident.closed_at;
+                  const duration = Math.max(
                     1,
-                    Math.round(
-                      ((i.closed_at ? new Date(i.closed_at).getTime() : Date.now()) - new Date(i.opened_at).getTime()) /
-                        60000,
-                    ),
+                    Math.round(((incident.closed_at ? new Date(incident.closed_at).getTime() : Date.now()) - new Date(incident.opened_at).getTime()) / 60000),
                   );
                   return (
-                    <Link
-                      key={i.id}
-                      to={`/status/${i.incident_number}`}
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-muted/40 transition-colors group"
-                    >
-                      <span
-                        className={`h-2.5 w-2.5 rounded-full shrink-0 ${ongoing ? "bg-destructive animate-pulse shadow-[0_0_8px_hsl(var(--destructive))]" : "bg-muted-foreground"}`}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="font-display font-semibold text-sm truncate">
-                          #{i.incident_number} · {svc?.name ?? i.service_key}
-                          {ongoing && (
-                            <Badge variant="destructive" className="ml-2 text-[10px]">
-                              Ongoing
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="text-xs text-muted-foreground truncate">
-                          {new Date(i.opened_at).toLocaleString()} ·{" "}
-                          {durMin < 60 ? `${durMin}m` : `${Math.floor(durMin / 60)}h ${durMin % 60}m`}
-                          {i.last_error ? ` · ${i.last_error}` : ""}
-                        </div>
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 group-hover:translate-x-0.5 group-hover:text-primary transition" />
+                    <Link key={incident.id} to={`/status/${incident.incident_number}`} className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40">
+                      <span className={cn("h-2.5 w-2.5 rounded-full", ongoing ? "bg-destructive animate-pulse" : "bg-muted-foreground")} />
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-semibold">#{incident.incident_number} · {service?.name ?? incident.service_key}</span>
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {formatDateTime(incident.opened_at)} · {duration < 60 ? `${duration}m` : `${Math.floor(duration / 60)}h ${duration % 60}m`}
+                          {incident.last_error ? ` · ${incident.last_error}` : ""}
+                        </span>
+                      </span>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     </Link>
                   );
                 })}
               </Card>
-            </div>
+            </section>
           )}
 
-          {/* LEGEND */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+          <section className="mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
             <span className="uppercase tracking-widest text-[10px]">Legend</span>
-            <span className="flex items-center gap-1.5">
-              <span className="inline-block h-3 w-3 rounded-sm bg-primary shadow-[0_0_6px_hsl(var(--primary))]" /> Up
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="inline-block h-3 w-3 rounded-sm bg-yellow-500 shadow-[0_0_6px_rgba(234,179,8,0.6)]" /> Degraded
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="inline-block h-3 w-3 rounded-sm bg-destructive shadow-[0_0_6px_hsl(var(--destructive))]" /> Outage
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="inline-block h-3 w-3 rounded-sm bg-muted" /> No data
-            </span>
-          </div>
-          {pageFootnote && (
-            <p className="text-center text-xs text-muted-foreground mt-4 whitespace-pre-wrap">{pageFootnote}</p>
-          )}
+            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-primary" /> Up</span>
+            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-accent" /> Degraded</span>
+            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-destructive" /> Outage</span>
+            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-muted" /> No data</span>
+          </section>
+          {pageFootnote && <p className="mt-4 whitespace-pre-wrap text-center text-xs text-muted-foreground">{pageFootnote}</p>}
         </div>
       </main>
       <Footer />
 
-      {/* SERVICE DETAIL DIALOG */}
-      <Dialog open={!!detailKey} onOpenChange={(o) => !o && setDetailKey(null)}>
-        <DialogContent className="max-w-2xl w-[calc(100vw-2rem)] max-h-[85vh] overflow-y-auto overflow-x-hidden">
-
-          {(() => {
-            if (!detailKey) return null;
-            const svc = services.find((s) => s.key === detailKey);
-            if (!svc) return null;
-            const current = serviceCurrent[detailKey];
-            const days = byService.get(detailKey);
-            const dayEntries = days ? Array.from(days.entries()) : [];
-            let dTotal = 0, dUp = 0, upDays = 0, degDays = 0, downDays = 0, noneDays = 0;
-            for (const [, v] of dayEntries) {
-              dTotal += v.total;
-              dUp += Math.round(((v.pct ?? 0) / 100) * v.total);
-              const st = statusFromPct(v.pct, v.total);
-              if (st === "up") upDays++;
-              else if (st === "degraded") degDays++;
-              else if (st === "down") downDays++;
-              else noneDays++;
-            }
-            const emptyDays = range - dayEntries.length;
-            noneDays += Math.max(0, emptyDays);
-            const pct = dTotal ? (100 * dUp) / dTotal : null;
-            const svcIncidents = incidents.filter((i) => i.service_key === detailKey);
-            const openIncidents = svcIncidents.filter((i) => !i.closed_at).length;
-            const lastCheck = detailChecks[0];
-            const upLatencies = detailChecks.filter((c) => c.is_up && c.latency_ms != null).map((c) => c.latency_ms!);
-            const avgLatency = upLatencies.length ? Math.round(upLatencies.reduce((a, b) => a + b, 0) / upLatencies.length) : null;
-            const accent =
-              current === "down" ? "hsl(var(--destructive))"
-              : current === "degraded" ? "rgb(234 179 8)"
-              : current === "up" ? "hsl(var(--primary))"
-              : "hsl(var(--muted-foreground))";
-            const statusLabel = { up: "Operational", degraded: "Degraded", down: "Outage", none: "No data" }[current];
-            return (
-              <>
-                <DialogHeader>
-                  <div className="flex items-center gap-3 flex-wrap pr-6">
-                    <span className="h-3 w-3 rounded-full shrink-0" style={{ background: accent, boxShadow: `0 0 10px ${accent}` }} />
-                    <DialogTitle className="font-display text-2xl min-w-0 break-words">{svc.name}</DialogTitle>
-                    <Badge variant="secondary" className="ml-auto shrink-0" style={{ color: accent, borderColor: `${accent}55` }}>
-                      {statusLabel}
-                    </Badge>
-                  </div>
-                  <DialogDescription className="flex items-center gap-2 pt-1 flex-wrap break-words">
-                    <span className="truncate max-w-full">{svc.desc}</span>
-                    {svc.url && (
-                      <a href={svc.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline shrink-0">
-                        Visit <ExternalLink className="h-3 w-3" />
-                      </a>
-                    )}
-                  </DialogDescription>
-                </DialogHeader>
-
-
-                {/* KPI grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
-                  <Card className="p-3">
-                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
-                      <Activity className="h-3 w-3" /> Uptime
-                    </div>
-                    <div className="font-display text-xl font-black" style={{ color: accent }}>
-                      {pct !== null ? `${pct.toFixed(2)}%` : "—"}
-                    </div>
-                    <div className="text-[10px] text-muted-foreground">last {range}d</div>
-                  </Card>
-                  <Card className="p-3">
-                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
-                      <Gauge className="h-3 w-3" /> Avg latency
-                    </div>
-                    <div className="font-display text-xl font-black">{avgLatency !== null ? `${avgLatency}ms` : "—"}</div>
-                    <div className="text-[10px] text-muted-foreground">last 30 checks</div>
-                  </Card>
-                  <Card className="p-3">
-                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
-                      <Zap className="h-3 w-3" /> Incidents
-                    </div>
-                    <div className="font-display text-xl font-black">
-                      {svcIncidents.length}
-                      {openIncidents > 0 && <span className="text-destructive text-sm ml-1">· {openIncidents} open</span>}
-                    </div>
-                    <div className="text-[10px] text-muted-foreground">recent history</div>
-                  </Card>
-                  <Card className="p-3 min-w-0">
-                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
-                      <Clock className="h-3 w-3" /> Last check
-                    </div>
-                    <div className="font-display text-sm font-bold truncate">
-                      {lastCheck ? new Date(lastCheck.checked_at).toLocaleTimeString() : "—"}
-                    </div>
-                    <div className="text-[10px] text-muted-foreground truncate">
-                      {lastCheck ? (lastCheck.is_up ? `Up · HTTP ${lastCheck.status_code ?? "—"}` : `Down · ${lastCheck.error ?? "error"}`) : "no data"}
-                    </div>
-                  </Card>
-
+      <Dialog open={!!detailKey} onOpenChange={(open) => !open && setDetailKey(null)}>
+        <DialogContent className="left-0 right-0 top-auto bottom-0 max-h-[88vh] w-full max-w-none translate-x-0 translate-y-0 overflow-y-auto overflow-x-hidden rounded-t-lg p-4 sm:bottom-auto sm:left-[50%] sm:right-auto sm:top-[50%] sm:w-[min(48rem,calc(100vw-2rem))] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg sm:p-6">
+          {selectedService && (
+            <>
+              <DialogHeader className="pr-8 text-left">
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
+                  <DialogTitle className="font-display text-2xl leading-tight break-words">{selectedService.name}</DialogTitle>
+                  <StatusPill status={selectedStatus} />
                 </div>
-
-                {/* Day breakdown */}
-                <div className="mt-5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CalendarDays className="h-4 w-4 text-primary" />
-                    <div className="font-display font-bold text-sm">Day Breakdown ({range}d)</div>
-                  </div>
-                  <div className="grid grid-cols-4 gap-2 text-center">
-                    <div className="rounded-md border border-primary/30 bg-primary/5 p-2">
-                      <div className="font-display font-black text-lg text-primary">{upDays}</div>
-                      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Up</div>
-                    </div>
-                    <div className="rounded-md border border-yellow-500/30 bg-yellow-500/5 p-2">
-                      <div className="font-display font-black text-lg text-yellow-500">{degDays}</div>
-                      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Degraded</div>
-                    </div>
-                    <div className="rounded-md border border-destructive/30 bg-destructive/5 p-2">
-                      <div className="font-display font-black text-lg text-destructive">{downDays}</div>
-                      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Down</div>
-                    </div>
-                    <div className="rounded-md border border-border bg-muted/20 p-2">
-                      <div className="font-display font-black text-lg text-muted-foreground">{noneDays}</div>
-                      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">No data</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Recent checks */}
-                <div className="mt-5">
-                  <div className="font-display font-bold text-sm mb-2">Recent Checks</div>
-                  {detailLoading ? (
-                    <div className="text-xs text-muted-foreground">Loading…</div>
-                  ) : detailChecks.length === 0 ? (
-                    <div className="text-xs text-muted-foreground">No recent checks recorded.</div>
-                  ) : (
-                    <Card className="divide-y divide-border max-h-56 overflow-y-auto overflow-x-hidden">
-                      {detailChecks.map((c, idx) => (
-                        <div key={idx} className="px-3 py-2 flex items-center gap-2 text-xs min-w-0">
-                          {c.is_up ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
-                          ) : (
-                            <XCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <div className="font-mono text-muted-foreground truncate text-[10px]">
-                              {new Date(c.checked_at).toLocaleString()}
-                            </div>
-                            <div className="truncate">
-                              {c.is_up ? "Up" : "Down"}
-                              {c.status_code != null ? ` · HTTP ${c.status_code}` : ""}
-                              {c.error ? ` · ${c.error}` : ""}
-                            </div>
-                          </div>
-                          {c.latency_ms != null && (
-                            <span className="font-mono text-muted-foreground shrink-0">{c.latency_ms}ms</span>
-                          )}
-                        </div>
-                      ))}
-                    </Card>
-
+                <DialogDescription className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                  <span className="min-w-0 break-words">{selectedService.desc}</span>
+                  {selectedService.url && (
+                    <a href={selectedService.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 border-l border-border pl-2 text-primary hover:underline">
+                      Visit <ArrowUpRight className="h-3.5 w-3.5" />
+                    </a>
                   )}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <MiniMetric icon={Activity} label="Uptime" value={selectedUptime !== null ? `${selectedUptime.toFixed(2)}%` : "—"} />
+                <MiniMetric icon={Gauge} label="Avg latency" value={avgLatency !== null ? `${avgLatency}ms` : "—"} />
+                <MiniMetric icon={Zap} label="Incidents" value={selectedOpenIncidents ? `${selectedIncidents.length} (${selectedOpenIncidents} open)` : selectedIncidents.length} />
+                <MiniMetric icon={Clock} label="Last check" value={lastCheck ? new Date(lastCheck.checked_at).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" }) : "—"} />
+              </div>
+
+              <section className="mt-5">
+                <div className="mb-2 flex items-center gap-2 text-sm font-semibold">
+                  <CalendarDays className="h-4 w-4 text-primary" />
+                  Day breakdown
                 </div>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  {(["up", "degraded", "down", "none"] as DayStatus[]).map((status) => (
+                    <div key={status} className={cn("rounded-lg border p-3", statusMeta[status].border, statusMeta[status].tone)}>
+                      <div className={cn("font-display text-xl font-bold", statusMeta[status].text)}>{daySummary[status]}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{statusMeta[status].label}</div>
+                    </div>
+                  ))}
+                </div>
+              </section>
 
-                {/* Incidents for this service */}
-                {svcIncidents.length > 0 && (
-                  <div className="mt-5">
-                    <div className="font-display font-bold text-sm mb-2">Incidents for {svc.name}</div>
-                    <Card className="divide-y divide-border overflow-x-hidden">
-                      {svcIncidents.map((i) => {
-                        const ongoing = !i.closed_at;
-                        const durMin = Math.max(
-                          1,
-                          Math.round(
-                            ((i.closed_at ? new Date(i.closed_at).getTime() : Date.now()) - new Date(i.opened_at).getTime()) / 60000,
-                          ),
-                        );
-                        return (
-                          <Link
-                            key={i.id}
-                            to={`/status/${i.incident_number}`}
-                            onClick={() => setDetailKey(null)}
-                            className="flex items-center gap-2 px-3 py-2 hover:bg-muted/40 transition text-xs min-w-0"
-                          >
-                            <span className={`h-2 w-2 rounded-full shrink-0 ${ongoing ? "bg-destructive animate-pulse" : "bg-muted-foreground"}`} />
-                            <span className="font-semibold shrink-0">#{i.incident_number}</span>
-                            <span className="text-muted-foreground truncate flex-1 min-w-0">
-                              {new Date(i.opened_at).toLocaleString()} · {durMin < 60 ? `${durMin}m` : `${Math.floor(durMin / 60)}h ${durMin % 60}m`}
-                              {i.last_error ? ` · ${i.last_error}` : ""}
-                            </span>
-                            <ChevronRight className="h-3 w-3 text-muted-foreground shrink-0" />
-                          </Link>
-                        );
-                      })}
-                    </Card>
-
-                  </div>
+              <section className="mt-5">
+                <div className="mb-2 text-sm font-semibold">Recent checks</div>
+                {detailLoading ? (
+                  <div className="rounded-lg border border-border p-4 text-sm text-muted-foreground">Loading…</div>
+                ) : detailChecks.length === 0 ? (
+                  <div className="rounded-lg border border-border p-4 text-sm text-muted-foreground">No recent checks recorded.</div>
+                ) : (
+                  <Card className="max-h-64 divide-y divide-border overflow-y-auto overflow-x-hidden">
+                    {detailChecks.map((check, index) => (
+                      <div key={`${check.checked_at}-${index}`} className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-3 py-2 text-xs">
+                        {check.is_up ? <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> : <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                        <span className="min-w-0">
+                          <span className="block truncate font-mono text-[10px] text-muted-foreground">{formatDateTime(check.checked_at)}</span>
+                          <span className="block truncate">
+                            {check.is_up ? "Up" : "Down"}
+                            {check.status_code != null ? ` · HTTP ${check.status_code}` : ""}
+                            {check.error ? ` · ${check.error}` : ""}
+                          </span>
+                        </span>
+                        <span className="shrink-0 font-mono text-muted-foreground">{check.latency_ms != null ? `${check.latency_ms}ms` : "—"}</span>
+                      </div>
+                    ))}
+                  </Card>
                 )}
-              </>
-            );
-          })()}
+              </section>
+
+              {selectedIncidents.length > 0 && (
+                <section className="mt-5">
+                  <div className="mb-2 text-sm font-semibold">Incidents for {selectedService.name}</div>
+                  <Card className="divide-y divide-border overflow-hidden">
+                    {selectedIncidents.map((incident) => {
+                      const ongoing = !incident.closed_at;
+                      const duration = Math.max(
+                        1,
+                        Math.round(((incident.closed_at ? new Date(incident.closed_at).getTime() : Date.now()) - new Date(incident.opened_at).getTime()) / 60000),
+                      );
+                      return (
+                        <Link key={incident.id} to={`/status/${incident.incident_number}`} onClick={() => setDetailKey(null)} className="grid min-w-0 grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-2 px-3 py-2 text-xs transition-colors hover:bg-muted/40">
+                          <span className={cn("h-2 w-2 rounded-full", ongoing ? "bg-destructive animate-pulse" : "bg-muted-foreground")} />
+                          <span className="font-semibold">#{incident.incident_number}</span>
+                          <span className="min-w-0 truncate text-muted-foreground">
+                            {formatDateTime(incident.opened_at)} · {duration < 60 ? `${duration}m` : `${Math.floor(duration / 60)}h ${duration % 60}m`}
+                            {incident.last_error ? ` · ${incident.last_error}` : ""}
+                          </span>
+                          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                        </Link>
+                      );
+                    })}
+                  </Card>
+                </section>
+              )}
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>
