@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import {
   ArrowLeft,
   Check,
-  ExternalLink,
+  
   Package,
   ShoppingCart,
 } from "lucide-react";

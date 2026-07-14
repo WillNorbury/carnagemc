@@ -17,7 +17,7 @@ import {
   Award,
   Flame,
   Star,
-  ExternalLink,
+  
   Plus,
   Minus,
   Trash2,
