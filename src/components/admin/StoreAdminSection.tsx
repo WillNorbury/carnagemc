@@ -252,6 +252,12 @@ export function StoreAdminSection() {
         >
           Categories ({cats.length})
         </Button>
+        <Button
+          variant={tab === "coupons" ? "default" : "outline"}
+          onClick={() => setTab("coupons")}
+        >
+          Coupons ({coupons.length})
+        </Button>
       </div>
 
       {tab === "items" && (
