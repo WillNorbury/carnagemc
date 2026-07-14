@@ -114,58 +114,9 @@ Deno.serve(async (req) => {
       siteName: 'CarnageMC',
     }
 
-    // Post to Discord channel (non-blocking for email flow). Skipped for test sends.
-    let discord: { ok: boolean; status?: number; error?: string } = { ok: false }
-    if (!testEmail) {
-      try {
-        const botToken = Deno.env.get('DISCORD_BOT_TOKEN')
-        const channelId = '1522474298332287037'
-        if (!botToken) {
-          discord = { ok: false, error: 'DISCORD_BOT_TOKEN not set' }
-        } else {
-          const plain = (entry.content || '')
-            .replace(/<[^>]+>/g, '')
-            .replace(/\s+/g, ' ')
-            .trim()
-          const description = plain.length > 1800 ? plain.slice(0, 1800) + '…' : plain
-          const embed: Record<string, unknown> = {
-            title: entry.title?.slice(0, 256) || 'Changelog update',
-            url: templateData.link,
-            description,
-            color: 0xef4444,
-            timestamp: new Date(entry.entry_date ?? Date.now()).toISOString(),
-            footer: { text: 'CarnageMC Changelog' },
-            fields: [] as { name: string; value: string; inline?: boolean }[],
-          }
-          const fields = embed.fields as { name: string; value: string; inline?: boolean }[]
-          if (entry.category) fields.push({ name: 'Category', value: String(entry.category), inline: true })
-          if (entry.version) fields.push({ name: 'Version', value: String(entry.version), inline: true })
+    // Discord auto-posting has been disabled — messages are sent manually.
 
-          const resp = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
-            method: 'POST',
-            headers: {
-              Authorization: `Bot ${botToken}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              content: `📝 **New changelog entry**`,
-              embeds: [embed],
-              allowed_mentions: { parse: [] },
-            }),
-          })
-          if (resp.ok) {
-            discord = { ok: true, status: resp.status }
-          } else {
-            const text = await resp.text().catch(() => '')
-            discord = { ok: false, status: resp.status, error: text.slice(0, 500) }
-            console.error('Discord post failed', resp.status, text)
-          }
-        }
-      } catch (e) {
-        discord = { ok: false, error: (e as Error).message }
-        console.error('Discord post error', e)
-      }
-    }
+
 
 
     let queued = 0
@@ -199,7 +150,6 @@ Deno.serve(async (req) => {
       queued,
       failed: errors.length,
       errors: errors.slice(0, 10),
-      discord,
     })
   } catch (e) {
     return json({ ok: false, error: (e as Error).message }, 500)
