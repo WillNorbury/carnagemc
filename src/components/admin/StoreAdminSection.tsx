@@ -101,25 +101,72 @@ const ICON_OPTIONS = ["Package", "Sparkles", "Zap", "Coins", "Award", "Flame", "
 export function StoreAdminSection() {
   const [cats, setCats] = useState<Category[]>([]);
   const [items, setItems] = useState<Item[]>([]);
-  const [tab, setTab] = useState<"items" | "categories">("items");
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [tab, setTab] = useState<"items" | "categories" | "coupons">("items");
   const [editingCat, setEditingCat] = useState<
     Category | (Omit<Category, "id"> & { id?: string }) | null
   >(null);
   const [editingItem, setEditingItem] = useState<
     Item | (Omit<Item, "id"> & { id?: string }) | null
   >(null);
+  const [editingCoupon, setEditingCoupon] = useState<
+    Coupon | (Omit<Coupon, "id" | "uses_count"> & { id?: string; uses_count?: number }) | null
+  >(null);
 
   async function load() {
-    const [{ data: c }, { data: i }] = await Promise.all([
+    const [{ data: c }, { data: i }, { data: cp }] = await Promise.all([
       supabase.from("store_categories").select("*").order("sort_order").order("name"),
       supabase.from("store_items").select("*").order("sort_order").order("name"),
+      supabase.from("store_coupons").select("*").order("created_at", { ascending: false }),
     ]);
     setCats((c as Category[]) ?? []);
     setItems((i as Item[]) ?? []);
+    setCoupons((cp as Coupon[]) ?? []);
   }
   useEffect(() => {
     load();
   }, []);
+
+  async function saveCoupon() {
+    if (!editingCoupon) return;
+    const cp = editingCoupon;
+    const code = cp.code.trim().toUpperCase();
+    if (!code) return toast.error("Code required");
+    const value = Number(cp.discount_value);
+    if (!(value >= 0)) return toast.error("Discount value must be ≥ 0");
+    if (cp.discount_type === "percent" && value > 100)
+      return toast.error("Percent must be ≤ 100");
+    const payload = {
+      code,
+      description: cp.description || null,
+      discount_type: cp.discount_type,
+      discount_value: value,
+      currency: (cp.currency || "USD").toUpperCase(),
+      min_subtotal: Number(cp.min_subtotal) || 0,
+      max_uses: cp.max_uses == null || cp.max_uses === ("" as any) ? null : Number(cp.max_uses),
+      starts_at: cp.starts_at || null,
+      expires_at: cp.expires_at || null,
+      active: !!cp.active,
+    };
+    if ("id" in cp && cp.id) {
+      const { error } = await supabase.from("store_coupons").update(payload).eq("id", cp.id);
+      if (error) return toast.error(error.message);
+    } else {
+      const { error } = await supabase.from("store_coupons").insert([payload]);
+      if (error) return toast.error(error.message);
+    }
+    toast.success("Coupon saved");
+    setEditingCoupon(null);
+    load();
+  }
+
+  async function removeCoupon(cp: Coupon) {
+    if (!confirm(`Delete coupon "${cp.code}"?`)) return;
+    const { error } = await supabase.from("store_coupons").delete().eq("id", cp.id);
+    if (error) return toast.error(error.message);
+    load();
+  }
+
 
   async function saveCat() {
     if (!editingCat) return;
