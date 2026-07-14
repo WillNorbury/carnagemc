@@ -255,7 +255,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <CartContext.Provider value={value}>
       {children}
-      <CartDrawer />
     </CartContext.Provider>
   );
 };
