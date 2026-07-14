@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {
   Activity,
   CheckCircle2,
@@ -17,6 +18,10 @@ import {
   Sparkles,
   Zap,
   ShieldCheck,
+  ExternalLink,
+  Clock,
+  Gauge,
+  CalendarDays,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -173,6 +178,27 @@ const Status = () => {
       last_error: string | null;
     }>
   >([]);
+  const [detailKey, setDetailKey] = useState<string | null>(null);
+  const [detailChecks, setDetailChecks] = useState<
+    Array<{ checked_at: string; is_up: boolean; latency_ms: number | null; status_code: number | null; error: string | null }>
+  >([]);
+  const [detailLoading, setDetailLoading] = useState(false);
+
+  useEffect(() => {
+    if (!detailKey) return;
+    setDetailLoading(true);
+    setDetailChecks([]);
+    supabase
+      .from("uptime_checks")
+      .select("checked_at, is_up, latency_ms, status_code, error")
+      .eq("service_key", detailKey)
+      .order("checked_at", { ascending: false })
+      .limit(30)
+      .then(({ data }) => {
+        setDetailChecks((data ?? []) as any);
+        setDetailLoading(false);
+      });
+  }, [detailKey]);
 
   useEffect(() => {
     document.title = "Status — CarnageMC";
@@ -495,7 +521,16 @@ const Status = () => {
               return (
                 <Card
                   key={s.key}
-                  className="group relative p-5 overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-lg"
+                  onClick={() => setDetailKey(s.key)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setDetailKey(s.key);
+                    }
+                  }}
+                  className="group relative p-5 overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-lg cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   style={{ borderColor: current === "up" ? undefined : `${accent}55` }}
                 >
                   <div
@@ -509,9 +544,11 @@ const Status = () => {
                           href={s.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-display font-bold hover:text-primary hover:underline"
+                          onClick={(e) => e.stopPropagation()}
+                          className="font-display font-bold hover:text-primary hover:underline inline-flex items-center gap-1"
                         >
                           {s.name}
+                          <ExternalLink className="h-3 w-3 opacity-60" />
                         </a>
                       ) : (
                         <div className="font-display font-bold">{s.name}</div>
@@ -529,12 +566,15 @@ const Status = () => {
                     <span className="font-mono font-bold text-sm normal-case tracking-normal" style={{ color: accent }}>
                       {pct !== null ? `${pct.toFixed(2)}%` : loading ? "…" : "—"}
                     </span>
-                    <span>Today</span>
+                    <span className="inline-flex items-center gap-1 group-hover:text-primary transition">
+                      Details <ChevronRight className="h-3 w-3" />
+                    </span>
                   </div>
                 </Card>
               );
             })}
           </div>
+
 
           {/* INCIDENTS */}
           {incidents.length > 0 && (
@@ -609,6 +649,199 @@ const Status = () => {
         </div>
       </main>
       <Footer />
+
+      {/* SERVICE DETAIL DIALOG */}
+      <Dialog open={!!detailKey} onOpenChange={(o) => !o && setDetailKey(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          {(() => {
+            if (!detailKey) return null;
+            const svc = services.find((s) => s.key === detailKey);
+            if (!svc) return null;
+            const current = serviceCurrent[detailKey];
+            const days = byService.get(detailKey);
+            const dayEntries = days ? Array.from(days.entries()) : [];
+            let dTotal = 0, dUp = 0, upDays = 0, degDays = 0, downDays = 0, noneDays = 0;
+            for (const [, v] of dayEntries) {
+              dTotal += v.total;
+              dUp += Math.round(((v.pct ?? 0) / 100) * v.total);
+              const st = statusFromPct(v.pct, v.total);
+              if (st === "up") upDays++;
+              else if (st === "degraded") degDays++;
+              else if (st === "down") downDays++;
+              else noneDays++;
+            }
+            const emptyDays = range - dayEntries.length;
+            noneDays += Math.max(0, emptyDays);
+            const pct = dTotal ? (100 * dUp) / dTotal : null;
+            const svcIncidents = incidents.filter((i) => i.service_key === detailKey);
+            const openIncidents = svcIncidents.filter((i) => !i.closed_at).length;
+            const lastCheck = detailChecks[0];
+            const upLatencies = detailChecks.filter((c) => c.is_up && c.latency_ms != null).map((c) => c.latency_ms!);
+            const avgLatency = upLatencies.length ? Math.round(upLatencies.reduce((a, b) => a + b, 0) / upLatencies.length) : null;
+            const accent =
+              current === "down" ? "hsl(var(--destructive))"
+              : current === "degraded" ? "rgb(234 179 8)"
+              : current === "up" ? "hsl(var(--primary))"
+              : "hsl(var(--muted-foreground))";
+            const statusLabel = { up: "Operational", degraded: "Degraded", down: "Outage", none: "No data" }[current];
+            return (
+              <>
+                <DialogHeader>
+                  <div className="flex items-center gap-3">
+                    <span className="h-3 w-3 rounded-full shrink-0" style={{ background: accent, boxShadow: `0 0 10px ${accent}` }} />
+                    <DialogTitle className="font-display text-2xl">{svc.name}</DialogTitle>
+                    <Badge variant="secondary" className="ml-auto" style={{ color: accent, borderColor: `${accent}55` }}>
+                      {statusLabel}
+                    </Badge>
+                  </div>
+                  <DialogDescription className="flex items-center gap-2 pt-1">
+                    {svc.desc}
+                    {svc.url && (
+                      <a href={svc.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
+                        Visit <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
+                  </DialogDescription>
+                </DialogHeader>
+
+                {/* KPI grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+                  <Card className="p-3">
+                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+                      <Activity className="h-3 w-3" /> Uptime
+                    </div>
+                    <div className="font-display text-xl font-black" style={{ color: accent }}>
+                      {pct !== null ? `${pct.toFixed(2)}%` : "—"}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground">last {range}d</div>
+                  </Card>
+                  <Card className="p-3">
+                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+                      <Gauge className="h-3 w-3" /> Avg latency
+                    </div>
+                    <div className="font-display text-xl font-black">{avgLatency !== null ? `${avgLatency}ms` : "—"}</div>
+                    <div className="text-[10px] text-muted-foreground">last 30 checks</div>
+                  </Card>
+                  <Card className="p-3">
+                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+                      <Zap className="h-3 w-3" /> Incidents
+                    </div>
+                    <div className="font-display text-xl font-black">
+                      {svcIncidents.length}
+                      {openIncidents > 0 && <span className="text-destructive text-sm ml-1">· {openIncidents} open</span>}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground">recent history</div>
+                  </Card>
+                  <Card className="p-3">
+                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+                      <Clock className="h-3 w-3" /> Last check
+                    </div>
+                    <div className="font-display text-sm font-bold">
+                      {lastCheck ? new Date(lastCheck.checked_at).toLocaleTimeString() : "—"}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground">
+                      {lastCheck ? (lastCheck.is_up ? `Up · HTTP ${lastCheck.status_code ?? "—"}` : `Down · ${lastCheck.error ?? "error"}`) : "no data"}
+                    </div>
+                  </Card>
+                </div>
+
+                {/* Day breakdown */}
+                <div className="mt-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CalendarDays className="h-4 w-4 text-primary" />
+                    <div className="font-display font-bold text-sm">Day Breakdown ({range}d)</div>
+                  </div>
+                  <div className="grid grid-cols-4 gap-2 text-center">
+                    <div className="rounded-md border border-primary/30 bg-primary/5 p-2">
+                      <div className="font-display font-black text-lg text-primary">{upDays}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Up</div>
+                    </div>
+                    <div className="rounded-md border border-yellow-500/30 bg-yellow-500/5 p-2">
+                      <div className="font-display font-black text-lg text-yellow-500">{degDays}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Degraded</div>
+                    </div>
+                    <div className="rounded-md border border-destructive/30 bg-destructive/5 p-2">
+                      <div className="font-display font-black text-lg text-destructive">{downDays}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Down</div>
+                    </div>
+                    <div className="rounded-md border border-border bg-muted/20 p-2">
+                      <div className="font-display font-black text-lg text-muted-foreground">{noneDays}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">No data</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Recent checks */}
+                <div className="mt-5">
+                  <div className="font-display font-bold text-sm mb-2">Recent Checks</div>
+                  {detailLoading ? (
+                    <div className="text-xs text-muted-foreground">Loading…</div>
+                  ) : detailChecks.length === 0 ? (
+                    <div className="text-xs text-muted-foreground">No recent checks recorded.</div>
+                  ) : (
+                    <Card className="divide-y divide-border max-h-56 overflow-y-auto">
+                      {detailChecks.map((c, idx) => (
+                        <div key={idx} className="px-3 py-2 flex items-center gap-2 text-xs">
+                          {c.is_up ? (
+                            <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                          ) : (
+                            <XCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+                          )}
+                          <span className="font-mono text-muted-foreground shrink-0">
+                            {new Date(c.checked_at).toLocaleString()}
+                          </span>
+                          <span className="flex-1 truncate">
+                            {c.is_up ? "Up" : "Down"}
+                            {c.status_code != null ? ` · HTTP ${c.status_code}` : ""}
+                            {c.error ? ` · ${c.error}` : ""}
+                          </span>
+                          {c.latency_ms != null && (
+                            <span className="font-mono text-muted-foreground shrink-0">{c.latency_ms}ms</span>
+                          )}
+                        </div>
+                      ))}
+                    </Card>
+                  )}
+                </div>
+
+                {/* Incidents for this service */}
+                {svcIncidents.length > 0 && (
+                  <div className="mt-5">
+                    <div className="font-display font-bold text-sm mb-2">Incidents for {svc.name}</div>
+                    <Card className="divide-y divide-border">
+                      {svcIncidents.map((i) => {
+                        const ongoing = !i.closed_at;
+                        const durMin = Math.max(
+                          1,
+                          Math.round(
+                            ((i.closed_at ? new Date(i.closed_at).getTime() : Date.now()) - new Date(i.opened_at).getTime()) / 60000,
+                          ),
+                        );
+                        return (
+                          <Link
+                            key={i.id}
+                            to={`/status/${i.incident_number}`}
+                            onClick={() => setDetailKey(null)}
+                            className="flex items-center gap-2 px-3 py-2 hover:bg-muted/40 transition text-xs"
+                          >
+                            <span className={`h-2 w-2 rounded-full shrink-0 ${ongoing ? "bg-destructive animate-pulse" : "bg-muted-foreground"}`} />
+                            <span className="font-semibold shrink-0">#{i.incident_number}</span>
+                            <span className="text-muted-foreground truncate flex-1">
+                              {new Date(i.opened_at).toLocaleString()} · {durMin < 60 ? `${durMin}m` : `${Math.floor(durMin / 60)}h ${durMin % 60}m`}
+                              {i.last_error ? ` · ${i.last_error}` : ""}
+                            </span>
+                            <ChevronRight className="h-3 w-3 text-muted-foreground shrink-0" />
+                          </Link>
+                        );
+                      })}
+                    </Card>
+                  </div>
+                )}
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
