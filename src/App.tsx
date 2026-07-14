@@ -70,6 +70,7 @@ import StaffChat from "./pages/StaffChat.tsx";
 import FireMarket from "./pages/FireMarket.tsx";
 import Store from "./pages/Store.tsx";
 import StorePackage from "./pages/StorePackage.tsx";
+import Checkout from "./pages/Checkout.tsx";
 
 
 const queryClient = new QueryClient();
