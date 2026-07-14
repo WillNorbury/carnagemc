@@ -1,0 +1,1 @@
+ALTER TABLE public.store_items ALTER COLUMN description DROP NOT NULL;

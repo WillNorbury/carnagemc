@@ -2167,7 +2167,7 @@ export type Database = {
           category_id: string | null
           created_at: string
           currency: string
-          description: string
+          description: string | null
           external_url: string | null
           featured: boolean
           id: string
@@ -2183,7 +2183,7 @@ export type Database = {
           category_id?: string | null
           created_at?: string
           currency?: string
-          description?: string
+          description?: string | null
           external_url?: string | null
           featured?: boolean
           id?: string
@@ -2199,7 +2199,7 @@ export type Database = {
           category_id?: string | null
           created_at?: string
           currency?: string
-          description?: string
+          description?: string | null
           external_url?: string | null
           featured?: boolean
           id?: string
