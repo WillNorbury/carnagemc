@@ -688,22 +688,23 @@ const Status = () => {
             return (
               <>
                 <DialogHeader>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap pr-6">
                     <span className="h-3 w-3 rounded-full shrink-0" style={{ background: accent, boxShadow: `0 0 10px ${accent}` }} />
-                    <DialogTitle className="font-display text-2xl">{svc.name}</DialogTitle>
-                    <Badge variant="secondary" className="ml-auto" style={{ color: accent, borderColor: `${accent}55` }}>
+                    <DialogTitle className="font-display text-2xl min-w-0 break-words">{svc.name}</DialogTitle>
+                    <Badge variant="secondary" className="ml-auto shrink-0" style={{ color: accent, borderColor: `${accent}55` }}>
                       {statusLabel}
                     </Badge>
                   </div>
-                  <DialogDescription className="flex items-center gap-2 pt-1">
-                    {svc.desc}
+                  <DialogDescription className="flex items-center gap-2 pt-1 flex-wrap break-words">
+                    <span className="truncate max-w-full">{svc.desc}</span>
                     {svc.url && (
-                      <a href={svc.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
+                      <a href={svc.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline shrink-0">
                         Visit <ExternalLink className="h-3 w-3" />
                       </a>
                     )}
                   </DialogDescription>
                 </DialogHeader>
+
 
                 {/* KPI grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
