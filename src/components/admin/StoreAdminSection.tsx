@@ -68,6 +68,34 @@ const emptyItem: Omit<Item, "id"> = {
   published: true,
 };
 
+type Coupon = {
+  id: string;
+  code: string;
+  description: string | null;
+  discount_type: "percent" | "fixed";
+  discount_value: number;
+  currency: string | null;
+  min_subtotal: number;
+  max_uses: number | null;
+  uses_count: number;
+  starts_at: string | null;
+  expires_at: string | null;
+  active: boolean;
+};
+
+const emptyCoupon: Omit<Coupon, "id" | "uses_count"> = {
+  code: "",
+  description: "",
+  discount_type: "percent",
+  discount_value: 10,
+  currency: "USD",
+  min_subtotal: 0,
+  max_uses: null,
+  starts_at: null,
+  expires_at: null,
+  active: true,
+};
+
 const ICON_OPTIONS = ["Package", "Sparkles", "Zap", "Coins", "Award", "Flame", "Star", "ShoppingBag"];
 
 export function StoreAdminSection() {
