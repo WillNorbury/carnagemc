@@ -652,7 +652,8 @@ const Status = () => {
 
       {/* SERVICE DETAIL DIALOG */}
       <Dialog open={!!detailKey} onOpenChange={(o) => !o && setDetailKey(null)}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl w-[calc(100vw-2rem)] max-h-[85vh] overflow-y-auto overflow-x-hidden">
+
           {(() => {
             if (!detailKey) return null;
             const svc = services.find((s) => s.key === detailKey);
