@@ -782,28 +782,31 @@ const Status = () => {
                   ) : detailChecks.length === 0 ? (
                     <div className="text-xs text-muted-foreground">No recent checks recorded.</div>
                   ) : (
-                    <Card className="divide-y divide-border max-h-56 overflow-y-auto">
+                    <Card className="divide-y divide-border max-h-56 overflow-y-auto overflow-x-hidden">
                       {detailChecks.map((c, idx) => (
-                        <div key={idx} className="px-3 py-2 flex items-center gap-2 text-xs">
+                        <div key={idx} className="px-3 py-2 flex items-center gap-2 text-xs min-w-0">
                           {c.is_up ? (
                             <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
                           ) : (
                             <XCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
                           )}
-                          <span className="font-mono text-muted-foreground shrink-0">
-                            {new Date(c.checked_at).toLocaleString()}
-                          </span>
-                          <span className="flex-1 truncate">
-                            {c.is_up ? "Up" : "Down"}
-                            {c.status_code != null ? ` · HTTP ${c.status_code}` : ""}
-                            {c.error ? ` · ${c.error}` : ""}
-                          </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-mono text-muted-foreground truncate text-[10px]">
+                              {new Date(c.checked_at).toLocaleString()}
+                            </div>
+                            <div className="truncate">
+                              {c.is_up ? "Up" : "Down"}
+                              {c.status_code != null ? ` · HTTP ${c.status_code}` : ""}
+                              {c.error ? ` · ${c.error}` : ""}
+                            </div>
+                          </div>
                           {c.latency_ms != null && (
                             <span className="font-mono text-muted-foreground shrink-0">{c.latency_ms}ms</span>
                           )}
                         </div>
                       ))}
                     </Card>
+
                   )}
                 </div>
 
