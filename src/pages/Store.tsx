@@ -17,7 +17,7 @@ import {
   Award,
   Flame,
   Star,
-  ExternalLink,
+  
   Plus,
   Minus,
   Trash2,
@@ -460,11 +460,6 @@ export default function Store() {
                         {formatPrice(heroItem.price, heroItem.currency)}
                       </span>
                       <AddToCartButton it={heroItem} size="lg" />
-                      {heroItem.external_url && (
-                        <span className="inline-flex items-center gap-1">
-                          Get it <ExternalLink className="w-3 h-3" />
-                        </span>
-                      )}
                     </div>
                   </div>
                 </ItemLink>
