@@ -254,16 +254,6 @@ export default function StorePackage() {
                     >
                       Buy now
                     </button>
-                    {item.external_url && (
-                      <a
-                        href={item.external_url}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className="inline-flex items-center gap-1.5 text-xs text-[#9ca3af] hover:text-[#ff5722] font-mono uppercase tracking-widest"
-                      >
-                        External link <ExternalLink className="w-3 h-3" />
-                      </a>
-                    )}
                   </div>
                 </div>
               </div>
