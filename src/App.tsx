@@ -68,6 +68,7 @@ import Punishments from "./pages/Punishments.tsx";
 import StaffChat from "./pages/StaffChat.tsx";
 import FireMarket from "./pages/FireMarket.tsx";
 import Store from "./pages/Store.tsx";
+import StorePackage from "./pages/StorePackage.tsx";
 
 
 const queryClient = new QueryClient();
@@ -193,7 +194,8 @@ const Shell = () => {
                    <Route path="/fire-market" element={<FireMarket />} />
                    <Route path="/firemarket" element={<Navigate to="/fire-market" replace />} />
                    <Route path="/discord" element={<Discord />} />
-                   <Route path="/store" element={<Store />} />
+                  <Route path="/store" element={<Store />} />
+                  <Route path="/store/package/:id" element={<StorePackage />} />
                    
                    <Route path="*" element={<NotFound />} />
           </Routes>

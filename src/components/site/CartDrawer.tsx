@@ -16,6 +16,7 @@ import {
   X,
   BadgePercent,
   Tag,
+  AlertCircle,
 } from "lucide-react";
 
 export function CartDrawer() {
@@ -240,7 +241,13 @@ export function CartDrawer() {
                 </div>
               )}
               {cart.couponError && (
-                <p className="text-xs text-destructive">{cart.couponError}</p>
+                <div
+                  role="alert"
+                  className="flex items-start gap-2 text-xs text-destructive bg-destructive/10 border border-destructive/30 rounded px-2 py-1.5"
+                >
+                  <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                  <span>{cart.couponError}</span>
+                </div>
               )}
               {cart.coupon && cart.discount === 0 && cart.subtotal < cart.coupon.min_subtotal && (
                 <p className="text-xs text-muted-foreground">

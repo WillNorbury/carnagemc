@@ -22,6 +22,7 @@ import {
   Minus,
   Trash2,
   Check,
+  AlertCircle,
 } from "lucide-react";
 
 type Category = {
@@ -167,19 +168,11 @@ export default function Store() {
     it: Item;
     children: React.ReactNode;
     className?: string;
-  }) =>
-    it.external_url ? (
-      <a
-        href={it.external_url}
-        target="_blank"
-        rel="noreferrer noopener"
-        className={className}
-      >
-        {children}
-      </a>
-    ) : (
-      <div className={className}>{children}</div>
-    );
+  }) => (
+    <Link to={`/store/package/${it.id}`} className={className}>
+      {children}
+    </Link>
+  );
 
   const handleAdd = (it: Item) => {
     cart.add({
@@ -683,7 +676,13 @@ export default function Store() {
                           <CouponInput />
                         )}
                         {cart.couponError && (
-                          <span className="text-xs text-red-400 font-mono">{cart.couponError}</span>
+                          <div
+                            role="alert"
+                            className="inline-flex items-center gap-2 text-xs font-mono text-red-300 bg-red-500/10 border border-red-500/40 px-2.5 py-1.5"
+                          >
+                            <AlertCircle className="w-3.5 h-3.5" />
+                            {cart.couponError}
+                          </div>
                         )}
                       </div>
 
