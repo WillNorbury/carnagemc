@@ -563,7 +563,7 @@ const Status = () => {
                 <DialogDescription className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
                   <span className="min-w-0 break-words">{selectedService.desc}</span>
                   {selectedService.url && (
-                    <a href={selectedService.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
+                    <a href={selectedService.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 border-l border-border pl-2 text-primary hover:underline">
                       Visit <ArrowUpRight className="h-3.5 w-3.5" />
                     </a>
                   )}
