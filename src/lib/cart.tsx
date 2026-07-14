@@ -157,22 +157,34 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         setCouponError(error.message);
         return false;
       }
-      if (!data || !data.active) {
-        setCouponError("Invalid or expired code.");
+      if (!data) {
+        setCouponError("Invalid code — check the spelling and try again.");
+        return false;
+      }
+      if (!data.active) {
+        setCouponError("This code is no longer active.");
         return false;
       }
       const now = new Date();
       if (data.starts_at && new Date(data.starts_at) > now) {
-        setCouponError("This code isn't active yet.");
+        setCouponError(
+          `This code isn't active until ${new Date(data.starts_at).toLocaleString()}.`,
+        );
         return false;
       }
       if (data.expires_at && new Date(data.expires_at) < now) {
-        setCouponError("This code has expired.");
+        setCouponError(
+          `This code expired on ${new Date(data.expires_at).toLocaleDateString()}.`,
+        );
         return false;
       }
       if (data.max_uses != null && (data.uses_count ?? 0) >= data.max_uses) {
-        setCouponError("This code has reached its use limit.");
+        setCouponError("This code has reached its usage limit.");
         return false;
+      }
+      if (Number(data.min_subtotal) > 0) {
+        // Not a hard error — the coupon can still be attached; drawer/store
+        // shows a helper hint until the subtotal meets the minimum.
       }
       setCoupon({
         id: data.id,
