@@ -1,4 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { CartDrawer } from "@/components/site/CartDrawer";
 
 export type CartItem = {
   id: string;
@@ -10,19 +12,40 @@ export type CartItem = {
   quantity: number;
 };
 
+export type AppliedCoupon = {
+  id: string;
+  code: string;
+  discount_type: "percent" | "fixed";
+  discount_value: number;
+  currency: string | null;
+  min_subtotal: number;
+  description: string | null;
+};
+
 type CartContextValue = {
   items: CartItem[];
   count: number;
   subtotal: number;
+  discount: number;
+  total: number;
   currency: string;
+  coupon: AppliedCoupon | null;
+  couponError: string | null;
+  applyingCoupon: boolean;
+  applyCoupon: (code: string) => Promise<boolean>;
+  clearCoupon: () => void;
   add: (item: Omit<CartItem, "quantity">, qty?: number) => void;
   remove: (id: string) => void;
   setQty: (id: string, qty: number) => void;
   clear: () => void;
+  isOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "carnage.cart.v1";
+const COUPON_KEY = "carnage.cart.coupon.v1";
 
 const read = (): CartItem[] => {
   try {
@@ -35,10 +58,26 @@ const read = (): CartItem[] => {
   }
 };
 
+const readCoupon = (): AppliedCoupon | null => {
+  try {
+    const raw = localStorage.getItem(COUPON_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as AppliedCoupon;
+  } catch {
+    return null;
+  }
+};
+
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>(() =>
     typeof window === "undefined" ? [] : read(),
   );
+  const [coupon, setCoupon] = useState<AppliedCoupon | null>(() =>
+    typeof window === "undefined" ? null : readCoupon(),
+  );
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -46,10 +85,17 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     } catch {}
   }, [items]);
 
-  // Sync across tabs
+  useEffect(() => {
+    try {
+      if (coupon) localStorage.setItem(COUPON_KEY, JSON.stringify(coupon));
+      else localStorage.removeItem(COUPON_KEY);
+    } catch {}
+  }, [coupon]);
+
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY) setItems(read());
+      if (e.key === COUPON_KEY) setCoupon(readCoupon());
     };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
@@ -80,16 +126,127 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     );
   }, []);
 
-  const clear = useCallback(() => setItems([]), []);
+  const clear = useCallback(() => {
+    setItems([]);
+    setCoupon(null);
+    setCouponError(null);
+  }, []);
+
+  const clearCoupon = useCallback(() => {
+    setCoupon(null);
+    setCouponError(null);
+  }, []);
+
+  const applyCoupon = useCallback(async (rawCode: string) => {
+    const code = rawCode.trim();
+    setCouponError(null);
+    if (!code) {
+      setCouponError("Enter a code.");
+      return false;
+    }
+    setApplyingCoupon(true);
+    try {
+      const { data, error } = await supabase
+        .from("store_coupons")
+        .select(
+          "id, code, description, discount_type, discount_value, currency, min_subtotal, max_uses, uses_count, starts_at, expires_at, active",
+        )
+        .ilike("code", code)
+        .maybeSingle();
+      if (error) {
+        setCouponError(error.message);
+        return false;
+      }
+      if (!data || !data.active) {
+        setCouponError("Invalid or expired code.");
+        return false;
+      }
+      const now = new Date();
+      if (data.starts_at && new Date(data.starts_at) > now) {
+        setCouponError("This code isn't active yet.");
+        return false;
+      }
+      if (data.expires_at && new Date(data.expires_at) < now) {
+        setCouponError("This code has expired.");
+        return false;
+      }
+      if (data.max_uses != null && (data.uses_count ?? 0) >= data.max_uses) {
+        setCouponError("This code has reached its use limit.");
+        return false;
+      }
+      setCoupon({
+        id: data.id,
+        code: data.code,
+        discount_type: data.discount_type as "percent" | "fixed",
+        discount_value: Number(data.discount_value) || 0,
+        currency: data.currency ?? null,
+        min_subtotal: Number(data.min_subtotal) || 0,
+        description: data.description ?? null,
+      });
+      return true;
+    } finally {
+      setApplyingCoupon(false);
+    }
+  }, []);
+
+  const openCart = useCallback(() => setIsOpen(true), []);
+  const closeCart = useCallback(() => setIsOpen(false), []);
 
   const value = useMemo<CartContextValue>(() => {
     const count = items.reduce((a, b) => a + b.quantity, 0);
     const subtotal = items.reduce((a, b) => a + (Number(b.price) || 0) * b.quantity, 0);
     const currency = (items.find((i) => i.currency)?.currency || "USD").toUpperCase();
-    return { items, count, subtotal, currency, add, remove, setQty, clear };
-  }, [items, add, remove, setQty, clear]);
+    let discount = 0;
+    if (coupon && subtotal >= coupon.min_subtotal) {
+      if (coupon.discount_type === "percent") {
+        discount = Math.min(subtotal, (subtotal * coupon.discount_value) / 100);
+      } else {
+        discount = Math.min(subtotal, coupon.discount_value);
+      }
+    }
+    const total = Math.max(0, subtotal - discount);
+    return {
+      items,
+      count,
+      subtotal,
+      discount,
+      total,
+      currency,
+      coupon,
+      couponError,
+      applyingCoupon,
+      applyCoupon,
+      clearCoupon,
+      add,
+      remove,
+      setQty,
+      clear,
+      isOpen,
+      openCart,
+      closeCart,
+    };
+  }, [
+    items,
+    coupon,
+    couponError,
+    applyingCoupon,
+    applyCoupon,
+    clearCoupon,
+    add,
+    remove,
+    setQty,
+    clear,
+    isOpen,
+    openCart,
+    closeCart,
+  ]);
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+      <CartDrawer />
+    </CartContext.Provider>
+  );
 };
 
 export const useCart = () => {
