@@ -178,6 +178,27 @@ const Status = () => {
       last_error: string | null;
     }>
   >([]);
+  const [detailKey, setDetailKey] = useState<string | null>(null);
+  const [detailChecks, setDetailChecks] = useState<
+    Array<{ checked_at: string; is_up: boolean; latency_ms: number | null; status_code: number | null; error: string | null }>
+  >([]);
+  const [detailLoading, setDetailLoading] = useState(false);
+
+  useEffect(() => {
+    if (!detailKey) return;
+    setDetailLoading(true);
+    setDetailChecks([]);
+    supabase
+      .from("uptime_checks")
+      .select("checked_at, is_up, latency_ms, status_code, error")
+      .eq("service_key", detailKey)
+      .order("checked_at", { ascending: false })
+      .limit(30)
+      .then(({ data }) => {
+        setDetailChecks((data ?? []) as any);
+        setDetailLoading(false);
+      });
+  }, [detailKey]);
 
   useEffect(() => {
     document.title = "Status — CarnageMC";
