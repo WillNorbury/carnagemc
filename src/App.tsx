@@ -198,6 +198,7 @@ const Shell = () => {
                    <Route path="/discord" element={<Discord />} />
                   <Route path="/store" element={<Store />} />
                   <Route path="/store/package/:id" element={<StorePackage />} />
+                  <Route path="/checkout" element={<Checkout />} />
                    
                    <Route path="*" element={<NotFound />} />
           </Routes>
