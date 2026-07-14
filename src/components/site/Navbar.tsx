@@ -13,7 +13,7 @@ import { useCart } from "@/lib/cart";
 
 const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
-  const { count: cartCount } = useCart();
+  const { count: cartCount, openCart } = useCart();
   const nav = useNavigate();
   const [scrolled, setScrolled] = useState(false);
 
@@ -51,7 +51,7 @@ const Navbar = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => nav("/store#cart")}
+            onClick={openCart}
             title="Cart"
             aria-label={`Cart (${cartCount} item${cartCount === 1 ? "" : "s"})`}
             className="relative"
