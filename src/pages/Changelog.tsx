@@ -14,6 +14,9 @@ import {
   ArrowRight,
   Radio,
   Maximize2,
+  Mail,
+  Globe,
+  MessageSquareOff,
 } from "lucide-react";
 import { changelogSlug } from "@/lib/changelog-slug";
 import Lightbox from "@/components/site/Lightbox";
