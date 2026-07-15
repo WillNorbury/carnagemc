@@ -23,7 +23,7 @@ const SERVICE_NAMES: Record<string, string> = {
 };
 
 const SERVICE_ENDPOINTS: Record<string, string> = {
-  website: "https://carnagemc.net",
+  website: "https://carnagemc.lovable.app",
   minecraft: "",
   api: "",
   panel: "https://panel.voxelnode.dev",
@@ -278,7 +278,7 @@ Deno.serve(async (req) => {
     /* ignore */
   }
 
-  const siteUrl = "https://carnagemc.net";
+  const siteUrl = "https://carnagemc.lovable.app";
   const apiHealth = `${SUPABASE_URL}/rest/v1/`;
   SERVICE_ENDPOINTS.website = siteUrl;
   SERVICE_ENDPOINTS.minecraft = mcHost;
