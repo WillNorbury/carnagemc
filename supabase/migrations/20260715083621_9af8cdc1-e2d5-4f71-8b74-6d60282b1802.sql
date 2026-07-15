@@ -1,0 +1,1 @@
+ALTER TABLE public.support_tickets ADD COLUMN IF NOT EXISTS admin_last_viewed_at timestamptz;
