@@ -9,6 +9,7 @@ export type CartItem = {
   image_url: string | null;
   external_url: string | null;
   quantity: number;
+  maxQuantity?: number | null;
 };
 
 export type AppliedCoupon = {
@@ -102,13 +103,17 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const add = useCallback((item: Omit<CartItem, "quantity">, qty: number = 1) => {
     setItems((prev) => {
+      const cap = Math.min(99, item.maxQuantity ?? 99);
       const found = prev.find((p) => p.id === item.id);
       if (found) {
+        const effectiveCap = Math.min(99, found.maxQuantity ?? cap);
         return prev.map((p) =>
-          p.id === item.id ? { ...p, quantity: Math.min(99, p.quantity + qty) } : p,
+          p.id === item.id
+            ? { ...p, quantity: Math.min(effectiveCap, p.quantity + qty) }
+            : p,
         );
       }
-      return [...prev, { ...item, quantity: Math.max(1, qty) }];
+      return [...prev, { ...item, quantity: Math.min(cap, Math.max(1, qty)) }];
     });
   }, []);
 
@@ -121,7 +126,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setItems((prev) =>
       qty <= 0
         ? prev.filter((p) => p.id !== id)
-        : prev.map((p) => (p.id === id ? { ...p, quantity: Math.min(99, qty) } : p)),
+        : prev.map((p) =>
+            p.id === id
+              ? { ...p, quantity: Math.min(99, p.maxQuantity ?? 99, qty) }
+              : p,
+          ),
     );
   }, []);
 
