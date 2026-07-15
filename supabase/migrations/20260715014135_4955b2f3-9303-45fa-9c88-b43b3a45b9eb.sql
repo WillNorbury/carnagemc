@@ -1,0 +1,1 @@
+GRANT SELECT (last_login_date, last_vote_date) ON public.user_streaks TO authenticated;
