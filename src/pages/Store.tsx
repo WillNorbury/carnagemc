@@ -174,6 +174,10 @@ export default function Store() {
     </Link>
   );
 
+  const RANK_SLUGS = new Set(["ranks", "rank-upgrades"]);
+  const isRankLike = (categoryId: string) =>
+    RANK_SLUGS.has(cats.find((c) => c.id === categoryId)?.slug ?? "");
+
   const handleAdd = (it: Item) => {
     cart.add({
       id: it.id,
@@ -182,6 +186,7 @@ export default function Store() {
       currency: it.currency,
       image_url: it.image_url,
       external_url: it.external_url,
+      maxQuantity: isRankLike(it.category_id) ? 1 : undefined,
     });
     setJustAdded(it.id);
     window.setTimeout(() => {
