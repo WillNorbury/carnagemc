@@ -11,12 +11,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 
-const SITES = [
-  { id: "mcservers", name: "MinecraftServers.org", url: "https://minecraftservers.org/", reward: "1 Vote Crate Key" },
-  { id: "mcmp", name: "MinecraftMP", url: "https://minecraft-mp.com/", reward: "1 Vote Crate Key" },
-  { id: "planetmc", name: "PlanetMinecraft", url: "https://www.planetminecraft.com/", reward: "1 Vote Crate Key" },
-  { id: "topg", name: "TopG", url: "https://topg.org/minecraft-servers/", reward: "1 Vote Crate Key" },
-];
+type VoteSite = { id: string; name: string; url: string; reward: string };
+
 
 const REWARDS = [
   { icon: Gift, title: "Daily Vote Key", desc: "1 crate key per site, every 24h." },
