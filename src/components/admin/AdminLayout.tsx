@@ -46,6 +46,7 @@ import {
   Flag,
   Send,
   ShieldCheck,
+  ExternalLink,
 } from "lucide-react";
 
 export type AdminSection =
