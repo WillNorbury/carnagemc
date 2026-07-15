@@ -2780,51 +2780,69 @@ const TicketsAdminSection = () => {
     if (!selected || !user || !reply.trim()) return;
     setSending(true);
     const body = reply.trim();
-    const { error } = await supabase.from("support_ticket_messages").insert({
+    const tempId = `temp-${Date.now()}`;
+    const optimistic: AdminMsg = {
+      id: tempId,
       ticket_id: selected.id,
       author_id: user.id,
       is_staff: true,
       body,
-    });
+      created_at: new Date().toISOString(),
+    } as AdminMsg;
+    setMessages((prev) => [...prev, optimistic]);
+    setReply("");
+
+    const { data: inserted, error } = await supabase
+      .from("support_ticket_messages")
+      .insert({
+        ticket_id: selected.id,
+        author_id: user.id,
+        is_staff: true,
+        body,
+      })
+      .select("*")
+      .single();
     if (error) {
+      setMessages((prev) => prev.filter((m) => m.id !== tempId));
+      setReply(body);
       setSending(false);
       return toast.error(error.message);
     }
-    // Email the ticket owner from tickets@carnagemc.net
-    try {
-      const { data: emailData } = await supabase.rpc("admin_get_user_email", { _user_id: selected.user_id });
-      const recipientEmail = (emailData as string | null) ?? null;
-      if (recipientEmail) {
-        const recipientName = profilesById[selected.user_id]?.display_name ?? "there";
-        const staffName = user.user_metadata?.display_name || user.email?.split("@")[0] || "Support";
-        await supabase.functions.invoke("send-transactional-email", {
-          body: {
-            templateName: "ticket-reply",
-            recipientEmail,
-            from: '"CarnageMC Support" <tickets@carnagemc.net>',
-            idempotencyKey: `ticket-reply-${selected.id}-${Date.now()}`,
-            templateData: {
-              recipientName,
-              subject: selected.subject,
-              reply: body,
-              staffName,
-              ticketUrl: `${window.location.origin}/support`,
-            },
-          },
-        });
-      }
-    } catch (e) {
-      console.warn("ticket-reply email failed", e);
-    }
+    setMessages((prev) =>
+      prev.map((m) => (m.id === tempId ? (inserted as AdminMsg) : m)),
+    );
     setSending(false);
-    setReply("");
-    if (selected.status === "open") await updateStatus(selected.id, "waiting_user");
-    const { data } = await supabase
-      .from("support_ticket_messages")
-      .select("*")
-      .eq("ticket_id", selected.id)
-      .order("created_at");
-    setMessages((data ?? []) as AdminMsg[]);
+
+    if (selected.status === "open") updateStatus(selected.id, "waiting_user");
+
+    // Fire-and-forget email notification
+    (async () => {
+      try {
+        const { data: emailData } = await supabase.rpc("admin_get_user_email", { _user_id: selected.user_id });
+        const recipientEmail = (emailData as string | null) ?? null;
+        if (recipientEmail) {
+          const recipientName = profilesById[selected.user_id]?.display_name ?? "there";
+          const staffName = user.user_metadata?.display_name || user.email?.split("@")[0] || "Support";
+          await supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "ticket-reply",
+              recipientEmail,
+              from: '"CarnageMC Support" <tickets@carnagemc.net>',
+              idempotencyKey: `ticket-reply-${selected.id}-${Date.now()}`,
+              templateData: {
+                recipientName,
+                subject: selected.subject,
+                reply: body,
+                staffName,
+                ticketUrl: `${window.location.origin}/support`,
+              },
+            },
+          });
+        }
+      } catch (e) {
+        console.warn("ticket-reply email failed", e);
+      }
+    })();
   };
 
   const deleteTicket = async (id: string) => {
