@@ -2914,14 +2914,23 @@ const TicketsAdminSection = () => {
           <div className="space-y-2">
             {filtered.map((t) => {
               const active = selectedId === t.id;
+              const unread = hasUnreadReply(t);
               return (
                 <button
                   key={t.id}
                   onClick={() => setSelectedId(t.id)}
-                  className={`w-full text-left p-3 rounded-lg border transition ${active ? "border-primary/60 bg-primary/5" : "border-border hover:border-primary/40 hover:bg-secondary/30"}`}
+                  className={`w-full text-left p-3 rounded-lg border transition ${active ? "border-primary/60 bg-primary/5" : unread ? "border-destructive/60 hover:border-destructive bg-destructive/5" : "border-border hover:border-primary/40 hover:bg-secondary/30"}`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <div className="font-semibold text-sm truncate">{t.subject}</div>
+                    <div className="font-semibold text-sm truncate flex items-center gap-2">
+                      {unread && (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-destructive text-destructive-foreground shrink-0">
+                          <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                          New reply
+                        </span>
+                      )}
+                      <span className="truncate">{t.subject}</span>
+                    </div>
                     <Badge variant="outline" className="text-[10px] shrink-0">
                       {t.status.replace("_", " ")}
                     </Badge>
