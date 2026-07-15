@@ -27,6 +27,7 @@ const Vote = () => {
   const { user } = useAuth();
   const [voted, setVoted] = useState<Record<string, number>>({});
   const [streak, setStreak] = useState<{ vote_streak: number; vote_best: number; total_votes: number } | null>(null);
+  const [sites, setSites] = useState<VoteSite[]>([]);
 
   useEffect(() => {
     document.title = "Vote — CarnageMC";
@@ -34,6 +35,14 @@ const Vote = () => {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setVoted(JSON.parse(raw));
     } catch {}
+    supabase
+      .from("vote_links")
+      .select("site_key, name, url, reward")
+      .eq("enabled", true)
+      .order("sort_order", { ascending: true })
+      .then(({ data }) => {
+        setSites((data ?? []).map((r: any) => ({ id: r.site_key, name: r.name, url: r.url, reward: r.reward })));
+      });
   }, []);
 
   useEffect(() => {
