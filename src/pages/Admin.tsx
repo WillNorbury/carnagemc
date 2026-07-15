@@ -247,6 +247,7 @@ const Admin = () => {
           {section === "mysql" && (isOwner ? <MySqlAdminSection /> : denied)}
           {section === "servers-status" && <ServersStatusAdminSection />}
           {section === "store" && <StoreAdminSection />}
+          {section === "vote-links" && <VoteLinksAdminSection />}
         </>
       )}
     </AdminLayout>
