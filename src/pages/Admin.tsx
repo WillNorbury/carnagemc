@@ -84,6 +84,7 @@ import { ApplicationStatusEmailEditor } from "@/components/admin/ApplicationStat
 import { MySqlAdminSection } from "@/components/admin/MySqlAdminSection";
 import ServersStatusAdminSection from "@/components/admin/ServersStatusAdminSection";
 import { StoreAdminSection } from "@/components/admin/StoreAdminSection";
+import { VoteLinksAdminSection } from "@/components/admin/VoteLinksAdminSection";
 
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
@@ -137,6 +138,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   mysql: { title: "LiteBans MySQL", description: "Connect and edit the LiteBans database directly. Use with caution." },
   "servers-status": { title: "Servers (Public Status)", description: "Edit the per-server cards on /servers-status: players, TPS, uptime, IP, and MOTD." },
   store: { title: "Store", description: "Manage the categories and items shown on /store." },
+  "vote-links": { title: "Vote Links", description: "Manage the vote sites shown on /vote." },
 };
 
 const Admin = () => {
@@ -245,6 +247,7 @@ const Admin = () => {
           {section === "mysql" && (isOwner ? <MySqlAdminSection /> : denied)}
           {section === "servers-status" && <ServersStatusAdminSection />}
           {section === "store" && <StoreAdminSection />}
+          {section === "vote-links" && <VoteLinksAdminSection />}
         </>
       )}
     </AdminLayout>

@@ -46,6 +46,7 @@ import {
   Flag,
   Send,
   ShieldCheck,
+  ExternalLink,
 } from "lucide-react";
 
 export type AdminSection =
@@ -83,7 +84,8 @@ export type AdminSection =
   | "console"
   | "mysql"
   | "servers-status"
-  | "store";
+  | "store"
+  | "vote-links";
 
 type NavItem =
   | { kind: "link"; id: AdminSection; icon: any; label: string }
@@ -122,6 +124,7 @@ const items: NavItem[] = [
   { kind: "link", id: "plugins", icon: Puzzle, label: "Plugins" },
   { kind: "link", id: "changelog", icon: Zap, label: "Changelog" },
   { kind: "link", id: "store", icon: Package, label: "Store" },
+  { kind: "link", id: "vote-links", icon: ExternalLink, label: "Vote Links" },
   { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
   { kind: "link", id: "apply", icon: ClipboardList, label: "Apply (types)" },
   { kind: "link", id: "features", icon: Sparkles, label: "Features" },

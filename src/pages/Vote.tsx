@@ -11,12 +11,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 
-const SITES = [
-  { id: "mcservers", name: "MinecraftServers.org", url: "https://minecraftservers.org/", reward: "1 Vote Crate Key" },
-  { id: "mcmp", name: "MinecraftMP", url: "https://minecraft-mp.com/", reward: "1 Vote Crate Key" },
-  { id: "planetmc", name: "PlanetMinecraft", url: "https://www.planetminecraft.com/", reward: "1 Vote Crate Key" },
-  { id: "topg", name: "TopG", url: "https://topg.org/minecraft-servers/", reward: "1 Vote Crate Key" },
-];
+type VoteSite = { id: string; name: string; url: string; reward: string };
+
 
 const REWARDS = [
   { icon: Gift, title: "Daily Vote Key", desc: "1 crate key per site, every 24h." },
@@ -31,6 +27,7 @@ const Vote = () => {
   const { user } = useAuth();
   const [voted, setVoted] = useState<Record<string, number>>({});
   const [streak, setStreak] = useState<{ vote_streak: number; vote_best: number; total_votes: number } | null>(null);
+  const [sites, setSites] = useState<VoteSite[]>([]);
 
   useEffect(() => {
     document.title = "Vote — CarnageMC";
@@ -38,6 +35,14 @@ const Vote = () => {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setVoted(JSON.parse(raw));
     } catch {}
+    supabase
+      .from("vote_links")
+      .select("site_key, name, url, reward")
+      .eq("enabled", true)
+      .order("sort_order", { ascending: true })
+      .then(({ data }) => {
+        setSites((data ?? []).map((r: any) => ({ id: r.site_key, name: r.name, url: r.url, reward: r.reward })));
+      });
   }, []);
 
   useEffect(() => {
@@ -54,11 +59,11 @@ const Vote = () => {
   }, [user]);
 
   const isFresh = (ts?: number) => ts && Date.now() - ts < 24 * 60 * 60 * 1000;
-  const completed = SITES.filter((s) => isFresh(voted[s.id])).length;
-  const progress = (completed / SITES.length) * 100;
+  const completed = sites.filter((s) => isFresh(voted[s.id])).length;
+  const progress = (completed / sites.length) * 100;
 
   const handleVote = async (id: string, url: string) => {
-    const alreadyToday = SITES.some((s) => isFresh(voted[s.id]));
+    const alreadyToday = sites.some((s) => isFresh(voted[s.id]));
     const next = { ...voted, [id]: Date.now() };
     setVoted(next);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
@@ -98,12 +103,12 @@ const Vote = () => {
             <div className="flex items-center justify-between mb-3">
               <div>
                 <div className="text-xs uppercase tracking-[0.25em] text-primary mb-1">Today's Progress</div>
-                <div className="font-display text-2xl font-bold">{completed} / {SITES.length} <span className="text-muted-foreground text-base">sites voted</span></div>
+                <div className="font-display text-2xl font-bold">{completed} / {sites.length} <span className="text-muted-foreground text-base">sites voted</span></div>
               </div>
               <div className="font-display text-3xl font-black text-gradient">{Math.round(progress)}%</div>
             </div>
             <Progress value={progress} className="h-3" />
-            {completed === SITES.length && (
+            {completed === sites.length && (
               <div className="mt-4 flex items-center gap-2 text-sm text-primary">
                 <CheckCircle2 className="h-4 w-4" />
                 All votes complete! Claim your bonus +250 coins in-game.
@@ -151,7 +156,7 @@ const Vote = () => {
               <h2 className="font-display text-3xl font-bold">Cast Your Daily Votes</h2>
             </div>
             <div className="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto">
-              {SITES.map((s) => {
+              {sites.map((s) => {
                 const done = isFresh(voted[s.id]);
                 return (
                   <Card key={s.id} className={`p-5 flex items-center justify-between gap-4 hover-lift hover-glow ${done ? "border-primary/50" : "border-border/60"}`}>

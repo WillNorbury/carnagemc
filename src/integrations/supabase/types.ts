@@ -2539,6 +2539,42 @@ export type Database = {
         }
         Relationships: []
       }
+      vote_links: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          name: string
+          reward: string
+          site_key: string
+          sort_order: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          name: string
+          reward?: string
+          site_key: string
+          sort_order?: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          name?: string
+          reward?: string
+          site_key?: string
+          sort_order?: number
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       website_webhook_deliveries: {
         Row: {
           attempted_at: string
