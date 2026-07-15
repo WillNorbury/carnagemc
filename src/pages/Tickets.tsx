@@ -308,16 +308,39 @@ const TicketDetail = ({ ticket, userId, onChanged }: { ticket: Ticket; userId: s
     const parsed = replySchema.safeParse({ body: reply });
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
     setSending(true);
-    const { error } = await supabase.from("support_ticket_messages").insert({
+    const body = parsed.data.body;
+    const tempId = `temp-${Date.now()}`;
+    const optimistic: Message = {
+      id: tempId,
       ticket_id: ticket.id,
       author_id: userId,
       is_staff: false,
-      body: parsed.data.body,
-    });
-    setSending(false);
-    if (error) return toast.error(error.message);
+      body,
+      created_at: new Date().toISOString(),
+    } as Message;
+    setMessages((prev) => [...prev, optimistic]);
     setReply("");
-    loadMessages();
+    const { data: inserted, error } = await supabase
+      .from("support_ticket_messages")
+      .insert({
+        ticket_id: ticket.id,
+        author_id: userId,
+        is_staff: false,
+        body,
+      })
+      .select("*")
+      .single();
+    setSending(false);
+    if (error) {
+      setMessages((prev) => prev.filter((m) => m.id !== tempId));
+      setReply(body);
+      return toast.error(error.message);
+    }
+    setMessages((prev) =>
+      prev.some((m) => m.id === (inserted as Message).id)
+        ? prev.filter((m) => m.id !== tempId)
+        : prev.map((m) => (m.id === tempId ? (inserted as Message) : m)),
+    );
   };
 
   const closeTicket = async () => {
