@@ -2704,6 +2704,7 @@ type AdminTicket = {
   priority: "low" | "normal" | "high" | "urgent";
   created_at: string;
   updated_at: string;
+  admin_last_viewed_at: string | null;
 };
 type AdminMsg = {
   id: string;
@@ -2720,12 +2721,20 @@ const TicketsAdminSection = () => {
   const { user } = useAuth();
   const [tickets, setTickets] = useState<AdminTicket[]>([]);
   const [profilesById, setProfilesById] = useState<Record<string, { display_name: string | null }>>({});
+  const [latestUserAt, setLatestUserAt] = useState<Record<string, string>>({});
   const [filter, setFilter] = useState<"all" | AdminTicket["status"]>("open");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [messages, setMessages] = useState<AdminMsg[]>([]);
   const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+
+  const hasUnreadReply = (t: AdminTicket) => {
+    const latest = latestUserAt[t.id];
+    if (!latest) return false;
+    if (!t.admin_last_viewed_at) return true;
+    return new Date(latest).getTime() > new Date(t.admin_last_viewed_at).getTime();
+  };
 
   const load = async () => {
     setLoading(true);
@@ -2741,6 +2750,17 @@ const TicketsAdminSection = () => {
       });
       setProfilesById(map);
     }
+    // Latest non-staff message per ticket, for unread badge
+    const { data: msgs } = await supabase
+      .from("support_ticket_messages")
+      .select("ticket_id, created_at, is_staff")
+      .eq("is_staff", false)
+      .order("created_at", { ascending: false });
+    const latestMap: Record<string, string> = {};
+    (msgs ?? []).forEach((m: any) => {
+      if (!latestMap[m.ticket_id]) latestMap[m.ticket_id] = m.created_at;
+    });
+    setLatestUserAt(latestMap);
     setLoading(false);
   };
 
@@ -2759,7 +2779,18 @@ const TicketsAdminSection = () => {
       .eq("ticket_id", selectedId)
       .order("created_at")
       .then(({ data }) => setMessages((data ?? []) as AdminMsg[]));
+    // Mark as viewed
+    const nowIso = new Date().toISOString();
+    setTickets((prev) =>
+      prev.map((t) => (t.id === selectedId ? { ...t, admin_last_viewed_at: nowIso } : t)),
+    );
+    supabase
+      .from("support_tickets")
+      .update({ admin_last_viewed_at: nowIso })
+      .eq("id", selectedId)
+      .then(() => {});
   }, [selectedId]);
+
 
   const filtered = filter === "all" ? tickets : tickets.filter((t) => t.status === filter);
   const selected = tickets.find((t) => t.id === selectedId) ?? null;
@@ -2883,14 +2914,23 @@ const TicketsAdminSection = () => {
           <div className="space-y-2">
             {filtered.map((t) => {
               const active = selectedId === t.id;
+              const unread = hasUnreadReply(t);
               return (
                 <button
                   key={t.id}
                   onClick={() => setSelectedId(t.id)}
-                  className={`w-full text-left p-3 rounded-lg border transition ${active ? "border-primary/60 bg-primary/5" : "border-border hover:border-primary/40 hover:bg-secondary/30"}`}
+                  className={`w-full text-left p-3 rounded-lg border transition ${active ? "border-primary/60 bg-primary/5" : unread ? "border-destructive/60 hover:border-destructive bg-destructive/5" : "border-border hover:border-primary/40 hover:bg-secondary/30"}`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <div className="font-semibold text-sm truncate">{t.subject}</div>
+                    <div className="font-semibold text-sm truncate flex items-center gap-2">
+                      {unread && (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-destructive text-destructive-foreground shrink-0">
+                          <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                          New reply
+                        </span>
+                      )}
+                      <span className="truncate">{t.subject}</span>
+                    </div>
                     <Badge variant="outline" className="text-[10px] shrink-0">
                       {t.status.replace("_", " ")}
                     </Badge>
