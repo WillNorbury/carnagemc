@@ -2721,12 +2721,20 @@ const TicketsAdminSection = () => {
   const { user } = useAuth();
   const [tickets, setTickets] = useState<AdminTicket[]>([]);
   const [profilesById, setProfilesById] = useState<Record<string, { display_name: string | null }>>({});
+  const [latestUserAt, setLatestUserAt] = useState<Record<string, string>>({});
   const [filter, setFilter] = useState<"all" | AdminTicket["status"]>("open");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [messages, setMessages] = useState<AdminMsg[]>([]);
   const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+
+  const hasUnreadReply = (t: AdminTicket) => {
+    const latest = latestUserAt[t.id];
+    if (!latest) return false;
+    if (!t.admin_last_viewed_at) return true;
+    return new Date(latest).getTime() > new Date(t.admin_last_viewed_at).getTime();
+  };
 
   const load = async () => {
     setLoading(true);
@@ -2742,6 +2750,17 @@ const TicketsAdminSection = () => {
       });
       setProfilesById(map);
     }
+    // Latest non-staff message per ticket, for unread badge
+    const { data: msgs } = await supabase
+      .from("support_ticket_messages")
+      .select("ticket_id, created_at, is_staff")
+      .eq("is_staff", false)
+      .order("created_at", { ascending: false });
+    const latestMap: Record<string, string> = {};
+    (msgs ?? []).forEach((m: any) => {
+      if (!latestMap[m.ticket_id]) latestMap[m.ticket_id] = m.created_at;
+    });
+    setLatestUserAt(latestMap);
     setLoading(false);
   };
 
@@ -2760,7 +2779,18 @@ const TicketsAdminSection = () => {
       .eq("ticket_id", selectedId)
       .order("created_at")
       .then(({ data }) => setMessages((data ?? []) as AdminMsg[]));
+    // Mark as viewed
+    const nowIso = new Date().toISOString();
+    setTickets((prev) =>
+      prev.map((t) => (t.id === selectedId ? { ...t, admin_last_viewed_at: nowIso } : t)),
+    );
+    supabase
+      .from("support_tickets")
+      .update({ admin_last_viewed_at: nowIso })
+      .eq("id", selectedId)
+      .then(() => {});
   }, [selectedId]);
+
 
   const filtered = filter === "all" ? tickets : tickets.filter((t) => t.status === filter);
   const selected = tickets.find((t) => t.id === selectedId) ?? null;
