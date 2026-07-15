@@ -2704,6 +2704,7 @@ type AdminTicket = {
   priority: "low" | "normal" | "high" | "urgent";
   created_at: string;
   updated_at: string;
+  admin_last_viewed_at: string | null;
 };
 type AdminMsg = {
   id: string;
