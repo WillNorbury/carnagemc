@@ -102,6 +102,9 @@ export default function StorePackage() {
     [item, qty],
   );
 
+  const isRankLike =
+    cat?.slug === "ranks" || cat?.slug === "rank-upgrades";
+
   const handleAdd = () => {
     if (!item) return;
     cart.add(
@@ -112,8 +115,9 @@ export default function StorePackage() {
         currency: item.currency,
         image_url: item.image_url,
         external_url: item.external_url,
+        maxQuantity: isRankLike ? 1 : undefined,
       },
-      qty,
+      isRankLike ? 1 : qty,
     );
     setJustAdded(true);
     toast.success(`${item.name} added to cart`);
