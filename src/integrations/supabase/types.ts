@@ -2080,6 +2080,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          unsubscribe_token: string
           user_id: string | null
         }
         Insert: {
@@ -2087,6 +2088,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          unsubscribe_token?: string
           user_id?: string | null
         }
         Update: {
@@ -2094,6 +2096,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          unsubscribe_token?: string
           user_id?: string | null
         }
         Relationships: []
@@ -2886,6 +2889,7 @@ export type Database = {
         }
       }
       slugify: { Args: { _input: string }; Returns: string }
+      status_unsubscribe: { Args: { _token: string }; Returns: boolean }
       submit_quiz_attempt: {
         Args: { _answers: Json; _duration_seconds: number; _quiz_id: string }
         Returns: string
