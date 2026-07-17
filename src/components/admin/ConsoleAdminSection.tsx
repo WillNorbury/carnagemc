@@ -15,8 +15,9 @@ import { cn } from "@/lib/utils";
 
 type Server = {
   id: string; name: string; slug: string; description: string | null;
-  enabled: boolean; last_seen_at: string | null; ingest_secret: string;
+  enabled: boolean; last_seen_at: string | null;
 };
+
 type LogRow = {
   id: number; server_id: string; level: string; source: string; line: string; logged_at: string;
 };
@@ -221,17 +222,29 @@ const ServerInstallDialog = ({ server, onRotate, isOwner }: { server: Server; on
   const [jarUrl, setJarUrl] = useState<string | null>(null);
   const [jarMeta, setJarMeta] = useState<{ size: number; updated: string } | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [secret, setSecret] = useState<string>("");
+  const [secretLoading, setSecretLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const copy = (v: string, label = "Copied") => { navigator.clipboard.writeText(v); toast({ title: label }); };
+
+  const loadSecret = async () => {
+    if (secret) return;
+    setSecretLoading(true);
+    const { data, error } = await (supabase as any).rpc("mc_server_get_ingest_secret", { _server_id: server.id });
+    setSecretLoading(false);
+    if (error) { toast({ title: "Failed to load secret", description: error.message, variant: "destructive" }); return; }
+    setSecret(String(data ?? ""));
+  };
 
   const configYaml =
 `# Drop into plugins/CarnageConsoleBridge/config.yml on your Minecraft server
 endpoint: ${BRIDGE_URL}
 server-slug: ${server.slug}
-server-secret: ${server.ingest_secret}
+server-secret: ${secret || "<click Reveal secret to load>"}
 poll-interval-ms: 1000
 log-batch-ms: 1000`;
+
 
   const loadJar = async () => {
     const { data: list } = await supabase.storage.from("mc-bridge-jars").list("", { limit: 100 });
@@ -341,12 +354,13 @@ log-batch-ms: 1000`;
               </div>
               <div className="flex items-center gap-2">
                 <Label className="w-28 text-xs">Ingest secret</Label>
-                <Input readOnly type={show ? "text" : "password"} value={server.ingest_secret} className="font-mono text-xs h-8" />
-                <Button size="icon" variant="ghost" onClick={() => setShow((s) => !s)}>
+                <Input readOnly type={show ? "text" : "password"} value={secret} placeholder={secretLoading ? "Loading…" : "Click Reveal to load"} className="font-mono text-xs h-8" />
+                <Button size="icon" variant="ghost" onClick={async () => { await loadSecret(); setShow((s) => !s); }} disabled={secretLoading}>
                   {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
-                <Button size="icon" variant="ghost" onClick={() => copy(server.ingest_secret, "Secret copied")}><Copy className="h-4 w-4" /></Button>
+                <Button size="icon" variant="ghost" onClick={async () => { await loadSecret(); if (secret) copy(secret, "Secret copied"); }} disabled={secretLoading}><Copy className="h-4 w-4" /></Button>
               </div>
+
             </div>
 
             <div className="relative">

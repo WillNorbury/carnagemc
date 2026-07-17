@@ -159,12 +159,12 @@ const UserProfile = () => {
         const modIds = (mods ?? []).map((m: any) => m.id);
         let likesByMod: Record<string, number> = {};
         if (modIds.length) {
-          const { data: likes } = await (supabase.from("mod_likes" as any) as any)
-            .select("mod_id").in("mod_id", modIds);
-          for (const l of (likes ?? []) as { mod_id: string }[]) {
-            likesByMod[l.mod_id] = (likesByMod[l.mod_id] ?? 0) + 1;
+          const { data: likes } = await (supabase as any).rpc("get_mod_like_counts", { _mod_ids: modIds });
+          for (const l of (likes ?? []) as { mod_id: string; likes: number }[]) {
+            likesByMod[l.mod_id] = Number(l.likes) || 0;
           }
         }
+
         allProjects = [
           ...((mods ?? []) as any[]).map((m) => ({
             kind: "mod" as const, id: m.id, slug: m.slug, short_id: m.short_id,
