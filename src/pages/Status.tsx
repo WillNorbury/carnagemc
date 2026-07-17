@@ -348,65 +348,122 @@ const Status = () => {
   }, [selectedDays, range]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
+      <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap"
+        rel="stylesheet"
+      />
       <Navbar />
-      <main className="flex-1 pt-24 pb-16 overflow-hidden">
-        <div className="container max-w-6xl px-4">
-          <section className="mb-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
-            <div className="min-w-0">
-              <Badge variant="outline" className={cn("mb-4 gap-2", currentMeta.border, currentMeta.text)}>
-                <span className={cn("h-2 w-2 rounded-full", currentMeta.dot, currentStatus !== "none" && "animate-pulse")} />
-                Live checks every 5 min
-              </Badge>
-              <h1 className="font-display text-4xl font-black leading-tight sm:text-6xl md:text-7xl break-words">
-                {pageTitle}
+      <main className="flex-1 w-full font-['Inter']">
+        <div className="max-w-6xl w-full mx-auto px-4 md:px-8 py-10 md:py-14 flex flex-col gap-12">
+          {/* Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
+            <div className="space-y-2 min-w-0">
+              <span className="text-[#ff5722] font-mono text-sm tracking-widest uppercase">
+                Live Uptime
+              </span>
+              <h1 className="text-6xl md:text-8xl font-bold font-['Space_Grotesk'] tracking-tighter italic break-words">
+                STATUS
               </h1>
-              <p className="mt-3 max-w-2xl text-sm sm:text-base text-muted-foreground">{pageSubtitle}</p>
+              <p className="text-[#9ca3af] max-w-xl">{pageSubtitle}</p>
             </div>
 
-            <div className={cn("rounded-lg border p-5", currentMeta.border, currentMeta.tone)}>
+            <div
+              className={cn(
+                "relative bg-[#1a1a24] border p-5 min-w-[260px]",
+                currentStatus === "up" && "border-emerald-500/30",
+                currentStatus === "degraded" && "border-amber-500/40",
+                currentStatus === "down" && "border-red-500/40",
+                currentStatus === "none" && "border-white/10",
+              )}
+            >
               <div className="flex items-start gap-3">
-                <div className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-lg", currentMeta.tone, currentMeta.text)}>
+                <div
+                  className={cn(
+                    "flex h-11 w-11 shrink-0 items-center justify-center border",
+                    currentStatus === "up" && "border-emerald-500/40 text-emerald-400",
+                    currentStatus === "degraded" && "border-amber-500/40 text-amber-400",
+                    currentStatus === "down" && "border-red-500/40 text-red-400",
+                    currentStatus === "none" && "border-white/10 text-[#9ca3af]",
+                  )}
+                >
                   <CurrentIcon className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <div className="font-display text-2xl font-bold leading-none">{overall !== null ? `${overall.toFixed(2)}%` : "—"}</div>
-                  <div className={cn("mt-2 text-sm font-semibold", currentMeta.text)}>{currentMeta.label}</div>
-                  <p className="mt-1 text-xs text-muted-foreground">{currentMeta.summary}</p>
+                  <div className="font-['Space_Grotesk'] text-2xl font-bold leading-none">
+                    {overall !== null ? `${overall.toFixed(2)}%` : "—"}
+                  </div>
+                  <div
+                    className={cn(
+                      "mt-2 text-[10px] font-mono tracking-widest uppercase",
+                      currentStatus === "up" && "text-emerald-400",
+                      currentStatus === "degraded" && "text-amber-400",
+                      currentStatus === "down" && "text-red-400",
+                      currentStatus === "none" && "text-[#9ca3af]",
+                    )}
+                  >
+                    {currentMeta.label}
+                  </div>
+                  <p className="mt-1 text-xs text-[#9ca3af]">{currentMeta.summary}</p>
                 </div>
               </div>
             </div>
-          </section>
+          </div>
 
-          <section className="mb-8 grid gap-3 sm:grid-cols-3">
-            <MiniMetric icon={ShieldCheck} label="Services up" value={`${statusCounts.up}/${services.length}`} />
-            <MiniMetric icon={Zap} label="Active incidents" value={activeIncidents} />
-            <MiniMetric icon={Activity} label="Window" value={`${range} days`} />
-          </section>
+          {/* Quick metrics */}
+          <div className="-mt-6 grid gap-3 sm:grid-cols-3">
+            {[
+              { icon: ShieldCheck, label: "Services up", value: `${statusCounts.up}/${services.length}` },
+              { icon: Zap, label: "Active incidents", value: activeIncidents },
+              { icon: Activity, label: "Window", value: `${range} days` },
+            ].map((m) => {
+              const Icon = m.icon;
+              return (
+                <div key={m.label} className="bg-[#1a1a24] border border-white/5 p-4">
+                  <div className="mb-2 flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-[#9ca3af]">
+                    <Icon className="h-3.5 w-3.5 shrink-0 text-[#ff5722]" />
+                    <span className="truncate">{m.label}</span>
+                  </div>
+                  <div className="font-['Space_Grotesk'] text-2xl font-bold leading-none truncate">
+                    {m.value}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
 
-          <section className="mb-5 flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between">
+          {/* Controls */}
+          <div className="-mt-6 flex flex-col gap-3 border-b border-white/5 pb-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="font-display text-xl font-bold">Service history</h2>
-              <p className="text-sm text-muted-foreground">Select a row for recent checks, latency, and incident history.</p>
+              <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
+                Service History
+              </h2>
+              <p className="text-xs text-[#9ca3af] mt-1">
+                Select a row for recent checks, latency, and incident history.
+              </p>
             </div>
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1 rounded-lg border border-border p-1">
-                      <Timer className="ml-2 h-3.5 w-3.5 text-muted-foreground" />
+                    <div className="flex items-center gap-1 border border-white/10 p-1">
+                      <Timer className="ml-2 h-3.5 w-3.5 text-[#9ca3af]" />
                       {[0, 1, 5, 15].map((min) => (
-                        <Button
+                        <button
                           key={min}
                           type="button"
-                          size="sm"
-                          variant={autoInterval === min ? "default" : "ghost"}
                           onClick={() => isOwner && setAutoInterval(min)}
                           disabled={!isOwner}
-                          className="h-8 px-2.5"
+                          className={cn(
+                            "px-2.5 py-1 text-[10px] font-mono tracking-widest uppercase transition",
+                            autoInterval === min
+                              ? "bg-[#ff5722] text-white"
+                              : "text-[#9ca3af] hover:text-[#ff5722]",
+                            !isOwner && "opacity-40 cursor-not-allowed hover:text-[#9ca3af]",
+                          )}
                         >
                           {min === 0 ? "Off" : `${min}m`}
-                        </Button>
+                        </button>
                       ))}
                     </div>
                   </TooltipTrigger>
@@ -417,35 +474,44 @@ const Status = () => {
                   )}
                 </Tooltip>
               </TooltipProvider>
-              <Button type="button" size="sm" variant="outline" onClick={handleRefresh} disabled={refreshing} className="h-10 px-3">
-                <RefreshCw className={cn("h-4 w-4 sm:mr-2", refreshing && "animate-spin")} />
+              <button
+                type="button"
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="inline-flex items-center gap-2 border border-white/10 px-3 py-2 text-[10px] font-mono tracking-widest uppercase text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition disabled:opacity-40"
+              >
+                <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin")} />
                 <span className="hidden sm:inline">{refreshing ? "Running" : "Refresh"}</span>
-              </Button>
-              <div className="flex items-center rounded-lg border border-border p-1">
+              </button>
+              <div className="flex items-center border border-white/10 p-1">
                 {RANGES.map((item) => (
-                  <Button
+                  <button
                     key={item.value}
                     type="button"
-                    size="sm"
-                    variant={range === item.value ? "default" : "ghost"}
                     onClick={() => setRange(item.value)}
-                    className="h-8 px-2.5"
+                    className={cn(
+                      "px-3 py-1 text-[10px] font-mono tracking-widest uppercase transition",
+                      range === item.value
+                        ? "bg-[#ff5722] text-white"
+                        : "text-[#9ca3af] hover:text-[#ff5722]",
+                    )}
                   >
                     {item.label}
-                  </Button>
+                  </button>
                 ))}
               </div>
             </div>
-          </section>
+          </div>
 
-          <section className="space-y-3">
+          {/* Service list */}
+          <section className="-mt-6 space-y-3">
             {services.map((service) => {
               const status = serviceCurrent[service.key] ?? "none";
               const meta = statusMeta[status];
               const days = byService.get(service.key) ?? new Map<string, { pct: number | null; total: number }>();
               const uptime = getUptime(days);
               return (
-                <Card
+                <div
                   key={service.key}
                   role="button"
                   tabIndex={0}
@@ -456,15 +522,14 @@ const Status = () => {
                       setDetailKey(service.key);
                     }
                   }}
-                  className={cn(
-                    "group min-w-0 cursor-pointer overflow-hidden p-4 transition-colors hover:border-primary/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                    meta.border,
-                  )}
+                  className="group min-w-0 cursor-pointer overflow-hidden p-4 bg-[#1a1a24] border border-white/5 hover:border-[#ff5722]/40 transition focus:outline-none focus-visible:border-[#ff5722]"
                 >
                   <div className="grid min-w-0 gap-4 lg:grid-cols-[16rem_minmax(0,1fr)_8rem] lg:items-center">
                     <div className="min-w-0">
                       <div className="mb-1 flex min-w-0 items-center gap-2">
-                        <span className="font-display font-bold truncate">{service.name}</span>
+                        <span className="font-['Space_Grotesk'] font-bold truncate group-hover:text-[#ff5722] transition-colors">
+                          {service.name}
+                        </span>
                         {service.url && (
                           <a
                             href={service.url}
@@ -472,18 +537,18 @@ const Status = () => {
                             rel="noopener noreferrer"
                             onClick={(event) => event.stopPropagation()}
                             aria-label={`Open ${service.name}`}
-                            className="shrink-0 text-muted-foreground transition-colors hover:text-primary"
+                            className="shrink-0 text-[#9ca3af] hover:text-[#ff5722] transition-colors"
                           >
                             <ArrowUpRight className="h-4 w-4" />
                           </a>
                         )}
                       </div>
-                      <div className="truncate text-xs text-muted-foreground">{service.desc}</div>
+                      <div className="truncate text-xs text-[#9ca3af]">{service.desc}</div>
                     </div>
 
                     <div className="min-w-0">
                       <DayGrid days={range} byDay={days} />
-                      <div className="mt-2 flex items-center justify-between gap-3 text-[10px] uppercase tracking-widest text-muted-foreground">
+                      <div className="mt-2 flex items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-widest text-[#5f6472]">
                         <span>{range}d ago</span>
                         <span>today</span>
                       </div>
@@ -491,29 +556,33 @@ const Status = () => {
 
                     <div className="flex min-w-0 items-center justify-between gap-3 lg:justify-end">
                       <div className="text-left lg:text-right min-w-0">
-                        <div className={cn("font-display text-lg font-bold leading-none", meta.text)}>{uptime !== null ? `${uptime.toFixed(2)}%` : loading ? "…" : "—"}</div>
+                        <div className={cn("font-['Space_Grotesk'] text-lg font-bold leading-none", meta.text)}>
+                          {uptime !== null ? `${uptime.toFixed(2)}%` : loading ? "…" : "—"}
+                        </div>
                         <div className="mt-1 flex lg:justify-end">
                           <StatusPill status={status} />
                         </div>
                       </div>
-                      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                      <ChevronRight className="h-4 w-4 shrink-0 text-[#5f6472] transition-transform group-hover:translate-x-0.5 group-hover:text-[#ff5722]" />
                     </div>
                   </div>
-                </Card>
+                </div>
               );
             })}
           </section>
 
           {incidents.length > 0 && (
-            <section className="mt-10">
-              <div className="mb-3 flex items-end justify-between gap-3">
-                <div>
-                  <h2 className="font-display text-xl font-bold">Recent incidents</h2>
-                  <p className="text-sm text-muted-foreground">The latest monitored disruptions and resolutions.</p>
-                </div>
-                <Badge variant="outline">{incidents.length}</Badge>
+            <section className="-mt-4">
+              <div className="flex items-center gap-4 mb-6">
+                <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
+                  Recent Incidents
+                </h2>
+                <div className="flex-1 h-px bg-white/5" />
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#9ca3af]">
+                  {incidents.length}
+                </span>
               </div>
-              <Card className="divide-y divide-border overflow-hidden">
+              <div className="bg-[#1a1a24] border border-white/5 divide-y divide-white/5 overflow-hidden">
                 {incidents.map((incident) => {
                   const service = services.find((item) => item.key === incident.service_key);
                   const ongoing = !incident.closed_at;
@@ -522,34 +591,41 @@ const Status = () => {
                     Math.round(((incident.closed_at ? new Date(incident.closed_at).getTime() : Date.now()) - new Date(incident.opened_at).getTime()) / 60000),
                   );
                   return (
-                    <Link key={incident.id} to={`/status/${incident.incident_number}`} className="flex min-w-0 items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40">
-                      <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", ongoing ? "bg-destructive animate-pulse" : "bg-muted-foreground")} />
+                    <Link
+                      key={incident.id}
+                      to={`/status/${incident.incident_number}`}
+                      className="flex min-w-0 items-center gap-3 px-4 py-3 transition-colors hover:bg-[#23232f] group"
+                    >
+                      <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", ongoing ? "bg-red-500 animate-pulse" : "bg-[#5f6472]")} />
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-semibold">#{incident.incident_number} · {service?.name ?? incident.service_key}</span>
-                        <span className="block truncate text-xs text-muted-foreground">
+                        <span className="block truncate text-sm font-semibold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                          #{incident.incident_number} · {service?.name ?? incident.service_key}
+                        </span>
+                        <span className="block truncate text-xs text-[#9ca3af]">
                           {formatDateTime(incident.opened_at)} · {duration < 60 ? `${duration}m` : `${Math.floor(duration / 60)}h ${duration % 60}m`}
                           {incident.last_error ? ` · ${incident.last_error}` : ""}
                         </span>
                       </span>
-                      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <ChevronRight className="h-4 w-4 shrink-0 text-[#5f6472] group-hover:text-[#ff5722] transition" />
                     </Link>
                   );
                 })}
-              </Card>
+              </div>
             </section>
           )}
 
-          <section className="mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-            <span className="uppercase tracking-widest text-[10px]">Legend</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-primary" /> Up</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-accent" /> Degraded</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-destructive" /> Outage</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-muted" /> No data</span>
+          <section className="-mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-[#9ca3af]">
+            <span className="uppercase tracking-widest text-[10px] font-mono text-[#5f6472]">Legend</span>
+            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 bg-emerald-500" /> Up</span>
+            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 bg-amber-500" /> Degraded</span>
+            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 bg-red-500" /> Outage</span>
+            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 bg-white/10" /> No data</span>
           </section>
-          {pageFootnote && <p className="mt-4 whitespace-pre-wrap text-center text-xs text-muted-foreground">{pageFootnote}</p>}
+          {pageFootnote && <p className="-mt-6 whitespace-pre-wrap text-center text-xs text-[#5f6472]">{pageFootnote}</p>}
         </div>
       </main>
       <Footer />
+
 
       <Dialog open={!!detailKey} onOpenChange={(open) => !open && setDetailKey(null)}>
         <DialogContent className="left-0 right-0 top-auto bottom-0 max-h-[88vh] w-full max-w-none translate-x-0 translate-y-0 overflow-y-auto overflow-x-hidden rounded-t-lg p-4 sm:bottom-auto sm:left-[50%] sm:right-auto sm:top-[50%] sm:w-[min(48rem,calc(100vw-2rem))] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg sm:p-6">
