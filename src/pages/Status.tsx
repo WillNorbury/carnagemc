@@ -513,6 +513,14 @@ const Status = () => {
               </TooltipProvider>
               <button
                 type="button"
+                onClick={() => { setSubDone(false); setSubOpen(true); }}
+                className="inline-flex items-center gap-2 border border-[#ff5722]/60 bg-[#ff5722]/10 px-3 py-2 text-[10px] font-mono tracking-widest uppercase text-[#ff5722] hover:bg-[#ff5722] hover:text-white transition"
+              >
+                <Bell className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Subscribe</span>
+              </button>
+              <button
+                type="button"
                 onClick={handleRefresh}
                 disabled={refreshing}
                 className="inline-flex items-center gap-2 border border-white/10 px-3 py-2 text-[10px] font-mono tracking-widest uppercase text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition disabled:opacity-40"
