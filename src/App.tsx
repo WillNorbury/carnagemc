@@ -69,6 +69,7 @@ import Punishments from "./pages/Punishments.tsx";
 import StaffChat from "./pages/StaffChat.tsx";
 import FireMarket from "./pages/FireMarket.tsx";
 import Store from "./pages/Store.tsx";
+import StoreCategory from "./pages/StoreCategory.tsx";
 import StorePackage from "./pages/StorePackage.tsx";
 import Checkout from "./pages/Checkout.tsx";
 
@@ -197,6 +198,7 @@ const Shell = () => {
                    <Route path="/firemarket" element={<Navigate to="/fire-market" replace />} />
                    <Route path="/discord" element={<Discord />} />
                   <Route path="/store" element={<Store />} />
+                  <Route path="/store/category/:slug" element={<StoreCategory />} />
                   <Route path="/store/package/:id" element={<StorePackage />} />
                   <Route path="/checkout" element={<Checkout />} />
                    

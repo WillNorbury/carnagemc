@@ -400,9 +400,9 @@ export default function Store() {
               {cats.map((c) => {
                 const Icon = iconFor(c.icon);
                 return (
-                  <button
+                  <Link
                     key={c.id}
-                    onClick={() => setActiveCat(c.id)}
+                    to={`/store/category/${c.slug}`}
                     className={`px-4 py-2 text-xs font-mono tracking-widest uppercase border transition inline-flex items-center gap-2 ${
                       activeCat === c.id
                         ? "bg-[#ff5722] border-[#ff5722] text-white"
@@ -411,7 +411,7 @@ export default function Store() {
                   >
                     <Icon className="w-3.5 h-3.5" strokeWidth={1.5} />
                     {c.name}
-                  </button>
+                  </Link>
                 );
               })}
             </div>
@@ -512,9 +512,12 @@ export default function Store() {
                   <div key={catId} className="md:col-span-12 mt-4">
                     <div className="flex items-center gap-4 mb-6">
                       <Icon className="w-4 h-4 text-[#ff5722]" strokeWidth={1.5} />
-                      <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
+                      <Link
+                        to={`/store/category/${cat?.slug ?? ""}`}
+                        className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em] hover:underline"
+                      >
                         {catName(catId)}
-                      </h2>
+                      </Link>
                       <div className="flex-1 h-px bg-white/5" />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
