@@ -8,6 +8,7 @@ import AnimatedCounter from "@/components/site/AnimatedCounter";
 import Countdown from "@/components/site/Countdown";
 import Reviews from "@/components/site/Reviews";
 import { SEO } from "@/components/site/SEO";
+import TwitchLiveWidget from "@/components/site/TwitchLiveWidget";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -237,6 +238,12 @@ const Index = () => {
       />
       <MouseTrail />
       <Navbar />
+
+      <div className="container pt-4">
+        <TwitchLiveWidget login="will_norbury" variant="compact" className="w-full" />
+      </div>
+
+
 
       {isAdmin && discordInviteError && (
         <div className="container pt-4">
