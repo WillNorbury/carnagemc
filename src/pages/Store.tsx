@@ -512,9 +512,12 @@ export default function Store() {
                   <div key={catId} className="md:col-span-12 mt-4">
                     <div className="flex items-center gap-4 mb-6">
                       <Icon className="w-4 h-4 text-[#ff5722]" strokeWidth={1.5} />
-                      <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
+                      <Link
+                        to={`/store/category/${cat?.slug ?? ""}`}
+                        className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em] hover:underline"
+                      >
                         {catName(catId)}
-                      </h2>
+                      </Link>
                       <div className="flex-1 h-px bg-white/5" />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
