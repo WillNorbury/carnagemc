@@ -4124,6 +4124,7 @@ const ApplicationsTab = () => {
     const {
       data: { user: u },
     } = await supabase.auth.getUser();
+    const app = items.find((i) => i.id === id);
     const { error } = await supabase
       .from("applications")
       .update({
@@ -4135,6 +4136,31 @@ const ApplicationsTab = () => {
       .eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(`Application ${status}`);
+
+    if (status === "approved" && app?.user_id) {
+      const ROLE_MAP: Record<string, string> = {
+        staff: "helper",
+        creator: "media",
+        admin: "admin",
+        developer: "developer",
+        builder: "builder",
+      };
+      const role = ROLE_MAP[String(app.type)];
+      if (role) {
+        const { error: roleErr } = await supabase
+          .from("user_roles")
+          .upsert({ user_id: app.user_id, role: role as any }, { onConflict: "user_id,role" });
+        if (roleErr) {
+          toast.error(`Role assign failed: ${roleErr.message}`);
+        } else {
+          toast.success(`Granted ${role} role`);
+          supabase.functions.invoke("discord-sync-user-roles", {
+            body: { user_id: app.user_id },
+          }).catch(() => {});
+        }
+      }
+    }
+
     supabase.functions.invoke("send-application-status-email", {
       body: {
         applicationId: id,
@@ -4147,6 +4173,7 @@ const ApplicationsTab = () => {
     setNotes("");
     load();
   };
+
 
   const remove = async (id: string) => {
     if (!(await confirm({ title: "Delete application?", description: "This application will be permanently deleted.", confirmText: "Delete", destructive: true }))) return;
