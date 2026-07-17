@@ -190,7 +190,7 @@ const Auth = () => {
       const { error } = await supabase.auth.resend({
         type: "signup",
         email,
-        options: { emailRedirectTo: `${window.location.origin}/` },
+        options: { emailRedirectTo: `${window.location.origin}${safeNext}` },
       });
       if (error) throw error;
       toast.success("Verification code resent — check your inbox");
