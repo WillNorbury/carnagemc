@@ -34,7 +34,7 @@ var get_server_status_default = defineTool({
 // src/lib/mcp/tools/list-active-incidents.ts
 import { createClient as createClient2 } from "npm:@supabase/supabase-js@^2.108.2";
 import { defineTool as defineTool2 } from "npm:@lovable.dev/mcp-js@0.23.0";
-import { z } from "npm:zod@^4.4.3";
+import { z } from "npm:zod@^3.23.8";
 var list_active_incidents_default = defineTool2({
   name: "list_active_incidents",
   title: "List active incidents",
@@ -96,7 +96,7 @@ var get_my_profile_default = defineTool3({
 // src/lib/mcp/tools/list-my-tickets.ts
 import { createClient as createClient4 } from "npm:@supabase/supabase-js@^2.108.2";
 import { defineTool as defineTool4 } from "npm:@lovable.dev/mcp-js@0.23.0";
-import { z as z2 } from "npm:zod@^4.4.3";
+import { z as z2 } from "npm:zod@^3.23.8";
 var list_my_tickets_default = defineTool4({
   name: "list_my_tickets",
   title: "List my support tickets",

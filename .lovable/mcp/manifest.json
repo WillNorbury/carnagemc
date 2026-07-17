@@ -42,16 +42,15 @@
           "openWorldHint": false
         },
         "inputSchema": {
-          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "limit": {
               "type": "integer",
-              "minimum": -9007199254740991,
-              "maximum": 9007199254740991,
               "description": "Maximum number of incidents to return (default 20)."
             }
-          }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
         },
         "outputSchema": null
       },
@@ -81,7 +80,6 @@
           "openWorldHint": false
         },
         "inputSchema": {
-          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "status": {
@@ -95,11 +93,11 @@
             },
             "limit": {
               "type": "integer",
-              "minimum": -9007199254740991,
-              "maximum": 9007199254740991,
               "description": "Maximum number of tickets to return (default 20)."
             }
-          }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
         },
         "outputSchema": null
       }
