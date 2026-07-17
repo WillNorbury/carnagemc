@@ -173,6 +173,7 @@ const Shell = () => {
                   <Route path="/events" element={<Events />} />
                   <Route path="/install" element={<Install />} />
                   <Route path="/status" element={<Status />} />
+                  <Route path="/status/unsubscribe" element={<StatusUnsubscribe />} />
                   <Route path="/status/:number" element={<StatusIncident />} />
                   <Route path="/servers-status" element={<ServersStatus />} />
                   <Route path="/appeal" element={<BanAppeals />} />
