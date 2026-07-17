@@ -239,6 +239,12 @@ const Index = () => {
       <MouseTrail />
       <Navbar />
 
+      <div className="container pt-4">
+        <TwitchLiveWidget login="will_norbury" variant="compact" className="w-full" />
+      </div>
+
+
+
       {isAdmin && discordInviteError && (
         <div className="container pt-4">
           <div className="rounded-lg border border-destructive/40 bg-destructive/10 text-destructive p-4 flex items-start gap-3">
