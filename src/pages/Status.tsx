@@ -83,47 +83,48 @@ const statusMeta: Record<DayStatus, { label: string; summary: string; tone: stri
   up: {
     label: "Operational",
     summary: "Systems are responding normally.",
-    tone: "bg-primary/10",
-    dot: "bg-primary",
-    text: "text-primary",
-    border: "border-primary/35",
+    tone: "bg-emerald-500/10",
+    dot: "bg-emerald-400",
+    text: "text-emerald-400",
+    border: "border-emerald-500/35",
     icon: CheckCircle2,
   },
   degraded: {
     label: "Degraded",
     summary: "One or more checks are slower than expected.",
-    tone: "bg-accent/10",
-    dot: "bg-accent",
-    text: "text-accent",
-    border: "border-accent/35",
+    tone: "bg-amber-500/10",
+    dot: "bg-amber-400",
+    text: "text-amber-400",
+    border: "border-amber-500/35",
     icon: AlertTriangle,
   },
   down: {
     label: "Outage",
     summary: "A service is currently failing checks.",
-    tone: "bg-destructive/10",
-    dot: "bg-destructive",
-    text: "text-destructive",
-    border: "border-destructive/35",
+    tone: "bg-red-500/10",
+    dot: "bg-red-400",
+    text: "text-red-400",
+    border: "border-red-500/35",
     icon: XCircle,
   },
   none: {
     label: "No data",
     summary: "Checks are still being collected.",
-    tone: "bg-muted/40",
-    dot: "bg-muted-foreground",
-    text: "text-muted-foreground",
-    border: "border-border",
+    tone: "bg-white/5",
+    dot: "bg-[#5f6472]",
+    text: "text-[#9ca3af]",
+    border: "border-white/10",
     icon: HelpCircle,
   },
 };
 
 const dayColor = (status: DayStatus) => {
-  if (status === "up") return "bg-primary/80";
-  if (status === "degraded") return "bg-accent/80";
-  if (status === "down") return "bg-destructive/80";
-  return "bg-muted/50";
+  if (status === "up") return "bg-emerald-500/80";
+  if (status === "degraded") return "bg-amber-500/80";
+  if (status === "down") return "bg-red-500/80";
+  return "bg-white/10";
 };
+
 
 const getUptime = (days?: Map<string, { pct: number | null; total: number }>) => {
   let total = 0;
