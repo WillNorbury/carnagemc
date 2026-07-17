@@ -4,18 +4,23 @@ import {
   Activity,
   AlertTriangle,
   ArrowUpRight,
+  Bell,
   CalendarDays,
   CheckCircle2,
   ChevronRight,
   Clock,
   Gauge,
   HelpCircle,
+  Loader2,
+  Mail,
   RefreshCw,
   ShieldCheck,
   Timer,
   XCircle,
   Zap,
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { Badge } from "@/components/ui/badge";
