@@ -8,6 +8,7 @@ import AnimatedCounter from "@/components/site/AnimatedCounter";
 import Countdown from "@/components/site/Countdown";
 import Reviews from "@/components/site/Reviews";
 import { SEO } from "@/components/site/SEO";
+import { Helmet } from "react-helmet-async";
 import TwitchLiveWidget from "@/components/site/TwitchLiveWidget";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -232,10 +233,31 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <SEO
-        title="CarnageMC — DonutSMP Copy"
-        description="Join CarnageMC for premium Lifesteal PvP, custom enchants, a player-driven economy, ranked seasons, and weekly events. Java & Bedrock supported."
+        title="CarnageMC — Minecraft Lifesteal & Economy Server"
+        description="Join CarnageMC, a premium 1.21.x Paper Minecraft Lifesteal server with custom enchants, a player-driven economy, ranked seasons, and weekly events. Java & Bedrock."
         path="/"
       />
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "CarnageMC",
+          url: "https://www.carnagemc.net/",
+          logo: "https://www.carnagemc.net/icon-512.png",
+          sameAs: ["https://discord.carnagemc.net"],
+        })}</script>
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "CarnageMC",
+          url: "https://www.carnagemc.net/",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: "https://www.carnagemc.net/wiki?q={search_term_string}",
+            "query-input": "required name=search_term_string",
+          },
+        })}</script>
+      </Helmet>
       <MouseTrail />
       <Navbar />
 
@@ -355,7 +377,10 @@ const Index = () => {
               Season 3 — Now Live
             </Badge>
             <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-[1.05]">
-              Welcome to <span className="text-gradient text-glow">CarnageMC</span>
+              <span className="text-gradient text-glow">CarnageMC</span>
+              <span className="block text-lg md:text-2xl lg:text-3xl font-semibold text-muted-foreground mt-4 tracking-normal">
+                Minecraft Lifesteal &amp; Economy Server
+              </span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
               {heroSub} Forge alliances. Steal hearts. Build legacies.
@@ -390,7 +415,7 @@ const Index = () => {
 
             {/* IP card */}
             <div className="max-w-lg mx-auto">
-              <button onClick={copyIp} className="group w-full relative">
+              <button onClick={copyIp} aria-label="Copy CarnageMC Java server IP to clipboard" className="group w-full relative">
                 <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-primary to-accent opacity-60 group-hover:opacity-100 blur transition" />
                 <div className="relative flex items-center justify-between gap-3 px-6 py-4 rounded-xl bg-card border border-primary/30">
                   <div className="text-left">

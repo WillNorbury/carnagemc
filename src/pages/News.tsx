@@ -78,7 +78,7 @@ const NewsPage = () => {
               <Card className="border-dashed max-w-md mx-auto">
                 <CardContent className="flex flex-col items-center justify-center py-12 text-center">
                   <Megaphone className="h-12 w-12 text-muted-foreground/50 mb-4" />
-                  <h3 className="text-lg font-medium text-foreground">No news yet</h3>
+                  <h2 className="text-lg font-medium text-foreground">No news yet</h2>
                   <p className="text-muted-foreground text-sm mt-1">Check back later for updates</p>
                 </CardContent>
               </Card>
@@ -115,7 +115,7 @@ const NewsPage = () => {
                           {format(new Date(n.created_at), "MMM d, yyyy")}
                         </span>
                       </div>
-                      <h3 className="font-semibold text-foreground truncate">{n.title}</h3>
+                      <h2 className="font-semibold text-foreground truncate">{n.title}</h2>
                       <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                         {n.excerpt || n.content}
                       </p>

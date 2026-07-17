@@ -1,0 +1,33 @@
+# CarnageMC
+
+> CarnageMC is a premium Minecraft Lifesteal, PvP, and player-driven economy server for Java and Bedrock, featuring custom enchants, ranked seasons, and weekly events.
+
+CarnageMC runs on Paper 1.21.x with heart-stealing PvP, custom enchantments, a full economy, and community events. Players can apply for staff, read the rules, browse news and changelog, watch live streams, and get support through Discord.
+
+## Pages
+
+- [Home](/): Server overview, IP, and how to join.
+- [Features](/features): Gameplay features, custom systems, and mechanics.
+- [News](/announcements): Announcements and server updates.
+- [Changelog](/changelog): Release notes and gameplay changes.
+- [Rules](/rules): Community code of conduct and enforcement rules.
+- [FAQ](/faq): Answers to common questions about the server.
+- [Wiki](/wiki): Guides, mechanics, and reference articles.
+- [Community](/community): Community links, socials, and highlights.
+- [Events](/events): Upcoming and past server events.
+- [Gallery](/gallery): Screenshots and player builds.
+- [Leaderboard](/leaderboard): Top players by stats and progression.
+- [Punishments](/punishments): Public ban, mute, and warning history.
+- [Ban Appeals](/appeals): Appeal a punishment.
+- [Apply](/apply): Staff applications.
+- [Live](/live): Live Twitch stream from the CarnageMC team.
+- [Status](/status): Live network status and incident history.
+- [Plugins](/plugins): Public server plugins and integrations.
+- [Contact](/contact): Get in touch with the team.
+- [Discord](/discord): Join the CarnageMC Discord.
+
+## Optional
+
+- [Install Guide](/install): How to install Minecraft and connect.
+- [Release Notes](/release-notes): Detailed patch notes.
+- [Quiz](/quiz): Community quizzes and leaderboards.

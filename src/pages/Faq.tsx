@@ -15,6 +15,8 @@ import remarkGfm from "remark-gfm";
 import { highlight } from "@/components/site/Highlight";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
+import { SEO } from "@/components/site/SEO";
+import { Helmet } from "react-helmet-async";
 
 type Faq = { id: string; question: string; answer: string; category: string; sort_order: number };
 type Counts = { helpful: number; not_helpful: number };
@@ -134,6 +136,27 @@ const Faq = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO
+        title="FAQ — CarnageMC"
+        description="Answers to the most common questions about CarnageMC — joining, ranks, Lifesteal mechanics, custom enchants, staff, and account support."
+        path="/faq"
+      />
+      {items.length > 0 && (
+        <Helmet>
+          <script type="application/ld+json">{JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: items.slice(0, 50).map((f) => ({
+              "@type": "Question",
+              name: f.question,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: (f.answer || "").replace(/[#>*_`~\[\]()]/g, "").replace(/\s+/g, " ").trim().slice(0, 1000),
+              },
+            })),
+          })}</script>
+        </Helmet>
+      )}
       <Navbar />
       <main className="flex-1">
         <section className="relative pt-28 pb-10">
