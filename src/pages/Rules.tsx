@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShieldCheck, Ban } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getIcon } from "@/lib/features";
+import { SEO } from "@/components/site/SEO";
 
 type Section = { id: string; icon: string; title: string; items: string[] };
 
@@ -31,6 +32,11 @@ const Rules = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO
+        title="Rules — CarnageMC"
+        description="Community rules and code of conduct for CarnageMC — how we keep Lifesteal PvP fair, cheat-free, and welcoming across Java and Bedrock."
+        path="/rules"
+      />
       <Navbar />
       <main className="flex-1">
         <section className="relative pt-28 pb-14 overflow-hidden">

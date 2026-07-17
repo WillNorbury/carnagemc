@@ -8,6 +8,7 @@ import AnimatedCounter from "@/components/site/AnimatedCounter";
 import Countdown from "@/components/site/Countdown";
 import Reviews from "@/components/site/Reviews";
 import { SEO } from "@/components/site/SEO";
+import { Helmet } from "react-helmet-async";
 import TwitchLiveWidget from "@/components/site/TwitchLiveWidget";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
