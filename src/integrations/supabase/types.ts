@@ -2077,7 +2077,7 @@ export type Database = {
       store_categories: {
         Row: {
           created_at: string
-          description: string
+          description: string | null
           icon: string
           id: string
           name: string
@@ -2088,7 +2088,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          description?: string
+          description?: string | null
           icon?: string
           id?: string
           name: string
@@ -2099,7 +2099,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          description?: string
+          description?: string | null
           icon?: string
           id?: string
           name?: string
