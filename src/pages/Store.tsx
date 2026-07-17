@@ -400,9 +400,9 @@ export default function Store() {
               {cats.map((c) => {
                 const Icon = iconFor(c.icon);
                 return (
-                  <button
+                  <Link
                     key={c.id}
-                    onClick={() => setActiveCat(c.id)}
+                    to={`/store/category/${c.slug}`}
                     className={`px-4 py-2 text-xs font-mono tracking-widest uppercase border transition inline-flex items-center gap-2 ${
                       activeCat === c.id
                         ? "bg-[#ff5722] border-[#ff5722] text-white"
@@ -411,7 +411,7 @@ export default function Store() {
                   >
                     <Icon className="w-3.5 h-3.5" strokeWidth={1.5} />
                     {c.name}
-                  </button>
+                  </Link>
                 );
               })}
             </div>
