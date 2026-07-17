@@ -70,7 +70,8 @@ const Auth = () => {
           return;
         }
       }
-      nav("/");
+      goNext();
+
     })();
     return () => { cancelled = true; };
   }, [user, nav, mode]);
@@ -110,7 +111,7 @@ const Auth = () => {
         const { error } = await supabase.auth.signUp({
           email, password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}${safeNext}`,
             data: { display_name: displayName },
           },
         });
@@ -123,8 +124,9 @@ const Auth = () => {
         const needsMfa = await checkMfaAfterSignIn();
         if (!needsMfa) {
           toast.success("Welcome back");
-          nav("/");
+          goNext();
         }
+
       }
     } catch (err: any) {
       toast.error(err.message ?? "Authentication failed");
@@ -147,7 +149,8 @@ const Auth = () => {
       });
       if (error) throw error;
       toast.success("Email verified — welcome!");
-      nav("/");
+      goNext();
+
     } catch (err: any) {
       toast.error(err.message ?? "Invalid or expired code");
     } finally {
@@ -171,7 +174,8 @@ const Auth = () => {
       });
       if (vErr) throw vErr;
       toast.success("Welcome back");
-      nav("/");
+      goNext();
+
     } catch (err: any) {
       toast.error(err.message ?? "Invalid authenticator code");
     } finally {
