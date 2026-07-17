@@ -2699,6 +2699,13 @@ export type Database = {
       }
       get_follower_count: { Args: { _user_id: string }; Returns: number }
       get_following_count: { Args: { _user_id: string }; Returns: number }
+      get_mod_like_counts: {
+        Args: { _mod_ids: string[] }
+        Returns: {
+          likes: number
+          mod_id: string
+        }[]
+      }
       get_my_private_profile: {
         Args: never
         Returns: {
@@ -2783,6 +2790,10 @@ export type Database = {
       is_org_member: {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
+      }
+      mc_server_get_ingest_secret: {
+        Args: { _server_id: string }
+        Returns: string
       }
       mc_server_rotate_secret: { Args: { _server_id: string }; Returns: string }
       move_to_dlq: {
