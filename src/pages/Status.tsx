@@ -206,6 +206,37 @@ const Status = () => {
   const [detailKey, setDetailKey] = useState<string | null>(null);
   const [detailChecks, setDetailChecks] = useState<Check[]>([]);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [subOpen, setSubOpen] = useState(false);
+  const [subEmail, setSubEmail] = useState("");
+  const [subSubmitting, setSubSubmitting] = useState(false);
+  const [subDone, setSubDone] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email) setSubEmail(user.email);
+    });
+  }, []);
+
+  const submitSubscribe = async () => {
+    const email = subEmail.trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      toast({ title: "Enter a valid email", variant: "destructive" });
+      return;
+    }
+    setSubSubmitting(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error } = await supabase
+      .from("status_subscribers")
+      .insert({ email, user_id: user?.id ?? null });
+    setSubSubmitting(false);
+    if (error && !/duplicate|unique/i.test(error.message)) {
+      toast({ title: "Couldn't subscribe", description: error.message, variant: "destructive" });
+      return;
+    }
+    setSubDone(true);
+    toast({ title: "You're subscribed", description: "We'll email you when incidents are posted or updated." });
+  };
 
   useEffect(() => {
     document.title = "Status — CarnageMC";
