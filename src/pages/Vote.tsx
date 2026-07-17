@@ -60,7 +60,7 @@ const Vote = () => {
 
   const isFresh = (ts?: number) => ts && Date.now() - ts < 24 * 60 * 60 * 1000;
   const completed = sites.filter((s) => isFresh(voted[s.id])).length;
-  const progress = (completed / sites.length) * 100;
+  const progress = sites.length > 0 ? (completed / sites.length) * 100 : 0;
 
   const handleVote = async (id: string, url: string) => {
     const alreadyToday = sites.some((s) => isFresh(voted[s.id]));
@@ -108,7 +108,7 @@ const Vote = () => {
               <div className="font-display text-3xl font-black text-gradient">{Math.round(progress)}%</div>
             </div>
             <Progress value={progress} className="h-3" />
-            {completed === sites.length && (
+            {sites.length > 0 && completed === sites.length && (
               <div className="mt-4 flex items-center gap-2 text-sm text-primary">
                 <CheckCircle2 className="h-4 w-4" />
                 All votes complete! Claim your bonus +250 coins in-game.
