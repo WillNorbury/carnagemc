@@ -23,7 +23,10 @@ async function twitchGet(path: string, params: Record<string, string>) {
   const body = await res.text();
   if (!res.ok) {
     console.error(`Twitch ${path} failed [${res.status}]: ${body}`);
-    throw new Error(`Twitch API ${path} ${res.status}: ${body}`);
+    const err = new Error(`Twitch API ${path} ${res.status}`);
+    (err as any).status = res.status;
+    (err as any).upstream = true;
+    throw err;
   }
   return JSON.parse(body);
 }
