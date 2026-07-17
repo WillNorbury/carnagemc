@@ -41,8 +41,28 @@ export default function WikiArticle() {
         ) : (
           <>
             <Helmet>
-              <title>{article.title} — Wiki</title>
+              <title>{article.title} — Wiki — CarnageMC</title>
               {article.excerpt && <meta name="description" content={article.excerpt} />}
+              <link rel="canonical" href={`https://www.carnagemc.net/wiki/${slug}`} />
+              <meta property="og:title" content={`${article.title} — Wiki`} />
+              {article.excerpt && <meta property="og:description" content={article.excerpt} />}
+              <meta property="og:type" content="article" />
+              <meta property="og:url" content={`https://www.carnagemc.net/wiki/${slug}`} />
+              <script type="application/ld+json">{JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Article",
+                headline: article.title,
+                datePublished: article.updated_at,
+                dateModified: article.updated_at,
+                articleSection: article.category || undefined,
+                description: article.excerpt || undefined,
+                mainEntityOfPage: `https://www.carnagemc.net/wiki/${slug}`,
+                publisher: {
+                  "@type": "Organization",
+                  name: "CarnageMC",
+                  logo: { "@type": "ImageObject", url: "https://www.carnagemc.net/icon-512.png" },
+                },
+              })}</script>
             </Helmet>
             <Link to="/wiki" className="text-sm text-muted-foreground hover:underline">← Wiki</Link>
             <header>

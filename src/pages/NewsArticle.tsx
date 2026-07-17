@@ -5,6 +5,7 @@ import Footer from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/site/SEO";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Share2 } from "lucide-react";
 import { toast } from "sonner";
@@ -68,13 +69,30 @@ const NewsArticle = () => {
   return (
     <div className="min-h-screen bg-background">
       {article && (
-        <SEO
-          title={`${article.title} — CarnageMC`}
-          description={(article.content || "").slice(0, 155).replace(/\s+/g, " ").trim() || "CarnageMC announcement"}
-          path={`/announcements/${slug}`}
-          image={article.cover_url || ogImageFor(article.title)}
-          type="article"
-        />
+        <>
+          <SEO
+            title={`${article.title} — CarnageMC`}
+            description={(article.content || "").slice(0, 155).replace(/\s+/g, " ").trim() || "CarnageMC announcement"}
+            path={`/announcements/${slug}`}
+            image={article.cover_url || ogImageFor(article.title)}
+            type="article"
+          />
+          <Helmet>
+            <script type="application/ld+json">{JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "NewsArticle",
+              headline: article.title,
+              datePublished: article.created_at,
+              image: article.cover_url ? [article.cover_url] : [ogImageFor(article.title)],
+              mainEntityOfPage: `https://www.carnagemc.net/announcements/${slug}`,
+              publisher: {
+                "@type": "Organization",
+                name: "CarnageMC",
+                logo: { "@type": "ImageObject", url: "https://www.carnagemc.net/icon-512.png" },
+              },
+            })}</script>
+          </Helmet>
+        </>
       )}
       <Navbar />
       <main className="container pt-24 pb-16 max-w-3xl">
