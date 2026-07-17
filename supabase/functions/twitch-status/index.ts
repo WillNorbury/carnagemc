@@ -78,6 +78,21 @@ Deno.serve(async (req) => {
       language: stream?.language ?? null,
     });
   } catch (e) {
+    const status = (e as any)?.status;
+    const upstream = (e as any)?.upstream;
+    // Upstream Twitch/gateway errors → return 200 with fallback so the widget stays graceful
+    if (upstream) {
+      const url = new URL(req.url);
+      const login = (url.searchParams.get("login") ?? DEFAULT_LOGIN).trim().toLowerCase();
+      return json({
+        isLive: false,
+        login,
+        displayName: login,
+        error: "TWITCH_SERVICE_UNAVAILABLE",
+        upstreamStatus: status ?? 0,
+        fallback: true,
+      }, 200);
+    }
     return json({ error: e instanceof Error ? e.message : String(e) }, 500);
   }
 });
