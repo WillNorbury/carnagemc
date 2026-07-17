@@ -198,6 +198,7 @@ const Shell = () => {
                    <Route path="/firemarket" element={<Navigate to="/fire-market" replace />} />
                    <Route path="/discord" element={<Discord />} />
                   <Route path="/store" element={<Store />} />
+                  <Route path="/store/category/:slug" element={<StoreCategory />} />
                   <Route path="/store/package/:id" element={<StorePackage />} />
                   <Route path="/checkout" element={<Checkout />} />
                    
