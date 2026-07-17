@@ -768,6 +768,53 @@ const Status = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      <Dialog open={subOpen} onOpenChange={setSubOpen}>
+        <DialogContent className="sm:max-w-md bg-[#1a1a24] border-white/10 text-slate-100">
+          <DialogHeader>
+            <DialogTitle className="font-['Space_Grotesk'] text-2xl flex items-center gap-2">
+              <Bell className="h-5 w-5 text-[#ff5722]" /> Incident alerts
+            </DialogTitle>
+            <DialogDescription className="text-[#9ca3af]">
+              Get an email whenever we post or update a status incident. Unsubscribe anytime.
+            </DialogDescription>
+          </DialogHeader>
+          {subDone ? (
+            <div className="mt-2 rounded border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-300 flex items-start gap-2">
+              <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />
+              <div>
+                You're on the list. We'll email <span className="font-mono">{subEmail}</span> when
+                incidents are posted or updated.
+              </div>
+            </div>
+          ) : (
+            <div className="mt-2 space-y-3">
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5f6472]" />
+                <Input
+                  type="email"
+                  value={subEmail}
+                  onChange={(e) => setSubEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="pl-9 bg-[#0a0a0f] border-white/10 text-slate-100"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={submitSubscribe}
+                disabled={subSubmitting}
+                className="w-full inline-flex items-center justify-center gap-2 bg-[#ff5722] hover:bg-[#ff5722]/90 disabled:opacity-50 text-white px-4 py-2.5 text-xs font-mono tracking-widest uppercase transition"
+              >
+                {subSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bell className="h-4 w-4" />}
+                {subSubmitting ? "Subscribing" : "Notify me"}
+              </button>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-[#5f6472] text-center">
+                Email notifications are currently off — we're collecting subscribers and will turn them on soon.
+              </p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
