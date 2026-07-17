@@ -60,7 +60,7 @@ const Vote = () => {
 
   const isFresh = (ts?: number) => ts && Date.now() - ts < 24 * 60 * 60 * 1000;
   const completed = sites.filter((s) => isFresh(voted[s.id])).length;
-  const progress = (completed / sites.length) * 100;
+  const progress = sites.length > 0 ? (completed / sites.length) * 100 : 0;
 
   const handleVote = async (id: string, url: string) => {
     const alreadyToday = sites.some((s) => isFresh(voted[s.id]));
