@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +8,7 @@ import { useCart } from "@/lib/cart";
 import { toast } from "sonner";
 import {
   Sparkles, Zap, Package, Coins, Award, Flame, Star, ShoppingBag,
-  ArrowLeft, Check, Plus,
+  ArrowLeft, Check, Plus, ChevronLeft, ChevronRight,
 } from "lucide-react";
 
 type Category = {
@@ -36,6 +36,8 @@ type Item = {
 const ICONS: Record<string, any> = { Sparkles, Zap, Package, Coins, Award, Flame, Star, ShoppingBag };
 const iconFor = (name?: string | null) => ICONS[name ?? ""] ?? Package;
 
+const PAGE_SIZE = 12;
+
 const formatPrice = (p: number | null | undefined, c?: string | null) => {
   if (p == null) return "";
   const cur = (c || "USD").toUpperCase();
@@ -50,12 +52,19 @@ const RANK_SLUGS = new Set(["ranks", "rank-upgrades"]);
 
 export default function StoreCategory() {
   const { slug = "" } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageParam = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
   const [cat, setCat] = useState<Category | null>(null);
-  const [items, setItems] = useState<Item[]>([]);
+  const [featured, setFeatured] = useState<Item[]>([]);
+  const [pageItems, setPageItems] = useState<Item[]>([]);
+  const [totalRest, setTotalRest] = useState(0);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [justAdded, setJustAdded] = useState<string | null>(null);
   const cart = useCart();
+
+  const totalPages = Math.max(1, Math.ceil(totalRest / PAGE_SIZE));
+  const page = Math.min(pageParam, totalPages);
 
   useEffect(() => {
     let cancelled = false;
@@ -75,23 +84,51 @@ export default function StoreCategory() {
         return;
       }
       setCat(c as Category);
-      const { data: its } = await supabase
+
+      // Featured items (always shown on every page)
+      const { data: feat } = await supabase
         .from("store_items")
         .select("id, category_id, name, description, price, currency, image_url, badge, featured, external_url, sort_order")
         .eq("category_id", (c as Category).id)
         .eq("published", true)
-        .order("sort_order", { ascending: true });
+        .eq("featured", true)
+        .order("sort_order", { ascending: true })
+        .order("id", { ascending: true });
       if (cancelled) return;
-      setItems((its as Item[]) ?? []);
+      setFeatured((feat as Item[]) ?? []);
+
+      // Paginated non-featured items with stable sort
+      const from = (pageParam - 1) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+      const { data: its, count } = await supabase
+        .from("store_items")
+        .select(
+          "id, category_id, name, description, price, currency, image_url, badge, featured, external_url, sort_order",
+          { count: "exact" },
+        )
+        .eq("category_id", (c as Category).id)
+        .eq("published", true)
+        .eq("featured", false)
+        .order("sort_order", { ascending: true })
+        .order("id", { ascending: true })
+        .range(from, to);
+      if (cancelled) return;
+      setPageItems((its as Item[]) ?? []);
+      setTotalRest(count ?? 0);
       setLoading(false);
     })();
     return () => { cancelled = true; };
-  }, [slug]);
-
-  const featured = useMemo(() => items.filter((i) => i.featured), [items]);
-  const rest = useMemo(() => items.filter((i) => !i.featured), [items]);
+  }, [slug, pageParam]);
 
   const isRank = RANK_SLUGS.has(cat?.slug ?? "");
+
+  const goToPage = (n: number) => {
+    const next = new URLSearchParams(searchParams);
+    if (n <= 1) next.delete("page");
+    else next.set("page", String(n));
+    setSearchParams(next);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handleAdd = (it: Item) => {
     cart.add({
@@ -171,7 +208,7 @@ export default function StoreCategory() {
               )}
             </header>
 
-            {items.length === 0 ? (
+            {featured.length === 0 && pageItems.length === 0 ? (
               <p className="text-[#9ca3af]">No items in this category yet.</p>
             ) : (
               <div className="space-y-10">
@@ -215,7 +252,7 @@ export default function StoreCategory() {
                   </section>
                 )}
 
-                {rest.length > 0 && (
+                {pageItems.length > 0 && (
                   <section>
                     {featured.length > 0 && (
                       <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em] mb-4">
@@ -223,7 +260,7 @@ export default function StoreCategory() {
                       </h2>
                     )}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {rest.map((it) => (
+                      {pageItems.map((it) => (
                         <Link
                           key={it.id}
                           to={`/store/package/${it.id}`}
@@ -253,6 +290,31 @@ export default function StoreCategory() {
                         </Link>
                       ))}
                     </div>
+
+                    {totalPages > 1 && (
+                      <nav
+                        aria-label="Pagination"
+                        className="flex items-center justify-between mt-8 gap-4"
+                      >
+                        <button
+                          onClick={() => goToPage(page - 1)}
+                          disabled={page <= 1}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono tracking-widest uppercase border border-white/10 text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-white/10 disabled:hover:text-[#9ca3af]"
+                        >
+                          <ChevronLeft className="w-3 h-3" /> Prev
+                        </button>
+                        <span className="text-xs font-mono tracking-widest uppercase text-[#9ca3af]">
+                          Page {page} of {totalPages}
+                        </span>
+                        <button
+                          onClick={() => goToPage(page + 1)}
+                          disabled={page >= totalPages}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono tracking-widest uppercase border border-white/10 text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-white/10 disabled:hover:text-[#9ca3af]"
+                        >
+                          Next <ChevronRight className="w-3 h-3" />
+                        </button>
+                      </nav>
+                    )}
                   </section>
                 )}
               </div>
