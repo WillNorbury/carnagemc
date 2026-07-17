@@ -210,13 +210,6 @@ const Auth = () => {
     }
   };
 
-  const discord = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "discord",
-      options: { redirectTo: `${window.location.origin}/` },
-    });
-    if (error) toast.error(error.message ?? "Discord sign-in failed. Enable Discord in your Supabase project.");
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-grid">
