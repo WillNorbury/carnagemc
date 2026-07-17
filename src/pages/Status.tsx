@@ -238,6 +238,35 @@ const Status = () => {
     toast({ title: "You're subscribed", description: "We'll email you when incidents are posted or updated." });
   };
 
+  const unsubscribeMe = async () => {
+    const email = subEmail.trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      toast({ title: "Enter your email first", variant: "destructive" });
+      return;
+    }
+    setSubSubmitting(true);
+    const { data: row } = await supabase
+      .from("status_subscribers")
+      .select("unsubscribe_token")
+      .ilike("email", email)
+      .maybeSingle();
+    if (!row?.unsubscribe_token) {
+      setSubSubmitting(false);
+      toast({ title: "Not subscribed", description: "That email isn't on the list." });
+      return;
+    }
+    const { error } = await supabase.rpc("status_unsubscribe", { _token: row.unsubscribe_token });
+    setSubSubmitting(false);
+    if (error) {
+      toast({ title: "Couldn't unsubscribe", description: error.message, variant: "destructive" });
+      return;
+    }
+    setSubDone(false);
+    setSubOpen(false);
+    toast({ title: "Unsubscribed", description: "You won't receive incident emails." });
+  };
+
+
   useEffect(() => {
     document.title = "Status — CarnageMC";
 
@@ -807,6 +836,14 @@ const Status = () => {
               >
                 {subSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bell className="h-4 w-4" />}
                 {subSubmitting ? "Subscribing" : "Notify me"}
+              </button>
+              <button
+                type="button"
+                onClick={unsubscribeMe}
+                disabled={subSubmitting}
+                className="w-full text-center text-[10px] font-mono uppercase tracking-widest text-[#9ca3af] hover:text-[#ff5722] transition disabled:opacity-40"
+              >
+                Already subscribed? Unsubscribe this email
               </button>
               <p className="text-[10px] font-mono uppercase tracking-widest text-[#5f6472] text-center">
                 Email notifications are currently off — we're collecting subscribers and will turn them on soon.
