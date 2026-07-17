@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,16 @@ type Mode = "signin" | "signup" | "verify" | "mfa";
 
 const Auth = () => {
   const nav = useNavigate();
+  const [searchParams] = useSearchParams();
+  const nextParam = searchParams.get("next") ?? "";
+  // Only accept same-origin relative paths (e.g. "/.lovable/oauth/consent?...").
+  const safeNext = useMemo(() => (nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/"), [nextParam]);
+  const goNext = () => {
+    if (safeNext === "/") nav("/");
+    else window.location.href = safeNext;
+  };
   const { user } = useAuth();
+
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,7 +70,8 @@ const Auth = () => {
           return;
         }
       }
-      nav("/");
+      goNext();
+
     })();
     return () => { cancelled = true; };
   }, [user, nav, mode]);
@@ -100,7 +111,7 @@ const Auth = () => {
         const { error } = await supabase.auth.signUp({
           email, password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}${safeNext}`,
             data: { display_name: displayName },
           },
         });
@@ -113,8 +124,9 @@ const Auth = () => {
         const needsMfa = await checkMfaAfterSignIn();
         if (!needsMfa) {
           toast.success("Welcome back");
-          nav("/");
+          goNext();
         }
+
       }
     } catch (err: any) {
       toast.error(err.message ?? "Authentication failed");
@@ -137,7 +149,8 @@ const Auth = () => {
       });
       if (error) throw error;
       toast.success("Email verified — welcome!");
-      nav("/");
+      goNext();
+
     } catch (err: any) {
       toast.error(err.message ?? "Invalid or expired code");
     } finally {
@@ -161,7 +174,8 @@ const Auth = () => {
       });
       if (vErr) throw vErr;
       toast.success("Welcome back");
-      nav("/");
+      goNext();
+
     } catch (err: any) {
       toast.error(err.message ?? "Invalid authenticator code");
     } finally {
@@ -176,7 +190,7 @@ const Auth = () => {
       const { error } = await supabase.auth.resend({
         type: "signup",
         email,
-        options: { emailRedirectTo: `${window.location.origin}/` },
+        options: { emailRedirectTo: `${window.location.origin}${safeNext}` },
       });
       if (error) throw error;
       toast.success("Verification code resent — check your inbox");
