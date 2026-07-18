@@ -140,6 +140,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   "servers-status": { title: "Servers (Public Status)", description: "Edit the per-server cards on /servers-status: players, TPS, uptime, IP, and MOTD." },
   store: { title: "Store", description: "Manage the categories and items shown on /store." },
   "vote-links": { title: "Vote Links", description: "Manage the vote sites shown on /vote." },
+  partners: { title: "Partners", description: "Manage the partners shown in the sidebar Partners dropdown." },
 };
 
 const Admin = () => {
