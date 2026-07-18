@@ -114,7 +114,10 @@ export default function Live() {
               </div>
             )}
           </div>
+
+          <TwitchClipsGallery login={CHANNEL} parents={parents} />
         </div>
+
       </main>
       <Footer />
     </div>
