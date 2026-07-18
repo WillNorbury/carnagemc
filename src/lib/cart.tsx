@@ -10,7 +10,9 @@ export type CartItem = {
   external_url: string | null;
   quantity: number;
   maxQuantity?: number | null;
+  recipient?: string | null;
 };
+
 
 export type AppliedCoupon = {
   id: string;
