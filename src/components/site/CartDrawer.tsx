@@ -52,7 +52,7 @@ export function CartDrawer() {
         `• ${ci.name} × ${ci.quantity} — ${formatMoney(
           (Number(ci.price) || 0) * ci.quantity,
           (ci.currency || cart.currency || "USD").toUpperCase(),
-        )}`,
+        )}${ci.recipient ? `  (gift to: ${ci.recipient})` : ""}`,
     );
     const summary = [
       "New store checkout submitted via the website.",
