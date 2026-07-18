@@ -25,6 +25,7 @@ import {
   Check,
   AlertCircle,
 } from "lucide-react";
+import { getRecentlyViewedIds, clearRecentlyViewed } from "@/lib/recentlyViewed";
 
 type Category = {
   id: string;
