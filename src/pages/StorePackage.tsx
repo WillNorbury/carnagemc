@@ -395,6 +395,7 @@ export default function StorePackage() {
                   </div>
                 </section>
               )}
+            </>
           )}
         </div>
       </main>
