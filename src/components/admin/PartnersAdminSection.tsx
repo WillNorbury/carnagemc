@@ -130,15 +130,12 @@ export const PartnersAdminSection = () => {
                 />
               </div>
               <div className="md:col-span-2">
-                <Label>URL</Label>
-                <div className="flex gap-2">
-                  <Input value={row.url} onChange={(e) => update(row.id, { url: e.target.value })} />
-                  <Button variant="outline" size="icon" asChild>
-                    <a href={row.url} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </Button>
-                </div>
+                <Label>Minecraft IP</Label>
+                <Input
+                  value={row.url}
+                  placeholder="play.example.net"
+                  onChange={(e) => update(row.id, { url: e.target.value })}
+                />
               </div>
               <div className="md:col-span-2">
                 <Label>Description (optional)</Label>

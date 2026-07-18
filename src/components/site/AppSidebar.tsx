@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import {
   Sidebar,
   SidebarContent,
@@ -66,7 +67,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-type NavItem = { to: string; label: string; icon: typeof Home; soon?: boolean };
+type NavItem = { to: string; label: string; icon: typeof Home; soon?: boolean; copyValue?: string };
 type NavGroup = { id: string; label: string; icon: typeof Home; items: NavItem[]; defaultOpen?: boolean };
 
 const websiteGroup: NavGroup = {
@@ -208,7 +209,12 @@ export function AppSidebar() {
         .order("sort_order", { ascending: true });
       if (!mounted) return;
       setPartnersItems(
-        (data ?? []).map((p: any) => ({ to: p.url as string, label: p.label as string, icon: Link2 }))
+        (data ?? []).map((p: any) => ({
+          to: `#partner-${p.label}`,
+          label: p.label as string,
+          icon: Link2,
+          copyValue: p.url as string,
+        }))
       );
     })();
     return () => {
@@ -250,6 +256,25 @@ export function AppSidebar() {
               </span>
             )}
           </div>
+        ) : l.copyValue ? (
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(l.copyValue!);
+                toast.success(`Copied IP: ${l.copyValue}`);
+              } catch {
+                toast.error("Failed to copy");
+              }
+              closeMobile();
+            }}
+            className="flex items-center gap-2 w-full text-left"
+          >
+            <l.icon className="h-4 w-4 shrink-0" />
+            {!collapsed && (
+              <span className="uppercase tracking-wider text-xs truncate">{l.label}</span>
+            )}
+          </button>
         ) : isExternal(l.to) ? (
           <a href={l.to} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
             <l.icon className="h-4 w-4 shrink-0" />
