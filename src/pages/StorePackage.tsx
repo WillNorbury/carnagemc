@@ -13,6 +13,7 @@ import {
   Package,
   ShoppingCart,
 } from "lucide-react";
+import { WishlistButton } from "@/components/site/WishlistButton";
 
 type Item = {
   id: string;
@@ -258,6 +259,9 @@ export default function StorePackage() {
                     >
                       Buy now
                     </button>
+                    <div className="inline-flex items-center border border-white/10 px-3 h-[46px]">
+                      <WishlistButton itemId={item.id} />
+                    </div>
                   </div>
                 </div>
               </div>
