@@ -921,7 +921,7 @@ export type Database = {
       }
       item_reviews: {
         Row: {
-          body: string
+          body: string | null
           created_at: string
           id: string
           rating: number
@@ -931,7 +931,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          body?: string
+          body?: string | null
           created_at?: string
           id?: string
           rating: number
@@ -941,7 +941,7 @@ export type Database = {
           user_id: string
         }
         Update: {
-          body?: string
+          body?: string | null
           created_at?: string
           id?: string
           rating?: number
