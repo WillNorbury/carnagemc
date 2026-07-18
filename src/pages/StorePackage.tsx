@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { WishlistButton } from "@/components/site/WishlistButton";
 import { StorePackageReviews } from "@/components/site/StorePackageReviews";
+import { recordRecentlyViewed } from "@/lib/recentlyViewed";
 
 type Item = {
   id: string;
@@ -74,6 +75,7 @@ export default function StorePackage() {
         return;
       }
       setItem(data as Item);
+      recordRecentlyViewed((data as Item).id);
       const [{ data: c }, { data: r }] = await Promise.all([
         supabase
           .from("store_categories")
