@@ -40,4 +40,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'contact-reply': contactReply,
   'admin-alert': adminAlert,
   'news-update': newsUpdate,
+  'order-confirmation': orderConfirmation,
 }
