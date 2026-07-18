@@ -324,6 +324,7 @@ export default function StoreCategory() {
         )}
       </main>
       <Footer />
+      <StickyCartBar />
     </div>
   );
 }
