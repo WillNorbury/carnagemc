@@ -13,6 +13,7 @@ import {
   Package,
   ShoppingCart,
 } from "lucide-react";
+import { WishlistButton } from "@/components/site/WishlistButton";
 
 type Item = {
   id: string;
