@@ -47,13 +47,16 @@ export function CartDrawer() {
       return;
     }
     setCheckingOut(true);
-    const lines = cart.items.map(
-      (ci) =>
-        `• ${ci.name} × ${ci.quantity} — ${formatMoney(
-          (Number(ci.price) || 0) * ci.quantity,
-          (ci.currency || cart.currency || "USD").toUpperCase(),
-        )}${ci.recipient ? `  (gift to: ${ci.recipient})` : ""}`,
-    );
+    const lines = cart.items.flatMap((ci) => {
+      const base = `• ${ci.name} × ${ci.quantity} — ${formatMoney(
+        (Number(ci.price) || 0) * ci.quantity,
+        (ci.currency || cart.currency || "USD").toUpperCase(),
+      )}${ci.recipient ? `  (gift to: ${ci.recipient})` : ""}`;
+      const extras: string[] = [];
+      if (ci.giftMessage) extras.push(`   ↳ Message: ${ci.giftMessage}`);
+      return [base, ...extras];
+    });
+
     const summary = [
       "New store checkout submitted via the website.",
       "",
