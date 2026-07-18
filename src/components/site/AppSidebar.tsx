@@ -66,7 +66,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-type NavItem = { to: string; label: string; icon: typeof Home; soon?: boolean };
+type NavItem = { to: string; label: string; icon: typeof Home; soon?: boolean; copyValue?: string };
 type NavGroup = { id: string; label: string; icon: typeof Home; items: NavItem[]; defaultOpen?: boolean };
 
 const websiteGroup: NavGroup = {
