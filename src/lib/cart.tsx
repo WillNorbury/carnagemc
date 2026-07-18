@@ -10,7 +10,9 @@ export type CartItem = {
   external_url: string | null;
   quantity: number;
   maxQuantity?: number | null;
+  recipient?: string | null;
 };
+
 
 export type AppliedCoupon = {
   id: string;
@@ -37,6 +39,7 @@ type CartContextValue = {
   add: (item: Omit<CartItem, "quantity">, qty?: number) => void;
   remove: (id: string) => void;
   setQty: (id: string, qty: number) => void;
+  setRecipient: (id: string, recipient: string | null) => void;
   clear: () => void;
   isOpen: boolean;
   openCart: () => void;
@@ -131,6 +134,13 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
               ? { ...p, quantity: Math.min(99, p.maxQuantity ?? 99, qty) }
               : p,
           ),
+    );
+  }, []);
+
+  const setRecipient = useCallback((id: string, recipient: string | null) => {
+    const clean = recipient ? recipient.trim().slice(0, 32) : null;
+    setItems((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, recipient: clean || null } : p)),
     );
   }, []);
 
@@ -240,6 +250,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       add,
       remove,
       setQty,
+      setRecipient,
       clear,
       isOpen,
       openCart,
@@ -255,6 +266,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     add,
     remove,
     setQty,
+    setRecipient,
     clear,
     isOpen,
     openCart,

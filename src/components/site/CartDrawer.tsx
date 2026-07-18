@@ -17,6 +17,7 @@ import {
   BadgePercent,
   Tag,
   AlertCircle,
+  Gift,
 } from "lucide-react";
 
 export function CartDrawer() {
@@ -51,7 +52,7 @@ export function CartDrawer() {
         `• ${ci.name} × ${ci.quantity} — ${formatMoney(
           (Number(ci.price) || 0) * ci.quantity,
           (ci.currency || cart.currency || "USD").toUpperCase(),
-        )}`,
+        )}${ci.recipient ? `  (gift to: ${ci.recipient})` : ""}`,
     );
     const summary = [
       "New store checkout submitted via the website.",
@@ -130,8 +131,11 @@ export function CartDrawer() {
             </div>
           ) : (
             <ul className="divide-y">
-              {cart.items.map((ci) => (
-                <li key={ci.id} className="flex items-center gap-3 p-3">
+              {cart.items.map((ci) => {
+                const giftEligible = (ci.maxQuantity ?? 99) === 1;
+                return (
+                <li key={ci.id} className="p-3 space-y-2">
+                  <div className="flex items-center gap-3">
                   <div className="w-12 h-12 shrink-0 bg-muted overflow-hidden flex items-center justify-center rounded">
                     {ci.image_url ? (
                       <img
@@ -187,8 +191,25 @@ export function CartDrawer() {
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
+                  </div>
+                  {giftEligible && (
+                    <div className="pl-15 ml-15">
+                      <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Gift className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <span className="whitespace-nowrap">Gift to</span>
+                        <Input
+                          value={ci.recipient ?? ""}
+                          onChange={(e) => cart.setRecipient(ci.id, e.target.value)}
+                          placeholder="Minecraft username (optional)"
+                          className="h-7 text-xs font-mono"
+                          maxLength={32}
+                        />
+                      </label>
+                    </div>
+                  )}
                 </li>
-              ))}
+                );
+              })}
             </ul>
           )}
         </div>
