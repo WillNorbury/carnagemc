@@ -94,6 +94,7 @@ export default function MeStatus() {
           <div className="flex gap-2">
             <Button asChild variant="outline" size="sm"><Link to="/profile">Edit profile</Link></Button>
             <Button asChild variant="outline" size="sm"><Link to="/me/orders">My orders</Link></Button>
+            <Button asChild variant="outline" size="sm"><Link to="/me/wishlist">My wishlist</Link></Button>
             <Button asChild variant="ghost" size="sm"><Link to="/dashboard">Dashboard</Link></Button>
           </div>
         </header>
