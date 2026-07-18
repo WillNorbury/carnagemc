@@ -52,6 +52,7 @@ type CartContextValue = {
   remove: (id: string) => void;
   setQty: (id: string, qty: number) => void;
   setRecipient: (id: string, recipient: string | null) => void;
+  setGiftMessage: (id: string, message: string | null) => void;
   clear: () => void;
   isOpen: boolean;
   openCart: () => void;
