@@ -85,7 +85,8 @@ export type AdminSection =
   | "mysql"
   | "servers-status"
   | "store"
-  | "vote-links";
+  | "vote-links"
+  | "partners";
 
 type NavItem =
   | { kind: "link"; id: AdminSection; icon: any; label: string }
@@ -125,6 +126,7 @@ const items: NavItem[] = [
   { kind: "link", id: "changelog", icon: Zap, label: "Changelog" },
   { kind: "link", id: "store", icon: Package, label: "Store" },
   { kind: "link", id: "vote-links", icon: ExternalLink, label: "Vote Links" },
+  { kind: "link", id: "partners", icon: Users, label: "Partners" },
   { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
   { kind: "link", id: "apply", icon: ClipboardList, label: "Apply (types)" },
   { kind: "link", id: "features", icon: Sparkles, label: "Features" },

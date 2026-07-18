@@ -85,6 +85,7 @@ import { MySqlAdminSection } from "@/components/admin/MySqlAdminSection";
 import ServersStatusAdminSection from "@/components/admin/ServersStatusAdminSection";
 import { StoreAdminSection } from "@/components/admin/StoreAdminSection";
 import { VoteLinksAdminSection } from "@/components/admin/VoteLinksAdminSection";
+import { PartnersAdminSection } from "@/components/admin/PartnersAdminSection";
 
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
@@ -139,6 +140,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   "servers-status": { title: "Servers (Public Status)", description: "Edit the per-server cards on /servers-status: players, TPS, uptime, IP, and MOTD." },
   store: { title: "Store", description: "Manage the categories and items shown on /store." },
   "vote-links": { title: "Vote Links", description: "Manage the vote sites shown on /vote." },
+  partners: { title: "Partners", description: "Manage the partners shown in the sidebar Partners dropdown." },
 };
 
 const Admin = () => {
@@ -248,6 +250,7 @@ const Admin = () => {
           {section === "servers-status" && <ServersStatusAdminSection />}
           {section === "store" && <StoreAdminSection />}
           {section === "vote-links" && <VoteLinksAdminSection />}
+          {section === "partners" && <PartnersAdminSection />}
         </>
       )}
     </AdminLayout>

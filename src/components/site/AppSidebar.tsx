@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Sidebar,
   SidebarContent,
@@ -109,11 +111,11 @@ const communityGroup: NavGroup = {
   ],
 };
 
-const partnersGroup: NavGroup = {
+const defaultPartnersGroup: NavGroup = {
   id: "partners",
   label: "Partners",
   icon: UsersIcon,
-  items: [{ to: "https://4dupe.net", label: "4Dupe", icon: Link2 }],
+  items: [],
 };
 
 const helpGroup: NavGroup = {
@@ -175,11 +177,12 @@ const accountGroup: NavGroup = {
   ],
 };
 
-const publicGroups: NavGroup[] = [
+const staticPublicGroupsBefore: NavGroup[] = [
   websiteGroup,
   mainGroup,
   communityGroup,
-  partnersGroup,
+];
+const staticPublicGroupsAfter: NavGroup[] = [
   helpGroup,
   actionsGroup,
   discoverGroup,
@@ -193,6 +196,32 @@ export function AppSidebar() {
   const { pathname } = useLocation();
   const { user, isAdmin, signOut } = useAuth();
   const nav = useNavigate();
+
+  const [partnersItems, setPartnersItems] = useState<NavItem[]>([]);
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const { data } = await supabase
+        .from("partners")
+        .select("label,url,sort_order,is_active")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+      if (!mounted) return;
+      setPartnersItems(
+        (data ?? []).map((p: any) => ({ to: p.url as string, label: p.label as string, icon: Link2 }))
+      );
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const partnersGroup: NavGroup = { ...defaultPartnersGroup, items: partnersItems };
+  const publicGroups: NavGroup[] = [
+    ...staticPublicGroupsBefore,
+    ...(partnersItems.length > 0 ? [partnersGroup] : []),
+    ...staticPublicGroupsAfter,
+  ];
 
   const closeMobile = () => {
     if (isMobile) setOpenMobile(false);
