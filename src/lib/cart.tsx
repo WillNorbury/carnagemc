@@ -39,6 +39,7 @@ type CartContextValue = {
   add: (item: Omit<CartItem, "quantity">, qty?: number) => void;
   remove: (id: string) => void;
   setQty: (id: string, qty: number) => void;
+  setRecipient: (id: string, recipient: string | null) => void;
   clear: () => void;
   isOpen: boolean;
   openCart: () => void;
