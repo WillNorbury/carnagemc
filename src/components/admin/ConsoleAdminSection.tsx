@@ -228,13 +228,15 @@ const ServerInstallDialog = ({ server, onRotate, isOwner }: { server: Server; on
 
   const copy = (v: string, label = "Copied") => { navigator.clipboard.writeText(v); toast({ title: label }); };
 
-  const loadSecret = async () => {
-    if (secret) return;
+  const loadSecret = async (): Promise<string> => {
+    if (secret) return secret;
     setSecretLoading(true);
     const { data, error } = await (supabase as any).rpc("mc_server_get_ingest_secret", { _server_id: server.id });
     setSecretLoading(false);
-    if (error) { toast({ title: "Failed to load secret", description: error.message, variant: "destructive" }); return; }
-    setSecret(String(data ?? ""));
+    if (error) { toast({ title: "Failed to load secret", description: error.message, variant: "destructive" }); return ""; }
+    const value = String(data ?? "");
+    setSecret(value);
+    return value;
   };
 
   const configYaml =
@@ -358,7 +360,7 @@ log-batch-ms: 1000`;
                 <Button size="icon" variant="ghost" onClick={async () => { await loadSecret(); setShow((s) => !s); }} disabled={secretLoading}>
                   {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
-                <Button size="icon" variant="ghost" onClick={async () => { await loadSecret(); if (secret) copy(secret, "Secret copied"); }} disabled={secretLoading}><Copy className="h-4 w-4" /></Button>
+                <Button size="icon" variant="ghost" onClick={async () => { const v = await loadSecret(); if (v) copy(v, "Secret copied"); }} disabled={secretLoading}><Copy className="h-4 w-4" /></Button>
               </div>
 
             </div>
@@ -369,7 +371,16 @@ log-batch-ms: 1000`;
                 size="sm"
                 variant="secondary"
                 className="absolute top-2 right-2"
-                onClick={() => copy(configYaml, "config.yml copied")}
+                onClick={async () => {
+                  const v = await loadSecret();
+                  const yaml = `# Drop into plugins/CarnageConsoleBridge/config.yml on your Minecraft server
+endpoint: ${BRIDGE_URL}
+server-slug: ${server.slug}
+server-secret: ${v}
+poll-interval-ms: 1000
+log-batch-ms: 1000`;
+                  copy(yaml, "config.yml copied");
+                }}
               >
                 <Copy className="h-3.5 w-3.5 mr-1" /> Copy
               </Button>
