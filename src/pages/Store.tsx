@@ -85,6 +85,13 @@ export default function Store() {
   const [checkingOut, setCheckingOut] = useState(false);
   const cartRef = useRef<HTMLElement | null>(null);
   const [recentIds, setRecentIds] = useState<string[]>(() => getRecentlyViewedIds());
+  const [popularIds, setPopularIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    supabase.rpc("get_popular_store_items", { _limit: 6 }).then(({ data }) => {
+      if (Array.isArray(data)) setPopularIds(data.map((r: any) => r.item_id).filter(Boolean));
+    });
+  }, []);
 
   useEffect(() => {
     const sync = () => setRecentIds(getRecentlyViewedIds());
@@ -176,6 +183,12 @@ export default function Store() {
     const byId = new Map(items.map((i) => [i.id, i]));
     return recentIds.map((id) => byId.get(id)).filter(Boolean) as Item[];
   }, [recentIds, items]);
+
+  const popularItems = useMemo(() => {
+    if (popularIds.length === 0) return [] as Item[];
+    const byId = new Map(items.map((i) => [i.id, i]));
+    return popularIds.map((id) => byId.get(id)).filter(Boolean) as Item[];
+  }, [popularIds, items]);
 
 
   const catName = (id: string) => cats.find((c) => c.id === id)?.name ?? "More";
@@ -439,6 +452,54 @@ export default function Store() {
               })}
             </div>
           )}
+
+          {popularItems.length > 0 && (
+            <section className="mb-10 border border-white/5 bg-[#12121a] p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <Flame className="w-3.5 h-3.5 text-[#ff5722]" strokeWidth={1.5} />
+                <h2 className="text-xs font-mono tracking-widest uppercase text-[#9ca3af]">
+                  Popular — most wishlisted
+                </h2>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                {popularItems.map((it, idx) => (
+                  <Link
+                    key={it.id}
+                    to={`/store/package/${it.id}`}
+                    className="group block bg-[#0a0a0f] border border-white/5 hover:border-[#ff5722]/40 transition overflow-hidden relative"
+                  >
+                    <span className="absolute top-2 left-2 z-10 bg-[#ff5722] text-white text-[10px] font-bold px-1.5 py-0.5 tracking-widest">
+                      #{idx + 1}
+                    </span>
+                    <div className="aspect-square bg-[#1a1a24] relative overflow-hidden">
+                      {it.image_url ? (
+                        <img
+                          src={it.image_url}
+                          alt={it.name}
+                          loading="lazy"
+                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[#ff5722]/30">
+                          <Package className="w-8 h-8" strokeWidth={1.5} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-2.5">
+                      <div className="text-xs font-semibold truncate group-hover:text-[#ff5722] transition">
+                        {it.name}
+                      </div>
+                      <div className="text-[10px] font-mono text-[#9ca3af] mt-0.5">
+                        {formatPrice(it.price, it.currency)}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
+
 
           {recentItems.length > 0 && (
             <section className="mb-10 border border-white/5 bg-[#12121a] p-5">
