@@ -244,12 +244,20 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         discount = Math.min(subtotal, coupon.discount_value);
       }
     }
-    const total = Math.max(0, subtotal - discount);
+    const afterCoupon = Math.max(0, subtotal - discount);
+    const tier = [...BUNDLE_TIERS].reverse().find((t) => count >= t.minItems) ?? null;
+    const bundlePercent = tier?.percent ?? 0;
+    const bundleDiscount = tier ? (afterCoupon * tier.percent) / 100 : 0;
+    const nextBundle = BUNDLE_TIERS.find((t) => count < t.minItems) ?? null;
+    const total = Math.max(0, afterCoupon - bundleDiscount);
     return {
       items,
       count,
       subtotal,
       discount,
+      bundleDiscount,
+      bundlePercent,
+      nextBundle,
       total,
       currency,
       coupon,
@@ -257,6 +265,15 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       applyingCoupon,
       applyCoupon,
       clearCoupon,
+      add,
+      remove,
+      setQty,
+      setRecipient,
+      clear,
+      isOpen,
+      openCart,
+      closeCart,
+    };
       add,
       remove,
       setQty,
