@@ -292,21 +292,34 @@ export default function Checkout() {
                       </button>
                       </div>
                       {giftEligible && (
-                        <div className="flex items-center gap-2 pl-[72px] text-xs">
-                          <Gift className="w-3.5 h-3.5 text-[#ff5722] shrink-0" />
-                          <span className="text-[10px] font-mono uppercase tracking-widest text-[#9ca3af]">
-                            Gift to
-                          </span>
-                          <input
-                            type="text"
-                            value={ci.recipient ?? ""}
-                            onChange={(e) => cart.setRecipient(ci.id, e.target.value)}
-                            placeholder="Minecraft username (optional)"
-                            maxLength={32}
-                            className="flex-1 max-w-xs px-2 py-1 bg-[#1a1a24] border border-white/10 focus:border-[#ff5722] focus:outline-none text-xs font-mono text-slate-100 placeholder:text-[#5f6472]"
-                          />
+                        <div className="space-y-2 pl-[72px]">
+                          <div className="flex items-center gap-2 text-xs">
+                            <Gift className="w-3.5 h-3.5 text-[#ff5722] shrink-0" />
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-[#9ca3af]">
+                              Gift to
+                            </span>
+                            <input
+                              type="text"
+                              value={ci.recipient ?? ""}
+                              onChange={(e) => cart.setRecipient(ci.id, e.target.value)}
+                              placeholder="Minecraft username (optional)"
+                              maxLength={32}
+                              className="flex-1 max-w-xs px-2 py-1 bg-[#1a1a24] border border-white/10 focus:border-[#ff5722] focus:outline-none text-xs font-mono text-slate-100 placeholder:text-[#5f6472]"
+                            />
+                          </div>
+                          {ci.recipient && (
+                            <textarea
+                              value={ci.giftMessage ?? ""}
+                              onChange={(e) => cart.setGiftMessage(ci.id, e.target.value)}
+                              placeholder="Optional gift message (max 200 chars)"
+                              maxLength={200}
+                              rows={2}
+                              className="w-full px-2 py-1 bg-[#1a1a24] border border-white/10 focus:border-[#ff5722] focus:outline-none text-xs text-slate-100 placeholder:text-[#5f6472] resize-none"
+                            />
+                          )}
                         </div>
                       )}
+
                     </li>
                     );
                   })}
