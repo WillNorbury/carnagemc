@@ -15,6 +15,7 @@ import { template as ticketReply } from './ticket-reply.tsx'
 import { template as contactReply } from './contact-reply.tsx'
 import { template as adminAlert } from './admin-alert.tsx'
 import { template as newsUpdate } from './news-update.tsx'
+import { template as orderConfirmation } from './order-confirmation.tsx'
 
 export interface TemplateEntry {
   component: React.ComponentType<any>
