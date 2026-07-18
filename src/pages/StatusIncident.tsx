@@ -61,11 +61,8 @@ const StatusIncident = () => {
         setLoading(false);
         return;
       }
-      const { data: inc } = await supabase
-        .from("uptime_incidents")
-        .select("id, incident_number, service_key, opened_at, closed_at, last_error")
-        .eq("incident_number", n)
-        .maybeSingle();
+      const { data: incRows } = await supabase.rpc("get_public_uptime_incident_by_number", { _number: n });
+      const inc = Array.isArray(incRows) ? incRows[0] : null;
       if (!inc) {
         setNotFound(true);
         setLoading(false);
@@ -77,13 +74,11 @@ const StatusIncident = () => {
       const toTs = new Date(
         (inc.closed_at ? new Date(inc.closed_at).getTime() : Date.now()) + 60 * 60_000,
       ).toISOString();
-      const { data: chk } = await supabase
-        .from("uptime_checks")
-        .select("id, checked_at, is_up, latency_ms, status_code, error")
-        .eq("service_key", inc.service_key)
-        .gte("checked_at", fromTs)
-        .lte("checked_at", toTs)
-        .order("checked_at", { ascending: true });
+      const { data: chk } = await supabase.rpc("get_public_uptime_checks_between", {
+        _service_key: inc.service_key,
+        _from: fromTs,
+        _to: toTs,
+      });
       setChecks((chk ?? []) as Check[]);
       setLoading(false);
     })();
