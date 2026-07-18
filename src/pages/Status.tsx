@@ -331,11 +331,7 @@ const Status = () => {
     setDetailLoading(true);
     setDetailChecks([]);
     supabase
-      .from("uptime_checks")
-      .select("checked_at, is_up, latency_ms, status_code, error")
-      .eq("service_key", detailKey)
-      .order("checked_at", { ascending: false })
-      .limit(30)
+      .rpc("get_public_uptime_checks_for_service", { _service_key: detailKey, _limit: 30 })
       .then(({ data }) => {
         setDetailChecks((data ?? []) as Check[]);
         setDetailLoading(false);
