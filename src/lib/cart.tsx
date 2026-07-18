@@ -137,6 +137,13 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     );
   }, []);
 
+  const setRecipient = useCallback((id: string, recipient: string | null) => {
+    const clean = recipient ? recipient.trim().slice(0, 32) : null;
+    setItems((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, recipient: clean || null } : p)),
+    );
+  }, []);
+
   const clear = useCallback(() => {
     setItems([]);
     setCoupon(null);
