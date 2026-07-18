@@ -334,8 +334,10 @@ export default function Checkout() {
                   </h2>
                 </div>
                 <div className="p-5 space-y-4">
+                  <AvailableCoupons variant="dark" />
                   {/* Coupon */}
                   <div className="space-y-2">
+
                     {cart.coupon ? (
                       <div className="flex items-center justify-between gap-2 p-2 border border-[#ff5722]/50 bg-[#ff5722]/5">
                         <div className="flex items-center gap-2 text-sm min-w-0">
