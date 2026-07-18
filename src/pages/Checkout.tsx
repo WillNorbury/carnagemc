@@ -349,6 +349,22 @@ export default function Checkout() {
                         </span>
                       </div>
                     )}
+                    {cart.bundleDiscount > 0 && (
+                      <div className="flex items-center justify-between text-[#ff5722]">
+                        <span className="text-xs font-mono uppercase tracking-widest">
+                          Bundle {cart.bundlePercent}%
+                        </span>
+                        <span className="tabular-nums font-mono">
+                          −{formatMoney(cart.bundleDiscount, cart.currency)}
+                        </span>
+                      </div>
+                    )}
+                    {cart.nextBundle && (
+                      <p className="text-[11px] text-[#9ca3af] font-mono">
+                        + {cart.nextBundle.minItems - cart.count} more item
+                        {cart.nextBundle.minItems - cart.count === 1 ? "" : "s"} → {cart.nextBundle.percent}% bundle discount
+                      </p>
+                    )}
                     <div className="flex items-center justify-between pt-2 border-t border-white/5">
                       <span className="text-xs font-mono uppercase tracking-widest text-[#9ca3af]">
                         Total
