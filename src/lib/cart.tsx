@@ -24,11 +24,21 @@ export type AppliedCoupon = {
   description: string | null;
 };
 
+export type BundleTier = { minItems: number; percent: number };
+export const BUNDLE_TIERS: BundleTier[] = [
+  { minItems: 3, percent: 5 },
+  { minItems: 5, percent: 10 },
+  { minItems: 10, percent: 15 },
+];
+
 type CartContextValue = {
   items: CartItem[];
   count: number;
   subtotal: number;
   discount: number;
+  bundleDiscount: number;
+  bundlePercent: number;
+  nextBundle: BundleTier | null;
   total: number;
   currency: string;
   coupon: AppliedCoupon | null;
