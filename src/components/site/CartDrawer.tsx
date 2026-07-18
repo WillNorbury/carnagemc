@@ -196,7 +196,7 @@ export function CartDrawer() {
                   </div>
                   </div>
                   {giftEligible && (
-                    <div className="pl-15 ml-15">
+                    <div className="pl-15 ml-15 space-y-1.5">
                       <label className="flex items-center gap-2 text-xs text-muted-foreground">
                         <Gift className="w-3.5 h-3.5 text-primary shrink-0" />
                         <span className="whitespace-nowrap">Gift to</span>
@@ -208,8 +208,18 @@ export function CartDrawer() {
                           maxLength={32}
                         />
                       </label>
+                      {ci.recipient && (
+                        <Input
+                          value={ci.giftMessage ?? ""}
+                          onChange={(e) => cart.setGiftMessage(ci.id, e.target.value)}
+                          placeholder="Optional gift message (max 200 chars)"
+                          className="h-7 text-xs"
+                          maxLength={200}
+                        />
+                      )}
                     </div>
                   )}
+
                 </li>
                 );
               })}
