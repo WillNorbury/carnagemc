@@ -250,6 +250,7 @@ const Admin = () => {
           {section === "servers-status" && <ServersStatusAdminSection />}
           {section === "store" && <StoreAdminSection />}
           {section === "vote-links" && <VoteLinksAdminSection />}
+          {section === "partners" && <PartnersAdminSection />}
         </>
       )}
     </AdminLayout>
