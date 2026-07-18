@@ -14,6 +14,7 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { WishlistButton } from "@/components/site/WishlistButton";
+import { StorePackageReviews } from "@/components/site/StorePackageReviews";
 
 type Item = {
   id: string;
