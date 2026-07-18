@@ -85,6 +85,13 @@ export default function Store() {
   const [checkingOut, setCheckingOut] = useState(false);
   const cartRef = useRef<HTMLElement | null>(null);
   const [recentIds, setRecentIds] = useState<string[]>(() => getRecentlyViewedIds());
+  const [popularIds, setPopularIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    supabase.rpc("get_popular_store_items", { _limit: 6 }).then(({ data }) => {
+      if (Array.isArray(data)) setPopularIds(data.map((r: any) => r.item_id).filter(Boolean));
+    });
+  }, []);
 
   useEffect(() => {
     const sync = () => setRecentIds(getRecentlyViewedIds());
