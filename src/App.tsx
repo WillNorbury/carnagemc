@@ -120,6 +120,7 @@ const Shell = () => {
                   <Route path="/release-notes" element={<ReleaseNotes />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/me/status" element={<MeStatus />} />
+                  <Route path="/me/orders" element={<MeOrders />} />
                   <Route path="/link-account" element={<LinkAccount />} />
                   <Route path="/apply" element={<Apply />} />
                   <Route path="/apply/:slug" element={<Apply />} />
