@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
+import StickyCartBar from "@/components/site/StickyCartBar";
 import { useCart } from "@/lib/cart";
 import { toast } from "sonner";
 import {
