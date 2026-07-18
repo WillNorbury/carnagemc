@@ -228,13 +228,15 @@ const ServerInstallDialog = ({ server, onRotate, isOwner }: { server: Server; on
 
   const copy = (v: string, label = "Copied") => { navigator.clipboard.writeText(v); toast({ title: label }); };
 
-  const loadSecret = async () => {
-    if (secret) return;
+  const loadSecret = async (): Promise<string> => {
+    if (secret) return secret;
     setSecretLoading(true);
     const { data, error } = await (supabase as any).rpc("mc_server_get_ingest_secret", { _server_id: server.id });
     setSecretLoading(false);
-    if (error) { toast({ title: "Failed to load secret", description: error.message, variant: "destructive" }); return; }
-    setSecret(String(data ?? ""));
+    if (error) { toast({ title: "Failed to load secret", description: error.message, variant: "destructive" }); return ""; }
+    const value = String(data ?? "");
+    setSecret(value);
+    return value;
   };
 
   const configYaml =
