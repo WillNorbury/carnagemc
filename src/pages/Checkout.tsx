@@ -11,6 +11,7 @@ import {
   AlertCircle,
   ArrowLeft,
   BadgePercent,
+  Gift,
   Minus,
   Package,
   Plus,
