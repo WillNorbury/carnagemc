@@ -52,6 +52,7 @@ export default function StorePackage() {
   const [item, setItem] = useState<Item | null>(null);
   const [cat, setCat] = useState<Category | null>(null);
   const [related, setRelated] = useState<Item[]>([]);
+  const [alsoLike, setAlsoLike] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
