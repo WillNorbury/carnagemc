@@ -256,6 +256,25 @@ export function AppSidebar() {
               </span>
             )}
           </div>
+        ) : l.copyValue ? (
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(l.copyValue!);
+                toast.success(`Copied IP: ${l.copyValue}`);
+              } catch {
+                toast.error("Failed to copy");
+              }
+              closeMobile();
+            }}
+            className="flex items-center gap-2 w-full text-left"
+          >
+            <l.icon className="h-4 w-4 shrink-0" />
+            {!collapsed && (
+              <span className="uppercase tracking-wider text-xs truncate">{l.label}</span>
+            )}
+          </button>
         ) : isExternal(l.to) ? (
           <a href={l.to} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
             <l.icon className="h-4 w-4 shrink-0" />
