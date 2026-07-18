@@ -440,6 +440,57 @@ export default function Store() {
             </div>
           )}
 
+          {recentItems.length > 0 && (
+            <section className="mb-10 border border-white/5 bg-[#12121a] p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xs font-mono tracking-widest uppercase text-[#9ca3af]">
+                  Recently viewed
+                </h2>
+                <button
+                  type="button"
+                  onClick={clearRecentlyViewed}
+                  className="text-[10px] font-mono tracking-widest uppercase text-[#9ca3af] hover:text-[#ff5722] transition"
+                >
+                  Clear
+                </button>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                {recentItems.map((it) => (
+                  <Link
+                    key={it.id}
+                    to={`/store/package/${it.id}`}
+                    className="group block bg-[#0a0a0f] border border-white/5 hover:border-[#ff5722]/40 transition overflow-hidden"
+                  >
+                    <div className="aspect-square bg-[#1a1a24] relative overflow-hidden">
+                      {it.image_url ? (
+                        <img
+                          src={it.image_url}
+                          alt={it.name}
+                          loading="lazy"
+                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[#ff5722]/30">
+                          <Package className="w-8 h-8" strokeWidth={1.5} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-2.5">
+                      <div className="text-xs font-semibold truncate group-hover:text-[#ff5722] transition">
+                        {it.name}
+                      </div>
+                      <div className="text-[10px] font-mono text-[#9ca3af] mt-0.5">
+                        {formatPrice(it.price, it.currency)}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
+
+
           {filtered.length === 0 ? (
             <p className="text-[#9ca3af]">
               {items.length === 0 ? "The store is empty." : "No items match your search."}
