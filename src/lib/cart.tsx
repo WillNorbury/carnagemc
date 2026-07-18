@@ -274,15 +274,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       openCart,
       closeCart,
     };
-      add,
-      remove,
-      setQty,
-      setRecipient,
-      clear,
-      isOpen,
-      openCart,
-      closeCart,
-    };
   }, [
     items,
     coupon,
