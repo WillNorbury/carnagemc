@@ -184,6 +184,12 @@ export default function Store() {
     return recentIds.map((id) => byId.get(id)).filter(Boolean) as Item[];
   }, [recentIds, items]);
 
+  const popularItems = useMemo(() => {
+    if (popularIds.length === 0) return [] as Item[];
+    const byId = new Map(items.map((i) => [i.id, i]));
+    return popularIds.map((id) => byId.get(id)).filter(Boolean) as Item[];
+  }, [popularIds, items]);
+
 
   const catName = (id: string) => cats.find((c) => c.id === id)?.name ?? "More";
 
