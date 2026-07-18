@@ -2795,6 +2795,13 @@ export type Database = {
           total: number
         }[]
       }
+      get_popular_store_items: {
+        Args: { _limit?: number }
+        Returns: {
+          item_id: string
+          wishlist_count: number
+        }[]
+      }
       get_quiz_leaderboard: {
         Args: { _limit?: number; _slug: string }
         Returns: {
