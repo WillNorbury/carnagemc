@@ -114,6 +114,8 @@ export default function Checkout() {
           (ci.currency || cart.currency || "USD").toUpperCase(),
         ),
         recipient: ci.recipient ?? null,
+        giftMessage: ci.giftMessage ?? null,
+
       }));
       const couponSummary = cart.coupon
         ? cart.coupon.discount_type === "percent"
