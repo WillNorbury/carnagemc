@@ -10,7 +10,9 @@ interface OrderLine {
   quantity: number
   priceFormatted: string
   recipient?: string | null
+  giftMessage?: string | null
 }
+
 
 interface Props {
   recipientName?: string
@@ -59,7 +61,11 @@ const Email = ({
               {it.recipient ? (
                 <Text style={giftLine}>🎁 Gift to <strong>{it.recipient}</strong></Text>
               ) : null}
+              {it.giftMessage ? (
+                <Text style={giftLine}>“{it.giftMessage}”</Text>
+              ) : null}
               <Text style={linePrice}>{it.priceFormatted}</Text>
+
             </Section>
           ))}
 

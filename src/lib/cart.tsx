@@ -11,7 +11,9 @@ export type CartItem = {
   quantity: number;
   maxQuantity?: number | null;
   recipient?: string | null;
+  giftMessage?: string | null;
 };
+
 
 
 export type AppliedCoupon = {
@@ -50,6 +52,7 @@ type CartContextValue = {
   remove: (id: string) => void;
   setQty: (id: string, qty: number) => void;
   setRecipient: (id: string, recipient: string | null) => void;
+  setGiftMessage: (id: string, message: string | null) => void;
   clear: () => void;
   isOpen: boolean;
   openCart: () => void;
@@ -153,6 +156,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       prev.map((p) => (p.id === id ? { ...p, recipient: clean || null } : p)),
     );
   }, []);
+
+  const setGiftMessage = useCallback((id: string, message: string | null) => {
+    const clean = message ? message.slice(0, 200) : null;
+    setItems((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, giftMessage: clean || null } : p)),
+    );
+  }, []);
+
 
   const clear = useCallback(() => {
     setItems([]);
@@ -269,6 +280,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       remove,
       setQty,
       setRecipient,
+      setGiftMessage,
       clear,
       isOpen,
       openCart,
@@ -285,11 +297,13 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     remove,
     setQty,
     setRecipient,
+    setGiftMessage,
     clear,
     isOpen,
     openCart,
     closeCart,
   ]);
+
 
   return (
     <CartContext.Provider value={value}>

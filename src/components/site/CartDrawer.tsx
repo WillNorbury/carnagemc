@@ -47,13 +47,16 @@ export function CartDrawer() {
       return;
     }
     setCheckingOut(true);
-    const lines = cart.items.map(
-      (ci) =>
-        `• ${ci.name} × ${ci.quantity} — ${formatMoney(
-          (Number(ci.price) || 0) * ci.quantity,
-          (ci.currency || cart.currency || "USD").toUpperCase(),
-        )}${ci.recipient ? `  (gift to: ${ci.recipient})` : ""}`,
-    );
+    const lines = cart.items.flatMap((ci) => {
+      const base = `• ${ci.name} × ${ci.quantity} — ${formatMoney(
+        (Number(ci.price) || 0) * ci.quantity,
+        (ci.currency || cart.currency || "USD").toUpperCase(),
+      )}${ci.recipient ? `  (gift to: ${ci.recipient})` : ""}`;
+      const extras: string[] = [];
+      if (ci.giftMessage) extras.push(`   ↳ Message: ${ci.giftMessage}`);
+      return [base, ...extras];
+    });
+
     const summary = [
       "New store checkout submitted via the website.",
       "",
@@ -193,7 +196,7 @@ export function CartDrawer() {
                   </div>
                   </div>
                   {giftEligible && (
-                    <div className="pl-15 ml-15">
+                    <div className="pl-15 ml-15 space-y-1.5">
                       <label className="flex items-center gap-2 text-xs text-muted-foreground">
                         <Gift className="w-3.5 h-3.5 text-primary shrink-0" />
                         <span className="whitespace-nowrap">Gift to</span>
@@ -205,8 +208,18 @@ export function CartDrawer() {
                           maxLength={32}
                         />
                       </label>
+                      {ci.recipient && (
+                        <Input
+                          value={ci.giftMessage ?? ""}
+                          onChange={(e) => cart.setGiftMessage(ci.id, e.target.value)}
+                          placeholder="Optional gift message (max 200 chars)"
+                          className="h-7 text-xs"
+                          maxLength={200}
+                        />
+                      )}
                     </div>
                   )}
+
                 </li>
                 );
               })}
