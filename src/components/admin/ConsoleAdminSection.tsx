@@ -360,7 +360,7 @@ log-batch-ms: 1000`;
                 <Button size="icon" variant="ghost" onClick={async () => { await loadSecret(); setShow((s) => !s); }} disabled={secretLoading}>
                   {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
-                <Button size="icon" variant="ghost" onClick={async () => { await loadSecret(); if (secret) copy(secret, "Secret copied"); }} disabled={secretLoading}><Copy className="h-4 w-4" /></Button>
+                <Button size="icon" variant="ghost" onClick={async () => { const v = await loadSecret(); if (v) copy(v, "Secret copied"); }} disabled={secretLoading}><Copy className="h-4 w-4" /></Button>
               </div>
 
             </div>
