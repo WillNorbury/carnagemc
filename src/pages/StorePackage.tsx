@@ -266,7 +266,37 @@ export default function StorePackage() {
                     <div className="inline-flex items-center border border-white/10 px-3 h-[46px]">
                       <WishlistButton itemId={item.id} />
                     </div>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const url = `${window.location.origin}/store/package/${item.id}`;
+                        const shareData = {
+                          title: item.name,
+                          text: `Check out ${item.name} on the store`,
+                          url,
+                        };
+                        try {
+                          if (navigator.share) {
+                            await navigator.share(shareData);
+                            return;
+                          }
+                        } catch {
+                          // fall through to clipboard
+                        }
+                        try {
+                          await navigator.clipboard.writeText(url);
+                          toast.success("Link copied to clipboard");
+                        } catch {
+                          toast.error("Couldn't copy link");
+                        }
+                      }}
+                      className="inline-flex items-center gap-2 px-4 h-[46px] text-xs font-mono tracking-widest uppercase border border-white/10 hover:border-[#ff5722] hover:text-[#ff5722] transition"
+                      aria-label="Share package"
+                    >
+                      <Share2 className="w-3.5 h-3.5" /> Share
+                    </button>
                   </div>
+
               </div>
 
               {/* Reviews */}
