@@ -401,6 +401,7 @@ export default function StorePackage() {
         </div>
       </main>
       <Footer />
+      <StickyCartBar />
     </div>
   );
 }
