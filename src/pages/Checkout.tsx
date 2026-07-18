@@ -72,6 +72,11 @@ export default function Checkout() {
       );
       summary.push(`Discount: -${formatMoney(cart.discount, cart.currency)}`);
     }
+    if (cart.bundleDiscount > 0) {
+      summary.push(
+        `Bundle discount: ${cart.bundlePercent}% off (-${formatMoney(cart.bundleDiscount, cart.currency)})`,
+      );
+    }
     summary.push(`Total: ${formatMoney(cart.total, cart.currency)}`);
     summary.push("", "Staff: please reply with payment instructions or fulfillment status.");
     const subject = `Store order — ${cart.count} item${
