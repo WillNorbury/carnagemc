@@ -14,6 +14,7 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { WishlistButton } from "@/components/site/WishlistButton";
+import { StorePackageReviews } from "@/components/site/StorePackageReviews";
 
 type Item = {
   id: string;
@@ -263,7 +264,10 @@ export default function StorePackage() {
                       <WishlistButton itemId={item.id} />
                     </div>
                   </div>
-                </div>
+              </div>
+
+              {/* Reviews */}
+              <StorePackageReviews itemId={item.id} />
               </div>
 
               {/* Related */}
