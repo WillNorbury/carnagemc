@@ -229,8 +229,10 @@ export function CartDrawer() {
 
         {cart.items.length > 0 && (
           <div className="border-t p-4 space-y-3 bg-muted/20">
+            <AvailableCoupons variant="light" />
             {/* Coupon */}
             <div className="space-y-1.5">
+
               {cart.coupon ? (
                 <div className="flex items-center justify-between gap-2 p-2 border border-primary/40 bg-primary/5 rounded">
                   <div className="flex items-center gap-2 text-sm">
