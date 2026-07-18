@@ -955,6 +955,7 @@ export default function Store() {
         </div>
       </main>
       <Footer />
+      <StickyCartBar />
     </div>
   );
 }
