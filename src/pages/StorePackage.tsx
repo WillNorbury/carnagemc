@@ -9,10 +9,11 @@ import { toast } from "sonner";
 import {
   ArrowLeft,
   Check,
-  
   Package,
+  Share2,
   ShoppingCart,
 } from "lucide-react";
+
 import { WishlistButton } from "@/components/site/WishlistButton";
 import { StorePackageReviews } from "@/components/site/StorePackageReviews";
 import { recordRecentlyViewed } from "@/lib/recentlyViewed";
