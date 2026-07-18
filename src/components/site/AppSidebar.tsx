@@ -208,7 +208,12 @@ export function AppSidebar() {
         .order("sort_order", { ascending: true });
       if (!mounted) return;
       setPartnersItems(
-        (data ?? []).map((p: any) => ({ to: p.url as string, label: p.label as string, icon: Link2 }))
+        (data ?? []).map((p: any) => ({
+          to: `#partner-${p.label}`,
+          label: p.label as string,
+          icon: Link2,
+          copyValue: p.url as string,
+        }))
       );
     })();
     return () => {
