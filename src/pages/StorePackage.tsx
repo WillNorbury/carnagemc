@@ -96,6 +96,25 @@ export default function StorePackage() {
       if (cancelled) return;
       setCat((c as Category) ?? null);
       setRelated((r as Item[]) ?? []);
+      // Cross-category "you might also like" from popular items
+      const { data: pop } = await supabase.rpc("get_popular_store_items", { _limit: 12 });
+      if (!cancelled && Array.isArray(pop) && pop.length > 0) {
+        const ids = pop.map((p: any) => p.item_id).filter(Boolean);
+        const { data: popItems } = await supabase
+          .from("store_items")
+          .select("*")
+          .in("id", ids)
+          .eq("published", true)
+          .neq("category_id", (data as Item).category_id);
+        if (!cancelled && Array.isArray(popItems)) {
+          const byId = new Map((popItems as Item[]).map((i) => [i.id, i]));
+          const ordered = ids
+            .map((pid: string) => byId.get(pid))
+            .filter(Boolean)
+            .slice(0, 4) as Item[];
+          setAlsoLike(ordered);
+        }
+      }
       setLoading(false);
     })();
     return () => {
