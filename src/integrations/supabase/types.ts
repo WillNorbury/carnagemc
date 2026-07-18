@@ -2802,6 +2802,61 @@ export type Database = {
           wishlist_count: number
         }[]
       }
+      get_public_active_uptime_incidents: {
+        Args: { _limit?: number }
+        Returns: {
+          closed_at: string
+          id: string
+          incident_number: number
+          last_error: string
+          opened_at: string
+          service_key: string
+        }[]
+      }
+      get_public_uptime_checks_between: {
+        Args: { _from: string; _service_key: string; _to: string }
+        Returns: {
+          checked_at: string
+          error: string
+          id: string
+          is_up: boolean
+          latency_ms: number
+          status_code: number
+        }[]
+      }
+      get_public_uptime_checks_for_service: {
+        Args: { _limit?: number; _service_key: string }
+        Returns: {
+          checked_at: string
+          error: string
+          id: string
+          is_up: boolean
+          latency_ms: number
+          status_code: number
+        }[]
+      }
+      get_public_uptime_incident_by_number: {
+        Args: { _number: number }
+        Returns: {
+          closed_at: string
+          id: string
+          incident_number: number
+          last_error: string
+          opened_at: string
+          service_key: string
+        }[]
+      }
+      get_public_uptime_incidents: {
+        Args: { _limit?: number }
+        Returns: {
+          closed_at: string
+          id: string
+          incident_number: number
+          last_error: string
+          opened_at: string
+          service_key: string
+        }[]
+      }
       get_quiz_leaderboard: {
         Args: { _limit?: number; _slug: string }
         Returns: {
