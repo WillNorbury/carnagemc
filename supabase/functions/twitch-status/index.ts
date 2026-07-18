@@ -44,6 +44,43 @@ Deno.serve(async (req) => {
     if (!/^[a-z0-9_]{2,32}$/.test(rawLogin)) {
       return json({ error: "invalid login" }, 400);
     }
+    const mode = url.searchParams.get("mode") ?? "status";
+
+    if (mode === "clips") {
+      const usersRes = await twitchGet("/users", { login: rawLogin });
+      const user = usersRes?.data?.[0];
+      if (!user) return json({ clips: [], login: rawLogin }, 200);
+      const limit = Math.min(20, Math.max(1, parseInt(url.searchParams.get("limit") ?? "8", 10) || 8));
+      const days = Math.min(365, Math.max(1, parseInt(url.searchParams.get("days") ?? "30", 10) || 30));
+      const startedAt = new Date(Date.now() - days * 86400_000).toISOString();
+      try {
+        const clipsRes = await twitchGet("/clips", {
+          broadcaster_id: user.id,
+          first: String(limit),
+          started_at: startedAt,
+        });
+        return json({
+          login: user.login,
+          displayName: user.display_name,
+          clips: (clipsRes?.data ?? []).map((c: any) => ({
+            id: c.id,
+            title: c.title,
+            url: c.url,
+            embedUrl: c.embed_url,
+            thumbnailUrl: c.thumbnail_url,
+            viewCount: c.view_count,
+            createdAt: c.created_at,
+            duration: c.duration,
+            creatorName: c.creator_name,
+          })),
+        });
+      } catch (err) {
+        if ((err as any)?.upstream) {
+          return json({ login: rawLogin, clips: [], fallback: true, error: "TWITCH_SERVICE_UNAVAILABLE" }, 200);
+        }
+        throw err;
+      }
+    }
 
     const [usersRes, streamsRes] = await Promise.all([
       twitchGet("/users", { login: rawLogin }),
@@ -55,6 +92,7 @@ Deno.serve(async (req) => {
     if (!user) {
       return json({ isLive: false, login: rawLogin, error: "channel not found" }, 404);
     }
+
 
     let gameName: string | null = stream?.game_name ?? null;
     if (stream?.game_id && !gameName) {
