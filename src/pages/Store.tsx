@@ -463,37 +463,59 @@ export default function Store() {
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                 {popularItems.map((it, idx) => (
-                  <Link
+                  <div
                     key={it.id}
-                    to={`/store/package/${it.id}`}
-                    className="group block bg-[#0a0a0f] border border-white/5 hover:border-[#ff5722]/40 transition overflow-hidden relative"
+                    className="group relative bg-[#0a0a0f] border border-white/5 hover:border-[#ff5722]/40 transition overflow-hidden"
                   >
-                    <span className="absolute top-2 left-2 z-10 bg-[#ff5722] text-white text-[10px] font-bold px-1.5 py-0.5 tracking-widest">
-                      #{idx + 1}
-                    </span>
-                    <div className="aspect-square bg-[#1a1a24] relative overflow-hidden">
-                      {it.image_url ? (
-                        <img
-                          src={it.image_url}
-                          alt={it.name}
-                          loading="lazy"
-                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[#ff5722]/30">
-                          <Package className="w-8 h-8" strokeWidth={1.5} />
+                    <Link to={`/store/package/${it.id}`} className="block">
+                      <span className="absolute top-2 left-2 z-10 bg-[#ff5722] text-white text-[10px] font-bold px-1.5 py-0.5 tracking-widest">
+                        #{idx + 1}
+                      </span>
+                      <div className="aspect-square bg-[#1a1a24] relative overflow-hidden">
+                        {it.image_url ? (
+                          <img
+                            src={it.image_url}
+                            alt={it.name}
+                            loading="lazy"
+                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[#ff5722]/30">
+                            <Package className="w-8 h-8" strokeWidth={1.5} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-2.5">
+                        <div className="text-xs font-semibold truncate group-hover:text-[#ff5722] transition">
+                          {it.name}
                         </div>
+                        <div className="text-[10px] font-mono text-[#9ca3af] mt-0.5">
+                          {formatPrice(it.price, it.currency)}
+                        </div>
+                      </div>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleAdd(it);
+                      }}
+                      aria-label={`Quick add ${it.name} to cart`}
+                      title="Quick add to cart"
+                      className={`absolute top-2 right-2 z-10 w-7 h-7 grid place-items-center border transition ${
+                        justAdded === it.id
+                          ? "bg-emerald-500/20 border-emerald-400/60 text-emerald-300"
+                          : "bg-[#0a0a0f]/80 border-white/10 text-[#9ca3af] opacity-0 group-hover:opacity-100 hover:bg-[#ff5722] hover:border-[#ff5722] hover:text-white"
+                      }`}
+                    >
+                      {justAdded === it.id ? (
+                        <Check className="w-3.5 h-3.5" />
+                      ) : (
+                        <Plus className="w-3.5 h-3.5" />
                       )}
-                    </div>
-                    <div className="p-2.5">
-                      <div className="text-xs font-semibold truncate group-hover:text-[#ff5722] transition">
-                        {it.name}
-                      </div>
-                      <div className="text-[10px] font-mono text-[#9ca3af] mt-0.5">
-                        {formatPrice(it.price, it.currency)}
-                      </div>
-                    </div>
-                  </Link>
+                    </button>
+                  </div>
                 ))}
               </div>
             </section>
