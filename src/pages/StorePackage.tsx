@@ -264,7 +264,10 @@ export default function StorePackage() {
                       <WishlistButton itemId={item.id} />
                     </div>
                   </div>
-                </div>
+              </div>
+
+              {/* Reviews */}
+              <StorePackageReviews itemId={item.id} />
               </div>
 
               {/* Related */}
