@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
+import StickyCartBar from "@/components/site/StickyCartBar";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { toast } from "sonner";
@@ -323,6 +324,7 @@ export default function StoreCategory() {
         )}
       </main>
       <Footer />
+      <StickyCartBar />
     </div>
   );
 }
