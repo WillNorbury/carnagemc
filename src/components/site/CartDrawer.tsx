@@ -17,6 +17,7 @@ import {
   BadgePercent,
   Tag,
   AlertCircle,
+  Gift,
 } from "lucide-react";
 
 export function CartDrawer() {
