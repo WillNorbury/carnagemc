@@ -94,7 +94,10 @@ export default function MeOrders() {
               {orders.map((o) => {
                 const meta = statusMeta[o.status] ?? statusMeta.open;
                 const Icon = meta.Icon;
-                const firstLines = o.body.split("\n").filter((l) => l.startsWith("- ")).slice(0, 3);
+                const firstLines = o.body
+                  .split("\n")
+                  .filter((l) => l.startsWith("•") || l.startsWith("- "))
+                  .slice(0, 4);
                 return (
                   <Link
                     key={o.id}

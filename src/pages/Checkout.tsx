@@ -99,6 +99,57 @@ export default function Checkout() {
       toast.error(error.message || "Could not create ticket.");
       return;
     }
+
+    // Fire-and-forget order confirmation email
+    if (user.email) {
+      const currency = (cart.currency || "USD").toUpperCase();
+      const emailItems = cart.items.map((ci) => ({
+        name: ci.name,
+        quantity: ci.quantity,
+        priceFormatted: formatMoney(
+          (Number(ci.price) || 0) * ci.quantity,
+          (ci.currency || cart.currency || "USD").toUpperCase(),
+        ),
+        recipient: ci.recipient ?? null,
+      }));
+      const couponSummary = cart.coupon
+        ? cart.coupon.discount_type === "percent"
+          ? `${cart.coupon.discount_value}% off`
+          : `${formatMoney(cart.coupon.discount_value, currency)} off`
+        : null;
+      const bundleSummary =
+        cart.bundleDiscount > 0
+          ? `Bundle discount: ${cart.bundlePercent}% off (−${formatMoney(cart.bundleDiscount, currency)})`
+          : null;
+      supabase.functions
+        .invoke("send-transactional-email", {
+          body: {
+            templateName: "order-confirmation",
+            recipientEmail: user.email,
+            idempotencyKey: `order-confirm-${data.id}`,
+            templateData: {
+              recipientName:
+                (user.user_metadata as any)?.username ||
+                (user.user_metadata as any)?.full_name ||
+                user.email.split("@")[0],
+              orderId: data.id,
+              items: emailItems,
+              subtotalFormatted: formatMoney(cart.subtotal, currency),
+              couponCode: cart.coupon?.code ?? null,
+              couponSummary,
+              discountFormatted:
+                cart.discount > 0 ? formatMoney(cart.discount, currency) : null,
+              bundleSummary,
+              totalFormatted: formatMoney(cart.total, currency),
+              ticketUrl: `${window.location.origin}/me/orders`,
+            },
+          },
+        })
+        .catch(() => {
+          /* non-blocking */
+        });
+    }
+
     cart.clear();
     toast.success("Order sent — a support ticket has been created.");
     nav(`/tickets?ticket=${data.id}`);
