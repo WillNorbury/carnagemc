@@ -354,7 +354,47 @@ export default function StorePackage() {
                   </div>
                 </section>
               )}
-            </>
+
+              {/* You might also like — cross-category popular */}
+              {alsoLike.length > 0 && (
+                <section className="pt-10 border-t border-white/5">
+                  <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em] mb-6">
+                    You might also like
+                  </h2>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {alsoLike.map((r) => (
+                      <Link
+                        key={r.id}
+                        to={`/store/package/${r.id}`}
+                        className="group block bg-[#0a0a0f] border border-white/5 hover:border-[#ff5722]/40 transition overflow-hidden"
+                      >
+                        <div className="aspect-square bg-[#1a1a24] relative overflow-hidden">
+                          {r.image_url ? (
+                            <img
+                              src={r.image_url}
+                              alt={r.name}
+                              loading="lazy"
+                              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[#ff5722]/30">
+                              <Package className="w-8 h-8" strokeWidth={1.5} />
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-2.5">
+                          <div className="text-xs font-semibold truncate group-hover:text-[#ff5722] transition">
+                            {r.name}
+                          </div>
+                          <div className="text-[10px] font-mono text-[#9ca3af] mt-0.5">
+                            {formatPrice(r.price, r.currency)}
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              )}
           )}
         </div>
       </main>
