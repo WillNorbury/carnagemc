@@ -280,6 +280,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       remove,
       setQty,
       setRecipient,
+      setGiftMessage,
       clear,
       isOpen,
       openCart,
@@ -296,11 +297,13 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     remove,
     setQty,
     setRecipient,
+    setGiftMessage,
     clear,
     isOpen,
     openCart,
     closeCart,
   ]);
+
 
   return (
     <CartContext.Provider value={value}>
