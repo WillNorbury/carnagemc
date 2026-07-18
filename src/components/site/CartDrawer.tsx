@@ -278,6 +278,15 @@ export function CartDrawer() {
               )}
             </div>
 
+            {/* Bundle progress */}
+            {cart.nextBundle && (
+              <p className="text-[11px] text-muted-foreground">
+                Add {cart.nextBundle.minItems - cart.count} more item
+                {cart.nextBundle.minItems - cart.count === 1 ? "" : "s"} to unlock a{" "}
+                <span className="text-primary font-semibold">{cart.nextBundle.percent}% bundle discount</span>.
+              </p>
+            )}
+
             {/* Totals */}
             <div className="space-y-1 text-sm">
               <div className="flex items-center justify-between">
@@ -286,8 +295,14 @@ export function CartDrawer() {
               </div>
               {cart.discount > 0 && (
                 <div className="flex items-center justify-between text-primary">
-                  <span>Discount</span>
+                  <span>Coupon ({cart.coupon?.code})</span>
                   <span className="tabular-nums">−{formatMoney(cart.discount, cart.currency)}</span>
+                </div>
+              )}
+              {cart.bundleDiscount > 0 && (
+                <div className="flex items-center justify-between text-primary">
+                  <span>Bundle discount ({cart.bundlePercent}%)</span>
+                  <span className="tabular-nums">−{formatMoney(cart.bundleDiscount, cart.currency)}</span>
                 </div>
               )}
               <div className="flex items-center justify-between font-bold text-base pt-1 border-t">
