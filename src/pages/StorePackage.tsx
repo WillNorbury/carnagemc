@@ -52,6 +52,7 @@ export default function StorePackage() {
   const [item, setItem] = useState<Item | null>(null);
   const [cat, setCat] = useState<Category | null>(null);
   const [related, setRelated] = useState<Item[]>([]);
+  const [alsoLike, setAlsoLike] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
@@ -95,6 +96,25 @@ export default function StorePackage() {
       if (cancelled) return;
       setCat((c as Category) ?? null);
       setRelated((r as Item[]) ?? []);
+      // Cross-category "you might also like" from popular items
+      const { data: pop } = await supabase.rpc("get_popular_store_items", { _limit: 12 });
+      if (!cancelled && Array.isArray(pop) && pop.length > 0) {
+        const ids = pop.map((p: any) => p.item_id).filter(Boolean);
+        const { data: popItems } = await supabase
+          .from("store_items")
+          .select("*")
+          .in("id", ids)
+          .eq("published", true)
+          .neq("category_id", (data as Item).category_id);
+        if (!cancelled && Array.isArray(popItems)) {
+          const byId = new Map((popItems as Item[]).map((i) => [i.id, i]));
+          const ordered = ids
+            .map((pid: string) => byId.get(pid))
+            .filter(Boolean)
+            .slice(0, 4) as Item[];
+          setAlsoLike(ordered);
+        }
+      }
       setLoading(false);
     })();
     return () => {
@@ -328,6 +348,47 @@ export default function StorePackage() {
                         </div>
                         <div className="mt-4 pt-4 border-t border-white/5 font-bold font-['Space_Grotesk']">
                           {formatPrice(r.price, r.currency)}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* You might also like — cross-category popular */}
+              {alsoLike.length > 0 && (
+                <section className="pt-10 border-t border-white/5">
+                  <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em] mb-6">
+                    You might also like
+                  </h2>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {alsoLike.map((r) => (
+                      <Link
+                        key={r.id}
+                        to={`/store/package/${r.id}`}
+                        className="group block bg-[#0a0a0f] border border-white/5 hover:border-[#ff5722]/40 transition overflow-hidden"
+                      >
+                        <div className="aspect-square bg-[#1a1a24] relative overflow-hidden">
+                          {r.image_url ? (
+                            <img
+                              src={r.image_url}
+                              alt={r.name}
+                              loading="lazy"
+                              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[#ff5722]/30">
+                              <Package className="w-8 h-8" strokeWidth={1.5} />
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-2.5">
+                          <div className="text-xs font-semibold truncate group-hover:text-[#ff5722] transition">
+                            {r.name}
+                          </div>
+                          <div className="text-[10px] font-mono text-[#9ca3af] mt-0.5">
+                            {formatPrice(r.price, r.currency)}
+                          </div>
                         </div>
                       </Link>
                     ))}
