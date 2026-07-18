@@ -38,6 +38,7 @@ import ChangelogEntry from "./pages/ChangelogEntry.tsx";
 import ReleaseNotes from "./pages/ReleaseNotes.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import MeStatus from "./pages/MeStatus.tsx";
+import MeOrders from "./pages/MeOrders.tsx";
 import LinkAccount from "./pages/LinkAccount.tsx";
 import Apply from "./pages/Apply.tsx";
 import Features from "./pages/Features.tsx";
@@ -119,6 +120,7 @@ const Shell = () => {
                   <Route path="/release-notes" element={<ReleaseNotes />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/me/status" element={<MeStatus />} />
+                  <Route path="/me/orders" element={<MeOrders />} />
                   <Route path="/link-account" element={<LinkAccount />} />
                   <Route path="/apply" element={<Apply />} />
                   <Route path="/apply/:slug" element={<Apply />} />
