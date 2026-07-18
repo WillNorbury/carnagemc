@@ -111,11 +111,11 @@ const communityGroup: NavGroup = {
   ],
 };
 
-const partnersGroup: NavGroup = {
+const defaultPartnersGroup: NavGroup = {
   id: "partners",
   label: "Partners",
   icon: UsersIcon,
-  items: [{ to: "https://4dupe.net", label: "4Dupe", icon: Link2 }],
+  items: [],
 };
 
 const helpGroup: NavGroup = {
