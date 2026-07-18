@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
+import SaleBanner from "@/components/site/SaleBanner";
 import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart, formatMoney } from "@/lib/cart";
