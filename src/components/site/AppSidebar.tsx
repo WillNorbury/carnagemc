@@ -197,6 +197,32 @@ export function AppSidebar() {
   const { user, isAdmin, signOut } = useAuth();
   const nav = useNavigate();
 
+  const [partnersItems, setPartnersItems] = useState<NavItem[]>([]);
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const { data } = await supabase
+        .from("partners")
+        .select("label,url,sort_order,is_active")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+      if (!mounted) return;
+      setPartnersItems(
+        (data ?? []).map((p: any) => ({ to: p.url as string, label: p.label as string, icon: Link2 }))
+      );
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const partnersGroup: NavGroup = { ...defaultPartnersGroup, items: partnersItems };
+  const publicGroups: NavGroup[] = [
+    ...staticPublicGroupsBefore,
+    ...(partnersItems.length > 0 ? [partnersGroup] : []),
+    ...staticPublicGroupsAfter,
+  ];
+
   const closeMobile = () => {
     if (isMobile) setOpenMobile(false);
   };
