@@ -75,6 +75,7 @@ export default function StorePackage() {
         return;
       }
       setItem(data as Item);
+      recordRecentlyViewed((data as Item).id);
       const [{ data: c }, { data: r }] = await Promise.all([
         supabase
           .from("store_categories")
