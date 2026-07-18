@@ -371,7 +371,16 @@ log-batch-ms: 1000`;
                 size="sm"
                 variant="secondary"
                 className="absolute top-2 right-2"
-                onClick={() => copy(configYaml, "config.yml copied")}
+                onClick={async () => {
+                  const v = await loadSecret();
+                  const yaml = `# Drop into plugins/CarnageConsoleBridge/config.yml on your Minecraft server
+endpoint: ${BRIDGE_URL}
+server-slug: ${server.slug}
+server-secret: ${v}
+poll-interval-ms: 1000
+log-batch-ms: 1000`;
+                  copy(yaml, "config.yml copied");
+                }}
               >
                 <Copy className="h-3.5 w-3.5 mr-1" /> Copy
               </Button>
