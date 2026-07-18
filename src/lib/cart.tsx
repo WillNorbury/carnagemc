@@ -11,7 +11,9 @@ export type CartItem = {
   quantity: number;
   maxQuantity?: number | null;
   recipient?: string | null;
+  giftMessage?: string | null;
 };
+
 
 
 export type AppliedCoupon = {
