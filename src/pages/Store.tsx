@@ -84,6 +84,17 @@ export default function Store() {
   const [justAdded, setJustAdded] = useState<string | null>(null);
   const [checkingOut, setCheckingOut] = useState(false);
   const cartRef = useRef<HTMLElement | null>(null);
+  const [recentIds, setRecentIds] = useState<string[]>(() => getRecentlyViewedIds());
+
+  useEffect(() => {
+    const sync = () => setRecentIds(getRecentlyViewedIds());
+    window.addEventListener("recently-viewed:changed", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("recently-viewed:changed", sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
 
   const scrollToCart = () => {
     const el = cartRef.current ?? document.getElementById("cart");
