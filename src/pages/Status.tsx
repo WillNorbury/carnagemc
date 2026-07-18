@@ -300,11 +300,7 @@ const Status = () => {
     const { data } = await supabase.rpc("get_uptime_daily", { _days: days });
     setRows((data ?? []) as DailyRow[]);
 
-    const { data: incidentRows } = await supabase
-      .from("uptime_incidents")
-      .select("id, incident_number, service_key, opened_at, closed_at, last_error")
-      .order("opened_at", { ascending: false })
-      .limit(20);
+    const { data: incidentRows } = await supabase.rpc("get_public_uptime_incidents", { _limit: 20 });
     setIncidents((incidentRows ?? []) as Incident[]);
     setLoading(false);
   };
