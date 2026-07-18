@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { WishlistButton } from "@/components/site/WishlistButton";
 import { StorePackageReviews } from "@/components/site/StorePackageReviews";
+import { recordRecentlyViewed } from "@/lib/recentlyViewed";
 
 type Item = {
   id: string;
