@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import TwitchLiveWidget from "@/components/site/TwitchLiveWidget";
+import TwitchClipsGallery from "@/components/site/TwitchClipsGallery";
 import { MessageSquare, Tv } from "lucide-react";
+
 
 const CHANNEL = "will_norbury";
 
