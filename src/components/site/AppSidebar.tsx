@@ -177,11 +177,12 @@ const accountGroup: NavGroup = {
   ],
 };
 
-const publicGroups: NavGroup[] = [
+const staticPublicGroupsBefore: NavGroup[] = [
   websiteGroup,
   mainGroup,
   communityGroup,
-  partnersGroup,
+];
+const staticPublicGroupsAfter: NavGroup[] = [
   helpGroup,
   actionsGroup,
   discoverGroup,
