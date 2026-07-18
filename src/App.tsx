@@ -39,6 +39,7 @@ import ReleaseNotes from "./pages/ReleaseNotes.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import MeStatus from "./pages/MeStatus.tsx";
 import MeOrders from "./pages/MeOrders.tsx";
+import MeWishlist from "./pages/MeWishlist.tsx";
 import LinkAccount from "./pages/LinkAccount.tsx";
 import Apply from "./pages/Apply.tsx";
 import Features from "./pages/Features.tsx";
