@@ -85,7 +85,8 @@ export type AdminSection =
   | "mysql"
   | "servers-status"
   | "store"
-  | "vote-links";
+  | "vote-links"
+  | "partners";
 
 type NavItem =
   | { kind: "link"; id: AdminSection; icon: any; label: string }
