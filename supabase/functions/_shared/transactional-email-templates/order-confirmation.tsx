@@ -10,7 +10,9 @@ interface OrderLine {
   quantity: number
   priceFormatted: string
   recipient?: string | null
+  giftMessage?: string | null
 }
+
 
 interface Props {
   recipientName?: string
