@@ -253,6 +253,7 @@ const Admin = () => {
           {section === "store" && <StoreAdminSection />}
           {section === "vote-links" && <VoteLinksAdminSection />}
           {section === "partners" && <PartnersAdminSection />}
+          {section === "skripts" && <AdminSkriptsSection />}
         </>
       )}
     </AdminLayout>
