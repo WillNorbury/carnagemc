@@ -128,6 +128,7 @@ const items: NavItem[] = [
   { kind: "link", id: "store", icon: Package, label: "Store" },
   { kind: "link", id: "vote-links", icon: ExternalLink, label: "Vote Links" },
   { kind: "link", id: "partners", icon: Users, label: "Partners" },
+  { kind: "link", id: "skripts", icon: FileText, label: "Skripts" },
   { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
   { kind: "link", id: "apply", icon: ClipboardList, label: "Apply (types)" },
   { kind: "link", id: "features", icon: Sparkles, label: "Features" },
