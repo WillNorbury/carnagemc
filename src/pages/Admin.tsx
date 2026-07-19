@@ -142,6 +142,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   store: { title: "Store", description: "Manage the categories and items shown on /store." },
   "vote-links": { title: "Vote Links", description: "Manage the vote sites shown on /vote." },
   partners: { title: "Partners", description: "Manage the partners shown in the sidebar Partners dropdown." },
+  skripts: { title: "Skripts", description: "Upload and download Skript (.sk) files staff can add to the server." },
 };
 
 const Admin = () => {
