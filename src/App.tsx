@@ -79,6 +79,7 @@ import StoreCategory from "./pages/StoreCategory.tsx";
 import StorePackage from "./pages/StorePackage.tsx";
 import Checkout from "./pages/Checkout.tsx";
 import Partners from "./pages/Partners.tsx";
+import PartnerDetail from "./pages/PartnerDetail.tsx";
 
 
 const queryClient = new QueryClient();
