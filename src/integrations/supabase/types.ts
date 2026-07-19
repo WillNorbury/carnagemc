@@ -92,6 +92,45 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_skripts: {
+        Row: {
+          created_at: string
+          description: string | null
+          filename: string
+          id: string
+          name: string
+          size_bytes: number | null
+          storage_path: string
+          updated_at: string
+          uploaded_by: string | null
+          version: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          filename: string
+          id?: string
+          name: string
+          size_bytes?: number | null
+          storage_path: string
+          updated_at?: string
+          uploaded_by?: string | null
+          version?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          filename?: string
+          id?: string
+          name?: string
+          size_bytes?: number | null
+          storage_path?: string
+          updated_at?: string
+          uploaded_by?: string | null
+          version?: string | null
+        }
+        Relationships: []
+      }
       alert_settings: {
         Row: {
           down_payload_template: Json | null
@@ -2945,6 +2984,7 @@ export type Database = {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
+      is_staff_user: { Args: { _uid: string }; Returns: boolean }
       mc_server_get_ingest_secret: {
         Args: { _server_id: string }
         Returns: string

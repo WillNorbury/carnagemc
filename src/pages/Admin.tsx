@@ -86,6 +86,7 @@ import ServersStatusAdminSection from "@/components/admin/ServersStatusAdminSect
 import { StoreAdminSection } from "@/components/admin/StoreAdminSection";
 import { VoteLinksAdminSection } from "@/components/admin/VoteLinksAdminSection";
 import { PartnersAdminSection } from "@/components/admin/PartnersAdminSection";
+import { AdminSkriptsSection } from "@/components/admin/AdminSkriptsSection";
 
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
@@ -141,6 +142,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   store: { title: "Store", description: "Manage the categories and items shown on /store." },
   "vote-links": { title: "Vote Links", description: "Manage the vote sites shown on /vote." },
   partners: { title: "Partners", description: "Manage the partners shown in the sidebar Partners dropdown." },
+  skripts: { title: "Skripts", description: "Upload and download Skript (.sk) files staff can add to the server." },
 };
 
 const Admin = () => {
@@ -251,6 +253,7 @@ const Admin = () => {
           {section === "store" && <StoreAdminSection />}
           {section === "vote-links" && <VoteLinksAdminSection />}
           {section === "partners" && <PartnersAdminSection />}
+          {section === "skripts" && <AdminSkriptsSection />}
         </>
       )}
     </AdminLayout>
