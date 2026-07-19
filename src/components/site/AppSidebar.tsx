@@ -210,10 +210,9 @@ export function AppSidebar() {
       if (!mounted) return;
       setPartnersItems(
         (data ?? []).map((p: any) => ({
-          to: `#partner-${p.label}`,
+          to: `/partners#partner-${encodeURIComponent(p.label)}`,
           label: p.label as string,
           icon: Link2,
-          copyValue: p.url as string,
         }))
       );
     })();

@@ -78,6 +78,7 @@ import Store from "./pages/Store.tsx";
 import StoreCategory from "./pages/StoreCategory.tsx";
 import StorePackage from "./pages/StorePackage.tsx";
 import Checkout from "./pages/Checkout.tsx";
+import Partners from "./pages/Partners.tsx";
 
 
 const queryClient = new QueryClient();
@@ -213,6 +214,7 @@ const Shell = () => {
                   <Route path="/store/category/:slug" element={<StoreCategory />} />
                   <Route path="/store/package/:id" element={<StorePackage />} />
                   <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/partners" element={<Partners />} />
                    
                    <Route path="*" element={<NotFound />} />
           </Routes>
