@@ -214,6 +214,7 @@ const Shell = () => {
                   <Route path="/store/category/:slug" element={<StoreCategory />} />
                   <Route path="/store/package/:id" element={<StorePackage />} />
                   <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/partners" element={<Partners />} />
                    
                    <Route path="*" element={<NotFound />} />
           </Routes>
