@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { SEO } from "@/components/site/SEO";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { partnerSlug, fetchPartnerStatus, PartnerStatus } from "@/lib/partnerSlug";
 
 type Partner = {
   id: string;
@@ -16,11 +19,15 @@ type Partner = {
 
 const COLS = 9;
 const ROWS = 6;
+const ICONS = ["🔮", "💎", "🧿", "🌸", "⚔️", "🛡️", "🔥", "⭐", "🍎", "🗝️", "🏹", "🧪"];
 
 const Partners = () => {
+  const navigate = useNavigate();
   const [rows, setRows] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [hovered, setHovered] = useState<Partner | null>(null);
+  const [query, setQuery] = useState("");
+  const [statuses, setStatuses] = useState<Record<string, PartnerStatus>>({});
 
   useEffect(() => {
     (async () => {
@@ -35,25 +42,43 @@ const Partners = () => {
     })();
   }, []);
 
-  const copyIp = async (p: Partner) => {
-    try {
-      await navigator.clipboard.writeText(p.url);
-      toast.success(`Copied IP: ${p.url}`);
-    } catch {
-      toast.error("Failed to copy");
-    }
-  };
+  useEffect(() => {
+    let cancelled = false;
+    rows.forEach((p) => {
+      setStatuses((s) => (s[p.id] ? s : { ...s, [p.id]: { online: false, loading: true } }));
+      fetchPartnerStatus(p.url).then((data) => {
+        if (cancelled) return;
+        setStatuses((s) => ({ ...s, [p.id]: { ...data, loading: false } }));
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [rows]);
 
-  // Layout partners into row 1 (index 9..) leaving row 0 as header row like the reference
+  const filtered = rows.filter((p) => {
+    const q = query.trim().toLowerCase();
+    if (!q) return true;
+    return p.label.toLowerCase().includes(q) || p.url.toLowerCase().includes(q);
+  });
+
+  const goToPartner = (p: Partner) => navigate(`/partners/${partnerSlug(p.label)}`);
+
   const slots: (Partner | null)[] = Array.from({ length: COLS * ROWS }, () => null);
-  rows.forEach((p, i) => {
-    // start at second row, second slot for a nicer look
+  filtered.forEach((p, i) => {
     const target = COLS + 1 + i;
     if (target < slots.length) slots[target] = p;
   });
 
-  // pixel-art fallback emojis for slots
-  const ICONS = ["🔮", "💎", "🧿", "🌸", "⚔️", "🛡️", "🔥", "⭐", "🍎", "🗝️", "🏹", "🧪"];
+  const StatusDot = ({ st }: { st?: PartnerStatus }) => {
+    if (!st || st.loading)
+      return <span className="h-2 w-2 rounded-full bg-muted-foreground/50 animate-pulse" />;
+    return (
+      <span
+        className={`h-2 w-2 rounded-full ${st.online ? "bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]" : "bg-red-500"}`}
+      />
+    );
+  };
 
   return (
     <>
@@ -70,17 +95,26 @@ const Partners = () => {
               imageRendering: "pixelated",
             }}
           >
-            {/* Header bar */}
-            <div className="mb-4 px-2 py-2 flex items-center justify-between border-b border-border/40">
+            <div className="mb-4 px-2 py-2 flex items-center justify-between border-b border-border/40 gap-3">
               <h1
-                className="text-muted-foreground tracking-[0.3em] text-xs sm:text-sm uppercase select-none"
+                className="text-muted-foreground tracking-[0.3em] text-xs sm:text-sm uppercase select-none whitespace-nowrap"
                 style={{ fontFamily: '"Press Start 2P", "VT323", ui-monospace, monospace' }}
               >
-                Server Selector — Partner
+                Server Selector
               </h1>
               <span className="text-[10px] text-muted-foreground/60 tracking-widest">
-                {rows.length}/{COLS * ROWS}
+                {filtered.length}/{rows.length}
               </span>
+            </div>
+
+            <div className="mb-3 relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search by name or IP…"
+                className="pl-8 h-9 bg-background/40 border-border/40"
+              />
             </div>
 
             {loading ? (
@@ -94,17 +128,18 @@ const Partners = () => {
               >
                 {slots.map((p, i) => {
                   const filled = !!p;
+                  const st = p ? statuses[p.id] : undefined;
                   return (
                     <button
                       key={i}
                       type="button"
                       disabled={!filled}
-                      onClick={() => p && copyIp(p)}
+                      onClick={() => p && goToPartner(p)}
                       onMouseEnter={() => setHovered(p)}
                       onMouseLeave={() => setHovered(null)}
                       onFocus={() => setHovered(p)}
                       onBlur={() => setHovered(null)}
-                      aria-label={p ? `Copy IP for ${p.label}` : "Empty slot"}
+                      aria-label={p ? `Open ${p.label}` : "Empty slot"}
                       className={`relative aspect-square rounded-[3px] transition-all ${
                         filled
                           ? "hover:scale-105 hover:z-10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
@@ -117,12 +152,17 @@ const Partners = () => {
                       }}
                     >
                       {filled && (
-                        <span
-                          className="absolute inset-0 flex items-center justify-center text-lg sm:text-2xl select-none drop-shadow-[0_0_6px_rgba(255,120,220,0.5)]"
-                          style={{ imageRendering: "pixelated" }}
-                        >
-                          {ICONS[i % ICONS.length]}
-                        </span>
+                        <>
+                          <span
+                            className="absolute inset-0 flex items-center justify-center text-lg sm:text-2xl select-none drop-shadow-[0_0_6px_rgba(255,120,220,0.5)]"
+                            style={{ imageRendering: "pixelated" }}
+                          >
+                            {ICONS[i % ICONS.length]}
+                          </span>
+                          <span className="absolute top-1 right-1">
+                            <StatusDot st={st} />
+                          </span>
+                        </>
                       )}
                     </button>
                   );
@@ -130,7 +170,6 @@ const Partners = () => {
               </div>
             )}
 
-            {/* Tooltip / detail bar */}
             <div
               className="mt-4 min-h-[64px] px-3 py-2 rounded-[3px] border border-border/40 flex items-center gap-3"
               style={{ background: "hsl(240 10% 8%)" }}
@@ -148,29 +187,34 @@ const Partners = () => {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div
-                      className="text-primary text-sm truncate"
+                      className="text-primary text-sm truncate flex items-center gap-2"
                       style={{ fontFamily: '"Press Start 2P", "VT323", ui-monospace, monospace' }}
                     >
+                      <StatusDot st={statuses[hovered.id]} />
                       {hovered.label}
                     </div>
                     <div className="text-xs text-muted-foreground truncate font-mono">
                       {hovered.url}
                     </div>
-                    {hovered.description && (
+                    {statuses[hovered.id] && !statuses[hovered.id].loading && (
                       <div className="text-[11px] text-muted-foreground/80 truncate">
-                        {hovered.description}
+                        {statuses[hovered.id].online
+                          ? `Online${statuses[hovered.id].players ? ` · ${statuses[hovered.id].players!.online}/${statuses[hovered.id].players!.max} players` : ""}`
+                          : "Offline"}
                       </div>
                     )}
                   </div>
                   <span className="text-[10px] text-muted-foreground/60 uppercase tracking-widest hidden sm:inline">
-                    Click to copy IP
+                    Click to open
                   </span>
                 </>
               ) : (
                 <span className="text-xs text-muted-foreground/60 tracking-widest uppercase">
                   {rows.length === 0
                     ? "No partners yet"
-                    : "Hover a slot to inspect · Click to copy IP"}
+                    : filtered.length === 0
+                    ? "No matches"
+                    : "Hover a slot to inspect · Click to open"}
                 </span>
               )}
             </div>
