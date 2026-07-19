@@ -86,6 +86,7 @@ import ServersStatusAdminSection from "@/components/admin/ServersStatusAdminSect
 import { StoreAdminSection } from "@/components/admin/StoreAdminSection";
 import { VoteLinksAdminSection } from "@/components/admin/VoteLinksAdminSection";
 import { PartnersAdminSection } from "@/components/admin/PartnersAdminSection";
+import { AdminSkriptsSection } from "@/components/admin/AdminSkriptsSection";
 
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
