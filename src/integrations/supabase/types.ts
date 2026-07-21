@@ -3150,6 +3150,12 @@ export type Database = {
         | "havoc"
         | "havoc_plus"
         | "builder"
+        | "blood"
+        | "blood_plus"
+        | "chaos"
+        | "chaos_plus"
+        | "titan"
+        | "immortal"
       application_status: "pending" | "approved" | "rejected" | "reviewed"
       application_type: "staff" | "builder" | "youtuber"
       org_member_role: "owner" | "admin" | "member"
@@ -3320,6 +3326,12 @@ export const Constants = {
         "havoc",
         "havoc_plus",
         "builder",
+        "blood",
+        "blood_plus",
+        "chaos",
+        "chaos_plus",
+        "titan",
+        "immortal",
       ],
       application_status: ["pending", "approved", "rejected", "reviewed"],
       application_type: ["staff", "builder", "youtuber"],
