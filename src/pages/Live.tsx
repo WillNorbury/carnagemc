@@ -4,12 +4,13 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import TwitchLiveWidget from "@/components/site/TwitchLiveWidget";
 import TwitchClipsGallery from "@/components/site/TwitchClipsGallery";
-import YouTubeLiveWidget from "@/components/site/YouTubeLiveWidget";
+import YouTubeLiveWidget, { type YouTubeStatus } from "@/components/site/YouTubeLiveWidget";
 import { MessageSquare, Tv, Youtube as YoutubeIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const TWITCH_CHANNEL = "will_norbury";
 const YT_HANDLE = "WillNorbury";
+const YT_CHANNEL_ID = "UClypnnDmHLVaSMyPNLzxwmQ";
 
 type Platform = "twitch" | "youtube";
 
@@ -23,6 +24,25 @@ export default function Live() {
 
   const [parents, setParents] = useState<string[]>([]);
   const [showChat, setShowChat] = useState(true);
+  const [ytStatus, setYtStatus] = useState<YouTubeStatus | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const url = new URL(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/youtube-status`);
+        url.searchParams.set("handle", YT_HANDLE);
+        const res = await fetch(url.toString(), {
+          headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string },
+        });
+        const data = await res.json();
+        if (!cancelled && res.ok) setYtStatus(data);
+      } catch {}
+    };
+    load();
+    const id = window.setInterval(load, 60_000);
+    return () => { cancelled = true; window.clearInterval(id); };
+  }, []);
 
   useEffect(() => {
     document.title = platform === "youtube" ? "YouTube Live — CarnageMC" : "Twitch Live — CarnageMC";
@@ -63,9 +83,14 @@ export default function Live() {
     return `https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?darkpopout&${parentPart}`;
   }, [parents]);
 
-  // YouTube live_stream embed picks up the channel's current live broadcast or shows an offline card.
-  const ytPlayerSrc = `https://www.youtube.com/embed/live_stream?channel=UClypnnDmHLVaSMyPNLzxwmQ&autoplay=1`;
-  const ytChatSrc = `https://www.youtube.com/live_chat?v=&embed_domain=${typeof window !== "undefined" ? window.location.hostname : "carnagemc.net"}`;
+  // Prefer the exact live videoId scraped by youtube-status; fall back to channel live_stream shim.
+  const host = typeof window !== "undefined" ? window.location.hostname : "carnagemc.net";
+  const ytPlayerSrc = ytStatus?.videoId
+    ? `https://www.youtube.com/embed/${ytStatus.videoId}?autoplay=1`
+    : `https://www.youtube.com/embed/live_stream?channel=${YT_CHANNEL_ID}&autoplay=1`;
+  const ytChatSrc = ytStatus?.videoId
+    ? `https://www.youtube.com/live_chat?v=${ytStatus.videoId}&embed_domain=${host}`
+    : "";
 
   const isYT = platform === "youtube";
 
@@ -129,14 +154,14 @@ export default function Live() {
           </div>
 
           {isYT ? (
-            <YouTubeLiveWidget handle={YT_HANDLE} />
+            <YouTubeLiveWidget handle={YT_HANDLE} status={ytStatus} />
           ) : (
             <TwitchLiveWidget login={TWITCH_CHANNEL} variant="full" />
           )}
 
           <div
             className={
-              showChat && !isYT
+              showChat && (isYT ? !!ytChatSrc : true)
                 ? "grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]"
                 : "grid gap-4"
             }
@@ -179,7 +204,19 @@ export default function Live() {
                 )}
               </div>
             )}
+
+            {showChat && isYT && ytChatSrc && (
+              <div className="border border-white/10 bg-black min-h-[420px] lg:min-h-0">
+                <iframe
+                  key={ytChatSrc}
+                  src={ytChatSrc}
+                  title={`${YT_HANDLE} YouTube chat`}
+                  className="h-full min-h-[420px] w-full"
+                />
+              </div>
+            )}
           </div>
+
 
           {!isYT && <TwitchClipsGallery login={TWITCH_CHANNEL} parents={parents} />}
         </div>

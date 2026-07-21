@@ -20,14 +20,24 @@ const fmt = (n: number) =>
 export default function YouTubeLiveWidget({
   handle = "WillNorbury",
   className,
+  status: externalStatus,
 }: {
   handle?: string;
   className?: string;
+  status?: YouTubeStatus | null;
 }) {
-  const [status, setStatus] = useState<YouTubeStatus | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState<YouTubeStatus | null>(externalStatus ?? null);
+  const [loading, setLoading] = useState(!externalStatus);
   const [error, setError] = useState<string | null>(null);
   const mounted = useRef(true);
+
+  useEffect(() => {
+    if (externalStatus) {
+      setStatus(externalStatus);
+      setLoading(false);
+      setError(null);
+    }
+  }, [externalStatus]);
 
   const load = async () => {
     try {
@@ -53,6 +63,7 @@ export default function YouTubeLiveWidget({
 
   useEffect(() => {
     mounted.current = true;
+    if (externalStatus) return () => { mounted.current = false; };
     load();
     const id = window.setInterval(load, 60_000);
     return () => {
@@ -60,7 +71,7 @@ export default function YouTubeLiveWidget({
       window.clearInterval(id);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handle]);
+  }, [handle, !!externalStatus]);
 
   const channelUrl = `https://www.youtube.com/@${handle}/live`;
 
