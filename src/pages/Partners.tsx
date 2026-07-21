@@ -29,6 +29,19 @@ const Partners = () => {
   const [hovered, setHovered] = useState<Partner | null>(null);
   const [query, setQuery] = useState("");
   const [statuses, setStatuses] = useState<Record<string, PartnerStatus>>({});
+  const [partnerAppOpen, setPartnerAppOpen] = useState(false);
+
+  useEffect(() => {
+    supabase
+      .from("application_types" as any)
+      .select("accepting,enabled")
+      .eq("slug", "partner")
+      .maybeSingle()
+      .then(({ data }: any) => {
+        setPartnerAppOpen(Boolean(data?.enabled && data?.accepting));
+      });
+  }, []);
+
 
   useEffect(() => {
     (async () => {
