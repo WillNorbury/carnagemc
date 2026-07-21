@@ -496,6 +496,16 @@ export default function Checkout() {
                         </span>
                       </div>
                     )}
+                    {cart.creatorDiscount > 0 && cart.creatorCode && (
+                      <div className="flex items-center justify-between text-fuchsia-300">
+                        <span className="text-xs font-mono uppercase tracking-widest">
+                          Creator {cart.creatorCode.discount_percent}%
+                        </span>
+                        <span className="tabular-nums font-mono">
+                          −{formatMoney(cart.creatorDiscount, cart.currency)}
+                        </span>
+                      </div>
+                    )}
                     {cart.bundleDiscount > 0 && (
                       <div className="flex items-center justify-between text-[#ff5722]">
                         <span className="text-xs font-mono uppercase tracking-widest">
