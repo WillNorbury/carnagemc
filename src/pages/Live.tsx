@@ -83,9 +83,14 @@ export default function Live() {
     return `https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?darkpopout&${parentPart}`;
   }, [parents]);
 
-  // YouTube live_stream embed picks up the channel's current live broadcast or shows an offline card.
-  const ytPlayerSrc = `https://www.youtube.com/embed/live_stream?channel=UClypnnDmHLVaSMyPNLzxwmQ&autoplay=1`;
-  const ytChatSrc = `https://www.youtube.com/live_chat?v=&embed_domain=${typeof window !== "undefined" ? window.location.hostname : "carnagemc.net"}`;
+  // Prefer the exact live videoId scraped by youtube-status; fall back to channel live_stream shim.
+  const host = typeof window !== "undefined" ? window.location.hostname : "carnagemc.net";
+  const ytPlayerSrc = ytStatus?.videoId
+    ? `https://www.youtube.com/embed/${ytStatus.videoId}?autoplay=1`
+    : `https://www.youtube.com/embed/live_stream?channel=${YT_CHANNEL_ID}&autoplay=1`;
+  const ytChatSrc = ytStatus?.videoId
+    ? `https://www.youtube.com/live_chat?v=${ytStatus.videoId}&embed_domain=${host}`
+    : "";
 
   const isYT = platform === "youtube";
 
