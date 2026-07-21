@@ -405,100 +405,112 @@ const Status = () => {
     return summary;
   }, [selectedDays, range]);
 
+  const nowStamp = new Date().toISOString().replace("T", " ").slice(0, 19) + " UTC";
+  const totalChecksWindow = rows.reduce((sum, r) => sum + Number(r.total_checks), 0);
+  const totalUpWindow = rows.reduce((sum, r) => sum + Number(r.up_checks), 0);
+  const totalDownWindow = Math.max(0, totalChecksWindow - totalUpWindow);
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
+    <div className="min-h-screen flex flex-col bg-[#07070b] text-slate-100">
       <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
         rel="stylesheet"
       />
       <Navbar />
+
+      {/* Top ticker */}
+      <div className="border-y border-white/5 bg-[#0a0a0f] font-['JetBrains_Mono'] text-[10px] uppercase tracking-[0.25em] text-[#9ca3af]">
+        <div className="max-w-7xl w-full mx-auto px-4 md:px-8 py-2 flex flex-wrap items-center gap-x-6 gap-y-1">
+          <span className="flex items-center gap-2">
+            <span className={cn("h-1.5 w-1.5 rounded-full animate-pulse",
+              currentStatus === "up" && "bg-emerald-400",
+              currentStatus === "degraded" && "bg-amber-400",
+              currentStatus === "down" && "bg-red-400",
+              currentStatus === "none" && "bg-white/30",
+            )} />
+            <span className="text-[#ff5722]">SYS://</span> {currentMeta.label}
+          </span>
+          <span>T: <span className="text-slate-200">{nowStamp}</span></span>
+          <span>WINDOW: <span className="text-slate-200">{range}D</span></span>
+          <span>SVC: <span className="text-emerald-400">{statusCounts.up}</span>/<span className="text-slate-200">{services.length}</span></span>
+          <span>INC: <span className={cn(activeIncidents ? "text-red-400" : "text-slate-200")}>{activeIncidents}</span> OPEN</span>
+          <span className="ml-auto">UPTIME: <span className="text-slate-200">{overall !== null ? `${overall.toFixed(3)}%` : "—"}</span></span>
+        </div>
+      </div>
+
       <main className="flex-1 w-full font-['Inter']">
-        <div className="max-w-6xl w-full mx-auto px-4 md:px-8 py-10 md:py-14 flex flex-col gap-12">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
-            <div className="space-y-2 min-w-0">
-              <span className="text-[#ff5722] font-mono text-sm tracking-widest uppercase">
-                Live Uptime
-              </span>
-              <h1 className="text-6xl md:text-8xl font-bold font-['Space_Grotesk'] tracking-tighter italic break-words">
-                STATUS
+        <div className="max-w-7xl w-full mx-auto px-4 md:px-8 py-8 md:py-10 flex flex-col gap-8">
+
+          {/* Command header */}
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
+            <div className="border border-white/5 bg-[#0f0f16] p-6 md:p-8">
+              <div className="flex items-center gap-2 text-[10px] font-['JetBrains_Mono'] tracking-[0.35em] uppercase text-[#ff5722]">
+                <span className="h-px w-6 bg-[#ff5722]" /> Command Center · Node 01
+              </div>
+              <h1 className="mt-3 font-['Space_Grotesk'] text-5xl md:text-7xl font-bold tracking-tighter italic leading-none">
+                STATUS<span className="text-[#ff5722]">.</span>
               </h1>
-              <p className="text-[#9ca3af] max-w-xl">{pageSubtitle}</p>
+              <p className="mt-3 max-w-xl text-sm text-[#9ca3af]">{pageSubtitle}</p>
+              <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5 border border-white/5">
+                {[
+                  { label: "Checks", value: totalChecksWindow.toLocaleString() },
+                  { label: "OK", value: totalUpWindow.toLocaleString(), tone: "text-emerald-400" },
+                  { label: "Fail", value: totalDownWindow.toLocaleString(), tone: totalDownWindow ? "text-red-400" : "text-slate-200" },
+                  { label: "Services", value: `${statusCounts.up}/${services.length}` },
+                ].map((s) => (
+                  <div key={s.label} className="bg-[#0f0f16] px-4 py-3">
+                    <div className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#5f6472]">{s.label}</div>
+                    <div className={cn("mt-1 font-['Space_Grotesk'] text-xl font-bold", s.tone ?? "text-slate-100")}>{s.value}</div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div
-              className={cn(
-                "relative bg-[#1a1a24] border p-5 min-w-[260px]",
-                currentStatus === "up" && "border-emerald-500/30",
-                currentStatus === "degraded" && "border-amber-500/40",
-                currentStatus === "down" && "border-red-500/40",
-                currentStatus === "none" && "border-white/10",
-              )}
-            >
-              <div className="flex items-start gap-3">
-                <div
-                  className={cn(
-                    "flex h-11 w-11 shrink-0 items-center justify-center border",
-                    currentStatus === "up" && "border-emerald-500/40 text-emerald-400",
-                    currentStatus === "degraded" && "border-amber-500/40 text-amber-400",
-                    currentStatus === "down" && "border-red-500/40 text-red-400",
-                    currentStatus === "none" && "border-white/10 text-[#9ca3af]",
-                  )}
-                >
-                  <CurrentIcon className="h-5 w-5" />
+            <div className={cn(
+              "relative border p-6 flex flex-col justify-between overflow-hidden",
+              currentStatus === "up" && "border-emerald-500/40 bg-emerald-500/[0.04]",
+              currentStatus === "degraded" && "border-amber-500/40 bg-amber-500/[0.04]",
+              currentStatus === "down" && "border-red-500/40 bg-red-500/[0.04]",
+              currentStatus === "none" && "border-white/10 bg-[#0f0f16]",
+            )}>
+              <div className="absolute inset-0 pointer-events-none opacity-[0.06]" style={{
+                backgroundImage: "repeating-linear-gradient(0deg,transparent,transparent 3px,#fff 3px,#fff 4px)"
+              }} />
+              <div className="relative">
+                <div className="flex items-center gap-2 text-[10px] font-['JetBrains_Mono'] uppercase tracking-[0.3em] text-[#9ca3af]">
+                  <CurrentIcon className={cn("h-3.5 w-3.5",
+                    currentStatus === "up" && "text-emerald-400",
+                    currentStatus === "degraded" && "text-amber-400",
+                    currentStatus === "down" && "text-red-400",
+                  )} />
+                  Global Health
                 </div>
-                <div className="min-w-0">
-                  <div className="font-['Space_Grotesk'] text-2xl font-bold leading-none">
-                    {overall !== null ? `${overall.toFixed(2)}%` : "—"}
-                  </div>
-                  <div
-                    className={cn(
-                      "mt-2 text-[10px] font-mono tracking-widest uppercase",
-                      currentStatus === "up" && "text-emerald-400",
-                      currentStatus === "degraded" && "text-amber-400",
-                      currentStatus === "down" && "text-red-400",
-                      currentStatus === "none" && "text-[#9ca3af]",
-                    )}
-                  >
-                    {currentMeta.label}
-                  </div>
-                  <p className="mt-1 text-xs text-[#9ca3af]">{currentMeta.summary}</p>
+                <div className="mt-4 font-['Space_Grotesk'] text-6xl font-bold leading-none tracking-tighter">
+                  {overall !== null ? `${overall.toFixed(2)}` : "—"}<span className="text-2xl text-[#9ca3af]">%</span>
                 </div>
+                <div className={cn("mt-2 text-[10px] font-['JetBrains_Mono'] uppercase tracking-[0.35em]",
+                  currentStatus === "up" && "text-emerald-400",
+                  currentStatus === "degraded" && "text-amber-400",
+                  currentStatus === "down" && "text-red-400",
+                  currentStatus === "none" && "text-[#9ca3af]",
+                )}>
+                  &gt;&gt; {currentMeta.label}
+                </div>
+                <p className="mt-3 text-xs text-[#9ca3af]">{currentMeta.summary}</p>
+              </div>
+              <div className="relative mt-6 grid grid-cols-3 gap-2 text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest">
+                <div><span className="text-[#5f6472]">UP </span><span className="text-emerald-400">{statusCounts.up}</span></div>
+                <div><span className="text-[#5f6472]">DEG </span><span className="text-amber-400">{statusCounts.degraded}</span></div>
+                <div><span className="text-[#5f6472]">DWN </span><span className="text-red-400">{statusCounts.down}</span></div>
               </div>
             </div>
           </div>
 
-          {/* Quick metrics */}
-          <div className="-mt-6 grid gap-3 sm:grid-cols-3">
-            {[
-              { icon: ShieldCheck, label: "Services up", value: `${statusCounts.up}/${services.length}` },
-              { icon: Zap, label: "Active incidents", value: activeIncidents },
-              { icon: Activity, label: "Window", value: `${range} days` },
-            ].map((m) => {
-              const Icon = m.icon;
-              return (
-                <div key={m.label} className="bg-[#1a1a24] border border-white/5 p-4">
-                  <div className="mb-2 flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-[#9ca3af]">
-                    <Icon className="h-3.5 w-3.5 shrink-0 text-[#ff5722]" />
-                    <span className="truncate">{m.label}</span>
-                  </div>
-                  <div className="font-['Space_Grotesk'] text-2xl font-bold leading-none truncate">
-                    {m.value}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Controls */}
-          <div className="-mt-6 flex flex-col gap-3 border-b border-white/5 pb-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
-                Service History
-              </h2>
-              <p className="text-xs text-[#9ca3af] mt-1">
-                Select a row for recent checks, latency, and incident history.
-              </p>
+          {/* Controls bar */}
+          <div className="flex flex-col gap-3 border border-white/5 bg-[#0f0f16] p-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="text-[10px] font-['JetBrains_Mono'] tracking-[0.3em] uppercase text-[#ff5722] shrink-0">/ services</span>
+              <span className="text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase text-[#5f6472] truncate">Select a row for telemetry</span>
             </div>
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <TooltipProvider>
@@ -513,10 +525,8 @@ const Status = () => {
                           onClick={() => isOwner && setAutoInterval(min)}
                           disabled={!isOwner}
                           className={cn(
-                            "px-2.5 py-1 text-[10px] font-mono tracking-widest uppercase transition",
-                            autoInterval === min
-                              ? "bg-[#ff5722] text-white"
-                              : "text-[#9ca3af] hover:text-[#ff5722]",
+                            "px-2.5 py-1 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase transition",
+                            autoInterval === min ? "bg-[#ff5722] text-white" : "text-[#9ca3af] hover:text-[#ff5722]",
                             !isOwner && "opacity-40 cursor-not-allowed hover:text-[#9ca3af]",
                           )}
                         >
@@ -525,17 +535,13 @@ const Status = () => {
                       ))}
                     </div>
                   </TooltipTrigger>
-                  {!isOwner && (
-                    <TooltipContent side="bottom">
-                      <p>Only owners can change auto-refresh.</p>
-                    </TooltipContent>
-                  )}
+                  {!isOwner && (<TooltipContent side="bottom"><p>Only owners can change auto-refresh.</p></TooltipContent>)}
                 </Tooltip>
               </TooltipProvider>
               <button
                 type="button"
                 onClick={() => { setSubDone(false); setSubOpen(true); }}
-                className="inline-flex items-center gap-2 border border-[#ff5722]/60 bg-[#ff5722]/10 px-3 py-2 text-[10px] font-mono tracking-widest uppercase text-[#ff5722] hover:bg-[#ff5722] hover:text-white transition"
+                className="inline-flex items-center gap-2 border border-[#ff5722]/60 bg-[#ff5722]/10 px-3 py-2 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase text-[#ff5722] hover:bg-[#ff5722] hover:text-white transition"
               >
                 <Bell className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Subscribe</span>
@@ -544,7 +550,7 @@ const Status = () => {
                 type="button"
                 onClick={handleRefresh}
                 disabled={refreshing}
-                className="inline-flex items-center gap-2 border border-white/10 px-3 py-2 text-[10px] font-mono tracking-widest uppercase text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition disabled:opacity-40"
+                className="inline-flex items-center gap-2 border border-white/10 px-3 py-2 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition disabled:opacity-40"
               >
                 <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin")} />
                 <span className="hidden sm:inline">{refreshing ? "Running" : "Refresh"}</span>
@@ -556,10 +562,8 @@ const Status = () => {
                     type="button"
                     onClick={() => setRange(item.value)}
                     className={cn(
-                      "px-3 py-1 text-[10px] font-mono tracking-widest uppercase transition",
-                      range === item.value
-                        ? "bg-[#ff5722] text-white"
-                        : "text-[#9ca3af] hover:text-[#ff5722]",
+                      "px-3 py-1 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase transition",
+                      range === item.value ? "bg-[#ff5722] text-white" : "text-[#9ca3af] hover:text-[#ff5722]",
                     )}
                   >
                     {item.label}
@@ -569,110 +573,91 @@ const Status = () => {
             </div>
           </div>
 
-          {/* Service list */}
-          <section className="-mt-6 space-y-3">
-            {services.map((service) => {
-              const status = serviceCurrent[service.key] ?? "none";
-              const meta = statusMeta[status];
-              const days = byService.get(service.key) ?? new Map<string, { pct: number | null; total: number }>();
-              const uptime = getUptime(days);
-              return (
-                <div
-                  key={service.key}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setDetailKey(service.key)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      setDetailKey(service.key);
-                    }
-                  }}
-                  className="group min-w-0 cursor-pointer overflow-hidden p-4 bg-[#1a1a24] border border-white/5 hover:border-[#ff5722]/40 transition focus:outline-none focus-visible:border-[#ff5722]"
-                >
-                  <div className="grid min-w-0 gap-4 lg:grid-cols-[16rem_minmax(0,1fr)_8rem] lg:items-center">
+          {/* Services table */}
+          <section className="border border-white/5 bg-[#0f0f16]">
+            <div className="hidden lg:grid grid-cols-[2rem_16rem_minmax(0,1fr)_6rem_7rem_2rem] items-center gap-4 px-4 py-2 border-b border-white/5 text-[10px] font-['JetBrains_Mono'] uppercase tracking-[0.25em] text-[#5f6472]">
+              <span>#</span>
+              <span>Service</span>
+              <span>Timeline · {range}d</span>
+              <span className="text-right">Uptime</span>
+              <span className="text-right">State</span>
+              <span />
+            </div>
+            <div className="divide-y divide-white/5">
+              {services.map((service, idx) => {
+                const status = serviceCurrent[service.key] ?? "none";
+                const meta = statusMeta[status];
+                const days = byService.get(service.key) ?? new Map<string, { pct: number | null; total: number }>();
+                const uptime = getUptime(days);
+                return (
+                  <div
+                    key={service.key}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setDetailKey(service.key)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setDetailKey(service.key); }
+                    }}
+                    className="group grid lg:grid-cols-[2rem_16rem_minmax(0,1fr)_6rem_7rem_2rem] grid-cols-1 items-center gap-4 px-4 py-3 cursor-pointer hover:bg-[#16161f] transition focus:outline-none focus-visible:bg-[#16161f]"
+                  >
+                    <span className="hidden lg:block font-['JetBrains_Mono'] text-[10px] text-[#5f6472]">{String(idx + 1).padStart(2, "0")}</span>
                     <div className="min-w-0">
-                      <div className="mb-1 flex min-w-0 items-center gap-2">
-                        <span className="font-['Space_Grotesk'] font-bold truncate group-hover:text-[#ff5722] transition-colors">
-                          {service.name}
-                        </span>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", meta.dot)} />
+                        <span className="font-['Space_Grotesk'] font-bold truncate group-hover:text-[#ff5722] transition-colors">{service.name}</span>
                         {service.url && (
-                          <a
-                            href={service.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(event) => event.stopPropagation()}
-                            aria-label={`Open ${service.name}`}
-                            className="shrink-0 text-[#9ca3af] hover:text-[#ff5722] transition-colors"
-                          >
-                            <ArrowUpRight className="h-4 w-4" />
+                          <a href={service.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} aria-label={`Open ${service.name}`} className="shrink-0 text-[#5f6472] hover:text-[#ff5722]">
+                            <ArrowUpRight className="h-3.5 w-3.5" />
                           </a>
                         )}
                       </div>
-                      <div className="truncate text-xs text-[#9ca3af]">{service.desc}</div>
+                      <div className="truncate font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#5f6472] mt-1">{service.desc}</div>
                     </div>
-
                     <div className="min-w-0">
                       <DayGrid days={range} byDay={days} />
-                      <div className="mt-2 flex items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-widest text-[#5f6472]">
-                        <span>{range}d ago</span>
-                        <span>today</span>
-                      </div>
                     </div>
-
-                    <div className="flex min-w-0 items-center justify-between gap-3 lg:justify-end">
-                      <div className="text-left lg:text-right min-w-0">
-                        <div className={cn("font-['Space_Grotesk'] text-lg font-bold leading-none", meta.text)}>
-                          {uptime !== null ? `${uptime.toFixed(2)}%` : loading ? "…" : "—"}
-                        </div>
-                        <div className="mt-1 flex lg:justify-end">
-                          <StatusPill status={status} />
-                        </div>
-                      </div>
-                      <ChevronRight className="h-4 w-4 shrink-0 text-[#5f6472] transition-transform group-hover:translate-x-0.5 group-hover:text-[#ff5722]" />
+                    <div className={cn("font-['Space_Grotesk'] text-base font-bold lg:text-right", meta.text)}>
+                      {uptime !== null ? `${uptime.toFixed(2)}%` : loading ? "…" : "—"}
                     </div>
+                    <div className="lg:flex lg:justify-end">
+                      <StatusPill status={status} />
+                    </div>
+                    <ChevronRight className="hidden lg:block h-4 w-4 text-[#5f6472] group-hover:text-[#ff5722] group-hover:translate-x-0.5 transition-transform" />
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </section>
 
+          {/* Incidents feed */}
           {incidents.length > 0 && (
-            <section className="-mt-4">
-              <div className="flex items-center gap-4 mb-6">
-                <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
-                  Recent Incidents
-                </h2>
+            <section className="border border-white/5 bg-[#0f0f16]">
+              <div className="flex items-center gap-3 border-b border-white/5 px-4 py-2">
+                <span className="text-[10px] font-['JetBrains_Mono'] tracking-[0.3em] uppercase text-[#ff5722]">/ incident log</span>
                 <div className="flex-1 h-px bg-white/5" />
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#9ca3af]">
-                  {incidents.length}
-                </span>
+                <span className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#5f6472]">{incidents.length} entries</span>
               </div>
-              <div className="bg-[#1a1a24] border border-white/5 divide-y divide-white/5 overflow-hidden">
+              <div className="divide-y divide-white/5 font-['JetBrains_Mono'] text-xs">
                 {incidents.map((incident) => {
                   const service = services.find((item) => item.key === incident.service_key);
                   const ongoing = !incident.closed_at;
-                  const duration = Math.max(
-                    1,
-                    Math.round(((incident.closed_at ? new Date(incident.closed_at).getTime() : Date.now()) - new Date(incident.opened_at).getTime()) / 60000),
-                  );
+                  const duration = Math.max(1, Math.round(((incident.closed_at ? new Date(incident.closed_at).getTime() : Date.now()) - new Date(incident.opened_at).getTime()) / 60000));
                   return (
-                    <Link
-                      key={incident.id}
-                      to={`/status/${incident.incident_number}`}
-                      className="flex min-w-0 items-center gap-3 px-4 py-3 transition-colors hover:bg-[#23232f] group"
-                    >
-                      <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", ongoing ? "bg-red-500 animate-pulse" : "bg-[#5f6472]")} />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-semibold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
-                          #{incident.incident_number} · {service?.name ?? incident.service_key}
-                        </span>
-                        <span className="block truncate text-xs text-[#9ca3af]">
-                          {formatDateTime(incident.opened_at)} · {duration < 60 ? `${duration}m` : `${Math.floor(duration / 60)}h ${duration % 60}m`}
+                    <Link key={incident.id} to={`/status/${incident.incident_number}`} className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-2 hover:bg-[#16161f] group">
+                      <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", ongoing ? "bg-red-500 animate-pulse" : "bg-[#5f6472]")} />
+                      <span className={cn("shrink-0 text-[10px] uppercase tracking-widest", ongoing ? "text-red-400" : "text-emerald-400")}>
+                        {ongoing ? "OPEN" : "RESOLVED"}
+                      </span>
+                      <span className="min-w-0 flex items-center gap-3">
+                        <span className="text-[#5f6472] shrink-0">{formatDateTime(incident.opened_at)}</span>
+                        <span className="text-slate-200 shrink-0">#{incident.incident_number}</span>
+                        <span className="text-slate-300 shrink-0">{service?.name ?? incident.service_key}</span>
+                        <span className="text-[#5f6472] truncate">
+                          · {duration < 60 ? `${duration}m` : `${Math.floor(duration / 60)}h ${duration % 60}m`}
                           {incident.last_error ? ` · ${incident.last_error}` : ""}
                         </span>
                       </span>
-                      <ChevronRight className="h-4 w-4 shrink-0 text-[#5f6472] group-hover:text-[#ff5722] transition" />
+                      <ChevronRight className="h-3.5 w-3.5 text-[#5f6472] group-hover:text-[#ff5722]" />
                     </Link>
                   );
                 })}
@@ -680,14 +665,20 @@ const Status = () => {
             </section>
           )}
 
-          <section className="-mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-[#9ca3af]">
-            <span className="uppercase tracking-widest text-[10px] font-mono text-[#5f6472]">Legend</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 bg-emerald-500" /> Up</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 bg-amber-500" /> Degraded</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 bg-red-500" /> Outage</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 bg-white/10" /> No data</span>
-          </section>
-          {pageFootnote && <p className="-mt-6 whitespace-pre-wrap text-center text-xs text-[#5f6472]">{pageFootnote}</p>}
+          {/* Legend footer */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/5 pt-4 text-xs">
+            <div className="flex flex-wrap items-center gap-4 font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#9ca3af]">
+              <span className="text-[#5f6472]">// legend</span>
+              <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 bg-emerald-500" /> Up</span>
+              <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 bg-amber-500" /> Degraded</span>
+              <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 bg-red-500" /> Outage</span>
+              <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 bg-white/10" /> No data</span>
+            </div>
+            <div className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#5f6472]">
+              Auto: {autoInterval === 0 ? "OFF" : `${autoInterval}m`} · Poll: 5m
+            </div>
+          </div>
+          {pageFootnote && <p className="whitespace-pre-wrap text-center text-xs text-[#5f6472] font-['JetBrains_Mono']">{pageFootnote}</p>}
         </div>
       </main>
       <Footer />
