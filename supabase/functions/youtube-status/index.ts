@@ -33,25 +33,51 @@ Deno.serve(async (req) => {
       redirect: "follow",
     });
     const html = await res.text();
+    const finalUrl = new URL(res.url);
 
+    // YouTube only redirects /@handle/live to /watch?v=... when the channel is
+    // ACTUALLY live right now. Any other landing page (channel, /streams, /featured)
+    // means they're offline — even if the HTML contains other channels' live cards.
+    const watchVideoId = finalUrl.pathname === "/watch" ? finalUrl.searchParams.get("v") : null;
     const channelId = pick(/"channelId":"(UC[a-zA-Z0-9_-]+)"/, html);
-    const videoId = pick(/"videoId":"([a-zA-Z0-9_-]{11})"/, html);
-    const isLive = /"isLive":true/.test(html) || /"isLiveBroadcast":\s*"?true/.test(html);
-    const title = pick(/"title":"([^"]{1,200})"/, html);
+
+    if (!watchVideoId || !/^[a-zA-Z0-9_-]{11}$/.test(watchVideoId)) {
+      return json({
+        isLive: false,
+        handle,
+        channelId,
+        videoId: null,
+        title: null,
+        displayName: pick(/"author":"([^"]{1,120})"/, html) ?? handle,
+        viewerCount: 0,
+        thumbnailUrl: null,
+      });
+    }
+
+    // Scope regexes to the block belonging to the live video to avoid pulling
+    // titles / viewer counts from unrelated shelf entries.
+    const videoBlockRe = new RegExp(
+      `"videoId":"${watchVideoId}"[\\s\\S]{0,4000}?"title":\\{"runs":\\[\\{"text":"([^"]{1,200})"`,
+    );
+    const title =
+      pick(videoBlockRe, html) ??
+      pick(/"videoPrimaryInfoRenderer"[\s\S]{0,1500}?"title":\{"runs":\[\{"text":"([^"]{1,200})"/, html) ??
+      pick(/<meta name="title" content="([^"]{1,200})"/, html);
     const author = pick(/"author":"([^"]{1,120})"/, html) ?? handle;
-    const viewerRaw = pick(/"concurrentViewers":"(\d+)"/, html);
+    const viewerRaw =
+      pick(/"concurrentViewers":"(\d+)"/, html) ??
+      pick(/"viewCount":"(\d+)","isLive":true/, html);
     const viewerCount = viewerRaw ? parseInt(viewerRaw, 10) : 0;
-    const thumbnailUrl = videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault_live.jpg` : null;
 
     return json({
-      isLive,
+      isLive: true,
       handle,
       channelId,
-      videoId: isLive ? videoId : null,
+      videoId: watchVideoId,
       title: title ? title.replace(/\\u0026/g, "&") : null,
       displayName: author,
       viewerCount,
-      thumbnailUrl,
+      thumbnailUrl: `https://i.ytimg.com/vi/${watchVideoId}/hqdefault_live.jpg`,
     });
   } catch (e) {
     return json({ error: e instanceof Error ? e.message : String(e) }, 500);
