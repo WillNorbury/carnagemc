@@ -361,6 +361,39 @@ export default function Store() {
     );
   };
 
+  const CreatorCodeInput = () => {
+    const [code, setCode] = useState("");
+    const apply = async () => {
+      const ok = await cart.applyCreatorCode(code);
+      if (ok) {
+        setCode("");
+        toast.success("Creator code applied");
+      }
+    };
+    return (
+      <div className="flex items-center gap-2">
+        <input
+          type="text"
+          value={code}
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") apply();
+          }}
+          placeholder="CREATOR CODE"
+          className="bg-[#1a1a24] border border-white/10 focus:border-fuchsia-400 focus:outline-none px-3 py-2 text-xs font-mono tracking-widest uppercase text-slate-100 placeholder:text-[#5f6472] w-48"
+        />
+        <button
+          type="button"
+          onClick={apply}
+          disabled={cart.applyingCreatorCode || !code.trim()}
+          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-[#9ca3af] hover:border-fuchsia-400 hover:text-fuchsia-300 transition disabled:opacity-50"
+        >
+          {cart.applyingCreatorCode ? "…" : "Apply"}
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
       <Helmet>
