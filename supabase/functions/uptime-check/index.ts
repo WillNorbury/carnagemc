@@ -36,17 +36,23 @@ async function checkHttp(
   url: string,
   expectOk = true,
   headers: Record<string, string> = {},
+  followRedirects = true,
 ): Promise<Check> {
   const start = Date.now();
   try {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 10_000);
-    const r = await fetch(url, { signal: ctrl.signal, redirect: "follow", headers });
+    const r = await fetch(url, {
+      signal: ctrl.signal,
+      redirect: followRedirects ? "follow" : "manual",
+      headers,
+    });
     clearTimeout(t);
     await r.arrayBuffer().catch(() => {});
+    const isRedirect = r.status >= 300 && r.status < 400;
     return {
       service_key,
-      is_up: expectOk ? r.ok : r.status < 500,
+      is_up: expectOk ? r.ok || (!followRedirects && isRedirect) : r.status < 500,
       latency_ms: Date.now() - start,
       status_code: r.status,
       error: null,
@@ -61,6 +67,7 @@ async function checkHttp(
     };
   }
 }
+
 
 async function checkMinecraft(service_key: string, host: string): Promise<Check> {
   const start = Date.now();
@@ -285,13 +292,17 @@ Deno.serve(async (req) => {
   SERVICE_ENDPOINTS.api = apiHealth;
 
   const checks = await Promise.all([
-    checkHttp("website", siteUrl),
+    // Do NOT follow redirects on the website check — the lovable.app edge sometimes
+    // 3xx-redirects to the custom domain (carnagemc.net) whose cert can flap while
+    // being reissued, producing false-positive incidents.
+    checkHttp("website", siteUrl, true, {}, false),
     checkMinecraft("minecraft", mcHost),
     checkHttp("api", apiHealth, false),
     checkHttp("panel", "https://panel.voxelnode.dev"),
     checkHttp("discord", "https://discord.gg/V8xYY2DasZ"),
     checkHttp("portfolio", "https://portfolio.carnagemc.net"),
   ]);
+
 
   const { error: insertErr } = await supabase.from("uptime_checks").insert(checks);
   if (insertErr) {
