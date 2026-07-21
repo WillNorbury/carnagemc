@@ -103,84 +103,60 @@ Deno.serve(async (req) => {
   try {
     const url = new URL(req.url);
     const handle = (url.searchParams.get("handle") ?? DEFAULT_HANDLE).replace(/^@/, "").trim();
+    const force = url.searchParams.get("refresh") === "1";
     if (!/^[a-zA-Z0-9_.-]{2,40}$/.test(handle)) {
       return json({ error: "invalid handle" }, 400);
     }
 
-    // Force a desktop-Chrome UA + full client hints; the Supabase edge IP range
-    // otherwise gets bounced to the mobile web (mweb) template which has a very
-    // different shape.
-    const res = await fetch(`https://www.youtube.com/@${handle}/live?hl=en&persist_hl=1&gl=US`, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
-        "Accept":
-          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
-        "Sec-Ch-Ua-Mobile": "?0",
-        "Sec-Ch-Ua-Platform": '"Windows"',
-        "Sec-Fetch-Dest": "document",
-        "Sec-Fetch-Mode": "navigate",
-        "Sec-Fetch-Site": "none",
-        "Sec-Fetch-User": "?1",
-        "Upgrade-Insecure-Requests": "1",
-        // Skip the EU consent interstitial.
-        Cookie: "CONSENT=YES+cb; SOCS=CAI; PREF=hl=en&gl=US",
-      },
-      redirect: "follow",
-    });
-    const html = await res.text();
-
-    const channelId = pick(/"channelId":"(UC[a-zA-Z0-9_-]+)"/, html);
-    const author = pick(/"author":"([^"]{1,120})"/, html) ?? handle;
-
-    // Isolate the videoDetails block for the primary video on the page and
-    // parse the individual fields from it. This avoids assumptions about the
-    // ordering of isLive / channelId / etc.
-    const detailsBlock = pick(/"videoDetails":\{([\s\S]{50,6000}?)\},"playerConfig"/, html)
-      ?? pick(/"videoDetails":\{([\s\S]{50,6000}?)\}(?=,"annotations"|,"playbackTracking"|,"streamingData")/, html);
-
-    const detailsVideoId = detailsBlock ? pick(/"videoId":"([a-zA-Z0-9_-]{11})"/, detailsBlock) : null;
-    const detailsTitle = detailsBlock ? pick(/"title":"([^"]{1,300})"/, detailsBlock) : null;
-    const detailsChannelId = detailsBlock ? pick(/"channelId":"(UC[a-zA-Z0-9_-]+)"/, detailsBlock) : null;
-    const detailsIsLive = detailsBlock ? /"isLive":true/.test(detailsBlock) : false;
-
-    // Require the primary video to (a) be flagged live and (b) belong to the
-    // requested channel — this keeps featured live shelves on offline channels
-    // from being promoted to the widget.
-    const belongsToChannel = detailsChannelId && channelId && detailsChannelId === channelId;
-    const live = !!(detailsIsLive && detailsVideoId && belongsToChannel);
-
-    if (!live) {
-      return json({
-        isLive: false,
-        handle,
-        channelId,
-        videoId: null,
-        title: null,
-        displayName: author,
-        viewerCount: 0,
-        thumbnailUrl: null,
+    const now = Date.now();
+    const cached = cache.get(handle);
+    if (!force && cached && cached.expiresAt > now) {
+      const age = Math.floor((now - cached.storedAt) / 1000);
+      const maxAge = Math.floor((cached.expiresAt - cached.storedAt) / 1000);
+      return json(cached.data, cached.status, {
+        "X-Cache": "HIT",
+        "Age": String(age),
+        "Cache-Control": `public, max-age=${maxAge}`,
       });
     }
 
-    const viewerRaw =
-      pick(new RegExp(`"videoId":"${detailsVideoId}"[\\s\\S]{0,6000}?"concurrentViewers":"(\\d+)"`), html) ??
-      pick(/"concurrentViewers":"(\d+)"/, html) ??
-      pick(/"originalViewCount":"(\d+)"/, html);
-    const viewerCount = viewerRaw ? parseInt(viewerRaw, 10) : 0;
+    let promise = inflight.get(handle);
+    if (!promise) {
+      promise = (async () => {
+        try {
+          return await fetchStatus(handle);
+        } finally {
+          inflight.delete(handle);
+        }
+      })();
+      inflight.set(handle, promise);
+    }
 
-    return json({
-      isLive: true,
-      handle,
-      channelId,
-      videoId: detailsVideoId,
-      title: detailsTitle ? detailsTitle.replace(/\\u0026/g, "&") : null,
-      displayName: author,
-      viewerCount,
-      thumbnailUrl: `https://i.ytimg.com/vi/${detailsVideoId}/hqdefault_live.jpg`,
-    });
+    try {
+      const { data, status } = await promise;
+      const ttl = data?.isLive ? LIVE_TTL_MS : OFFLINE_TTL_MS;
+      cache.set(handle, { data, status, storedAt: now, expiresAt: now + ttl });
+      return json(data, status, {
+        "X-Cache": "MISS",
+        "Cache-Control": `public, max-age=${Math.floor(ttl / 1000)}`,
+      });
+    } catch (err) {
+      // Upstream failed — serve stale within grace window.
+      if (cached && now - cached.storedAt < STALE_GRACE_MS) {
+        return json(cached.data, cached.status, {
+          "X-Cache": "STALE",
+          "Age": String(Math.floor((now - cached.storedAt) / 1000)),
+        });
+      }
+      const message = err instanceof Error ? err.message : String(err);
+      cache.set(handle, {
+        data: { error: message },
+        status: 500,
+        storedAt: now,
+        expiresAt: now + ERROR_TTL_MS,
+      });
+      return json({ error: message }, 500);
+    }
   } catch (e) {
     return json({ error: e instanceof Error ? e.message : String(e) }, 500);
   }
