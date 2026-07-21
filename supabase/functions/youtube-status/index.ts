@@ -40,10 +40,11 @@ Deno.serve(async (req) => {
       return json({
         finalUrl: res.url,
         status: res.status,
-        canonicalMatch: pick(/<link rel="canonical" href="([^"]+)"/, html),
+        canonicalMatch: pick(/<link rel="canonical" href="([^"]+)"/, html) ?? "MISS",
+        watchInCanonicalArea: pick(/rel="canonical"[^>]{0,300}/, html) ?? "MISS",
         hasLiveNow: /"liveBroadcastDetails":\{"isLiveNow":true/.test(html),
+        hasCanonicalUrl: pick(/"canonicalUrl":"([^"]+)"/, html) ?? "MISS",
         htmlLen: html.length,
-        head: html.slice(0, 400),
       });
     }
 
