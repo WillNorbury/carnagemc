@@ -52,18 +52,20 @@ Deno.serve(async (req) => {
     const channelId = pick(/"channelId":"(UC[a-zA-Z0-9_-]+)"/, html);
     const author = pick(/"author":"([^"]{1,120})"/, html) ?? handle;
 
-    // Pull the videoDetails block for the primary video on the page. If that
-    // block is flagged isLive:true AND belongs to this channel, we're live.
-    // We deliberately require BOTH so featured/recommended live shelves on an
-    // offline channel don't get promoted to the main widget.
-    const detailsRe = /"videoDetails":\{"videoId":"([a-zA-Z0-9_-]{11})","title":"([^"]{1,300})"[\s\S]{0,3000}?"channelId":"(UC[a-zA-Z0-9_-]+)"[\s\S]{0,3000}?"isLive":(true|false)/;
-    const m = html.match(detailsRe);
+    // Isolate the videoDetails block for the primary video on the page and
+    // parse the individual fields from it. This avoids assumptions about the
+    // ordering of isLive / channelId / etc.
+    const detailsBlock = pick(/"videoDetails":\{([\s\S]{50,6000}?)\},"playerConfig"/, html)
+      ?? pick(/"videoDetails":\{([\s\S]{50,6000}?)\}(?=,"annotations"|,"playbackTracking"|,"streamingData")/, html);
 
-    const detailsVideoId = m?.[1] ?? null;
-    const detailsTitle = m?.[2] ?? null;
-    const detailsChannelId = m?.[3] ?? null;
-    const detailsIsLive = m?.[4] === "true";
+    const detailsVideoId = detailsBlock ? pick(/"videoId":"([a-zA-Z0-9_-]{11})"/, detailsBlock) : null;
+    const detailsTitle = detailsBlock ? pick(/"title":"([^"]{1,300})"/, detailsBlock) : null;
+    const detailsChannelId = detailsBlock ? pick(/"channelId":"(UC[a-zA-Z0-9_-]+)"/, detailsBlock) : null;
+    const detailsIsLive = detailsBlock ? /"isLive":true/.test(detailsBlock) : false;
 
+    // Require the primary video to (a) be flagged live and (b) belong to the
+    // requested channel — this keeps featured live shelves on offline channels
+    // from being promoted to the widget.
     const belongsToChannel = detailsChannelId && channelId && detailsChannelId === channelId;
     const live = !!(detailsIsLive && detailsVideoId && belongsToChannel);
 
