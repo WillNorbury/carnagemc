@@ -592,4 +592,266 @@ const Row = ({ label, value }: { label: string; value: string }) => (
   </div>
 );
 
+const partnerSchema = z.object({
+  server_name: z.string().trim().min(2, "Server name is required").max(80),
+  server_url: z.string().trim().min(3, "Server IP or website is required").max(200),
+  discord: z.string().trim().min(2, "Discord contact is required").max(64),
+  advertisement: z.string().trim().min(30, "Write a short advertisement (min 30 chars)").max(2000),
+  why: z.string().trim().min(30, "Tell us why you want to partner (min 30 chars)").max(2000),
+});
+
+const PartnerApplyForm = ({
+  types,
+  onBack,
+}: {
+  types: ApplicationType[] | null;
+  onBack: () => void;
+}) => {
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const [type, setType] = useState<ApplicationType | null>(null);
+  const [typeError, setTypeError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [profileMc, setProfileMc] = useState<string>("");
+  const [form, setForm] = useState({
+    server_name: "",
+    server_url: "",
+    discord: "",
+    advertisement: "",
+    why: "",
+  });
+
+  useEffect(() => {
+    if (types) {
+      const found = types.find((t) => t.slug === "partner") ?? null;
+      if (!found) {
+        supabase
+          .from("application_types" as any)
+          .select("*")
+          .eq("slug", "partner")
+          .eq("enabled", true)
+          .maybeSingle()
+          .then(({ data }) => {
+            if (!data) setTypeError("Partner applications aren't available right now.");
+            else setType((data as unknown) as ApplicationType);
+          });
+      } else {
+        setType(found);
+      }
+    }
+  }, [types]);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      navigate(`/auth?redirect=${encodeURIComponent(`/apply/partner`)}`);
+      return;
+    }
+    supabase
+      .from("profiles")
+      .select("mc_username")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.mc_username) setProfileMc(data.mc_username);
+      });
+  }, [user, authLoading, navigate]);
+
+  const submit = async () => {
+    if (!user || !type) return;
+    const r = partnerSchema.safeParse(form);
+    if (!r.success) return toast.error(r.error.issues[0].message);
+    setSubmitting(true);
+    const mcFallback = profileMc || (user.email?.split("@")[0] || "partner").replace(/[^A-Za-z0-9_]/g, "").slice(0, 16).padEnd(3, "0");
+    const { data: inserted, error } = await supabase.from("applications").insert({
+      user_id: user.id,
+      type: "partner" as any,
+      mc_username: mcFallback,
+      discord: r.data.discord,
+      experience: r.data.advertisement,
+      why: r.data.why,
+      portfolio_url: r.data.server_url,
+      extra: { server_name: r.data.server_name, server_url: r.data.server_url, advertisement: r.data.advertisement } as any,
+    }).select("id").single();
+    setSubmitting(false);
+    if (error) return toast.error(error.message);
+
+    const appId = inserted?.id;
+    const applicationsFrom = "CarnageMC Applications <applications@carnagemc.net>";
+    const common = {
+      mcUsername: mcFallback,
+      applicationType: "partner",
+      discord: r.data.discord,
+      age: "",
+      timezone: "",
+      experience: r.data.advertisement,
+      why: r.data.why,
+      portfolioUrl: r.data.server_url,
+      serverName: r.data.server_name,
+    };
+    if (user.email) {
+      supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "application-received",
+          recipientEmail: user.email,
+          idempotencyKey: `application-received-${appId}`,
+          from: applicationsFrom,
+          templateData: common,
+        },
+      }).catch(() => {});
+    }
+    supabase.functions.invoke("send-transactional-email", {
+      body: {
+        templateName: "application-admin",
+        idempotencyKey: `application-admin-${appId}`,
+        from: applicationsFrom,
+        templateData: { ...common, adminUrl: `${window.location.origin}/admin?tab=applications` },
+      },
+    }).catch(() => {});
+    if (appId) {
+      supabase.functions.invoke("notify-application-discord", {
+        body: { applicationId: appId },
+      }).catch(() => {});
+    }
+
+    toast.success("Partner application submitted! We'll be in touch soon.");
+    navigate("/dashboard");
+  };
+
+  if (authLoading || (!type && !typeError)) {
+    return (
+      <Shell>
+        <div className="flex justify-center py-20">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
+      </Shell>
+    );
+  }
+
+  if (typeError) {
+    return (
+      <Shell>
+        <Card className="p-10 text-center space-y-4">
+          <h1 className="font-display text-2xl font-bold">Not available</h1>
+          <p className="text-muted-foreground">{typeError}</p>
+          <Button onClick={onBack}>Back to applications</Button>
+        </Card>
+      </Shell>
+    );
+  }
+  if (!type) return null;
+  const Icon = getIcon(type.icon);
+
+  if (!type.accepting) {
+    return (
+      <Shell>
+        <Card className="p-10 text-center space-y-4">
+          <Icon className="h-10 w-10 mx-auto text-primary" />
+          <h1 className="font-display text-2xl font-bold">Partner applications are closed</h1>
+          <p className="text-muted-foreground">Check back later — we'll reopen soon.</p>
+          <Button onClick={onBack}>Back to applications</Button>
+        </Card>
+      </Shell>
+    );
+  }
+
+  return (
+    <Shell>
+      <SEO
+        title="Become a Partner — CarnageMC"
+        description="Apply to become an official partner server."
+        path="/apply/partner"
+      />
+      <button
+        onClick={onBack}
+        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
+      >
+        <ArrowLeft className="h-4 w-4" /> All applications
+      </button>
+      <header className="mb-8">
+        <Badge variant="secondary" className="mb-3 text-primary border-primary/40">
+          <Icon className="h-3 w-3 mr-1" /> Partner Application
+        </Badge>
+        <h1 className="font-display text-3xl md:text-4xl font-black mb-2">
+          Become a <span className="text-gradient">Partner</span>
+        </h1>
+        <p className="text-muted-foreground">
+          {type.intro || "Tell us about your server and how you'd like to partner with us."}
+        </p>
+      </header>
+
+      <Card className="p-6 space-y-5">
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="server_name">Server name *</Label>
+            <Input
+              id="server_name"
+              value={form.server_name}
+              onChange={(e) => setForm({ ...form, server_name: e.target.value })}
+              placeholder="MyAwesome Network"
+              maxLength={80}
+            />
+          </div>
+          <div>
+            <Label htmlFor="server_url">Server IP or Website *</Label>
+            <Input
+              id="server_url"
+              value={form.server_url}
+              onChange={(e) => setForm({ ...form, server_url: e.target.value })}
+              placeholder="play.myserver.net or https://myserver.net"
+              maxLength={200}
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <Label htmlFor="discord">Discord contact *</Label>
+            <Input
+              id="discord"
+              value={form.discord}
+              onChange={(e) => setForm({ ...form, discord: e.target.value })}
+              placeholder="username or invite link"
+              maxLength={64}
+            />
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="advertisement">Your advertisement *</Label>
+          <Textarea
+            id="advertisement"
+            value={form.advertisement}
+            onChange={(e) => setForm({ ...form, advertisement: e.target.value })}
+            placeholder="Write the pitch you'd like us to feature — gamemodes, unique features, player count, community vibe..."
+            rows={6}
+            maxLength={2000}
+          />
+          <p className="text-xs text-muted-foreground mt-1">{form.advertisement.length}/2000</p>
+        </div>
+
+        <div>
+          <Label htmlFor="why">Why partner with us? *</Label>
+          <Textarea
+            id="why"
+            value={form.why}
+            onChange={(e) => setForm({ ...form, why: e.target.value })}
+            placeholder="How does a partnership benefit both communities?"
+            rows={5}
+            maxLength={2000}
+          />
+          <p className="text-xs text-muted-foreground mt-1">{form.why.length}/2000</p>
+        </div>
+
+        <div className="flex justify-between pt-2">
+          <Button variant="ghost" onClick={onBack} disabled={submitting}>
+            <ArrowLeft className="h-4 w-4 mr-1" /> Back
+          </Button>
+          <Button onClick={submit} disabled={submitting} size="lg" className="glow">
+            {submitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+            Submit partner application
+          </Button>
+        </div>
+      </Card>
+    </Shell>
+  );
+};
+
 export default Apply;
