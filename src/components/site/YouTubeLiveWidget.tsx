@@ -63,6 +63,7 @@ export default function YouTubeLiveWidget({
 
   useEffect(() => {
     mounted.current = true;
+    if (externalStatus) return () => { mounted.current = false; };
     load();
     const id = window.setInterval(load, 60_000);
     return () => {
@@ -70,7 +71,7 @@ export default function YouTubeLiveWidget({
       window.clearInterval(id);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handle]);
+  }, [handle, !!externalStatus]);
 
   const channelUrl = `https://www.youtube.com/@${handle}/live`;
 
