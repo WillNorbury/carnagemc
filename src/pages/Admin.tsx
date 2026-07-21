@@ -85,6 +85,7 @@ import { ApplicationStatusEmailEditor } from "@/components/admin/ApplicationStat
 import { MySqlAdminSection } from "@/components/admin/MySqlAdminSection";
 import ServersStatusAdminSection from "@/components/admin/ServersStatusAdminSection";
 import { StoreAdminSection } from "@/components/admin/StoreAdminSection";
+import { CreatorCodesAdminSection } from "@/components/admin/CreatorCodesAdminSection";
 import { VoteLinksAdminSection } from "@/components/admin/VoteLinksAdminSection";
 import { PartnersAdminSection } from "@/components/admin/PartnersAdminSection";
 import { AdminSkriptsSection } from "@/components/admin/AdminSkriptsSection";
@@ -256,7 +257,12 @@ const Admin = () => {
           {section === "console" && (isOwner ? <ConsoleAdminSection /> : denied)}
           {section === "mysql" && (isOwner ? <MySqlAdminSection /> : denied)}
           {section === "servers-status" && <ServersStatusAdminSection />}
-          {section === "store" && <StoreAdminSection />}
+          {section === "store" && (
+            <div className="space-y-10">
+              <StoreAdminSection />
+              <CreatorCodesAdminSection />
+            </div>
+          )}
           {section === "vote-links" && <VoteLinksAdminSection />}
           {section === "partners" && <PartnersAdminSection />}
           {section === "skripts" && <AdminSkriptsSection />}
