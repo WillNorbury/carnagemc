@@ -24,46 +24,50 @@ Deno.serve(async (req) => {
       return json({ error: "invalid handle" }, 400);
     }
 
+    // Force a desktop-Chrome UA + full client hints; the Supabase edge IP range
+    // otherwise gets bounced to the mobile web (mweb) template which has a very
+    // different shape.
     const res = await fetch(`https://www.youtube.com/@${handle}/live?hl=en&persist_hl=1&gl=US`, {
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+        "Accept":
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
-        // Skip the EU consent interstitial that otherwise strips useful HTML.
-        Cookie: "CONSENT=YES+cb; SOCS=CAI",
+        "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
+        "Sec-Ch-Ua-Mobile": "?0",
+        "Sec-Ch-Ua-Platform": '"Windows"',
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Sec-Fetch-User": "?1",
+        "Upgrade-Insecure-Requests": "1",
+        // Skip the EU consent interstitial.
+        Cookie: "CONSENT=YES+cb; SOCS=CAI; PREF=hl=en&gl=US",
       },
       redirect: "follow",
     });
     const html = await res.text();
 
-    if (url.searchParams.get("debug") === "1") {
-      const idx = html.indexOf("canonical");
-      const idx2 = html.indexOf("liveBroadcastDetails");
-      const idx3 = html.indexOf("isLive");
-      return json({
-        finalUrl: res.url,
-        status: res.status,
-        htmlLen: html.length,
-        canonicalIdx: idx,
-        canonicalSnippet: idx >= 0 ? html.slice(Math.max(0, idx - 40), idx + 300) : null,
-        liveBroadcastIdx: idx2,
-        liveBroadcastSnippet: idx2 >= 0 ? html.slice(idx2, idx2 + 300) : null,
-        isLiveIdx: idx3,
-        isLiveSnippet: idx3 >= 0 ? html.slice(idx3, idx3 + 200) : null,
-      });
-    }
-
     const channelId = pick(/"channelId":"(UC[a-zA-Z0-9_-]+)"/, html);
     const author = pick(/"author":"([^"]{1,120})"/, html) ?? handle;
 
-    // YouTube serves the /@handle/live page with a canonical link pointing at the
-    // active live watch URL only when that channel is actually live right now.
-    // Combined with a liveBroadcastDetails.isLiveNow:true marker, this reliably
-    // separates a real live stream from featured/recommended content on the page.
-    const canonical = pick(/<link rel="canonical" href="https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})"/, html);
-    const liveNow = /"liveBroadcastDetails":\{"isLiveNow":true/.test(html);
+    // Pull the videoDetails block for the primary video on the page. If that
+    // block is flagged isLive:true AND belongs to this channel, we're live.
+    // We deliberately require BOTH so featured/recommended live shelves on an
+    // offline channel don't get promoted to the main widget.
+    const detailsRe = /"videoDetails":\{"videoId":"([a-zA-Z0-9_-]{11})","title":"([^"]{1,300})"[\s\S]{0,3000}?"channelId":"(UC[a-zA-Z0-9_-]+)"[\s\S]{0,3000}?"isLive":(true|false)/;
+    const m = html.match(detailsRe);
 
-    if (!canonical || !liveNow) {
+    const detailsVideoId = m?.[1] ?? null;
+    const detailsTitle = m?.[2] ?? null;
+    const detailsChannelId = m?.[3] ?? null;
+    const detailsIsLive = m?.[4] === "true";
+
+    const belongsToChannel = detailsChannelId && channelId && detailsChannelId === channelId;
+    const live = !!(detailsIsLive && detailsVideoId && belongsToChannel);
+
+    if (!live) {
       return json({
         isLive: false,
         handle,
@@ -76,29 +80,21 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Scope title/viewer regexes to the block belonging to THIS live video to
-    // avoid pulling data from unrelated shelf entries in the same HTML payload.
-    const videoBlockRe = new RegExp(
-      `"videoId":"${canonical}"[\\s\\S]{0,6000}?"title":\\{"runs":\\[\\{"text":"([^"]{1,200})"`,
-    );
-    const title =
-      pick(videoBlockRe, html) ??
-      pick(/"videoPrimaryInfoRenderer"[\s\S]{0,1500}?"title":\{"runs":\[\{"text":"([^"]{1,200})"/, html) ??
-      pick(/<meta name="title" content="([^"]{1,200})"/, html);
     const viewerRaw =
-      pick(new RegExp(`"videoId":"${canonical}"[\\s\\S]{0,6000}?"concurrentViewers":"(\\d+)"`), html) ??
-      pick(/"concurrentViewers":"(\d+)"/, html);
+      pick(new RegExp(`"videoId":"${detailsVideoId}"[\\s\\S]{0,6000}?"concurrentViewers":"(\\d+)"`), html) ??
+      pick(/"concurrentViewers":"(\d+)"/, html) ??
+      pick(/"originalViewCount":"(\d+)"/, html);
     const viewerCount = viewerRaw ? parseInt(viewerRaw, 10) : 0;
 
     return json({
       isLive: true,
       handle,
       channelId,
-      videoId: canonical,
-      title: title ? title.replace(/\\u0026/g, "&") : null,
+      videoId: detailsVideoId,
+      title: detailsTitle ? detailsTitle.replace(/\\u0026/g, "&") : null,
       displayName: author,
       viewerCount,
-      thumbnailUrl: `https://i.ytimg.com/vi/${canonical}/hqdefault_live.jpg`,
+      thumbnailUrl: `https://i.ytimg.com/vi/${detailsVideoId}/hqdefault_live.jpg`,
     });
   } catch (e) {
     return json({ error: e instanceof Error ? e.message : String(e) }, 500);
