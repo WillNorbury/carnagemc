@@ -36,6 +36,17 @@ Deno.serve(async (req) => {
     });
     const html = await res.text();
 
+    if (url.searchParams.get("debug") === "1") {
+      return json({
+        finalUrl: res.url,
+        status: res.status,
+        canonicalMatch: pick(/<link rel="canonical" href="([^"]+)"/, html),
+        hasLiveNow: /"liveBroadcastDetails":\{"isLiveNow":true/.test(html),
+        htmlLen: html.length,
+        head: html.slice(0, 400),
+      });
+    }
+
     const channelId = pick(/"channelId":"(UC[a-zA-Z0-9_-]+)"/, html);
     const author = pick(/"author":"([^"]{1,120})"/, html) ?? handle;
 
