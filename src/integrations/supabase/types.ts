@@ -476,6 +476,45 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_codes: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          creator_name: string
+          discount_percent: number
+          id: string
+          max_uses: number | null
+          notes: string | null
+          updated_at: string
+          uses_count: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          creator_name: string
+          discount_percent?: number
+          id?: string
+          max_uses?: number | null
+          notes?: string | null
+          updated_at?: string
+          uses_count?: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          creator_name?: string
+          discount_percent?: number
+          id?: string
+          max_uses?: number | null
+          notes?: string | null
+          updated_at?: string
+          uses_count?: number
+        }
+        Relationships: []
+      }
       custom_roles: {
         Row: {
           color: string
@@ -2805,6 +2844,15 @@ export type Database = {
     }
     Functions: {
       admin_get_user_email: { Args: { _user_id: string }; Returns: string }
+      apply_creator_code: {
+        Args: { _code: string }
+        Returns: {
+          code: string
+          creator_name: string
+          discount_percent: number
+          id: string
+        }[]
+      }
       can_access_ticket: { Args: { _ticket_id: string }; Returns: boolean }
       check_is_admin_logged: {
         Args: { _context?: string; _user_agent?: string }

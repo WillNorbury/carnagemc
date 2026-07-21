@@ -62,6 +62,7 @@ import { GalleryAdminSection } from "@/components/admin/GalleryAdminSection";
 import { ContactAdminSection } from "@/components/admin/ContactAdminSection";
 import { EmailTestSection } from "@/components/admin/EmailTestSection";
 import { ApplyTypesAdminSection } from "@/components/admin/ApplyTypesAdminSection";
+import { CreatorCodesAdminSection } from "@/components/admin/CreatorCodesAdminSection";
 import { StatCard } from "@/components/admin/StatCard";
 import { CustomRolesManager, type CustomRole } from "@/components/admin/CustomRolesManager";
 import { ALL_ROLES, roleLabel, isStaffRole, type AppRole } from "@/lib/roles";
@@ -227,7 +228,12 @@ const Admin = () => {
           {section === "plugins" && <PluginsTab />}
           {section === "changelog" && <ChangelogTab />}
           {section === "applications" && <ApplicationsTab />}
-          {section === "apply" && <ApplyTypesAdminSection />}
+          {section === "apply" && (
+            <div className="space-y-10">
+              <ApplyTypesAdminSection />
+              <CreatorCodesAdminSection />
+            </div>
+          )}
           {section === "features" && <FeaturesTab />}
           {section === "rules" && <RulesTab />}
           {section === "alerts" && <AlertsTab />}

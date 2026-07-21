@@ -26,6 +26,13 @@ export type AppliedCoupon = {
   description: string | null;
 };
 
+export type AppliedCreatorCode = {
+  id: string;
+  code: string;
+  creator_name: string;
+  discount_percent: number;
+};
+
 export type BundleTier = { minItems: number; percent: number };
 export const BUNDLE_TIERS: BundleTier[] = [
   { minItems: 3, percent: 5 },
@@ -38,6 +45,7 @@ type CartContextValue = {
   count: number;
   subtotal: number;
   discount: number;
+  creatorDiscount: number;
   bundleDiscount: number;
   bundlePercent: number;
   nextBundle: BundleTier | null;
@@ -48,6 +56,11 @@ type CartContextValue = {
   applyingCoupon: boolean;
   applyCoupon: (code: string) => Promise<boolean>;
   clearCoupon: () => void;
+  creatorCode: AppliedCreatorCode | null;
+  creatorCodeError: string | null;
+  applyingCreatorCode: boolean;
+  applyCreatorCode: (code: string) => Promise<boolean>;
+  clearCreatorCode: () => void;
   add: (item: Omit<CartItem, "quantity">, qty?: number) => void;
   remove: (id: string) => void;
   setQty: (id: string, qty: number) => void;
@@ -62,6 +75,7 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "carnage.cart.v1";
 const COUPON_KEY = "carnage.cart.coupon.v1";
+const CREATOR_KEY = "carnage.cart.creator.v1";
 
 const read = (): CartItem[] => {
   try {
@@ -84,6 +98,16 @@ const readCoupon = (): AppliedCoupon | null => {
   }
 };
 
+const readCreator = (): AppliedCreatorCode | null => {
+  try {
+    const raw = localStorage.getItem(CREATOR_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as AppliedCreatorCode;
+  } catch {
+    return null;
+  }
+};
+
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>(() =>
     typeof window === "undefined" ? [] : read(),
@@ -93,6 +117,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   );
   const [couponError, setCouponError] = useState<string | null>(null);
   const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [creatorCode, setCreatorCode] = useState<AppliedCreatorCode | null>(() =>
+    typeof window === "undefined" ? null : readCreator(),
+  );
+  const [creatorCodeError, setCreatorCodeError] = useState<string | null>(null);
+  const [applyingCreatorCode, setApplyingCreatorCode] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -109,9 +138,17 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [coupon]);
 
   useEffect(() => {
+    try {
+      if (creatorCode) localStorage.setItem(CREATOR_KEY, JSON.stringify(creatorCode));
+      else localStorage.removeItem(CREATOR_KEY);
+    } catch {}
+  }, [creatorCode]);
+
+  useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY) setItems(read());
       if (e.key === COUPON_KEY) setCoupon(readCoupon());
+      if (e.key === CREATOR_KEY) setCreatorCode(readCreator());
     };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
@@ -169,11 +206,18 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setItems([]);
     setCoupon(null);
     setCouponError(null);
+    setCreatorCode(null);
+    setCreatorCodeError(null);
   }, []);
 
   const clearCoupon = useCallback(() => {
     setCoupon(null);
     setCouponError(null);
+  }, []);
+
+  const clearCreatorCode = useCallback(() => {
+    setCreatorCode(null);
+    setCreatorCodeError(null);
   }, []);
 
   const applyCoupon = useCallback(async (rawCode: string) => {
@@ -240,6 +284,44 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
+  const applyCreatorCode = useCallback(async (rawCode: string) => {
+    const code = rawCode.trim();
+    setCreatorCodeError(null);
+    if (!code) {
+      setCreatorCodeError("Enter a creator code.");
+      return false;
+    }
+    setApplyingCreatorCode(true);
+    try {
+      const { data, error } = await supabase
+        .from("creator_codes")
+        .select("id, code, creator_name, discount_percent, active, max_uses, uses_count")
+        .ilike("code", code)
+        .maybeSingle();
+      if (error) {
+        setCreatorCodeError(error.message);
+        return false;
+      }
+      if (!data || !data.active) {
+        setCreatorCodeError("Invalid or inactive creator code.");
+        return false;
+      }
+      if (data.max_uses != null && (data.uses_count ?? 0) >= data.max_uses) {
+        setCreatorCodeError("This creator code has reached its usage limit.");
+        return false;
+      }
+      setCreatorCode({
+        id: data.id,
+        code: data.code,
+        creator_name: data.creator_name,
+        discount_percent: Number(data.discount_percent) || 0,
+      });
+      return true;
+    } finally {
+      setApplyingCreatorCode(false);
+    }
+  }, []);
+
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);
 
@@ -256,16 +338,21 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
     const afterCoupon = Math.max(0, subtotal - discount);
+    const creatorDiscount = creatorCode
+      ? (afterCoupon * creatorCode.discount_percent) / 100
+      : 0;
+    const afterCreator = Math.max(0, afterCoupon - creatorDiscount);
     const tier = [...BUNDLE_TIERS].reverse().find((t) => count >= t.minItems) ?? null;
     const bundlePercent = tier?.percent ?? 0;
-    const bundleDiscount = tier ? (afterCoupon * tier.percent) / 100 : 0;
+    const bundleDiscount = tier ? (afterCreator * tier.percent) / 100 : 0;
     const nextBundle = BUNDLE_TIERS.find((t) => count < t.minItems) ?? null;
-    const total = Math.max(0, afterCoupon - bundleDiscount);
+    const total = Math.max(0, afterCreator - bundleDiscount);
     return {
       items,
       count,
       subtotal,
       discount,
+      creatorDiscount,
       bundleDiscount,
       bundlePercent,
       nextBundle,
@@ -276,6 +363,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       applyingCoupon,
       applyCoupon,
       clearCoupon,
+      creatorCode,
+      creatorCodeError,
+      applyingCreatorCode,
+      applyCreatorCode,
+      clearCreatorCode,
       add,
       remove,
       setQty,
@@ -293,6 +385,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     applyingCoupon,
     applyCoupon,
     clearCoupon,
+    creatorCode,
+    creatorCodeError,
+    applyingCreatorCode,
+    applyCreatorCode,
+    clearCreatorCode,
     add,
     remove,
     setQty,
