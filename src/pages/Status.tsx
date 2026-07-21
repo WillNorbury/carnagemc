@@ -213,7 +213,18 @@ const Status = () => {
   const [subEmail, setSubEmail] = useState("");
   const [subSubmitting, setSubSubmitting] = useState(false);
   const [subDone, setSubDone] = useState(false);
+  const [query, setQuery] = useState("");
+  const [stateFilter, setStateFilter] = useState<"all" | DayStatus>("all");
   const { toast } = useToast();
+
+  const copyText = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({ title: `${label} copied`, description: text });
+    } catch {
+      toast({ title: "Copy failed", variant: "destructive" });
+    }
+  };
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
