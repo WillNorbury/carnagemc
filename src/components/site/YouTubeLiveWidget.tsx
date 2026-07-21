@@ -20,14 +20,24 @@ const fmt = (n: number) =>
 export default function YouTubeLiveWidget({
   handle = "WillNorbury",
   className,
+  status: externalStatus,
 }: {
   handle?: string;
   className?: string;
+  status?: YouTubeStatus | null;
 }) {
-  const [status, setStatus] = useState<YouTubeStatus | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState<YouTubeStatus | null>(externalStatus ?? null);
+  const [loading, setLoading] = useState(!externalStatus);
   const [error, setError] = useState<string | null>(null);
   const mounted = useRef(true);
+
+  useEffect(() => {
+    if (externalStatus) {
+      setStatus(externalStatus);
+      setLoading(false);
+      setError(null);
+    }
+  }, [externalStatus]);
 
   const load = async () => {
     try {
