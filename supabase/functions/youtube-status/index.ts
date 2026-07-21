@@ -37,14 +37,19 @@ Deno.serve(async (req) => {
     const html = await res.text();
 
     if (url.searchParams.get("debug") === "1") {
+      const idx = html.indexOf("canonical");
+      const idx2 = html.indexOf("liveBroadcastDetails");
+      const idx3 = html.indexOf("isLive");
       return json({
         finalUrl: res.url,
         status: res.status,
-        canonicalMatch: pick(/<link rel="canonical" href="([^"]+)"/, html) ?? "MISS",
-        watchInCanonicalArea: pick(/rel="canonical"[^>]{0,300}/, html) ?? "MISS",
-        hasLiveNow: /"liveBroadcastDetails":\{"isLiveNow":true/.test(html),
-        hasCanonicalUrl: pick(/"canonicalUrl":"([^"]+)"/, html) ?? "MISS",
         htmlLen: html.length,
+        canonicalIdx: idx,
+        canonicalSnippet: idx >= 0 ? html.slice(Math.max(0, idx - 40), idx + 300) : null,
+        liveBroadcastIdx: idx2,
+        liveBroadcastSnippet: idx2 >= 0 ? html.slice(idx2, idx2 + 300) : null,
+        isLiveIdx: idx3,
+        isLiveSnippet: idx3 >= 0 ? html.slice(idx3, idx3 + 200) : null,
       });
     }
 
