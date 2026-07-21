@@ -24,6 +24,25 @@ export default function Live() {
 
   const [parents, setParents] = useState<string[]>([]);
   const [showChat, setShowChat] = useState(true);
+  const [ytStatus, setYtStatus] = useState<YouTubeStatus | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const url = new URL(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/youtube-status`);
+        url.searchParams.set("handle", YT_HANDLE);
+        const res = await fetch(url.toString(), {
+          headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string },
+        });
+        const data = await res.json();
+        if (!cancelled && res.ok) setYtStatus(data);
+      } catch {}
+    };
+    load();
+    const id = window.setInterval(load, 60_000);
+    return () => { cancelled = true; window.clearInterval(id); };
+  }, []);
 
   useEffect(() => {
     document.title = platform === "youtube" ? "YouTube Live — CarnageMC" : "Twitch Live — CarnageMC";
