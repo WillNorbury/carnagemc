@@ -292,13 +292,17 @@ Deno.serve(async (req) => {
   SERVICE_ENDPOINTS.api = apiHealth;
 
   const checks = await Promise.all([
-    checkHttp("website", siteUrl),
+    // Do NOT follow redirects on the website check — the lovable.app edge sometimes
+    // 3xx-redirects to the custom domain (carnagemc.net) whose cert can flap while
+    // being reissued, producing false-positive incidents.
+    checkHttp("website", siteUrl, true, {}, false),
     checkMinecraft("minecraft", mcHost),
     checkHttp("api", apiHealth, false),
     checkHttp("panel", "https://panel.voxelnode.dev"),
     checkHttp("discord", "https://discord.gg/V8xYY2DasZ"),
     checkHttp("portfolio", "https://portfolio.carnagemc.net"),
   ]);
+
 
   const { error: insertErr } = await supabase.from("uptime_checks").insert(checks);
   if (insertErr) {
