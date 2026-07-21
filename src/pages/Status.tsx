@@ -9,13 +9,16 @@ import {
   CheckCircle2,
   ChevronRight,
   Clock,
+  Copy,
   Gauge,
   HelpCircle,
   Loader2,
   Mail,
   RefreshCw,
+  Search,
   ShieldCheck,
   Timer,
+  X,
   XCircle,
   Zap,
 } from "lucide-react";
@@ -210,7 +213,18 @@ const Status = () => {
   const [subEmail, setSubEmail] = useState("");
   const [subSubmitting, setSubSubmitting] = useState(false);
   const [subDone, setSubDone] = useState(false);
+  const [query, setQuery] = useState("");
+  const [stateFilter, setStateFilter] = useState<"all" | DayStatus>("all");
   const { toast } = useToast();
+
+  const copyText = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({ title: `${label} copied`, description: text });
+    } catch {
+      toast({ title: "Copy failed", variant: "destructive" });
+    }
+  };
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -507,127 +521,221 @@ const Status = () => {
           </div>
 
           {/* Controls bar */}
-          <div className="flex flex-col gap-3 border border-white/5 bg-[#0f0f16] p-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3 min-w-0">
-              <span className="text-[10px] font-['JetBrains_Mono'] tracking-[0.3em] uppercase text-[#ff5722] shrink-0">/ services</span>
-              <span className="text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase text-[#5f6472] truncate">Select a row for telemetry</span>
+          <div className="flex flex-col gap-3 border border-white/5 bg-[#0f0f16] p-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <span className="text-[10px] font-['JetBrains_Mono'] tracking-[0.3em] uppercase text-[#ff5722] shrink-0">/ query</span>
+                <div className="relative flex-1 max-w-sm">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#5f6472]" />
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search services…"
+                    className="w-full bg-[#07070b] border border-white/10 pl-8 pr-8 py-2 text-xs font-['JetBrains_Mono'] text-slate-100 placeholder:text-[#5f6472] focus:outline-none focus:border-[#ff5722] transition"
+                  />
+                  {query && (
+                    <button
+                      type="button"
+                      onClick={() => setQuery("")}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-[#5f6472] hover:text-[#ff5722]"
+                      aria-label="Clear search"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 border border-white/10 p-1">
+                        <Timer className="ml-2 h-3.5 w-3.5 text-[#9ca3af]" />
+                        {[0, 1, 5, 15].map((min) => (
+                          <button
+                            key={min}
+                            type="button"
+                            onClick={() => isOwner && setAutoInterval(min)}
+                            disabled={!isOwner}
+                            className={cn(
+                              "px-2.5 py-1 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase transition",
+                              autoInterval === min ? "bg-[#ff5722] text-white" : "text-[#9ca3af] hover:text-[#ff5722]",
+                              !isOwner && "opacity-40 cursor-not-allowed hover:text-[#9ca3af]",
+                            )}
+                          >
+                            {min === 0 ? "Off" : `${min}m`}
+                          </button>
+                        ))}
+                      </div>
+                    </TooltipTrigger>
+                    {!isOwner && (<TooltipContent side="bottom"><p>Only owners can change auto-refresh.</p></TooltipContent>)}
+                  </Tooltip>
+                </TooltipProvider>
+                <button
+                  type="button"
+                  onClick={() => { setSubDone(false); setSubOpen(true); }}
+                  className="inline-flex items-center gap-2 border border-[#ff5722]/60 bg-[#ff5722]/10 px-3 py-2 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase text-[#ff5722] hover:bg-[#ff5722] hover:text-white transition"
+                >
+                  <Bell className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Subscribe</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  className="inline-flex items-center gap-2 border border-white/10 px-3 py-2 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition disabled:opacity-40"
+                >
+                  <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin")} />
+                  <span className="hidden sm:inline">{refreshing ? "Running" : "Refresh"}</span>
+                </button>
+                <div className="flex items-center border border-white/10 p-1">
+                  {RANGES.map((item) => (
+                    <button
+                      key={item.value}
+                      type="button"
+                      onClick={() => setRange(item.value)}
+                      className={cn(
+                        "px-3 py-1 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase transition",
+                        range === item.value ? "bg-[#ff5722] text-white" : "text-[#9ca3af] hover:text-[#ff5722]",
+                      )}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
-            <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1 border border-white/10 p-1">
-                      <Timer className="ml-2 h-3.5 w-3.5 text-[#9ca3af]" />
-                      {[0, 1, 5, 15].map((min) => (
-                        <button
-                          key={min}
-                          type="button"
-                          onClick={() => isOwner && setAutoInterval(min)}
-                          disabled={!isOwner}
-                          className={cn(
-                            "px-2.5 py-1 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase transition",
-                            autoInterval === min ? "bg-[#ff5722] text-white" : "text-[#9ca3af] hover:text-[#ff5722]",
-                            !isOwner && "opacity-40 cursor-not-allowed hover:text-[#9ca3af]",
-                          )}
-                        >
-                          {min === 0 ? "Off" : `${min}m`}
-                        </button>
-                      ))}
-                    </div>
-                  </TooltipTrigger>
-                  {!isOwner && (<TooltipContent side="bottom"><p>Only owners can change auto-refresh.</p></TooltipContent>)}
-                </Tooltip>
-              </TooltipProvider>
-              <button
-                type="button"
-                onClick={() => { setSubDone(false); setSubOpen(true); }}
-                className="inline-flex items-center gap-2 border border-[#ff5722]/60 bg-[#ff5722]/10 px-3 py-2 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase text-[#ff5722] hover:bg-[#ff5722] hover:text-white transition"
-              >
-                <Bell className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Subscribe</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleRefresh}
-                disabled={refreshing}
-                className="inline-flex items-center gap-2 border border-white/10 px-3 py-2 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition disabled:opacity-40"
-              >
-                <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin")} />
-                <span className="hidden sm:inline">{refreshing ? "Running" : "Refresh"}</span>
-              </button>
-              <div className="flex items-center border border-white/10 p-1">
-                {RANGES.map((item) => (
+            {/* State filter chips */}
+            <div className="flex flex-wrap items-center gap-2 border-t border-white/5 pt-3">
+              <span className="text-[10px] font-['JetBrains_Mono'] tracking-[0.3em] uppercase text-[#ff5722]">/ filter</span>
+              {([
+                { key: "all", label: "All", count: services.length, tone: "text-slate-200", active: "bg-[#ff5722] text-white border-[#ff5722]" },
+                { key: "up", label: "Operational", count: statusCounts.up, tone: "text-emerald-400", active: "bg-emerald-500/20 text-emerald-300 border-emerald-500/50" },
+                { key: "degraded", label: "Degraded", count: statusCounts.degraded, tone: "text-amber-400", active: "bg-amber-500/20 text-amber-300 border-amber-500/50" },
+                { key: "down", label: "Outage", count: statusCounts.down, tone: "text-red-400", active: "bg-red-500/20 text-red-300 border-red-500/50" },
+                { key: "none", label: "No Data", count: statusCounts.none, tone: "text-[#9ca3af]", active: "bg-white/10 text-slate-200 border-white/30" },
+              ] as const).map((f) => {
+                const on = stateFilter === f.key;
+                return (
                   <button
-                    key={item.value}
+                    key={f.key}
                     type="button"
-                    onClick={() => setRange(item.value)}
+                    onClick={() => setStateFilter(f.key)}
                     className={cn(
-                      "px-3 py-1 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase transition",
-                      range === item.value ? "bg-[#ff5722] text-white" : "text-[#9ca3af] hover:text-[#ff5722]",
+                      "inline-flex items-center gap-2 border px-2.5 py-1 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase transition",
+                      on ? f.active : cn("border-white/10 hover:border-[#ff5722]/50", f.tone),
                     )}
                   >
-                    {item.label}
+                    <span>{f.label}</span>
+                    <span className={cn("px-1 border", on ? "border-current/40" : "border-white/10 text-[#5f6472]")}>{f.count}</span>
                   </button>
-                ))}
-              </div>
+                );
+              })}
+              {(query || stateFilter !== "all") && (
+                <button
+                  type="button"
+                  onClick={() => { setQuery(""); setStateFilter("all"); }}
+                  className="ml-auto inline-flex items-center gap-1 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase text-[#5f6472] hover:text-[#ff5722]"
+                >
+                  <X className="h-3 w-3" /> Reset
+                </button>
+              )}
             </div>
           </div>
 
           {/* Services table */}
           <section className="border border-white/5 bg-[#0f0f16]">
-            <div className="hidden lg:grid grid-cols-[2rem_16rem_minmax(0,1fr)_6rem_7rem_2rem] items-center gap-4 px-4 py-2 border-b border-white/5 text-[10px] font-['JetBrains_Mono'] uppercase tracking-[0.25em] text-[#5f6472]">
+            <div className="hidden lg:grid grid-cols-[2rem_16rem_minmax(0,1fr)_6rem_7rem_10rem] items-center gap-4 px-4 py-2 border-b border-white/5 text-[10px] font-['JetBrains_Mono'] uppercase tracking-[0.25em] text-[#5f6472]">
               <span>#</span>
               <span>Service</span>
               <span>Timeline · {range}d</span>
               <span className="text-right">Uptime</span>
               <span className="text-right">State</span>
-              <span />
+              <span className="text-right">Actions</span>
             </div>
             <div className="divide-y divide-white/5">
-              {services.map((service, idx) => {
-                const status = serviceCurrent[service.key] ?? "none";
-                const meta = statusMeta[status];
-                const days = byService.get(service.key) ?? new Map<string, { pct: number | null; total: number }>();
-                const uptime = getUptime(days);
-                return (
-                  <div
-                    key={service.key}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setDetailKey(service.key)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setDetailKey(service.key); }
-                    }}
-                    className="group grid lg:grid-cols-[2rem_16rem_minmax(0,1fr)_6rem_7rem_2rem] grid-cols-1 items-center gap-4 px-4 py-3 cursor-pointer hover:bg-[#16161f] transition focus:outline-none focus-visible:bg-[#16161f]"
-                  >
-                    <span className="hidden lg:block font-['JetBrains_Mono'] text-[10px] text-[#5f6472]">{String(idx + 1).padStart(2, "0")}</span>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", meta.dot)} />
-                        <span className="font-['Space_Grotesk'] font-bold truncate group-hover:text-[#ff5722] transition-colors">{service.name}</span>
-                        {service.url && (
-                          <a href={service.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} aria-label={`Open ${service.name}`} className="shrink-0 text-[#5f6472] hover:text-[#ff5722]">
-                            <ArrowUpRight className="h-3.5 w-3.5" />
-                          </a>
-                        )}
+              {(() => {
+                const q = query.trim().toLowerCase();
+                const filtered = services
+                  .map((service, idx) => ({ service, idx, status: serviceCurrent[service.key] ?? "none" as DayStatus }))
+                  .filter(({ service, status }) => {
+                    if (stateFilter !== "all" && status !== stateFilter) return false;
+                    if (!q) return true;
+                    return (
+                      service.name.toLowerCase().includes(q) ||
+                      service.desc.toLowerCase().includes(q) ||
+                      service.key.toLowerCase().includes(q)
+                    );
+                  });
+                if (filtered.length === 0) {
+                  return (
+                    <div className="px-4 py-10 text-center font-['JetBrains_Mono'] text-xs uppercase tracking-widest text-[#5f6472]">
+                      No services match your filter.
+                    </div>
+                  );
+                }
+                return filtered.map(({ service, idx, status }) => {
+                  const meta = statusMeta[status];
+                  const days = byService.get(service.key) ?? new Map<string, { pct: number | null; total: number }>();
+                  const uptime = getUptime(days);
+                  return (
+                    <div
+                      key={service.key}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setDetailKey(service.key)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setDetailKey(service.key); }
+                      }}
+                      className="group grid lg:grid-cols-[2rem_16rem_minmax(0,1fr)_6rem_7rem_10rem] grid-cols-1 items-center gap-4 px-4 py-3 cursor-pointer hover:bg-[#16161f] transition focus:outline-none focus-visible:bg-[#16161f]"
+                    >
+                      <span className="hidden lg:block font-['JetBrains_Mono'] text-[10px] text-[#5f6472]">{String(idx + 1).padStart(2, "0")}</span>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", meta.dot)} />
+                          <span className="font-['Space_Grotesk'] font-bold truncate group-hover:text-[#ff5722] transition-colors">{service.name}</span>
+                          {service.url && (
+                            <a href={service.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} aria-label={`Open ${service.name}`} className="shrink-0 text-[#5f6472] hover:text-[#ff5722]">
+                              <ArrowUpRight className="h-3.5 w-3.5" />
+                            </a>
+                          )}
+                        </div>
+                        <div className="truncate font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#5f6472] mt-1">{service.desc}</div>
                       </div>
-                      <div className="truncate font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#5f6472] mt-1">{service.desc}</div>
+                      <div className="min-w-0">
+                        <DayGrid days={range} byDay={days} />
+                      </div>
+                      <div className={cn("font-['Space_Grotesk'] text-base font-bold lg:text-right", meta.text)}>
+                        {uptime !== null ? `${uptime.toFixed(2)}%` : loading ? "…" : "—"}
+                      </div>
+                      <div className="lg:flex lg:justify-end">
+                        <StatusPill status={status} />
+                      </div>
+                      <div className="flex items-center gap-1 lg:justify-end" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); copyText(service.url || service.desc, service.name); }}
+                          className="inline-flex items-center gap-1 border border-white/10 px-2 py-1 text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition"
+                          title="Copy link/IP"
+                        >
+                          <Copy className="h-3 w-3" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); setDetailKey(service.key); }}
+                          className="inline-flex items-center gap-1 border border-white/10 px-2 py-1 text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition"
+                        >
+                          Details <ChevronRight className="h-3 w-3" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <DayGrid days={range} byDay={days} />
-                    </div>
-                    <div className={cn("font-['Space_Grotesk'] text-base font-bold lg:text-right", meta.text)}>
-                      {uptime !== null ? `${uptime.toFixed(2)}%` : loading ? "…" : "—"}
-                    </div>
-                    <div className="lg:flex lg:justify-end">
-                      <StatusPill status={status} />
-                    </div>
-                    <ChevronRight className="hidden lg:block h-4 w-4 text-[#5f6472] group-hover:text-[#ff5722] group-hover:translate-x-0.5 transition-transform" />
-                  </div>
-                );
-              })}
+                  );
+                });
+              })()}
             </div>
           </section>
+
 
           {/* Incidents feed */}
           {incidents.length > 0 && (
