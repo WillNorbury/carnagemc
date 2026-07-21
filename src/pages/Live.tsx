@@ -154,14 +154,14 @@ export default function Live() {
           </div>
 
           {isYT ? (
-            <YouTubeLiveWidget handle={YT_HANDLE} />
+            <YouTubeLiveWidget handle={YT_HANDLE} status={ytStatus} />
           ) : (
             <TwitchLiveWidget login={TWITCH_CHANNEL} variant="full" />
           )}
 
           <div
             className={
-              showChat && !isYT
+              showChat && (isYT ? !!ytChatSrc : true)
                 ? "grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]"
                 : "grid gap-4"
             }
@@ -204,7 +204,19 @@ export default function Live() {
                 )}
               </div>
             )}
+
+            {showChat && isYT && ytChatSrc && (
+              <div className="border border-white/10 bg-black min-h-[420px] lg:min-h-0">
+                <iframe
+                  key={ytChatSrc}
+                  src={ytChatSrc}
+                  title={`${YT_HANDLE} YouTube chat`}
+                  className="h-full min-h-[420px] w-full"
+                />
+              </div>
+            )}
           </div>
+
 
           {!isYT && <TwitchClipsGallery login={TWITCH_CHANNEL} parents={parents} />}
         </div>
