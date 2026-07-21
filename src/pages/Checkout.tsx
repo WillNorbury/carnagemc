@@ -17,6 +17,7 @@ import {
   Package,
   Plus,
   ShoppingCart,
+  Sparkles,
   Tag,
   Trash2,
   X,
@@ -417,6 +418,65 @@ export default function Checkout() {
                       </p>
                     )}
                   </div>
+
+                  {/* Creator code */}
+                  <div className="space-y-2">
+                    {cart.creatorCode ? (
+                      <div className="flex items-center justify-between gap-2 p-2 border border-fuchsia-400/50 bg-fuchsia-500/5">
+                        <div className="flex items-center gap-2 text-sm min-w-0">
+                          <Sparkles className="h-4 w-4 text-fuchsia-300 shrink-0" />
+                          <span className="font-mono font-semibold truncate">
+                            {cart.creatorCode.code}
+                          </span>
+                          <span className="text-xs text-[#9ca3af] font-mono truncate">
+                            {cart.creatorCode.discount_percent}% off · supporting {cart.creatorCode.creator_name}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={cart.clearCreatorCode}
+                          className="text-[#9ca3af] hover:text-fuchsia-300"
+                          aria-label="Remove creator code"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <div className="relative flex-1">
+                          <Sparkles className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#5f6472]" />
+                          <input
+                            type="text"
+                            value={creatorInput}
+                            onChange={(e) => setCreatorInput(e.target.value.toUpperCase())}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") applyCreator();
+                            }}
+                            placeholder="CREATOR CODE"
+                            className="w-full pl-7 pr-2 py-2 bg-[#1a1a24] border border-white/10 focus:border-fuchsia-400 focus:outline-none text-xs font-mono uppercase tracking-widest text-slate-100 placeholder:text-[#5f6472]"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={applyCreator}
+                          disabled={cart.applyingCreatorCode || !creatorInput.trim()}
+                          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-[#9ca3af] hover:border-fuchsia-400 hover:text-fuchsia-300 transition disabled:opacity-50"
+                        >
+                          {cart.applyingCreatorCode ? "…" : "Apply"}
+                        </button>
+                      </div>
+                    )}
+                    {cart.creatorCodeError && (
+                      <div
+                        role="alert"
+                        className="flex items-start gap-2 text-xs font-mono text-red-300 bg-red-500/10 border border-red-500/40 px-2.5 py-1.5"
+                      >
+                        <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                        <span>{cart.creatorCodeError}</span>
+                      </div>
+                    )}
+                  </div>
+
 
                   {/* Totals */}
                   <div className="space-y-1.5 text-sm border-t border-white/5 pt-4">
