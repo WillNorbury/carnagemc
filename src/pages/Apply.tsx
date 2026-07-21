@@ -20,6 +20,7 @@ import {
   ArrowRight,
   Check,
   ChevronRight,
+  Handshake,
 } from "lucide-react";
 import { SEO } from "@/components/site/SEO";
 import { cn } from "@/lib/utils";
@@ -112,6 +113,38 @@ const Apply = () => {
         <Card className="p-10 text-center text-muted-foreground">
           No application types are currently available. Check back soon.
         </Card>
+      )}
+
+      {types && types.some((t) => t.slug === "partner" && t.accepting) && (
+        <Link
+          to="/apply/partner"
+          className="group relative block mb-6 rounded-xl border border-primary/40 bg-gradient-to-r from-primary/15 via-primary/5 to-transparent p-6 hover:border-primary hover:shadow-elegant transition"
+        >
+          <div className="flex items-start gap-4">
+            <div className="h-12 w-12 shrink-0 rounded-lg bg-primary/20 grid place-items-center">
+              <Handshake className="h-6 w-6 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <Badge variant="secondary" className="text-primary border-primary/40">
+                  Server owners
+                </Badge>
+                <Badge variant="outline">Partnerships open</Badge>
+              </div>
+              <div className="font-display font-bold text-xl">
+                Run a Minecraft server? <span className="text-gradient">Become a Partner.</span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                Get featured on our Partners page, cross-promote your community, and reach new
+                players. Submit a partnership application in a few minutes.
+              </p>
+              <div className="mt-3 inline-flex items-center text-sm text-primary font-medium">
+                Send a partner application
+                <ArrowRight className="h-4 w-4 ml-1 transition group-hover:translate-x-1" />
+              </div>
+            </div>
+          </div>
+        </Link>
       )}
 
       {types && types.length > 0 && (
