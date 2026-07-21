@@ -27,7 +27,17 @@ export default function Checkout() {
   const { user } = useAuth();
   const nav = useNavigate();
   const [couponInput, setCouponInput] = useState("");
+  const [creatorInput, setCreatorInput] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  const applyCreator = async () => {
+    const ok = await cart.applyCreatorCode(creatorInput);
+    if (ok) {
+      setCreatorInput("");
+      toast.success(`Creator code applied — supporting ${cart.creatorCode?.creator_name ?? "creator"}`);
+    }
+  };
+
 
   const applyCoupon = async () => {
     const ok = await cart.applyCoupon(couponInput);
@@ -75,6 +85,11 @@ export default function Checkout() {
         })`,
       );
       summary.push(`Discount: -${formatMoney(cart.discount, cart.currency)}`);
+    }
+    if (cart.creatorDiscount > 0 && cart.creatorCode) {
+      summary.push(
+        `Creator code: ${cart.creatorCode.code} — ${cart.creatorCode.creator_name} (${cart.creatorCode.discount_percent}% off, -${formatMoney(cart.creatorDiscount, cart.currency)})`,
+      );
     }
     if (cart.bundleDiscount > 0) {
       summary.push(
