@@ -83,6 +83,9 @@ const Apply = () => {
   }, []);
 
   if (slug) {
+    if (slug === "partner") {
+      return <PartnerApplyForm types={types} onBack={() => navigate("/apply")} />;
+    }
     return <ApplyForm slug={slug} types={types} onBack={() => navigate("/apply")} />;
   }
 
