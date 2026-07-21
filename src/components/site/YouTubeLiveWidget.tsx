@@ -62,7 +62,7 @@ export default function YouTubeLiveWidget({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handle]);
 
-  const channelUrl = `https://www.youtube.com/@${handle}`;
+  const channelUrl = `https://www.youtube.com/@${handle}/live`;
 
   if (loading && !status) {
     return (
