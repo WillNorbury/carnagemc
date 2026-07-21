@@ -24,60 +24,79 @@ Deno.serve(async (req) => {
       return json({ error: "invalid handle" }, 400);
     }
 
-    const res = await fetch(`https://www.youtube.com/@${handle}/live`, {
+    // Force a desktop-Chrome UA + full client hints; the Supabase edge IP range
+    // otherwise gets bounced to the mobile web (mweb) template which has a very
+    // different shape.
+    const res = await fetch(`https://www.youtube.com/@${handle}/live?hl=en&persist_hl=1&gl=US`, {
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+        "Accept":
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
+        "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
+        "Sec-Ch-Ua-Mobile": "?0",
+        "Sec-Ch-Ua-Platform": '"Windows"',
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Sec-Fetch-User": "?1",
+        "Upgrade-Insecure-Requests": "1",
+        // Skip the EU consent interstitial.
+        Cookie: "CONSENT=YES+cb; SOCS=CAI; PREF=hl=en&gl=US",
       },
       redirect: "follow",
     });
     const html = await res.text();
-    const finalUrl = new URL(res.url);
 
-    // YouTube only redirects /@handle/live to /watch?v=... when the channel is
-    // ACTUALLY live right now. Any other landing page (channel, /streams, /featured)
-    // means they're offline — even if the HTML contains other channels' live cards.
-    const watchVideoId = finalUrl.pathname === "/watch" ? finalUrl.searchParams.get("v") : null;
     const channelId = pick(/"channelId":"(UC[a-zA-Z0-9_-]+)"/, html);
+    const author = pick(/"author":"([^"]{1,120})"/, html) ?? handle;
 
-    if (!watchVideoId || !/^[a-zA-Z0-9_-]{11}$/.test(watchVideoId)) {
+    // Isolate the videoDetails block for the primary video on the page and
+    // parse the individual fields from it. This avoids assumptions about the
+    // ordering of isLive / channelId / etc.
+    const detailsBlock = pick(/"videoDetails":\{([\s\S]{50,6000}?)\},"playerConfig"/, html)
+      ?? pick(/"videoDetails":\{([\s\S]{50,6000}?)\}(?=,"annotations"|,"playbackTracking"|,"streamingData")/, html);
+
+    const detailsVideoId = detailsBlock ? pick(/"videoId":"([a-zA-Z0-9_-]{11})"/, detailsBlock) : null;
+    const detailsTitle = detailsBlock ? pick(/"title":"([^"]{1,300})"/, detailsBlock) : null;
+    const detailsChannelId = detailsBlock ? pick(/"channelId":"(UC[a-zA-Z0-9_-]+)"/, detailsBlock) : null;
+    const detailsIsLive = detailsBlock ? /"isLive":true/.test(detailsBlock) : false;
+
+    // Require the primary video to (a) be flagged live and (b) belong to the
+    // requested channel — this keeps featured live shelves on offline channels
+    // from being promoted to the widget.
+    const belongsToChannel = detailsChannelId && channelId && detailsChannelId === channelId;
+    const live = !!(detailsIsLive && detailsVideoId && belongsToChannel);
+
+    if (!live) {
       return json({
         isLive: false,
         handle,
         channelId,
         videoId: null,
         title: null,
-        displayName: pick(/"author":"([^"]{1,120})"/, html) ?? handle,
+        displayName: author,
         viewerCount: 0,
         thumbnailUrl: null,
       });
     }
 
-    // Scope regexes to the block belonging to the live video to avoid pulling
-    // titles / viewer counts from unrelated shelf entries.
-    const videoBlockRe = new RegExp(
-      `"videoId":"${watchVideoId}"[\\s\\S]{0,4000}?"title":\\{"runs":\\[\\{"text":"([^"]{1,200})"`,
-    );
-    const title =
-      pick(videoBlockRe, html) ??
-      pick(/"videoPrimaryInfoRenderer"[\s\S]{0,1500}?"title":\{"runs":\[\{"text":"([^"]{1,200})"/, html) ??
-      pick(/<meta name="title" content="([^"]{1,200})"/, html);
-    const author = pick(/"author":"([^"]{1,120})"/, html) ?? handle;
     const viewerRaw =
+      pick(new RegExp(`"videoId":"${detailsVideoId}"[\\s\\S]{0,6000}?"concurrentViewers":"(\\d+)"`), html) ??
       pick(/"concurrentViewers":"(\d+)"/, html) ??
-      pick(/"viewCount":"(\d+)","isLive":true/, html);
+      pick(/"originalViewCount":"(\d+)"/, html);
     const viewerCount = viewerRaw ? parseInt(viewerRaw, 10) : 0;
 
     return json({
       isLive: true,
       handle,
       channelId,
-      videoId: watchVideoId,
-      title: title ? title.replace(/\\u0026/g, "&") : null,
+      videoId: detailsVideoId,
+      title: detailsTitle ? detailsTitle.replace(/\\u0026/g, "&") : null,
       displayName: author,
       viewerCount,
-      thumbnailUrl: `https://i.ytimg.com/vi/${watchVideoId}/hqdefault_live.jpg`,
+      thumbnailUrl: `https://i.ytimg.com/vi/${detailsVideoId}/hqdefault_live.jpg`,
     });
   } catch (e) {
     return json({ error: e instanceof Error ? e.message : String(e) }, 500);
