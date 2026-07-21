@@ -10,9 +10,14 @@ export const ALL_ROLES = [
   { value: "helper", label: "Helper", emoji: "🟢" },
   { value: "builder", label: "Builder", emoji: "🛠️" },
   { value: "media", label: "Media", emoji: "📰" },
-  { value: "havoc_plus", label: "Havoc+", emoji: "💎" },
-  { value: "havoc", label: "Havoc", emoji: "🔥" },
-  { value: "donut_plus", label: "Donut+", emoji: "🍩" },
+  { value: "immortal", label: "Immortal", emoji: "🌟" },
+  { value: "titan", label: "Titan", emoji: "🗿" },
+  { value: "chaos_plus", label: "Chaos+", emoji: "🌀" },
+  { value: "chaos", label: "Chaos", emoji: "☄️" },
+  { value: "blood_plus", label: "Blood+", emoji: "🩸" },
+  { value: "blood", label: "Blood", emoji: "❤️" },
+  { value: "havoc_plus", label: "Carnage+", emoji: "💎" },
+  { value: "havoc", label: "Carnage", emoji: "🔥" },
   { value: "default", label: "Member", emoji: "👤" },
 ] as const;
 
