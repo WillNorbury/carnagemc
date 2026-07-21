@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { SEO } from "@/components/site/SEO";
-import { Loader2, Search, Handshake, ArrowRight } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { partnerSlug, fetchPartnerStatus, PartnerStatus } from "@/lib/partnerSlug";
@@ -29,18 +29,6 @@ const Partners = () => {
   const [hovered, setHovered] = useState<Partner | null>(null);
   const [query, setQuery] = useState("");
   const [statuses, setStatuses] = useState<Record<string, PartnerStatus>>({});
-  const [partnerAppOpen, setPartnerAppOpen] = useState(false);
-
-  useEffect(() => {
-    supabase
-      .from("application_types" as any)
-      .select("accepting,enabled")
-      .eq("slug", "partner")
-      .maybeSingle()
-      .then(({ data }: any) => {
-        setPartnerAppOpen(Boolean(data?.enabled && data?.accepting));
-      });
-  }, []);
 
 
   useEffect(() => {
