@@ -4,12 +4,13 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import TwitchLiveWidget from "@/components/site/TwitchLiveWidget";
 import TwitchClipsGallery from "@/components/site/TwitchClipsGallery";
-import YouTubeLiveWidget from "@/components/site/YouTubeLiveWidget";
+import YouTubeLiveWidget, { type YouTubeStatus } from "@/components/site/YouTubeLiveWidget";
 import { MessageSquare, Tv, Youtube as YoutubeIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const TWITCH_CHANNEL = "will_norbury";
 const YT_HANDLE = "WillNorbury";
+const YT_CHANNEL_ID = "UClypnnDmHLVaSMyPNLzxwmQ";
 
 type Platform = "twitch" | "youtube";
 
