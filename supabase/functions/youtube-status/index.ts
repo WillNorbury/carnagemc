@@ -24,11 +24,13 @@ Deno.serve(async (req) => {
       return json({ error: "invalid handle" }, 400);
     }
 
-    const res = await fetch(`https://www.youtube.com/@${handle}/live`, {
+    const res = await fetch(`https://www.youtube.com/@${handle}/live?hl=en&persist_hl=1&gl=US`, {
       headers: {
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
         "Accept-Language": "en-US,en;q=0.9",
+        // Skip the EU consent interstitial that otherwise breaks the /live redirect.
+        Cookie: "CONSENT=YES+cb; SOCS=CAI",
       },
       redirect: "follow",
     });
