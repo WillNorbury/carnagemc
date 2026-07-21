@@ -25,3 +25,5 @@ project_id = "xedqdxjorneezfnpyogg"
     verify_jwt = false
   [functions.unsubscribe-news]
     verify_jwt = false
+  [functions.youtube-status]
+    verify_jwt = false
