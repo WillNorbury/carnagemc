@@ -902,6 +902,40 @@ export default function Store() {
                         )}
                       </div>
 
+                      {/* Creator code row */}
+                      <div className="flex flex-col md:flex-row md:items-center gap-3">
+                        {cart.creatorCode ? (
+                          <div className="flex items-center gap-3 border border-fuchsia-400/50 bg-fuchsia-500/5 px-3 py-2">
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-fuchsia-300">
+                              Creator
+                            </span>
+                            <span className="font-mono font-bold text-sm">{cart.creatorCode.code}</span>
+                            <span className="text-xs text-[#9ca3af]">
+                              {cart.creatorCode.discount_percent}% off · supporting {cart.creatorCode.creator_name}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={cart.clearCreatorCode}
+                              className="ml-2 text-[#9ca3af] hover:text-fuchsia-300"
+                              aria-label="Remove creator code"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ) : (
+                          <CreatorCodeInput />
+                        )}
+                        {cart.creatorCodeError && (
+                          <div
+                            role="alert"
+                            className="inline-flex items-center gap-2 text-xs font-mono text-red-300 bg-red-500/10 border border-red-500/40 px-2.5 py-1.5"
+                          >
+                            <AlertCircle className="w-3.5 h-3.5" />
+                            {cart.creatorCodeError}
+                          </div>
+                        )}
+                      </div>
+
                       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div className="flex flex-col gap-1 text-sm">
                           <div className="flex items-center gap-3">
@@ -919,6 +953,16 @@ export default function Store() {
                               </span>
                               <span className="tabular-nums font-mono">
                                 −{formatMoney(cart.discount, cart.currency)}
+                              </span>
+                            </div>
+                          )}
+                          {cart.creatorDiscount > 0 && cart.creatorCode && (
+                            <div className="flex items-center gap-3 text-fuchsia-300">
+                              <span className="text-xs font-mono uppercase tracking-widest w-24">
+                                Creator {cart.creatorCode.discount_percent}%
+                              </span>
+                              <span className="tabular-nums font-mono">
+                                −{formatMoney(cart.creatorDiscount, cart.currency)}
                               </span>
                             </div>
                           )}
