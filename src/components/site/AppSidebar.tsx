@@ -78,6 +78,7 @@ const websiteGroup: NavGroup = {
     { to: "https://portfolio.carnagemc.net", label: "Portfolio", icon: Link2 },
     { to: "https://panel.voxelnode.dev", label: "VoxelNode", icon: Link2 },
     { to: "/fire-market", label: "Fire Market", icon: Link2 },
+    { to: "https://appeals.carnagemc.net", label: "Appeals", icon: Link2 },
   ],
 };
 
