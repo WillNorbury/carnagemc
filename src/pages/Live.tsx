@@ -1,51 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import TwitchLiveWidget from "@/components/site/TwitchLiveWidget";
 import TwitchClipsGallery from "@/components/site/TwitchClipsGallery";
-import YouTubeLiveWidget, { type YouTubeStatus } from "@/components/site/YouTubeLiveWidget";
-import { MessageSquare, Tv, Youtube as YoutubeIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { MessageSquare, Tv } from "lucide-react";
 
 const TWITCH_CHANNEL = "will_norbury";
-const YT_HANDLE = "WillNorbury";
-const YT_CHANNEL_ID = "UClypnnDmHLVaSMyPNLzxwmQ";
-
-type Platform = "twitch" | "youtube";
 
 export default function Live() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const platform: Platform = searchParams.get("youtube") !== null
-    ? "youtube"
-    : searchParams.get("twitch") !== null
-      ? "twitch"
-      : "twitch";
-
   const [parents, setParents] = useState<string[]>([]);
   const [showChat, setShowChat] = useState(true);
-  const [ytStatus, setYtStatus] = useState<YouTubeStatus | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      try {
-        const url = new URL(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/youtube-status`);
-        url.searchParams.set("handle", YT_HANDLE);
-        const res = await fetch(url.toString(), {
-          headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string },
-        });
-        const data = await res.json();
-        if (!cancelled && res.ok) setYtStatus(data);
-      } catch {}
-    };
-    load();
-    const id = window.setInterval(load, 60_000);
-    return () => { cancelled = true; window.clearInterval(id); };
-  }, []);
-
-  useEffect(() => {
-    document.title = platform === "youtube" ? "YouTube Live — CarnageMC" : "Twitch Live — CarnageMC";
+    document.title = "Twitch Live — CarnageMC";
     const hosts = new Set<string>();
     if (typeof window !== "undefined") hosts.add(window.location.hostname);
     [
@@ -57,15 +24,7 @@ export default function Live() {
       "localhost",
     ].forEach((h) => hosts.add(h));
     setParents(Array.from(hosts));
-  }, [platform]);
-
-  const switchTo = (p: Platform) => {
-    const next = new URLSearchParams(searchParams);
-    next.delete("twitch");
-    next.delete("youtube");
-    next.set(p, "");
-    setSearchParams(next, { replace: true });
-  };
+  }, []);
 
   const twitchPlayerSrc = useMemo(() => {
     if (!parents.length) return "";
@@ -83,17 +42,6 @@ export default function Live() {
     return `https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?darkpopout&${parentPart}`;
   }, [parents]);
 
-  // Prefer the exact live videoId scraped by youtube-status; fall back to channel live_stream shim.
-  const host = typeof window !== "undefined" ? window.location.hostname : "carnagemc.net";
-  const ytPlayerSrc = ytStatus?.videoId
-    ? `https://www.youtube.com/embed/${ytStatus.videoId}?autoplay=1`
-    : `https://www.youtube.com/embed/live_stream?channel=${YT_CHANNEL_ID}&autoplay=1`;
-  const ytChatSrc = ytStatus?.videoId
-    ? `https://www.youtube.com/live_chat?v=${ytStatus.videoId}&embed_domain=${host}`
-    : "";
-
-  const isYT = platform === "youtube";
-
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
       <link
@@ -105,8 +53,8 @@ export default function Live() {
         <div className="max-w-7xl w-full mx-auto px-4 md:px-8 py-10 md:py-14 flex flex-col gap-8">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-white/5 pb-6">
             <div className="min-w-0">
-              <span className={cn("font-mono text-sm tracking-widest uppercase", isYT ? "text-red-500" : "text-[#9146ff]")}>
-                {isYT ? "YouTube · Live" : "Twitch · Live"}
+              <span className="font-mono text-sm tracking-widest uppercase text-[#9146ff]">
+                Twitch · Live
               </span>
               <h1 className="text-5xl md:text-7xl font-bold font-['Space_Grotesk'] tracking-tighter italic break-words">
                 LIVE
@@ -125,58 +73,17 @@ export default function Live() {
             </button>
           </div>
 
-          {/* Platform tabs */}
-          <div className="inline-flex border border-white/10 bg-[#1a1a24] w-fit">
-            <button
-              type="button"
-              onClick={() => switchTo("twitch")}
-              className={cn(
-                "inline-flex items-center gap-2 px-4 py-2 text-[11px] font-mono uppercase tracking-widest transition",
-                !isYT
-                  ? "bg-[#9146ff]/20 text-white border-r border-[#9146ff]/40"
-                  : "text-[#9ca3af] hover:text-white border-r border-white/10",
-              )}
-            >
-              <Tv className="h-3.5 w-3.5" /> Twitch
-            </button>
-            <button
-              type="button"
-              onClick={() => switchTo("youtube")}
-              className={cn(
-                "inline-flex items-center gap-2 px-4 py-2 text-[11px] font-mono uppercase tracking-widest transition",
-                isYT
-                  ? "bg-red-500/20 text-white"
-                  : "text-[#9ca3af] hover:text-white",
-              )}
-            >
-              <YoutubeIcon className="h-3.5 w-3.5" /> YouTube
-            </button>
-          </div>
-
-          {isYT ? (
-            <YouTubeLiveWidget handle={YT_HANDLE} status={ytStatus} />
-          ) : (
-            <TwitchLiveWidget login={TWITCH_CHANNEL} variant="full" />
-          )}
+          <TwitchLiveWidget login={TWITCH_CHANNEL} variant="full" />
 
           <div
             className={
-              showChat && (isYT ? !!ytChatSrc : true)
+              showChat
                 ? "grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]"
                 : "grid gap-4"
             }
           >
             <div className="relative w-full overflow-hidden border border-white/10 bg-black" style={{ aspectRatio: "16 / 9" }}>
-              {isYT ? (
-                <iframe
-                  key={ytPlayerSrc}
-                  src={ytPlayerSrc}
-                  title={`${YT_HANDLE} YouTube stream`}
-                  allowFullScreen
-                  allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-                  className="absolute inset-0 h-full w-full"
-                />
-              ) : twitchPlayerSrc ? (
+              {twitchPlayerSrc ? (
                 <iframe
                   key={twitchPlayerSrc}
                   src={twitchPlayerSrc}
@@ -192,7 +99,7 @@ export default function Live() {
               )}
             </div>
 
-            {showChat && !isYT && (
+            {showChat && (
               <div className="border border-white/10 bg-black min-h-[420px] lg:min-h-0">
                 {twitchChatSrc && (
                   <iframe
@@ -204,23 +111,10 @@ export default function Live() {
                 )}
               </div>
             )}
-
-            {showChat && isYT && ytChatSrc && (
-              <div className="border border-white/10 bg-black min-h-[420px] lg:min-h-0">
-                <iframe
-                  key={ytChatSrc}
-                  src={ytChatSrc}
-                  title={`${YT_HANDLE} YouTube chat`}
-                  className="h-full min-h-[420px] w-full"
-                />
-              </div>
-            )}
           </div>
 
-
-          {!isYT && <TwitchClipsGallery login={TWITCH_CHANNEL} parents={parents} />}
+          <TwitchClipsGallery login={TWITCH_CHANNEL} parents={parents} />
         </div>
-
       </main>
       <Footer />
     </div>
