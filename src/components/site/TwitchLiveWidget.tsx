@@ -52,41 +52,26 @@ export default function TwitchLiveWidget({
 
   const load = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke("twitch-status", {
-        method: "GET",
-        body: undefined,
-        // pass login via query string
-        // @ts-expect-error - runtime accepts a query option in newer supabase-js versions
-        query: { login },
+      const url = new URL(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/twitch-status`,
+      );
+      url.searchParams.set("login", login);
+      const res = await fetch(url.toString(), {
+        headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string },
       });
-      if (error) throw error;
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? `HTTP ${res.status}`);
       if (mounted.current) {
-        setStatus(data as TwitchStatus);
+        setStatus(data);
         setError(null);
       }
-    } catch (e: any) {
-      // Fallback: call via fetch with query params
-      try {
-        const url = new URL(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/twitch-status`,
-        );
-        url.searchParams.set("login", login);
-        const res = await fetch(url.toString(), {
-          headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string },
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data?.error ?? `HTTP ${res.status}`);
-        if (mounted.current) {
-          setStatus(data);
-          setError(null);
-        }
-      } catch (err: any) {
-        if (mounted.current) setError(err?.message ?? "Failed to load");
-      }
+    } catch (err: any) {
+      if (mounted.current) setError(err?.message ?? "Failed to load");
     } finally {
       if (mounted.current) setLoading(false);
     }
   };
+
 
   useEffect(() => {
     mounted.current = true;
