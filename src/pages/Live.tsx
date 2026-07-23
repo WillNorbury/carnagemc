@@ -1,18 +1,28 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import TwitchLiveWidget from "@/components/site/TwitchLiveWidget";
 import TwitchClipsGallery from "@/components/site/TwitchClipsGallery";
 import { MessageSquare, Tv } from "lucide-react";
 
-const TWITCH_CHANNEL = "will_norbury";
+const CHANNELS: { tab: string; login: string; label: string }[] = [
+  { tab: "WillNorbury", login: "will_norbury", label: "WillNorbury" },
+  { tab: "ItzVoxel", login: "itzvoxelwastaken", label: "ItzVoxel" },
+];
 
 export default function Live() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const active =
+    CHANNELS.find((c) => c.tab.toLowerCase() === (tabParam ?? "").toLowerCase()) ??
+    CHANNELS[0];
+
   const [parents, setParents] = useState<string[]>([]);
   const [showChat, setShowChat] = useState(true);
 
   useEffect(() => {
-    document.title = "Twitch Live — CarnageMC";
+    document.title = `${active.label} — Twitch Live — CarnageMC`;
     const hosts = new Set<string>();
     if (typeof window !== "undefined") hosts.add(window.location.hostname);
     [
@@ -24,23 +34,29 @@ export default function Live() {
       "localhost",
     ].forEach((h) => hosts.add(h));
     setParents(Array.from(hosts));
-  }, []);
+  }, [active.label]);
 
   const twitchPlayerSrc = useMemo(() => {
     if (!parents.length) return "";
     const qp = new URLSearchParams();
-    qp.set("channel", TWITCH_CHANNEL);
+    qp.set("channel", active.login);
     qp.set("muted", "false");
     qp.set("autoplay", "true");
     const parentPart = parents.map((p) => `parent=${encodeURIComponent(p)}`).join("&");
     return `https://player.twitch.tv/?${qp.toString()}&${parentPart}`;
-  }, [parents]);
+  }, [parents, active.login]);
 
   const twitchChatSrc = useMemo(() => {
     if (!parents.length) return "";
     const parentPart = parents.map((p) => `parent=${encodeURIComponent(p)}`).join("&");
-    return `https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?darkpopout&${parentPart}`;
-  }, [parents]);
+    return `https://www.twitch.tv/embed/${active.login}/chat?darkpopout&${parentPart}`;
+  }, [parents, active.login]);
+
+  const setTab = (tab: string) => {
+    const next = new URLSearchParams(searchParams);
+    next.set("tab", tab);
+    setSearchParams(next, { replace: true });
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
@@ -57,23 +73,44 @@ export default function Live() {
                 Twitch · Live
               </span>
               <h1 className="text-5xl md:text-7xl font-bold font-['Space_Grotesk'] tracking-tighter italic break-words">
-                LIVE
+                {active.label.toUpperCase()}
               </h1>
               <p className="text-[#9ca3af] max-w-xl mt-1">
                 Watch the stream without leaving the site. Status updates every minute.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowChat((v) => !v)}
-              className="inline-flex items-center gap-2 border border-white/10 px-3 py-2 text-[10px] font-mono tracking-widest uppercase text-[#9ca3af] hover:border-white/30 hover:text-white transition self-start"
-            >
-              <MessageSquare className="h-3.5 w-3.5" />
-              {showChat ? "Hide chat" : "Show chat"}
-            </button>
+            <div className="flex flex-wrap items-center gap-2 self-start">
+              {CHANNELS.map((c) => {
+                const isActive = c.tab === active.tab;
+                return (
+                  <button
+                    key={c.tab}
+                    type="button"
+                    onClick={() => setTab(c.tab)}
+                    className={
+                      "inline-flex items-center gap-2 border px-3 py-2 text-[10px] font-mono tracking-widest uppercase transition " +
+                      (isActive
+                        ? "border-[#9146ff] text-white bg-[#9146ff]/10"
+                        : "border-white/10 text-[#9ca3af] hover:border-white/30 hover:text-white")
+                    }
+                  >
+                    <Tv className="h-3.5 w-3.5" />
+                    {c.label}
+                  </button>
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => setShowChat((v) => !v)}
+                className="inline-flex items-center gap-2 border border-white/10 px-3 py-2 text-[10px] font-mono tracking-widest uppercase text-[#9ca3af] hover:border-white/30 hover:text-white transition"
+              >
+                <MessageSquare className="h-3.5 w-3.5" />
+                {showChat ? "Hide chat" : "Show chat"}
+              </button>
+            </div>
           </div>
 
-          <TwitchLiveWidget login={TWITCH_CHANNEL} variant="full" />
+          <TwitchLiveWidget key={`w-${active.login}`} login={active.login} variant="full" />
 
           <div
             className={
@@ -87,7 +124,7 @@ export default function Live() {
                 <iframe
                   key={twitchPlayerSrc}
                   src={twitchPlayerSrc}
-                  title={`${TWITCH_CHANNEL} Twitch stream`}
+                  title={`${active.login} Twitch stream`}
                   allowFullScreen
                   allow="autoplay; fullscreen; picture-in-picture"
                   className="absolute inset-0 h-full w-full"
@@ -105,7 +142,7 @@ export default function Live() {
                   <iframe
                     key={twitchChatSrc}
                     src={twitchChatSrc}
-                    title={`${TWITCH_CHANNEL} Twitch chat`}
+                    title={`${active.login} Twitch chat`}
                     className="h-full min-h-[420px] w-full"
                   />
                 )}
@@ -113,7 +150,7 @@ export default function Live() {
             )}
           </div>
 
-          <TwitchClipsGallery login={TWITCH_CHANNEL} parents={parents} />
+          <TwitchClipsGallery key={`c-${active.login}`} login={active.login} parents={parents} />
         </div>
       </main>
       <Footer />
