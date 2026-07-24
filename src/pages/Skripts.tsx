@@ -271,59 +271,70 @@ const Skripts = () => {
               return (
                 <Card
                   key={sk.id}
-                  className="relative p-4 h-full overflow-hidden hover:border-orange-500/50 hover:shadow-[0_0_25px_-10px_hsl(24_95%_53%/0.4)] transition group"
+                  className="relative p-0 h-full overflow-hidden hover:border-orange-500/50 hover:shadow-[0_0_25px_-10px_hsl(24_95%_53%/0.4)] transition group"
                 >
                   <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent opacity-0 group-hover:opacity-100 transition" />
-                  <div className="flex gap-3">
-                    {sk.icon_url ? (
-                      <img src={sk.icon_url} alt="" className="h-12 w-12 rounded-md object-cover border border-orange-500/30 shrink-0" />
-                    ) : (
-                      <div className="h-12 w-12 rounded-md bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0">
-                        <FileCode className="h-6 w-6 text-orange-400" />
-                      </div>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-display font-semibold group-hover:text-orange-300 transition truncate">
-                          {sk.name}
-                        </h3>
-                        {sk.version && (
-                          <Badge variant="secondary" className="text-[10px]">v{sk.version}</Badge>
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground truncate">
-                        by <span className="text-foreground/80">{name}</span>
-                      </div>
-                      {sk.description && (
-                        <p className="text-sm text-muted-foreground line-clamp-2 mt-1.5">
-                          {sk.description}
-                        </p>
-                      )}
-                      {sk.tags?.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {sk.tags.slice(0, 4).map((t) => (
-                            <Badge key={t} variant="outline" className="text-[10px]">
-                              {t}
-                            </Badge>
-                          ))}
+                  <Link to={`/skripts/${sk.id}`} className="block p-4">
+                    <div className="flex gap-3">
+                      {sk.icon_url ? (
+                        <img src={sk.icon_url} alt="" className="h-12 w-12 rounded-md object-cover border border-orange-500/30 shrink-0" />
+                      ) : (
+                        <div className="h-12 w-12 rounded-md bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0">
+                          <FileCode className="h-6 w-6 text-orange-400" />
                         </div>
                       )}
-                      <div className="flex items-center gap-3 text-[11px] text-muted-foreground mt-2 font-mono">
-                        <span className="inline-flex items-center gap-1">
-                          <Download className="h-3 w-3" /> {fmt(sk.downloads)}
-                        </span>
-                        <span>·</span>
-                        <span>{fmtBytes(sk.size_bytes)}</span>
-                        <span>·</span>
-                        <span className="inline-flex items-center gap-1">
-                          <Clock className="h-3 w-3" /> {timeAgo(sk.created_at)}
-                        </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-display font-semibold group-hover:text-orange-300 transition truncate">
+                            {sk.name}
+                          </h3>
+                          {sk.version && (
+                            <Badge variant="secondary" className="text-[10px]">v{sk.version}</Badge>
+                          )}
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate">
+                          by <span className="text-foreground/80">{name}</span>
+                        </div>
+                        {sk.description && (
+                          <p className="text-sm text-muted-foreground line-clamp-2 mt-1.5">
+                            {sk.description}
+                          </p>
+                        )}
+                        {sk.tags?.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {sk.tags.slice(0, 4).map((t) => (
+                              <Badge key={t} variant="outline" className="text-[10px]">
+                                {t}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                        <div className="flex items-center gap-3 text-[11px] text-muted-foreground mt-2 font-mono">
+                          <span className="inline-flex items-center gap-1">
+                            <Download className="h-3 w-3" /> {fmt(sk.downloads)}
+                          </span>
+                          <span>·</span>
+                          <span>{fmtBytes(sk.size_bytes)}</span>
+                          <span>·</span>
+                          <span className="inline-flex items-center gap-1">
+                            <Clock className="h-3 w-3" /> {timeAgo(sk.created_at)}
+                          </span>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="mt-3"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            download(sk);
+                          }}
+                        >
+                          <Download className="h-4 w-4 mr-1" /> Download .sk
+                        </Button>
                       </div>
-                      <Button size="sm" variant="outline" className="mt-3" onClick={() => download(sk)}>
-                        <Download className="h-4 w-4 mr-1" /> Download .sk
-                      </Button>
                     </div>
-                  </div>
+                  </Link>
                 </Card>
               );
             })}
