@@ -81,6 +81,7 @@ import Checkout from "./pages/Checkout.tsx";
 import Partners from "./pages/Partners.tsx";
 import PartnerDetail from "./pages/PartnerDetail.tsx";
 import Skripts from "./pages/Skripts.tsx";
+import SkriptDetail from "./pages/SkriptDetail.tsx";
 
 
 const queryClient = new QueryClient();
@@ -173,6 +174,7 @@ const Shell = () => {
                   <Route path="/servers" element={<Navigate to="/plugins" replace />} />
                   <Route path="/server/:slug" element={<Navigate to="/plugins" replace />} />
                   <Route path="/skripts" element={<Skripts />} />
+                  <Route path="/skripts/:id" element={<SkriptDetail />} />
                   <Route path="/skripts/new" element={<Navigate to="/dashboard#skripts" replace />} />
                   <Route path="/skript/:slug" element={<Navigate to="/plugins" replace />} />
                   <Route path="/cart" element={<Navigate to="/checkout" replace />} />
