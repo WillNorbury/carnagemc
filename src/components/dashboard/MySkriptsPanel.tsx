@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { FileCode, Upload, Loader2, Trash2, ExternalLink, Eye, EyeOff, Download } from "lucide-react";
+import { FileCode, Upload, Loader2, Trash2, ExternalLink, Eye, EyeOff, Download, Image as ImageIcon, X } from "lucide-react";
 
 type Skript = {
   id: string;
