@@ -207,6 +207,32 @@ const MySkriptsPanel = () => {
             />
           </div>
         </div>
+        <div className="mt-3 space-y-1.5">
+          <Label>Icon (optional)</Label>
+          <div className="flex items-center gap-3">
+            <div className="h-14 w-14 rounded-md border border-border/70 bg-background/60 flex items-center justify-center overflow-hidden shrink-0">
+              {iconUrl ? (
+                <img src={iconUrl} alt="Skript icon" className="h-full w-full object-cover" />
+              ) : (
+                <ImageIcon className="h-5 w-5 text-muted-foreground" />
+              )}
+            </div>
+            <Input
+              ref={iconRef}
+              type="file"
+              accept="image/*"
+              disabled={iconUploading}
+              onChange={(e) => e.target.files?.[0] && uploadIcon(e.target.files[0])}
+              className="flex-1"
+            />
+            {iconUrl && (
+              <Button type="button" size="sm" variant="ghost" onClick={() => setIconUrl("")}>
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+            {iconUploading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          </div>
+        </div>
         <Button onClick={upload} disabled={uploading} className="mt-4">
           {uploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
           Upload Skript
