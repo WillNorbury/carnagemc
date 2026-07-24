@@ -42,8 +42,11 @@ const MySkriptsPanel = () => {
   const [description, setDescription] = useState("");
   const [version, setVersion] = useState("");
   const [tagsInput, setTagsInput] = useState("");
+  const [iconUrl, setIconUrl] = useState("");
+  const [iconUploading, setIconUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const iconRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
     if (!user) return;
