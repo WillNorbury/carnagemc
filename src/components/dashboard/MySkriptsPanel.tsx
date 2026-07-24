@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { FileCode, Upload, Loader2, Trash2, ExternalLink, Eye, EyeOff, Download } from "lucide-react";
+import { FileCode, Upload, Loader2, Trash2, ExternalLink, Eye, EyeOff, Download, Image as ImageIcon, X } from "lucide-react";
 
 type Skript = {
   id: string;
@@ -22,6 +22,7 @@ type Skript = {
   tags: string[];
   downloads: number;
   published: boolean;
+  icon_url: string | null;
   created_at: string;
 };
 
@@ -41,8 +42,11 @@ const MySkriptsPanel = () => {
   const [description, setDescription] = useState("");
   const [version, setVersion] = useState("");
   const [tagsInput, setTagsInput] = useState("");
+  const [iconUrl, setIconUrl] = useState("");
+  const [iconUploading, setIconUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const iconRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
     if (!user) return;
@@ -60,8 +64,30 @@ const MySkriptsPanel = () => {
   useEffect(() => { load(); }, [user?.id]);
 
   const reset = () => {
-    setName(""); setDescription(""); setVersion(""); setTagsInput(""); setFile(null);
+    setName(""); setDescription(""); setVersion(""); setTagsInput(""); setFile(null); setIconUrl("");
     if (fileRef.current) fileRef.current.value = "";
+    if (iconRef.current) iconRef.current.value = "";
+  };
+
+  const uploadIcon = async (f: File) => {
+    if (!user) return;
+    setIconUploading(true);
+    try {
+      const safe = f.name.replace(/[^a-zA-Z0-9._-]+/g, "_");
+      const path = `${user.id}/skript-icons/${Date.now()}-${safe}`;
+      const up = await supabase.storage.from("plugin-screenshots").upload(path, f, {
+        contentType: f.type || "image/png",
+        upsert: false,
+      });
+      if (up.error) throw up.error;
+      const { data: pub } = supabase.storage.from("plugin-screenshots").getPublicUrl(path);
+      setIconUrl(pub.publicUrl);
+    } catch (e: any) {
+      toast.error(e.message ?? "Icon upload failed");
+    } finally {
+      setIconUploading(false);
+      if (iconRef.current) iconRef.current.value = "";
+    }
   };
 
   const upload = async () => {
@@ -91,6 +117,7 @@ const MySkriptsPanel = () => {
         filename: file.name,
         storage_path: path,
         size_bytes: file.size,
+        icon_url: iconUrl.trim() || null,
         uploaded_by: user.id,
       });
       if (ins.error) throw ins.error;
@@ -180,6 +207,32 @@ const MySkriptsPanel = () => {
             />
           </div>
         </div>
+        <div className="mt-3 space-y-1.5">
+          <Label>Icon (optional)</Label>
+          <div className="flex items-center gap-3">
+            <div className="h-14 w-14 rounded-md border border-border/70 bg-background/60 flex items-center justify-center overflow-hidden shrink-0">
+              {iconUrl ? (
+                <img src={iconUrl} alt="Skript icon" className="h-full w-full object-cover" />
+              ) : (
+                <ImageIcon className="h-5 w-5 text-muted-foreground" />
+              )}
+            </div>
+            <Input
+              ref={iconRef}
+              type="file"
+              accept="image/*"
+              disabled={iconUploading}
+              onChange={(e) => e.target.files?.[0] && uploadIcon(e.target.files[0])}
+              className="flex-1"
+            />
+            {iconUrl && (
+              <Button type="button" size="sm" variant="ghost" onClick={() => setIconUrl("")}>
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+            {iconUploading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          </div>
+        </div>
         <Button onClick={upload} disabled={uploading} className="mt-4">
           {uploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
           Upload Skript
@@ -194,7 +247,13 @@ const MySkriptsPanel = () => {
         <div className="space-y-2">
           {items.map((s) => (
             <div key={s.id} className="flex items-center gap-3 rounded-lg border border-border/70 p-3">
-              <FileCode className="h-5 w-5 text-orange-400 shrink-0" />
+              {s.icon_url ? (
+                <img src={s.icon_url} alt="" className="h-10 w-10 rounded-md object-cover border border-border/70 shrink-0" />
+              ) : (
+                <div className="h-10 w-10 rounded-md bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0">
+                  <FileCode className="h-5 w-5 text-orange-400" />
+                </div>
+              )}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-medium truncate">{s.name}</span>

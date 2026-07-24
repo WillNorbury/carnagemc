@@ -2676,6 +2676,7 @@ export type Database = {
           description: string | null
           downloads: number
           filename: string
+          icon_url: string | null
           id: string
           name: string
           published: boolean
@@ -2691,6 +2692,7 @@ export type Database = {
           description?: string | null
           downloads?: number
           filename: string
+          icon_url?: string | null
           id?: string
           name: string
           published?: boolean
@@ -2706,6 +2708,7 @@ export type Database = {
           description?: string | null
           downloads?: number
           filename?: string
+          icon_url?: string | null
           id?: string
           name?: string
           published?: boolean
