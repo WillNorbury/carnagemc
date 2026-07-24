@@ -281,6 +281,7 @@ const Dashboard = () => {
         <h2 className="font-display text-2xl font-black mb-3 mt-2">My Stuff</h2>
         <MyFavoritePluginsPanel userId={user!.id} />
         <MyPluginsPanel userId={user!.id} />
+        <MySkriptsPanel />
 
 
         {/* Quick links */}
