@@ -66,7 +66,7 @@ const Skripts = () => {
       .select("*")
       .eq("published", true)
       .order("created_at", { ascending: false });
-    const rows = (data ?? []) as Skript[];
+    const rows = ((data as unknown) ?? []) as Skript[];
     setSkripts(rows);
     const ids = Array.from(new Set(rows.map((r) => r.uploaded_by).filter(Boolean)));
     if (ids.length) {
