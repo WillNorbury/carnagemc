@@ -22,6 +22,7 @@ type Skript = {
   tags: string[];
   downloads: number;
   uploaded_by: string;
+  icon_url: string | null;
   created_at: string;
 };
 
