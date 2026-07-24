@@ -1,0 +1,1 @@
+ALTER TABLE public.user_skripts ADD COLUMN IF NOT EXISTS icon_url TEXT;
