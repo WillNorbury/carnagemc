@@ -31,6 +31,7 @@ import { toast } from "sonner";
 import { Bell, ExternalLink, Loader2, Lock, MessageCircle, Palette, Unlink } from "lucide-react";
 import OrganizationsCard from "@/components/site/OrganizationsCard";
 import TwoFactorCard from "@/components/profile/TwoFactorCard";
+import MyPluginsPanel from "@/components/dashboard/MyPluginsPanel";
 
 const Profile = () => {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -361,6 +362,11 @@ const Profile = () => {
         </Card>
 
         <OrganizationsCard userId={user!.id} />
+
+        <div className="mt-6">
+          <MyPluginsPanel userId={user!.id} />
+        </div>
+
 
 
 
