@@ -171,8 +171,8 @@ const Shell = () => {
                   <Route path="/modpack/:slug" element={<Navigate to="/plugins" replace />} />
                   <Route path="/servers" element={<Navigate to="/plugins" replace />} />
                   <Route path="/server/:slug" element={<Navigate to="/plugins" replace />} />
-                  <Route path="/skripts" element={<Navigate to="/plugins" replace />} />
-                  <Route path="/skripts/new" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/skripts" element={<Skripts />} />
+                  <Route path="/skripts/new" element={<Navigate to="/dashboard#skripts" replace />} />
                   <Route path="/skript/:slug" element={<Navigate to="/plugins" replace />} />
                   <Route path="/cart" element={<Navigate to="/checkout" replace />} />
                   <Route path="/wishlist" element={<Navigate to="/plugins" replace />} />
