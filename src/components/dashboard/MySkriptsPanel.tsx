@@ -247,7 +247,13 @@ const MySkriptsPanel = () => {
         <div className="space-y-2">
           {items.map((s) => (
             <div key={s.id} className="flex items-center gap-3 rounded-lg border border-border/70 p-3">
-              <FileCode className="h-5 w-5 text-orange-400 shrink-0" />
+              {s.icon_url ? (
+                <img src={s.icon_url} alt="" className="h-10 w-10 rounded-md object-cover border border-border/70 shrink-0" />
+              ) : (
+                <div className="h-10 w-10 rounded-md bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0">
+                  <FileCode className="h-5 w-5 text-orange-400" />
+                </div>
+              )}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-medium truncate">{s.name}</span>
