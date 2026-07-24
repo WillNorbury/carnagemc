@@ -150,7 +150,10 @@ const discoverGroup: NavGroup = {
   id: "discover",
   label: "Discover",
   icon: Compass,
-  items: [{ to: "/plugins", label: "Plugins", icon: Puzzle }],
+  items: [
+    { to: "/skripts", label: "Skripts", icon: ScrollText },
+    { to: "/plugins", label: "Plugins", icon: Puzzle },
+  ],
 };
 
 const weatherGroup: NavGroup = {
@@ -179,18 +182,8 @@ const accountGroup: NavGroup = {
   ],
 };
 
-const staticPublicGroupsBefore: NavGroup[] = [
-  websiteGroup,
-  mainGroup,
-  communityGroup,
-];
-const staticPublicGroupsAfter: NavGroup[] = [
-  helpGroup,
-  actionsGroup,
-  discoverGroup,
-  weatherGroup,
-  soonGroup,
-];
+const staticPublicGroupsBefore: NavGroup[] = [websiteGroup, mainGroup, communityGroup];
+const staticPublicGroupsAfter: NavGroup[] = [helpGroup, actionsGroup, discoverGroup, weatherGroup, soonGroup];
 
 export function AppSidebar() {
   const { state, isMobile, setOpenMobile } = useSidebar();
@@ -214,7 +207,7 @@ export function AppSidebar() {
           to: `/partners#partner-${encodeURIComponent(p.label)}`,
           label: p.label as string,
           icon: Link2,
-        }))
+        })),
       );
     })();
     return () => {
@@ -271,9 +264,7 @@ export function AppSidebar() {
             className="flex items-center gap-2 w-full text-left"
           >
             <l.icon className="h-4 w-4 shrink-0" />
-            {!collapsed && (
-              <span className="uppercase tracking-wider text-xs truncate">{l.label}</span>
-            )}
+            {!collapsed && <span className="uppercase tracking-wider text-xs truncate">{l.label}</span>}
           </button>
         ) : isExternal(l.to) ? (
           <a href={l.to} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
