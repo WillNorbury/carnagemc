@@ -275,9 +275,13 @@ const Skripts = () => {
                 >
                   <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent opacity-0 group-hover:opacity-100 transition" />
                   <div className="flex gap-3">
-                    <div className="h-12 w-12 rounded-md bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0">
-                      <FileCode className="h-6 w-6 text-orange-400" />
-                    </div>
+                    {sk.icon_url ? (
+                      <img src={sk.icon_url} alt="" className="h-12 w-12 rounded-md object-cover border border-orange-500/30 shrink-0" />
+                    ) : (
+                      <div className="h-12 w-12 rounded-md bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shrink-0">
+                        <FileCode className="h-6 w-6 text-orange-400" />
+                      </div>
+                    )}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <h3 className="font-display font-semibold group-hover:text-orange-300 transition truncate">
