@@ -64,8 +64,30 @@ const MySkriptsPanel = () => {
   useEffect(() => { load(); }, [user?.id]);
 
   const reset = () => {
-    setName(""); setDescription(""); setVersion(""); setTagsInput(""); setFile(null);
+    setName(""); setDescription(""); setVersion(""); setTagsInput(""); setFile(null); setIconUrl("");
     if (fileRef.current) fileRef.current.value = "";
+    if (iconRef.current) iconRef.current.value = "";
+  };
+
+  const uploadIcon = async (f: File) => {
+    if (!user) return;
+    setIconUploading(true);
+    try {
+      const safe = f.name.replace(/[^a-zA-Z0-9._-]+/g, "_");
+      const path = `${user.id}/skript-icons/${Date.now()}-${safe}`;
+      const up = await supabase.storage.from("plugin-screenshots").upload(path, f, {
+        contentType: f.type || "image/png",
+        upsert: false,
+      });
+      if (up.error) throw up.error;
+      const { data: pub } = supabase.storage.from("plugin-screenshots").getPublicUrl(path);
+      setIconUrl(pub.publicUrl);
+    } catch (e: any) {
+      toast.error(e.message ?? "Icon upload failed");
+    } finally {
+      setIconUploading(false);
+      if (iconRef.current) iconRef.current.value = "";
+    }
   };
 
   const upload = async () => {
@@ -95,6 +117,7 @@ const MySkriptsPanel = () => {
         filename: file.name,
         storage_path: path,
         size_bytes: file.size,
+        icon_url: iconUrl.trim() || null,
         uploaded_by: user.id,
       });
       if (ins.error) throw ins.error;
