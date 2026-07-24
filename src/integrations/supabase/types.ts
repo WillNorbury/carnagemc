@@ -2670,6 +2670,54 @@ export type Database = {
         }
         Relationships: []
       }
+      user_skripts: {
+        Row: {
+          created_at: string
+          description: string | null
+          downloads: number
+          filename: string
+          id: string
+          name: string
+          published: boolean
+          size_bytes: number | null
+          storage_path: string
+          tags: string[]
+          updated_at: string
+          uploaded_by: string
+          version: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          downloads?: number
+          filename: string
+          id?: string
+          name: string
+          published?: boolean
+          size_bytes?: number | null
+          storage_path: string
+          tags?: string[]
+          updated_at?: string
+          uploaded_by: string
+          version?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          downloads?: number
+          filename?: string
+          id?: string
+          name?: string
+          published?: boolean
+          size_bytes?: number | null
+          storage_path?: string
+          tags?: string[]
+          updated_at?: string
+          uploaded_by?: string
+          version?: string | null
+        }
+        Relationships: []
+      }
       user_streaks: {
         Row: {
           created_at: string
@@ -3079,6 +3127,10 @@ export type Database = {
       }
       record_plugin_download: {
         Args: { _plugin_id: string }
+        Returns: undefined
+      }
+      record_user_skript_download: {
+        Args: { _skript_id: string }
         Returns: undefined
       }
       record_vote_streak: {
