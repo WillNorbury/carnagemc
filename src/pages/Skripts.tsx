@@ -123,12 +123,21 @@ const Skripts = () => {
       return;
     }
     await supabase.rpc("record_user_skript_download" as any, { _skript_id: sk.id });
-    const a = document.createElement("a");
-    a.href = data.signedUrl;
-    a.download = sk.filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    try {
+      const res = await fetch(data.signedUrl);
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = sk.filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      window.open(data.signedUrl, "_blank", "noopener");
+    }
     setSkripts((prev) =>
       prev.map((s) => (s.id === sk.id ? { ...s, downloads: s.downloads + 1 } : s)),
     );
