@@ -27,6 +27,7 @@ import {
   ShieldCheck,
   Vote as VoteIcon,
   ScrollText,
+  Terminal,
   Puzzle,
   FileText,
   LifeBuoy,
