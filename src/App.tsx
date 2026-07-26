@@ -175,6 +175,7 @@ const Shell = () => {
                   <Route path="/servers" element={<Navigate to="/plugins" replace />} />
                   <Route path="/server/:slug" element={<Navigate to="/plugins" replace />} />
                   <Route path="/skripts" element={<Skripts />} />
+                  <Route path="/commands" element={<Commands />} />
                   <Route path="/skripts/:id" element={<SkriptDetail />} />
                   <Route path="/skripts/new" element={<Navigate to="/dashboard#skripts" replace />} />
                   <Route path="/skript/:slug" element={<Navigate to="/plugins" replace />} />
