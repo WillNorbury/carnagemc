@@ -128,6 +128,7 @@ const helpGroup: NavGroup = {
   items: [
     { to: "/rules", label: "Rules", icon: ScrollText },
     { to: "/faq", label: "FAQ", icon: HelpCircle },
+    { to: "/commands", label: "Commands", icon: Terminal },
     { to: "/wiki", label: "Wiki", icon: BookOpen },
     { to: "/install", label: "How to Install", icon: Download },
     { to: "/support", label: "Support", icon: LifeBuoy },
