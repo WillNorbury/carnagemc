@@ -63,6 +63,7 @@ const Servers = () => {
   const [rows, setRows] = useState<Row[]>([]);
   const [live, setLive] = useState<Record<string, Live>>({});
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<"featured" | "players" | "updated" | "name">("featured");
