@@ -66,9 +66,26 @@ const MyServersPanel = () => {
 
   const reset = () => {
     setName(""); setIp(""); setPort(""); setDescription(""); setLongDescription(""); setVersion("");
-    setTagsInput(""); setWebsiteUrl(""); setDiscordUrl(""); setIconUrl("");
+    setTagsInput(""); setWebsiteUrl(""); setDiscordUrl(""); setIconUrl(""); setEditingId(null);
     if (iconRef.current) iconRef.current.value = "";
   };
+
+  const startEdit = (r: Row) => {
+    setEditingId(r.id);
+    setName(r.name);
+    setIp(r.ip);
+    setPort(r.port ? String(r.port) : "");
+    setDescription(r.description ?? "");
+    setLongDescription(r.long_description ?? "");
+    setVersion(r.version ?? "");
+    setTagsInput((r.tags ?? []).join(", "));
+    setWebsiteUrl(r.website_url ?? "");
+    setDiscordUrl(r.discord_url ?? "");
+    setIconUrl(r.icon_url ?? "");
+    setOpen(true);
+    if (typeof window !== "undefined") window.scrollTo({ top: window.scrollY, behavior: "auto" });
+  };
+
 
   const uploadIcon = async (f: File) => {
     if (!user) return;
