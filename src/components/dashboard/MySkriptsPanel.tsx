@@ -226,7 +226,7 @@ const MySkriptsPanel = () => {
             <Input id="sk-tags" value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} placeholder="utility, anti-afk" />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="sk-file">Skript file (.sk)</Label>
+            <Label htmlFor="sk-file">{editingId ? "Replace file (.sk, optional)" : "Skript file (.sk)"}</Label>
             <Input
               id="sk-file"
               ref={fileRef}
