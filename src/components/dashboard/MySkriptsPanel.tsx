@@ -65,9 +65,21 @@ const MySkriptsPanel = () => {
   useEffect(() => { load(); }, [user?.id]);
 
   const reset = () => {
-    setName(""); setDescription(""); setVersion(""); setTagsInput(""); setFile(null); setIconUrl("");
+    setName(""); setDescription(""); setVersion(""); setTagsInput(""); setFile(null); setIconUrl(""); setEditingId(null);
     if (fileRef.current) fileRef.current.value = "";
     if (iconRef.current) iconRef.current.value = "";
+  };
+
+  const startEdit = (sk: Skript) => {
+    setEditingId(sk.id);
+    setName(sk.name);
+    setDescription(sk.description ?? "");
+    setVersion(sk.version ?? "");
+    setTagsInput((sk.tags ?? []).join(", "));
+    setIconUrl(sk.icon_url ?? "");
+    setFile(null);
+    if (fileRef.current) fileRef.current.value = "";
+    document.getElementById("skripts")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const uploadIcon = async (f: File) => {
