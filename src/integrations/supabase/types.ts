@@ -2670,6 +2670,69 @@ export type Database = {
         }
         Relationships: []
       }
+      user_servers: {
+        Row: {
+          banner_url: string | null
+          created_at: string
+          description: string | null
+          discord_url: string | null
+          featured: boolean
+          icon_url: string | null
+          id: string
+          ip: string
+          long_description: string | null
+          name: string
+          port: number | null
+          published: boolean
+          slug: string
+          tags: string[]
+          updated_at: string
+          user_id: string
+          version: string | null
+          website_url: string | null
+        }
+        Insert: {
+          banner_url?: string | null
+          created_at?: string
+          description?: string | null
+          discord_url?: string | null
+          featured?: boolean
+          icon_url?: string | null
+          id?: string
+          ip: string
+          long_description?: string | null
+          name: string
+          port?: number | null
+          published?: boolean
+          slug: string
+          tags?: string[]
+          updated_at?: string
+          user_id: string
+          version?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          banner_url?: string | null
+          created_at?: string
+          description?: string | null
+          discord_url?: string | null
+          featured?: boolean
+          icon_url?: string | null
+          id?: string
+          ip?: string
+          long_description?: string | null
+          name?: string
+          port?: number | null
+          published?: boolean
+          slug?: string
+          tags?: string[]
+          updated_at?: string
+          user_id?: string
+          version?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       user_skripts: {
         Row: {
           created_at: string
