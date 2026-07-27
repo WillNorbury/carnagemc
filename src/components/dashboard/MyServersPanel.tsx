@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Server as ServerIcon, Loader2, Trash2, Eye, EyeOff, ExternalLink, Image as ImageIcon, X, Plus } from "lucide-react";
+import { Server as ServerIcon, Loader2, Trash2, Eye, EyeOff, ExternalLink, Image as ImageIcon, X, Plus, Pencil, Save } from "lucide-react";
 
 type Row = {
   id: string;
@@ -18,6 +18,7 @@ type Row = {
   ip: string;
   port: number | null;
   description: string | null;
+  long_description: string | null;
   version: string | null;
   tags: string[];
   icon_url: string | null;
