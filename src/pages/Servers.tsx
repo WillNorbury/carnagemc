@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -62,6 +63,7 @@ const Servers = () => {
   const [rows, setRows] = useState<Row[]>([]);
   const [live, setLive] = useState<Record<string, Live>>({});
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<"featured" | "players" | "updated" | "name">("featured");
@@ -195,7 +197,7 @@ const Servers = () => {
             </div>
             <div className="grid md:grid-cols-3 gap-3">
               {featured.map((r) => (
-                <Card key={r.id} className="relative p-4 h-full overflow-hidden border-orange-500/20 bg-gradient-to-br from-card via-card to-orange-500/5 hover:border-orange-500/60 transition group">
+                <Card key={r.id} onClick={() => navigate(`/server/${r.slug}`)} className="relative cursor-pointer p-4 h-full overflow-hidden border-orange-500/20 bg-gradient-to-br from-card via-card to-orange-500/5 hover:border-orange-500/60 transition group">
                   <div className="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-orange-400 via-orange-500 to-rose-600 opacity-70 group-hover:opacity-100 transition" />
                   <div className="flex gap-3 items-start pl-2">
                     {r.icon_url ? (
@@ -293,7 +295,9 @@ const Servers = () => {
                     )}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-display font-semibold truncate group-hover:text-orange-300 transition">{r.name}</span>
+                        <Link to={`/server/${r.slug}`} className="font-display font-semibold truncate group-hover:text-orange-300 transition hover:underline">
+                          {r.name}
+                        </Link>
                         <Badge variant="outline" className={l?.online ? "border-emerald-500/40 text-emerald-400" : "text-muted-foreground"}>
                           <span className={`h-1.5 w-1.5 rounded-full mr-1.5 ${l?.online ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground"}`} />
                           {l ? (l.online ? "Online" : "Offline") : "…"}
@@ -303,6 +307,7 @@ const Servers = () => {
                         <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{r.description}</p>
                       )}
                     </div>
+
                   </div>
 
                   <button
