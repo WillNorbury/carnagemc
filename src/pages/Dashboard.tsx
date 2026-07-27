@@ -283,6 +283,8 @@ const Dashboard = () => {
         <MyFavoritePluginsPanel userId={user!.id} />
         <MyPluginsPanel userId={user!.id} />
         <MySkriptsPanel />
+        <MyServersPanel />
+
 
 
         {/* Quick links */}
