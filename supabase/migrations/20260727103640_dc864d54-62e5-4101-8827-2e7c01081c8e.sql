@@ -1,0 +1,2 @@
+ALTER TABLE public.item_reviews DROP CONSTRAINT item_reviews_target_type_check;
+ALTER TABLE public.item_reviews ADD CONSTRAINT item_reviews_target_type_check CHECK (target_type = ANY (ARRAY['discover_item'::text,'plugin'::text,'store_item'::text,'server'::text,'skript'::text,'mod'::text]));
