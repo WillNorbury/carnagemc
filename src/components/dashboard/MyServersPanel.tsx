@@ -38,6 +38,7 @@ const MyServersPanel = () => {
   const [ip, setIp] = useState("");
   const [port, setPort] = useState("");
   const [description, setDescription] = useState("");
+  const [longDescription, setLongDescription] = useState("");
   const [version, setVersion] = useState("");
   const [tagsInput, setTagsInput] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
@@ -62,7 +63,7 @@ const MyServersPanel = () => {
   useEffect(() => { load(); }, [user?.id]);
 
   const reset = () => {
-    setName(""); setIp(""); setPort(""); setDescription(""); setVersion("");
+    setName(""); setIp(""); setPort(""); setDescription(""); setLongDescription(""); setVersion("");
     setTagsInput(""); setWebsiteUrl(""); setDiscordUrl(""); setIconUrl("");
     if (iconRef.current) iconRef.current.value = "";
   };
@@ -97,6 +98,7 @@ const MyServersPanel = () => {
       ip: ip.trim(),
       port: port.trim() ? Number(port) : null,
       description: description.trim() || null,
+      long_description: longDescription.trim() || null,
       version: version.trim() || null,
       tags: tagsInput.split(",").map((t) => t.trim()).filter(Boolean),
       website_url: websiteUrl.trim() || null,
@@ -182,9 +184,25 @@ const MyServersPanel = () => {
             <Input value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} placeholder="Survival, SMP, Economy" />
           </div>
           <div>
-            <Label>Description</Label>
-            <Textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What makes your server great?" />
+            <Label>Short description</Label>
+            <Input
+              value={description}
+              maxLength={160}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="One-line pitch shown on the servers list"
+            />
+            <p className="text-[11px] text-muted-foreground mt-1">{description.length}/160 — shown on cards and search results.</p>
           </div>
+          <div>
+            <Label>Full description</Label>
+            <Textarea
+              rows={5}
+              value={longDescription}
+              onChange={(e) => setLongDescription(e.target.value)}
+              placeholder="Markdown supported — shown on your server page"
+            />
+          </div>
+
           <div>
             <Label>Icon</Label>
             <div className="flex items-center gap-3">
