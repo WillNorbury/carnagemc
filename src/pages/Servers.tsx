@@ -293,7 +293,9 @@ const Servers = () => {
                     )}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-display font-semibold truncate group-hover:text-orange-300 transition">{r.name}</span>
+                        <Link to={`/server/${r.slug}`} className="font-display font-semibold truncate group-hover:text-orange-300 transition hover:underline">
+                          {r.name}
+                        </Link>
                         <Badge variant="outline" className={l?.online ? "border-emerald-500/40 text-emerald-400" : "text-muted-foreground"}>
                           <span className={`h-1.5 w-1.5 rounded-full mr-1.5 ${l?.online ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground"}`} />
                           {l ? (l.online ? "Online" : "Offline") : "…"}
@@ -303,6 +305,7 @@ const Servers = () => {
                         <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{r.description}</p>
                       )}
                     </div>
+
                   </div>
 
                   <button
