@@ -90,7 +90,7 @@ export default function ServerDetail() {
     toast.success("IP copied");
   };
 
-  if (loading) return <PageLoader />;
+  if (loading) return <PageLoader loading />;
 
   if (!row) {
     return (
