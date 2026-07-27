@@ -82,6 +82,7 @@ import Partners from "./pages/Partners.tsx";
 import PartnerDetail from "./pages/PartnerDetail.tsx";
 import Skripts from "./pages/Skripts.tsx";
 import Commands from "./pages/Commands.tsx";
+import Servers from "./pages/Servers.tsx";
 import SkriptDetail from "./pages/SkriptDetail.tsx";
 
 
