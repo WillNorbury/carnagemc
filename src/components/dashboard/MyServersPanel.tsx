@@ -283,6 +283,9 @@ const MyServersPanel = () => {
                   {r.port ? `${r.ip}:${r.port}` : r.ip}
                 </div>
               </div>
+              <Button variant="ghost" size="icon" onClick={() => startEdit(r)} title="Edit">
+                <Pencil className="h-4 w-4" />
+              </Button>
               <Button variant="ghost" size="icon" onClick={() => togglePublished(r)} title={r.published ? "Unpublish" : "Publish"}>
                 {r.published ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
               </Button>
