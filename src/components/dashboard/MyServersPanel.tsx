@@ -245,10 +245,13 @@ const MyServersPanel = () => {
               {iconUploading && <Loader2 className="h-4 w-4 animate-spin" />}
             </div>
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            {editingId && (
+              <Button variant="outline" onClick={() => { reset(); setOpen(false); }}>Cancel edit</Button>
+            )}
             <Button onClick={submit} disabled={saving}>
-              {saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Plus className="h-4 w-4 mr-1" />}
-              {saving ? "Saving…" : "Add server"}
+              {saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : editingId ? <Save className="h-4 w-4 mr-1" /> : <Plus className="h-4 w-4 mr-1" />}
+              {saving ? "Saving…" : editingId ? "Save changes" : "Add server"}
             </Button>
           </div>
         </div>
