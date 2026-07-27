@@ -262,10 +262,15 @@ const MySkriptsPanel = () => {
             {iconUploading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           </div>
         </div>
-        <Button onClick={upload} disabled={uploading} className="mt-4">
-          {uploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
-          Upload Skript
-        </Button>
+        <div className="mt-4 flex gap-2">
+          <Button onClick={upload} disabled={uploading}>
+            {uploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : editingId ? <Save className="h-4 w-4 mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
+            {editingId ? "Save changes" : "Upload Skript"}
+          </Button>
+          {editingId && (
+            <Button variant="outline" onClick={reset} disabled={uploading}>Cancel edit</Button>
+          )}
+        </div>
       </div>
 
       {loading ? (
