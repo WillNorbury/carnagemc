@@ -155,6 +155,7 @@ const discoverGroup: NavGroup = {
   items: [
     { to: "/skripts", label: "Skripts", icon: ScrollText },
     { to: "/plugins", label: "Plugins", icon: Puzzle },
+    { to: "/servers", label: "Servers", icon: ServerIconSidebar },
   ],
 };
 
