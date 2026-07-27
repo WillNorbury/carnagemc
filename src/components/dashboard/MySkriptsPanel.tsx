@@ -105,36 +105,51 @@ const MySkriptsPanel = () => {
 
   const upload = async () => {
     if (!user) return;
-    if (!file || !name.trim()) {
+    if (!name.trim()) {
+      toast.error("Name is required");
+      return;
+    }
+    if (!editingId && !file) {
       toast.error("Name and file are required");
       return;
     }
     setUploading(true);
     try {
-      const safe = file.name.replace(/[^a-zA-Z0-9._-]+/g, "_");
-      const path = `${user.id}/${Date.now()}-${safe}`;
-      const up = await supabase.storage.from("user-skripts").upload(path, file, {
-        contentType: file.type || "text/plain",
-        upsert: false,
-      });
-      if (up.error) throw up.error;
       const tags = tagsInput
         .split(",")
         .map((t) => t.trim())
         .filter(Boolean);
-      const ins = await supabase.from("user_skripts" as any).insert({
+
+      let fileFields: Record<string, any> = {};
+      if (file) {
+        const safe = file.name.replace(/[^a-zA-Z0-9._-]+/g, "_");
+        const path = `${user.id}/${Date.now()}-${safe}`;
+        const up = await supabase.storage.from("user-skripts").upload(path, file, {
+          contentType: file.type || "text/plain",
+          upsert: false,
+        });
+        if (up.error) throw up.error;
+        fileFields = { filename: file.name, storage_path: path, size_bytes: file.size };
+      }
+
+      const base = {
         name: name.trim(),
         description: description.trim() || null,
         version: version.trim() || null,
         tags,
-        filename: file.name,
-        storage_path: path,
-        size_bytes: file.size,
         icon_url: iconUrl.trim() || null,
-        uploaded_by: user.id,
-      });
-      if (ins.error) throw ins.error;
-      toast.success("Skript uploaded");
+        ...fileFields,
+      };
+
+      if (editingId) {
+        const upd = await supabase.from("user_skripts" as any).update(base as any).eq("id", editingId);
+        if (upd.error) throw upd.error;
+        toast.success("Skript updated");
+      } else {
+        const ins = await supabase.from("user_skripts" as any).insert({ ...base, uploaded_by: user.id } as any);
+        if (ins.error) throw ins.error;
+        toast.success("Skript uploaded");
+      }
       reset();
       load();
     } catch (e: any) {
@@ -143,6 +158,7 @@ const MySkriptsPanel = () => {
       setUploading(false);
     }
   };
+
 
   const togglePublished = async (sk: Skript) => {
     const { error } = await supabase
