@@ -182,9 +182,25 @@ const MyServersPanel = () => {
             <Input value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} placeholder="Survival, SMP, Economy" />
           </div>
           <div>
-            <Label>Description</Label>
-            <Textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What makes your server great?" />
+            <Label>Short description</Label>
+            <Input
+              value={description}
+              maxLength={160}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="One-line pitch shown on the servers list"
+            />
+            <p className="text-[11px] text-muted-foreground mt-1">{description.length}/160 — shown on cards and search results.</p>
           </div>
+          <div>
+            <Label>Full description</Label>
+            <Textarea
+              rows={5}
+              value={longDescription}
+              onChange={(e) => setLongDescription(e.target.value)}
+              placeholder="Markdown supported — shown on your server page"
+            />
+          </div>
+
           <div>
             <Label>Icon</Label>
             <div className="flex items-center gap-3">
