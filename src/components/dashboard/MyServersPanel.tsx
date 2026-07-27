@@ -38,6 +38,7 @@ const MyServersPanel = () => {
   const [ip, setIp] = useState("");
   const [port, setPort] = useState("");
   const [description, setDescription] = useState("");
+  const [longDescription, setLongDescription] = useState("");
   const [version, setVersion] = useState("");
   const [tagsInput, setTagsInput] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
@@ -62,7 +63,7 @@ const MyServersPanel = () => {
   useEffect(() => { load(); }, [user?.id]);
 
   const reset = () => {
-    setName(""); setIp(""); setPort(""); setDescription(""); setVersion("");
+    setName(""); setIp(""); setPort(""); setDescription(""); setLongDescription(""); setVersion("");
     setTagsInput(""); setWebsiteUrl(""); setDiscordUrl(""); setIconUrl("");
     if (iconRef.current) iconRef.current.value = "";
   };
@@ -97,6 +98,7 @@ const MyServersPanel = () => {
       ip: ip.trim(),
       port: port.trim() ? Number(port) : null,
       description: description.trim() || null,
+      long_description: longDescription.trim() || null,
       version: version.trim() || null,
       tags: tagsInput.split(",").map((t) => t.trim()).filter(Boolean),
       website_url: websiteUrl.trim() || null,
