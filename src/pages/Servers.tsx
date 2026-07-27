@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -195,7 +196,7 @@ const Servers = () => {
             </div>
             <div className="grid md:grid-cols-3 gap-3">
               {featured.map((r) => (
-                <Card key={r.id} className="relative p-4 h-full overflow-hidden border-orange-500/20 bg-gradient-to-br from-card via-card to-orange-500/5 hover:border-orange-500/60 transition group">
+                <Card key={r.id} onClick={() => navigate(`/server/${r.slug}`)} className="relative cursor-pointer p-4 h-full overflow-hidden border-orange-500/20 bg-gradient-to-br from-card via-card to-orange-500/5 hover:border-orange-500/60 transition group">
                   <div className="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-orange-400 via-orange-500 to-rose-600 opacity-70 group-hover:opacity-100 transition" />
                   <div className="flex gap-3 items-start pl-2">
                     {r.icon_url ? (
