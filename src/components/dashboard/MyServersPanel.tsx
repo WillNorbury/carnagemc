@@ -111,8 +111,7 @@ const MyServersPanel = () => {
     if (!user) return;
     if (!name.trim() || !ip.trim()) return toast.error("Server name and IP are required");
     setSaving(true);
-    const { error } = await supabase.from("user_servers" as any).insert({
-      user_id: user.id,
+    const payload: any = {
       name: name.trim(),
       ip: ip.trim(),
       port: port.trim() ? Number(port) : null,
@@ -123,14 +122,18 @@ const MyServersPanel = () => {
       website_url: websiteUrl.trim() || null,
       discord_url: discordUrl.trim() || null,
       icon_url: iconUrl || null,
-    } as any);
+    };
+    const { error } = editingId
+      ? await supabase.from("user_servers" as any).update(payload).eq("id", editingId)
+      : await supabase.from("user_servers" as any).insert({ ...payload, user_id: user.id });
     setSaving(false);
     if (error) return toast.error(error.message);
-    toast.success("Server added to /servers");
+    toast.success(editingId ? "Server updated" : "Server added to /servers");
     reset();
     setOpen(false);
     load();
   };
+
 
   const togglePublished = async (r: Row) => {
     const { error } = await supabase
