@@ -83,6 +83,7 @@ import PartnerDetail from "./pages/PartnerDetail.tsx";
 import Skripts from "./pages/Skripts.tsx";
 import Commands from "./pages/Commands.tsx";
 import Servers from "./pages/Servers.tsx";
+import ServerDetail from "./pages/ServerDetail.tsx";
 import SkriptDetail from "./pages/SkriptDetail.tsx";
 
 
@@ -174,7 +175,8 @@ const Shell = () => {
                   <Route path="/modpacks" element={<Navigate to="/plugins" replace />} />
                   <Route path="/modpack/:slug" element={<Navigate to="/plugins" replace />} />
                   
-                  <Route path="/server/:slug" element={<Navigate to="/plugins" replace />} />
+                  <Route path="/server/:slug" element={<ServerDetail />} />
+                  <Route path="/servers/:slug" element={<ServerDetail />} />
                   <Route path="/skripts" element={<Skripts />} />
                   <Route path="/commands" element={<Commands />} />
                   <Route path="/servers" element={<Servers />} />
