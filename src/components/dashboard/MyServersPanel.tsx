@@ -166,7 +166,7 @@ const MyServersPanel = () => {
           <Button variant="outline" size="sm" asChild>
             <Link to="/servers"><ExternalLink className="h-4 w-4 mr-1" /> View /servers</Link>
           </Button>
-          <Button size="sm" onClick={() => setOpen((v) => !v)}>
+          <Button size="sm" onClick={() => { if (open) { reset(); setOpen(false); } else { reset(); setOpen(true); } }}>
             {open ? <X className="h-4 w-4 mr-1" /> : <Plus className="h-4 w-4 mr-1" />}
             {open ? "Cancel" : "Add server"}
           </Button>
