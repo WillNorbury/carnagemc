@@ -299,6 +299,9 @@ const MySkriptsPanel = () => {
                   {s.filename} · {s.downloads} downloads · {new Date(s.created_at).toLocaleDateString()}
                 </p>
               </div>
+              <Button size="sm" variant="ghost" onClick={() => startEdit(s)} title="Edit">
+                <Pencil className="h-4 w-4" />
+              </Button>
               <Button size="sm" variant="ghost" onClick={() => download(s)} title="Download">
                 <Download className="h-4 w-4" />
               </Button>
