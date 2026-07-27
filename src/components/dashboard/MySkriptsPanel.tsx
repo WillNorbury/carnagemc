@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { FileCode, Upload, Loader2, Trash2, ExternalLink, Eye, EyeOff, Download, Image as ImageIcon, X } from "lucide-react";
+import { FileCode, Upload, Loader2, Trash2, ExternalLink, Eye, EyeOff, Download, Image as ImageIcon, X, Pencil, Save } from "lucide-react";
 
 type Skript = {
   id: string;
@@ -45,6 +45,7 @@ const MySkriptsPanel = () => {
   const [iconUrl, setIconUrl] = useState("");
   const [iconUploading, setIconUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const iconRef = useRef<HTMLInputElement>(null);
 
@@ -64,9 +65,21 @@ const MySkriptsPanel = () => {
   useEffect(() => { load(); }, [user?.id]);
 
   const reset = () => {
-    setName(""); setDescription(""); setVersion(""); setTagsInput(""); setFile(null); setIconUrl("");
+    setName(""); setDescription(""); setVersion(""); setTagsInput(""); setFile(null); setIconUrl(""); setEditingId(null);
     if (fileRef.current) fileRef.current.value = "";
     if (iconRef.current) iconRef.current.value = "";
+  };
+
+  const startEdit = (sk: Skript) => {
+    setEditingId(sk.id);
+    setName(sk.name);
+    setDescription(sk.description ?? "");
+    setVersion(sk.version ?? "");
+    setTagsInput((sk.tags ?? []).join(", "));
+    setIconUrl(sk.icon_url ?? "");
+    setFile(null);
+    if (fileRef.current) fileRef.current.value = "";
+    document.getElementById("skripts")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const uploadIcon = async (f: File) => {
@@ -92,36 +105,51 @@ const MySkriptsPanel = () => {
 
   const upload = async () => {
     if (!user) return;
-    if (!file || !name.trim()) {
+    if (!name.trim()) {
+      toast.error("Name is required");
+      return;
+    }
+    if (!editingId && !file) {
       toast.error("Name and file are required");
       return;
     }
     setUploading(true);
     try {
-      const safe = file.name.replace(/[^a-zA-Z0-9._-]+/g, "_");
-      const path = `${user.id}/${Date.now()}-${safe}`;
-      const up = await supabase.storage.from("user-skripts").upload(path, file, {
-        contentType: file.type || "text/plain",
-        upsert: false,
-      });
-      if (up.error) throw up.error;
       const tags = tagsInput
         .split(",")
         .map((t) => t.trim())
         .filter(Boolean);
-      const ins = await supabase.from("user_skripts" as any).insert({
+
+      let fileFields: Record<string, any> = {};
+      if (file) {
+        const safe = file.name.replace(/[^a-zA-Z0-9._-]+/g, "_");
+        const path = `${user.id}/${Date.now()}-${safe}`;
+        const up = await supabase.storage.from("user-skripts").upload(path, file, {
+          contentType: file.type || "text/plain",
+          upsert: false,
+        });
+        if (up.error) throw up.error;
+        fileFields = { filename: file.name, storage_path: path, size_bytes: file.size };
+      }
+
+      const base = {
         name: name.trim(),
         description: description.trim() || null,
         version: version.trim() || null,
         tags,
-        filename: file.name,
-        storage_path: path,
-        size_bytes: file.size,
         icon_url: iconUrl.trim() || null,
-        uploaded_by: user.id,
-      });
-      if (ins.error) throw ins.error;
-      toast.success("Skript uploaded");
+        ...fileFields,
+      };
+
+      if (editingId) {
+        const upd = await supabase.from("user_skripts" as any).update(base as any).eq("id", editingId);
+        if (upd.error) throw upd.error;
+        toast.success("Skript updated");
+      } else {
+        const ins = await supabase.from("user_skripts" as any).insert({ ...base, uploaded_by: user.id } as any);
+        if (ins.error) throw ins.error;
+        toast.success("Skript uploaded");
+      }
       reset();
       load();
     } catch (e: any) {
@@ -130,6 +158,7 @@ const MySkriptsPanel = () => {
       setUploading(false);
     }
   };
+
 
   const togglePublished = async (sk: Skript) => {
     const { error } = await supabase
@@ -197,7 +226,7 @@ const MySkriptsPanel = () => {
             <Input id="sk-tags" value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} placeholder="utility, anti-afk" />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="sk-file">Skript file (.sk)</Label>
+            <Label htmlFor="sk-file">{editingId ? "Replace file (.sk, optional)" : "Skript file (.sk)"}</Label>
             <Input
               id="sk-file"
               ref={fileRef}
@@ -233,10 +262,15 @@ const MySkriptsPanel = () => {
             {iconUploading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           </div>
         </div>
-        <Button onClick={upload} disabled={uploading} className="mt-4">
-          {uploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
-          Upload Skript
-        </Button>
+        <div className="mt-4 flex gap-2">
+          <Button onClick={upload} disabled={uploading}>
+            {uploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : editingId ? <Save className="h-4 w-4 mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
+            {editingId ? "Save changes" : "Upload Skript"}
+          </Button>
+          {editingId && (
+            <Button variant="outline" onClick={reset} disabled={uploading}>Cancel edit</Button>
+          )}
+        </div>
       </div>
 
       {loading ? (
@@ -265,6 +299,9 @@ const MySkriptsPanel = () => {
                   {s.filename} · {s.downloads} downloads · {new Date(s.created_at).toLocaleDateString()}
                 </p>
               </div>
+              <Button size="sm" variant="ghost" onClick={() => startEdit(s)} title="Edit">
+                <Pencil className="h-4 w-4" />
+              </Button>
               <Button size="sm" variant="ghost" onClick={() => download(s)} title="Download">
                 <Download className="h-4 w-4" />
               </Button>

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Server as ServerIcon, Loader2, Trash2, Eye, EyeOff, ExternalLink, Image as ImageIcon, X, Plus } from "lucide-react";
+import { Server as ServerIcon, Loader2, Trash2, Eye, EyeOff, ExternalLink, Image as ImageIcon, X, Plus, Pencil, Save } from "lucide-react";
 
 type Row = {
   id: string;
@@ -18,6 +18,7 @@ type Row = {
   ip: string;
   port: number | null;
   description: string | null;
+  long_description: string | null;
   version: string | null;
   tags: string[];
   icon_url: string | null;
@@ -33,6 +34,7 @@ const MyServersPanel = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const [name, setName] = useState("");
   const [ip, setIp] = useState("");
@@ -64,9 +66,26 @@ const MyServersPanel = () => {
 
   const reset = () => {
     setName(""); setIp(""); setPort(""); setDescription(""); setLongDescription(""); setVersion("");
-    setTagsInput(""); setWebsiteUrl(""); setDiscordUrl(""); setIconUrl("");
+    setTagsInput(""); setWebsiteUrl(""); setDiscordUrl(""); setIconUrl(""); setEditingId(null);
     if (iconRef.current) iconRef.current.value = "";
   };
+
+  const startEdit = (r: Row) => {
+    setEditingId(r.id);
+    setName(r.name);
+    setIp(r.ip);
+    setPort(r.port ? String(r.port) : "");
+    setDescription(r.description ?? "");
+    setLongDescription(r.long_description ?? "");
+    setVersion(r.version ?? "");
+    setTagsInput((r.tags ?? []).join(", "));
+    setWebsiteUrl(r.website_url ?? "");
+    setDiscordUrl(r.discord_url ?? "");
+    setIconUrl(r.icon_url ?? "");
+    setOpen(true);
+    if (typeof window !== "undefined") window.scrollTo({ top: window.scrollY, behavior: "auto" });
+  };
+
 
   const uploadIcon = async (f: File) => {
     if (!user) return;
@@ -92,8 +111,7 @@ const MyServersPanel = () => {
     if (!user) return;
     if (!name.trim() || !ip.trim()) return toast.error("Server name and IP are required");
     setSaving(true);
-    const { error } = await supabase.from("user_servers" as any).insert({
-      user_id: user.id,
+    const payload: any = {
       name: name.trim(),
       ip: ip.trim(),
       port: port.trim() ? Number(port) : null,
@@ -104,14 +122,18 @@ const MyServersPanel = () => {
       website_url: websiteUrl.trim() || null,
       discord_url: discordUrl.trim() || null,
       icon_url: iconUrl || null,
-    } as any);
+    };
+    const { error } = editingId
+      ? await supabase.from("user_servers" as any).update(payload).eq("id", editingId)
+      : await supabase.from("user_servers" as any).insert({ ...payload, user_id: user.id });
     setSaving(false);
     if (error) return toast.error(error.message);
-    toast.success("Server added to /servers");
+    toast.success(editingId ? "Server updated" : "Server added to /servers");
     reset();
     setOpen(false);
     load();
   };
+
 
   const togglePublished = async (r: Row) => {
     const { error } = await supabase
@@ -144,7 +166,7 @@ const MyServersPanel = () => {
           <Button variant="outline" size="sm" asChild>
             <Link to="/servers"><ExternalLink className="h-4 w-4 mr-1" /> View /servers</Link>
           </Button>
-          <Button size="sm" onClick={() => setOpen((v) => !v)}>
+          <Button size="sm" onClick={() => { if (open) { reset(); setOpen(false); } else { reset(); setOpen(true); } }}>
             {open ? <X className="h-4 w-4 mr-1" /> : <Plus className="h-4 w-4 mr-1" />}
             {open ? "Cancel" : "Add server"}
           </Button>
@@ -223,10 +245,13 @@ const MyServersPanel = () => {
               {iconUploading && <Loader2 className="h-4 w-4 animate-spin" />}
             </div>
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            {editingId && (
+              <Button variant="outline" onClick={() => { reset(); setOpen(false); }}>Cancel edit</Button>
+            )}
             <Button onClick={submit} disabled={saving}>
-              {saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Plus className="h-4 w-4 mr-1" />}
-              {saving ? "Saving…" : "Add server"}
+              {saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : editingId ? <Save className="h-4 w-4 mr-1" /> : <Plus className="h-4 w-4 mr-1" />}
+              {saving ? "Saving…" : editingId ? "Save changes" : "Add server"}
             </Button>
           </div>
         </div>
@@ -258,6 +283,9 @@ const MyServersPanel = () => {
                   {r.port ? `${r.ip}:${r.port}` : r.ip}
                 </div>
               </div>
+              <Button variant="ghost" size="icon" onClick={() => startEdit(r)} title="Edit">
+                <Pencil className="h-4 w-4" />
+              </Button>
               <Button variant="ghost" size="icon" onClick={() => togglePublished(r)} title={r.published ? "Unpublish" : "Publish"}>
                 {r.published ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
               </Button>
