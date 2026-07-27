@@ -65,6 +65,7 @@ import {
   MailPlus,
   Tornado,
   FileCode,
+  Server as ServerIconSidebar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
