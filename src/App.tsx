@@ -173,7 +173,7 @@ const Shell = () => {
                   <Route path="/shader/:slug" element={<Navigate to="/plugins" replace />} />
                   <Route path="/modpacks" element={<Navigate to="/plugins" replace />} />
                   <Route path="/modpack/:slug" element={<Navigate to="/plugins" replace />} />
-                  <Route path="/servers" element={<Navigate to="/plugins" replace />} />
+                  
                   <Route path="/server/:slug" element={<Navigate to="/plugins" replace />} />
                   <Route path="/skripts" element={<Skripts />} />
                   <Route path="/commands" element={<Commands />} />
