@@ -45,6 +45,7 @@ const MySkriptsPanel = () => {
   const [iconUrl, setIconUrl] = useState("");
   const [iconUploading, setIconUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const iconRef = useRef<HTMLInputElement>(null);
 
