@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Loader2, User as UserIcon, FileText, LifeBuoy, ClipboardList, Link2, ExternalLink, CheckCircle2, Flame, Vote as VoteIcon, Trophy, FileCode, Plus, Puzzle, Boxes } from "lucide-react";
 import MyPluginsPanel from "@/components/dashboard/MyPluginsPanel";
 import MySkriptsPanel from "@/components/dashboard/MySkriptsPanel";
+import MyServersPanel from "@/components/dashboard/MyServersPanel";
 import MyFavoritePluginsPanel from "@/components/dashboard/MyFavoritePluginsPanel";
 
 type Streaks = {
@@ -283,6 +284,8 @@ const Dashboard = () => {
         <MyFavoritePluginsPanel userId={user!.id} />
         <MyPluginsPanel userId={user!.id} />
         <MySkriptsPanel />
+        <MyServersPanel />
+
 
 
         {/* Quick links */}
