@@ -85,6 +85,7 @@ type FormState = {
   published: boolean;
   pricing: "free" | "paid";
   price: string;
+  org_id: string | null;
 };
 
 const EMPTY: FormState = {
