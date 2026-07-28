@@ -1,4 +1,5 @@
 export const ALL_ROLES = [
+  { value: "founder", label: "Founder", emoji: "🏆" },
   { value: "owner", label: "Owner", emoji: "👑" },
   { value: "manager", label: "Manager", emoji: "📌" },
   { value: "developer", label: "Developer", emoji: "🔧" },
@@ -10,16 +11,13 @@ export const ALL_ROLES = [
   { value: "helper", label: "Helper", emoji: "🟢" },
   { value: "builder", label: "Builder", emoji: "🛠️" },
   { value: "media", label: "Media", emoji: "📰" },
-  { value: "immortal", label: "Immortal", emoji: "🌟" },
   { value: "titan", label: "Titan", emoji: "🗿" },
-  { value: "chaos_plus", label: "Chaos+", emoji: "🌀" },
   { value: "chaos", label: "Chaos", emoji: "☄️" },
-  { value: "blood_plus", label: "Blood+", emoji: "🩸" },
   { value: "blood", label: "Blood", emoji: "❤️" },
-  { value: "havoc_plus", label: "Carnage+", emoji: "💎" },
   { value: "havoc", label: "Carnage", emoji: "🔥" },
   { value: "default", label: "Member", emoji: "👤" },
 ] as const;
+
 
 export type AppRole = typeof ALL_ROLES[number]["value"];
 
