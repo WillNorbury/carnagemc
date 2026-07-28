@@ -76,6 +76,7 @@ export type PermissionMatrix = Partial<Record<AppRole, string[]>>;
 
 // Sensible defaults applied when no matrix is configured yet.
 export const DEFAULT_PERMISSIONS: PermissionMatrix = {
+  founder: ALL_PERMISSION_KEYS,
   owner: ALL_PERMISSION_KEYS,
   manager: ALL_PERMISSION_KEYS.filter((k) => k !== "permissions.edit"),
   developer: ALL_PERMISSION_KEYS,
