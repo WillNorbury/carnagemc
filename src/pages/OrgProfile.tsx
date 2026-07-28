@@ -334,7 +334,7 @@ export default function OrgProfile() {
           <div className="flex items-center gap-2 shrink-0">
             {isOwner && (
               <Button asChild variant="outline" size="sm">
-                <Link to="/profile">
+                <Link to={`/org/${org.slug}/settings`}>
                   <Settings className="h-4 w-4 mr-1.5" /> Manage
                 </Link>
               </Button>
