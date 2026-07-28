@@ -63,6 +63,7 @@ type Plugin = {
   screenshots: string[];
   published: boolean;
   price: number | null;
+  org_id: string | null;
 };
 
 type FormState = {
@@ -85,6 +86,7 @@ type FormState = {
   published: boolean;
   pricing: "free" | "paid";
   price: string;
+  org_id: string | null;
 };
 
 const EMPTY: FormState = {
@@ -107,6 +109,7 @@ const EMPTY: FormState = {
   published: true,
   pricing: "free",
   price: "0",
+  org_id: null,
 };
 
 const slugify = (s: string) =>
@@ -141,6 +144,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
   const [versionFilter, setVersionFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
   const [versionsFor, setVersionsFor] = useState<Plugin | null>(null);
+  const [orgs, setOrgs] = useState<{ id: string; name: string }[]>([]);
 
 
   const load = async () => {
@@ -155,8 +159,18 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
     setLoading(false);
   };
 
+  const loadOrgs = async () => {
+    const { data } = await supabase
+      .from("organizations")
+      .select("id, name")
+      .eq("owner_id", userId)
+      .order("name");
+    setOrgs((data ?? []) as { id: string; name: string }[]);
+  };
+
   useEffect(() => {
     load();
+    loadOrgs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
@@ -186,6 +200,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       published: p.published,
       pricing: (p.price ?? 0) > 0 ? "paid" : "free",
       price: p.price != null ? String(p.price) : "0",
+      org_id: p.org_id ?? null,
     });
     setOpen(true);
   };
@@ -290,6 +305,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       screenshots: form.screenshots,
       published: form.published,
       price: form.pricing === "paid" ? Math.max(0, Number(form.price) || 0) : 0,
+      org_id: form.org_id,
     };
 
     let error;
@@ -611,6 +627,33 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
                 />
               </div>
             </div>
+
+            <div>
+              <Label>Organization</Label>
+              <Select
+                value={form.org_id ?? "none"}
+                onValueChange={(v) => setForm({ ...form, org_id: v === "none" ? null : v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Personal (no organization)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Personal (no organization)</SelectItem>
+                  {orgs.map((o) => (
+                    <SelectItem key={o.id} value={o.id}>
+                      {o.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {orgs.length === 0 && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  You're not an owner of any organization yet. Create one from your profile first.
+                </p>
+              )}
+            </div>
+
+
 
 
             <div>
