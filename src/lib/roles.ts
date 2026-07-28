@@ -22,6 +22,7 @@ export const ALL_ROLES = [
 export type AppRole = typeof ALL_ROLES[number]["value"];
 
 export const STAFF_ROLES: AppRole[] = [
+  "founder",
   "owner",
   "manager",
   "developer",
