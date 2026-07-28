@@ -12,6 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { Terminal, Trash2, Plus, RefreshCw, Settings, Eye, EyeOff, Copy, Download, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { confirm } from "@/lib/confirm";
 
 type Server = {
   id: string; name: string; slug: string; description: string | null;
@@ -433,12 +434,12 @@ const ServersTab = ({ servers, reload }: { servers: Server[]; reload: () => void
     reload();
   };
   const remove = async (s: Server) => {
-    if (!confirm(`Delete ${s.name}? This removes all its logs and command history.`)) return;
+    if (!(await confirm(`Delete ${s.name}? This removes all its logs and command history.`))) return;
     await supabase.from("mc_servers").delete().eq("id", s.id);
     reload();
   };
   const rotate = async (s: Server) => {
-    if (!confirm("Rotate the ingest secret? The bridge plugin will need the new value.")) return;
+    if (!(await confirm("Rotate the ingest secret? The bridge plugin will need the new value."))) return;
     const { data, error } = await supabase.rpc("mc_server_rotate_secret", { _server_id: s.id });
     if (error) { toast({ title: "Failed", description: error.message, variant: "destructive" }); return; }
     toast({ title: "New secret generated", description: String(data).slice(0, 12) + "…" });

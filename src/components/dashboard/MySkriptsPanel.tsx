@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { FileCode, Upload, Loader2, Trash2, ExternalLink, Eye, EyeOff, Download, Image as ImageIcon, X, Pencil, Save } from "lucide-react";
+import { confirm } from "@/lib/confirm";
 
 type Skript = {
   id: string;
@@ -170,7 +171,7 @@ const MySkriptsPanel = () => {
   };
 
   const remove = async (sk: Skript) => {
-    if (!confirm(`Delete "${sk.name}"? This cannot be undone.`)) return;
+    if (!(await confirm(`Delete "${sk.name}"? This cannot be undone.`))) return;
     const del = await supabase.from("user_skripts" as any).delete().eq("id", sk.id);
     if (del.error) return toast.error(del.error.message);
     await supabase.storage.from("user-skripts").remove([sk.storage_path]);

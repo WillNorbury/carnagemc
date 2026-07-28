@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Sparkles } from "lucide-react";
+import { confirm } from "@/lib/confirm";
 
 type CreatorCode = {
   id: string;
@@ -80,7 +81,7 @@ export const CreatorCodesAdminSection = () => {
   };
 
   const remove = async (row: CreatorCode) => {
-    if (!confirm(`Delete creator code ${row.code}?`)) return;
+    if (!(await confirm(`Delete creator code ${row.code}?`))) return;
     const { error } = await supabase.from("creator_codes").delete().eq("id", row.id);
     if (error) return toast.error(error.message);
     setRows((r) => r.filter((x) => x.id !== row.id));

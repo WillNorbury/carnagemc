@@ -12,6 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Ban, MicOff, Footprints, AlertTriangle, Search, Shield, Clock, ExternalLink, ShieldOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { confirm } from "@/lib/confirm";
 
 type Punishment = {
   id: number;
@@ -63,7 +64,7 @@ function PunishmentRow({ p, kind, isAdmin, onRemoved }: { p: Punishment; kind: "
   const canRemove = isAdmin && (kind === "bans" || kind === "mutes") && p.active && !p.removed_at;
   const removeAction = kind === "bans" ? "unban" : "unmute";
   const doRemove = async (silent: boolean) => {
-    if (!confirm(`${removeAction}${silent ? " silently (-s)" : ""}?`)) return;
+    if (!(await confirm(`${removeAction}${silent ? " silently (-s)" : ""}?`))) return;
     setActing(true);
     try {
       const { data, error } = await supabase.functions.invoke("punishments-lookup", {

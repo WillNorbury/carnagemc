@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Pencil, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { confirm } from "@/lib/confirm";
 
 export type CustomRole = {
   key: string;
@@ -95,7 +96,7 @@ export const CustomRolesManager = ({
   };
 
   const remove = async (key: string) => {
-    if (!confirm(`Delete custom role "${key}"? This will also remove it from any user it's assigned to.`))
+    if (!(await confirm(`Delete custom role "${key}"? This will also remove it from any user it's assigned to.`)))
       return;
     const { error } = await supabase.from("custom_roles").delete().eq("key", key);
     if (error) return toast.error(error.message);

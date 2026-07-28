@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+import { confirm } from "@/lib/confirm";
   Info,
   Tag,
   AlignLeft,
@@ -353,7 +354,7 @@ const PluginSettings = () => {
   };
 
   const deletePlugin = async () => {
-    if (!confirm(`Delete "${plugin.name}"? This cannot be undone.`)) return;
+    if (!(await confirm(`Delete "${plugin.name}"? This cannot be undone.`))) return;
     setDeleting(true);
     const { error } = await supabase.from("plugins").delete().eq("id", plugin.id);
     setDeleting(false);
@@ -458,7 +459,7 @@ const PluginSettings = () => {
   };
 
   const deleteVersion = async (v: PluginVersion) => {
-    if (!confirm(`Delete version ${v.version}?`)) return;
+    if (!(await confirm(`Delete version ${v.version}?`))) return;
     if (v.jar_path) {
       await supabase.storage.from("plugin-jars").remove([v.jar_path]);
     }

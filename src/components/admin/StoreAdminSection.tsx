@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Pencil, Trash2, Plus } from "lucide-react";
+import { confirm } from "@/lib/confirm";
 
 type Category = {
   id: string;
@@ -161,7 +162,7 @@ export function StoreAdminSection() {
   }
 
   async function removeCoupon(cp: Coupon) {
-    if (!confirm(`Delete coupon "${cp.code}"?`)) return;
+    if (!(await confirm(`Delete coupon "${cp.code}"?`))) return;
     const { error } = await supabase.from("store_coupons").delete().eq("id", cp.id);
     if (error) return toast.error(error.message);
     load();
@@ -194,7 +195,7 @@ export function StoreAdminSection() {
   }
 
   async function removeCat(c: Category) {
-    if (!confirm(`Delete category "${c.name}"? Items in it must be deleted or reassigned first.`))
+    if (!(await confirm(`Delete category "${c.name}"? Items in it must be deleted or reassigned first.`)))
       return;
     const { error } = await supabase.from("store_categories").delete().eq("id", c.id);
     if (error) return toast.error(error.message);
@@ -232,7 +233,7 @@ export function StoreAdminSection() {
   }
 
   async function removeItem(it: Item) {
-    if (!confirm(`Delete "${it.name}"?`)) return;
+    if (!(await confirm(`Delete "${it.name}"?`))) return;
     const { error } = await supabase.from("store_items").delete().eq("id", it.id);
     if (error) return toast.error(error.message);
     load();

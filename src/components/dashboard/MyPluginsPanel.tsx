@@ -39,6 +39,7 @@ import {
 import PluginVersionsDialog from "./PluginVersionsDialog";
 import { MultiTagInput } from "@/components/ui/multi-tag-input";
 import FoliaBadge, { supportsFolia } from "@/components/site/FoliaBadge";
+import { confirm } from "@/lib/confirm";
 
 
 type Plugin = {
@@ -309,7 +310,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
   };
 
   const remove = async (p: Plugin) => {
-    if (!confirm(`Delete "${p.name}"? This cannot be undone.`)) return;
+    if (!(await confirm(`Delete "${p.name}"? This cannot be undone.`))) return;
     const { error } = await supabase.from("plugins").delete().eq("id", p.id);
     if (error) return toast.error(error.message);
     toast.success("Plugin deleted");

@@ -7,6 +7,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, ShieldCheck, ShieldOff, Smartphone } from "lucide-react";
+import { confirm } from "@/lib/confirm";
 
 type FactorInfo = {
   id: string;
@@ -111,7 +112,7 @@ const TwoFactorCard = () => {
 
   const disable = async () => {
     if (!factor?.id) return;
-    if (!confirm("Remove your authenticator app? You'll only need email + password to sign in.")) return;
+    if (!(await confirm("Remove your authenticator app? You'll only need email + password to sign in."))) return;
     setWorking(true);
     const { error } = await supabase.auth.mfa.unenroll({ factorId: factor.id });
     setWorking(false);

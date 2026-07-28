@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, RefreshCw, ShieldOff } from "lucide-react";
+import { confirm } from "@/lib/confirm";
 
 type PunType = "bans" | "mutes" | "kicks" | "warnings";
 
@@ -69,7 +70,7 @@ export const PunishmentsAdminSection = () => {
   const unban = async (item: Item) => {
     if (type !== "bans" && type !== "mutes") return;
     const action = type === "bans" ? "unban" : "unmute";
-    if (!confirm(`${action} ${item.username ?? item.uuid}${silent ? " (silent -s)" : ""}?`)) return;
+    if (!(await confirm(`${action} ${item.username ?? item.uuid}${silent ? " (silent -s)" : ""}?`))) return;
     setActingId(item.id);
     try {
       const { data, error } = await supabase.functions.invoke("punishments-lookup", {
