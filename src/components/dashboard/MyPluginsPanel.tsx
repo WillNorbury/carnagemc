@@ -305,6 +305,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       screenshots: form.screenshots,
       published: form.published,
       price: form.pricing === "paid" ? Math.max(0, Number(form.price) || 0) : 0,
+      org_id: form.org_id,
     };
 
     let error;
