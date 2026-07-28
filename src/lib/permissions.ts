@@ -110,12 +110,9 @@ export const DEFAULT_PERMISSIONS: PermissionMatrix = {
   builder: [],
   media: [],
   havoc: [],
-  havoc_plus: [],
   blood: [],
-  blood_plus: [],
   chaos: [],
-  chaos_plus: [],
   titan: [],
-  immortal: [],
   default: [],
+
 };
