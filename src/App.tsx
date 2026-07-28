@@ -49,6 +49,8 @@ import Faq from "./pages/Faq.tsx";
 import Events from "./pages/Events.tsx";
 import { MaintenanceGate } from "./components/site/MaintenanceGate.tsx";
 import OrgProfile from "./pages/OrgProfile.tsx";
+import OrgSettings from "./pages/OrgSettings.tsx";
+
 import Install from "./pages/Install.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Status from "./pages/Status.tsx";
@@ -147,6 +149,8 @@ const Shell = () => {
                   <Route path="/users" element={<Users />} />
                   <Route path="/user/:slug" element={<UserProfile />} />
                   <Route path="/org/:slug" element={<OrgProfile />} />
+                  <Route path="/org/:slug/settings" element={<OrgSettings />} />
+
                  <Route path="/plugins" element={<Plugins />} />
                  <Route path="/modrinth-plugins" element={<ModrinthPlugins />} />
                  <Route path="/modrinth-plugins/:projectId" element={<ModrinthPluginDetail />} />
