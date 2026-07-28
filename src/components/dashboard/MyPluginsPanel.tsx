@@ -612,6 +612,33 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
               </div>
             </div>
 
+            <div>
+              <Label>Organization</Label>
+              <Select
+                value={form.org_id ?? "none"}
+                onValueChange={(v) => setForm({ ...form, org_id: v === "none" ? null : v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Personal (no organization)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Personal (no organization)</SelectItem>
+                  {orgs.map((o) => (
+                    <SelectItem key={o.id} value={o.id}>
+                      {o.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {orgs.length === 0 && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  You're not an owner of any organization yet. Create one from your profile first.
+                </p>
+              )}
+            </div>
+
+
+
 
             <div>
               <Label>Icon</Label>
