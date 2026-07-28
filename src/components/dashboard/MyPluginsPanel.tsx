@@ -188,6 +188,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       published: p.published,
       pricing: (p.price ?? 0) > 0 ? "paid" : "free",
       price: p.price != null ? String(p.price) : "0",
+      org_id: p.org_id ?? null,
     });
     setOpen(true);
   };
