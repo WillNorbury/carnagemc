@@ -63,6 +63,7 @@ type Plugin = {
   screenshots: string[];
   published: boolean;
   price: number | null;
+  org_id: string | null;
 };
 
 type FormState = {
