@@ -108,6 +108,7 @@ const EMPTY: FormState = {
   published: true,
   pricing: "free",
   price: "0",
+  org_id: null,
 };
 
 const slugify = (s: string) =>
