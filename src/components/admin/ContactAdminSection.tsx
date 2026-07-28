@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { logWebsiteEvent } from "@/lib/logEvent";
 import { Textarea } from "@/components/ui/textarea";
 import { Trash2, Plus, Send } from "lucide-react";
+import { confirm } from "@/lib/confirm";
 
 type Method = {
   id: string;
@@ -67,7 +68,7 @@ export function ContactAdminSection() {
     logWebsiteEvent({ kind: "contact_method_update", title: "Contact method updated", detail: m.label });
   }
   async function removeMethod(m: Method) {
-    if (!confirm(`Delete ${m.label}?`)) return;
+    if (!(await confirm(`Delete ${m.label}?`))) return;
     const { error } = await supabase.from("contact_methods").delete().eq("id", m.id);
     if (error) return toast.error(error.message);
     logWebsiteEvent({ kind: "contact_method_delete", title: "Contact method deleted", detail: m.label, color: 0xef4444 });

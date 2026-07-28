@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Download, Trash2, Upload, FileCode, Loader2 } from "lucide-react";
+import { confirm } from "@/lib/confirm";
 
 type Skript = {
   id: string;
@@ -109,7 +110,7 @@ export const AdminSkriptsSection = () => {
   };
 
   const remove = async (s: Skript) => {
-    if (!confirm(`Delete "${s.name}"? This cannot be undone.`)) return;
+    if (!(await confirm(`Delete "${s.name}"? This cannot be undone.`))) return;
     const del = await supabase.from("admin_skripts").delete().eq("id", s.id);
     if (del.error) {
       toast({ title: "Delete failed", description: del.error.message, variant: "destructive" });

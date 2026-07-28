@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Upload, Trash2, Download, Plus } from "lucide-react";
+import { confirm } from "@/lib/confirm";
 
 type PluginVersion = {
   id: string;
@@ -158,7 +159,7 @@ export default function PluginVersionsDialog({
   };
 
   const removeVersion = async (v: PluginVersion) => {
-    if (!confirm(`Delete version ${v.version}? This cannot be undone.`)) return;
+    if (!(await confirm(`Delete version ${v.version}? This cannot be undone.`))) return;
     if (v.jar_path) {
       await supabase.storage.from("plugin-jars").remove([v.jar_path]);
     }

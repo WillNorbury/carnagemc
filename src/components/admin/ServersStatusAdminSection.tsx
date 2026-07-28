@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Plus, Trash2, Save, RefreshCw } from "lucide-react";
+import { confirm } from "@/lib/confirm";
 
 
 type Row = {
@@ -87,7 +88,7 @@ const ServersStatusAdminSection = () => {
   };
 
   const remove = async (r: Row) => {
-    if (!confirm(`Delete server "${r.name}"?`)) return;
+    if (!(await confirm(`Delete server "${r.name}"?`))) return;
     const { error } = await supabase.from("mc_public_servers").delete().eq("slug", r.slug);
     if (error) return toast.error(error.message);
     toast.success("Deleted");

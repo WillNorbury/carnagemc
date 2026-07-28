@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { logWebsiteEvent } from "@/lib/logEvent";
 import { Pencil, Trash2, Plus } from "lucide-react";
+import { confirm } from "@/lib/confirm";
 
 type Article = {
   id: string;
@@ -66,7 +67,7 @@ export function WikiAdminSection() {
   }
 
   async function remove(a: Article) {
-    if (!confirm(`Delete "${a.title}"?`)) return;
+    if (!(await confirm(`Delete "${a.title}"?`))) return;
     const { error } = await supabase.from("wiki_articles").delete().eq("id", a.id);
     if (error) return toast.error(error.message);
     logWebsiteEvent({ kind: "wiki_delete", title: "Wiki article deleted", detail: a.title, color: 0xef4444 });

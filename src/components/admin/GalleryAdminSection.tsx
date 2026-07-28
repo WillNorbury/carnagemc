@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { logWebsiteEvent } from "@/lib/logEvent";
 import { Trash2, Upload } from "lucide-react";
+import { confirm } from "@/lib/confirm";
 
 type Item = {
   id: string;
@@ -72,7 +73,7 @@ export function GalleryAdminSection() {
   }
 
   async function remove(it: Item) {
-    if (!confirm("Delete this image?")) return;
+    if (!(await confirm("Delete this image?"))) return;
     const { error } = await supabase.from("gallery_items").delete().eq("id", it.id);
     if (error) return toast.error(error.message);
     logWebsiteEvent({ kind: "gallery_delete", title: "Gallery item deleted", detail: it.title ?? it.id, color: 0xef4444 });

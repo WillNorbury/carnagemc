@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Server as ServerIcon, Loader2, Trash2, Eye, EyeOff, ExternalLink, Image as ImageIcon, X, Plus, Pencil, Save } from "lucide-react";
+import { confirm } from "@/lib/confirm";
 
 type Row = {
   id: string;
@@ -145,7 +146,7 @@ const MyServersPanel = () => {
   };
 
   const remove = async (r: Row) => {
-    if (!confirm(`Delete server "${r.name}"?`)) return;
+    if (!(await confirm(`Delete server "${r.name}"?`))) return;
     const { error } = await supabase.from("user_servers" as any).delete().eq("id", r.id);
     if (error) return toast.error(error.message);
     toast.success("Deleted");
