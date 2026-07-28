@@ -144,6 +144,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
   const [versionFilter, setVersionFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
   const [versionsFor, setVersionsFor] = useState<Plugin | null>(null);
+  const [orgs, setOrgs] = useState<{ id: string; name: string }[]>([]);
 
 
   const load = async () => {
@@ -158,8 +159,18 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
     setLoading(false);
   };
 
+  const loadOrgs = async () => {
+    const { data } = await supabase
+      .from("organizations")
+      .select("id, name")
+      .eq("owner_id", userId)
+      .order("name");
+    setOrgs((data ?? []) as { id: string; name: string }[]);
+  };
+
   useEffect(() => {
     load();
+    loadOrgs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
