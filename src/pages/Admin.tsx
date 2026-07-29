@@ -87,6 +87,7 @@ import ServersStatusAdminSection from "@/components/admin/ServersStatusAdminSect
 import { StoreAdminSection } from "@/components/admin/StoreAdminSection";
 import { CreatorCodesAdminSection } from "@/components/admin/CreatorCodesAdminSection";
 import { VoteLinksAdminSection } from "@/components/admin/VoteLinksAdminSection";
+import { GameModesAdminSection } from "@/components/admin/GameModesAdminSection";
 import { PartnersAdminSection } from "@/components/admin/PartnersAdminSection";
 import { AdminSkriptsSection } from "@/components/admin/AdminSkriptsSection";
 
@@ -268,6 +269,7 @@ const Admin = () => {
           {section === "vote-links" && <VoteLinksAdminSection />}
           {section === "partners" && <PartnersAdminSection />}
           {section === "skripts" && <AdminSkriptsSection />}
+          {section === "game-modes" && <GameModesAdminSection />}
         </>
       )}
     </AdminLayout>
