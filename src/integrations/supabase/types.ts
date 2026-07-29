@@ -997,6 +997,66 @@ export type Database = {
         }
         Relationships: []
       }
+      game_modes: {
+        Row: {
+          accent: string
+          banner_url: string | null
+          created_at: string
+          description: string | null
+          features: string[]
+          icon: string
+          id: string
+          long_description: string | null
+          name: string
+          published: boolean
+          screenshots: string[]
+          server_ip: string | null
+          slug: string
+          sort_order: number
+          status: string
+          tagline: string | null
+          updated_at: string
+        }
+        Insert: {
+          accent?: string
+          banner_url?: string | null
+          created_at?: string
+          description?: string | null
+          features?: string[]
+          icon?: string
+          id?: string
+          long_description?: string | null
+          name: string
+          published?: boolean
+          screenshots?: string[]
+          server_ip?: string | null
+          slug: string
+          sort_order?: number
+          status?: string
+          tagline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accent?: string
+          banner_url?: string | null
+          created_at?: string
+          description?: string | null
+          features?: string[]
+          icon?: string
+          id?: string
+          long_description?: string | null
+          name?: string
+          published?: boolean
+          screenshots?: string[]
+          server_ip?: string | null
+          slug?: string
+          sort_order?: number
+          status?: string
+          tagline?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       item_reviews: {
         Row: {
           body: string | null
