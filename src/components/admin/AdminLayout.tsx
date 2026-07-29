@@ -87,7 +87,9 @@ export type AdminSection =
   | "store"
   | "vote-links"
   | "partners"
-  | "skripts";
+  | "skripts"
+  | "game-modes";
+
 
 type NavItem =
   | { kind: "link"; id: AdminSection; icon: any; label: string }
@@ -133,6 +135,8 @@ const items: NavItem[] = [
   { kind: "link", id: "apply", icon: ClipboardList, label: "Apply (types)" },
   { kind: "link", id: "features", icon: Sparkles, label: "Features" },
   { kind: "link", id: "rules", icon: Gavel, label: "Rules" },
+  { kind: "link", id: "game-modes", icon: Sparkles, label: "Game Modes" },
+
 
   { kind: "link", id: "faqs", icon: HelpCircle, label: "FAQs" },
   { kind: "link", id: "events", icon: Calendar, label: "Events" },

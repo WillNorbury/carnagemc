@@ -1,83 +1,43 @@
-# Owner Console → Live Minecraft Server Console
+## Context
 
-A web terminal in `/admin?tab=console` (owner-only) that picks a Minecraft server, sends real console commands, and streams the live server log (chat, joins, errors, command output) in real time.
+The site already has working, backend-connected versions of most requested pages: Home, News, Leaderboards, Staff, Store, Rules, FAQ, Status, Gallery, Vote, Events, Support, Dashboard, and Careers (via `/apply`). Replacing those with placeholder-data rebuilds would remove real functionality, so the plan keeps their data layers and upgrades presentation instead.
 
-## How the bridge works
+Genuinely missing: Game Modes pages, Privacy Policy, Terms of Service, Refund Policy.
 
-The website cannot talk to a Minecraft server directly — most servers are behind NAT/firewalls. We use an **outbound-only bridge plugin** that runs on each MC server. The plugin polls our backend for queued commands and pushes log lines back. No inbound ports need to be opened.
+## Phase 1 — New pages (nothing exists today)
 
-```text
-Browser  ──HTTPS──►  Edge fn (queue cmd) ──► Postgres queue
-                                                │
-   MC server ◄── poll commands ◄── Edge fn ◄────┘
-   MC server ── POST log lines ──► Edge fn ──► Postgres logs ──► Realtime ──► Browser
-```
+**Game Modes**
+- `/gamemodes` — grid of glass cards for Survival, Lifesteal, 4Dupe, Hub-2, each with banner art, tagline, live player count, and hover lift.
+- `/gamemodes/:slug` — detail page: full-width banner, gameplay description, feature list, screenshots strip with lightbox, "Join Server" IP copy button, related modes.
+- Content stored in a `game_modes` table so you can edit modes from the admin panel rather than hardcoding.
 
-## What gets built
+**Legal pages**
+- `/privacy`, `/terms`, `/refund` — clean long-form editorial layout, sticky section nav, last-updated date. Copy drafted from your actual store/ticket/data flows, marked for your review before publishing.
 
-### 1. Database (migration)
+## Phase 2 — Shared design system pass
 
-- `mc_servers` — one row per Minecraft server. Fields: `name`, `slug`, `description`, `ingest_secret` (random, server-stored, used by the plugin to authenticate), `enabled`, `last_seen_at`.
-- `mc_console_commands` — command queue. Fields: `server_id`, `command`, `issued_by` (user_id), `status` (`pending|sent|done|error`), `response`, `sent_at`, `completed_at`.
-- `mc_console_logs` — streamed log lines. Fields: `server_id`, `level` (`INFO|WARN|ERROR`), `source` (`server|chat|command`), `line`, `logged_at`.
-- RLS: owner-only `SELECT/INSERT/UPDATE` on all three. Service role has full access (used by the bridge edge functions). Realtime enabled on `mc_console_logs` and `mc_console_commands` (so the UI updates instantly).
+Introduce reusable primitives so every page inherits the AAA feel instead of one-off styling:
+- `GlassCard`, `SectionHeader`, `StatTile`, `GradientButton`, `PageHero`
+- Scroll-reveal wrapper (IntersectionObserver, respects reduced-motion)
+- Animated counters reused across Home / Status / Leaderboards
+- Consistent radius, spacing scale, and orange→amber gradient tokens in `index.css`
 
-### 2. Edge functions
+## Phase 3 — Upgrade existing pages (data untouched)
 
-- `mc-bridge-poll` (called by the plugin)
-  - Auth: `X-Server-Slug` + `X-Server-Secret` headers checked against `mc_servers.ingest_secret`.
-  - `GET` → returns up to N pending commands, marks them `sent`, stamps `last_seen_at`.
-  - `POST` (results) → updates command rows with `response`, sets `status=done|error`.
-  - `POST /logs` (or `?kind=logs`) → bulk-insert log lines.
-- `mc-console-send` (called by the website)
-  - Owner-only (uses existing `is_current_user_admin` + owner role check).
-  - Validates `server_id` + `command`, inserts into `mc_console_commands`.
-- `mc-server-secret-rotate` — owner regenerates a server's `ingest_secret`.
-
-### 3. Admin UI updates (owner-only)
-
-Replace the current `ConsoleAdminSection` with:
-
-- **Server picker** (dropdown) listing `mc_servers`. Shows green dot if `last_seen_at` is within the last 30s.
-- **Live log pane** — subscribes to Realtime `INSERT` on `mc_console_logs` filtered by the selected server. Auto-scroll, color by level, search/filter input, "Pause" toggle.
-- **Command input** at the bottom. Submitting inserts via `mc-console-send`. The browser shows the command echo immediately, and the response line streams back when the plugin marks it `done`.
-- **Server management subtab** (owner): add/edit/delete servers (`name`, `description`, `enabled`), and a "Show install instructions" button that displays the plugin download link, the server's slug, and a one-time-reveal of `ingest_secret` with a "Rotate" button.
-
-### 4. The bridge plugin
-
-Tiny Paper/Spigot/Folia plugin (`CarnageConsoleBridge`) shipped as a JAR the user uploads to each server's `plugins/` folder. On startup it reads `config.yml`:
-
-```yaml
-endpoint: https://<project>.functions.supabase.co/mc-bridge-poll
-server-slug: survival
-server-secret: <paste from website>
-poll-interval-ms: 500
-log-batch-ms: 1000
-```
-
-Behavior:
-
-- **Console capture**: attaches a `log4j` appender to the root logger to capture every console line (chat, joins, plugin errors, command output). Buffers lines and POSTs them in batches every `log-batch-ms`.
-- **Command execution**: every `poll-interval-ms` calls `GET` on the bridge. For each command, runs `Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd)` on the main thread, captures any direct response text into a per-command buffer, then POSTs the result.
-- **Heartbeat**: every poll also stamps `last_seen_at` so the UI shows online status.
-- Plugin source + build instructions live in a new `mc-bridge-plugin/` folder in the repo so it's versioned alongside the website.
-
-## Security
-
-- `ingest_secret` is per-server, generated server-side, shown to the owner once on creation/rotation. Stored hashed at rest if practical (otherwise plain in the row with strict RLS).
-- All website endpoints check `owner` role via the existing `usePermissions` + `is_current_user_admin` pattern used by the current Console tab.
-- Command audit: every command keeps `issued_by` (user_id) and timestamps forever in `mc_console_commands`.
-- Rate limit: edge function caps each server to N commands/min to avoid runaway loops.
+- **Home**: animated hero with parallax layers, IP copy button, live player count + status pill, featured game modes row, "Why CarnageMC", recent announcements, triple CTA.
+- **Leaderboards**: animated podium for top 3, tab set expanded to Richest / Kills / Deaths / Killstreak / Playtime / Votes / Balance / Mob Kills.
+- **Staff**: grouped by rank (Owner → Builder), avatar, role colour, description, Discord button.
+- **News**: featured post hero, category chips, tag filter, search, pagination.
+- **Gallery**: true masonry, video support, hover zoom, improved lightbox.
+- **Vote / Events / Support / Rules / FAQ / Status / Store**: styling and layout polish to match the new system; existing logic preserved.
 
 ## Technical notes
 
-- Polling at 500 ms is cheap (one request, single row select) and works on any host. We can upgrade to SSE/WebSocket later without changing the UI contract.
-- Realtime is enabled per-table via `ALTER PUBLICATION supabase_realtime ADD TABLE ...` in the migration. The UI uses one `supabase.channel` per selected server.
-- The existing `punishments-lookup` console commands (`lookup`, `unban`, `list`, etc.) stay available as **client-side shortcuts** in the same UI, so the tab does both web-side admin actions and real MC console commands.
-- No inbound firewall changes required on the MC host — outbound HTTPS only.
+- Orange / black / dark-gray branding kept; all colour via semantic tokens, no hardcoded hex in components.
+- New tables (`game_modes`, screenshots) get RLS + GRANTs; public read, admin write.
+- Pages are lazy-loaded via route-level code splitting to protect load time.
+- Each page gets `<SEO>` with unique title, description, canonical, and JSON-LD where applicable.
 
-## Out of scope (can be added later)
+## Suggested order
 
-- Tab-complete suggestions sourced from the MC server.
-- Per-server role permissions (e.g. let admins use one server but not another).
-- Replaying historical logs older than what's stored in `mc_console_logs` (we'd keep a rolling N days and purge).
+Phase 1 first (real gaps), then Phase 2, then Phase 3 in batches so you can review as we go rather than in one giant unreviewable change.

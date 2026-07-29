@@ -80,6 +80,11 @@ import Store from "./pages/Store.tsx";
 import StoreCategory from "./pages/StoreCategory.tsx";
 import StorePackage from "./pages/StorePackage.tsx";
 import Checkout from "./pages/Checkout.tsx";
+import GameModes from "./pages/GameModes.tsx";
+import GameModeDetail from "./pages/GameModeDetail.tsx";
+import Privacy from "./pages/Privacy.tsx";
+import Terms from "./pages/Terms.tsx";
+import Refund from "./pages/Refund.tsx";
 import Partners from "./pages/Partners.tsx";
 import PartnerDetail from "./pages/PartnerDetail.tsx";
 import Skripts from "./pages/Skripts.tsx";
@@ -229,6 +234,15 @@ const Shell = () => {
                   <Route path="/store/category/:slug" element={<StoreCategory />} />
                   <Route path="/store/package/:id" element={<StorePackage />} />
                   <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/gamemodes" element={<GameModes />} />
+                  <Route path="/gamemodes/:slug" element={<GameModeDetail />} />
+                  <Route path="/game-modes" element={<Navigate to="/gamemodes" replace />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/privacy-policy" element={<Navigate to="/privacy" replace />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/tos" element={<Navigate to="/terms" replace />} />
+                  <Route path="/refund" element={<Refund />} />
+                  <Route path="/refund-policy" element={<Navigate to="/refund" replace />} />
                   <Route path="/partners" element={<Partners />} />
                   <Route path="/partners/:slug" element={<PartnerDetail />} />
                    
