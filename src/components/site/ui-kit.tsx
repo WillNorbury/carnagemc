@@ -1,9 +1,30 @@
 import { forwardRef, useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonProps } from "@/components/ui/button";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
+import AnimatedCounter from "@/components/site/AnimatedCounter";
+
+export { AnimatedCounter };
+
+/* ------------------------------------------------------------------ */
+/* GradientButton — premium gradient CTA                               */
+/* ------------------------------------------------------------------ */
+
+export const GradientButton = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, size = "lg", ...props }, ref) => (
+    <Button
+      ref={ref}
+      variant="premium"
+      size={size}
+      className={cn("font-display font-bold tracking-wide", className)}
+      {...props}
+    />
+  ),
+);
+GradientButton.displayName = "GradientButton";
+
 
 /* ------------------------------------------------------------------ */
 /* Reveal — scroll-triggered fade/slide, respects reduced motion       */
