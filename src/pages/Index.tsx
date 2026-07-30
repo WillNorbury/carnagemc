@@ -525,6 +525,9 @@ const Index = () => {
               View all features <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
+        </section>
+
+
 
         {/* Featured game modes */}
         {gameModes.length > 0 && (
