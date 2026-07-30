@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { ALL_ROLES, roleLabel, type AppRole } from "@/lib/roles";
 import { userProfilePath } from "@/lib/userSlug";
 import { Link } from "react-router-dom";
+import { GlassCard, PageHero, Reveal } from "@/components/site/ui-kit";
+import { ShieldCheck } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type StaffMember = {
   user_id: string;
@@ -81,57 +83,84 @@ const Staff = () => {
   })).filter((g) => g.members.length > 0);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <main className="container pt-28 pb-16">
-        <header className="mb-10 text-center">
-          <h1 className="text-4xl font-bold tracking-tight">Meet the Staff</h1>
-          <p className="text-muted-foreground mt-2">
-            The team keeping CarnageMC running smoothly.
-          </p>
-        </header>
+      <main className="flex-1">
+        <PageHero
+          eyebrow={<><ShieldCheck className="h-3 w-3 mr-1" /> The Team</>}
+          title="Meet the"
+          highlight="Staff"
+          description="The people keeping CarnageMC running smoothly — moderation, development, builds and support."
+        >
+          {!loading && members.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="secondary" className="border-primary/30">
+                {members.length} member{members.length === 1 ? "" : "s"}
+              </Badge>
+              <Badge variant="secondary" className="border-primary/30">
+                {grouped.length} rank{grouped.length === 1 ? "" : "s"}
+              </Badge>
+            </div>
+          )}
+        </PageHero>
 
-        {loading ? (
-          <p className="text-center text-muted-foreground">Loading…</p>
-        ) : grouped.length === 0 ? (
-          <p className="text-center text-muted-foreground">No staff members to show yet.</p>
-        ) : (
-          <div className="space-y-12">
-            {grouped.map(({ role, members }) => (
-              <section key={role}>
-                <div className="flex items-center gap-3 mb-5">
-                  <h2 className="text-xl font-semibold">{roleLabel(role)}</h2>
-                  <Badge variant="secondary">{members.length}</Badge>
-                </div>
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {members.map((m) => {
-                    const name = m.display_name ?? m.mc_username ?? "Unknown";
-                    const initials = name.slice(0, 2).toUpperCase();
-                    const skin = m.mc_username
-                      ? `https://mc-heads.net/avatar/${m.mc_username}/96`
-                      : null;
-                    return (
-                      <Card key={m.user_id} className="p-0 hover:border-primary/50 hover:shadow-md transition">
-                        <Link to={userProfilePath({ id: m.user_id, display_name: m.display_name, mc_username: m.mc_username })} className="flex items-center gap-4 p-5">
-                          <Avatar className="h-14 w-14">
-                            <AvatarImage src={skin ?? m.avatar_url ?? undefined} alt={name} />
-                            <AvatarFallback>{initials}</AvatarFallback>
-                          </Avatar>
-                          <div className="min-w-0">
-                            <p className="font-semibold truncate">{name}</p>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {roleLabel(m.role)}
-                            </p>
-                          </div>
-                        </Link>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </section>
-            ))}
-          </div>
-        )}
+        <div className="container pb-24">
+          {loading ? (
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className="h-24 rounded-2xl" />
+              ))}
+            </div>
+          ) : grouped.length === 0 ? (
+            <GlassCard className="p-12 text-center">
+              <p className="text-muted-foreground">No staff members to show yet.</p>
+            </GlassCard>
+          ) : (
+            <div className="space-y-14">
+              {grouped.map(({ role, members }, gi) => (
+                <section key={role}>
+                  <Reveal delay={gi * 60}>
+                    <div className="flex items-center gap-3 mb-5">
+                      <h2 className="font-display text-lg md:text-xl font-black tracking-tight">
+                        {roleLabel(role)}
+                      </h2>
+                      <span className="h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent" />
+                      <Badge variant="secondary" className="border-primary/30">{members.length}</Badge>
+                    </div>
+                  </Reveal>
+                  <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {members.map((m, i) => {
+                      const name = m.display_name ?? m.mc_username ?? "Unknown";
+                      const initials = name.slice(0, 2).toUpperCase();
+                      const skin = m.mc_username
+                        ? `https://mc-heads.net/avatar/${m.mc_username}/96`
+                        : null;
+                      return (
+                        <Reveal key={m.user_id} delay={i * 45}>
+                          <GlassCard interactive className="h-full">
+                            <Link
+                              to={userProfilePath({ id: m.user_id, display_name: m.display_name, mc_username: m.mc_username })}
+                              className="flex items-center gap-4 p-5"
+                            >
+                              <Avatar className="h-14 w-14 ring-2 ring-primary/30">
+                                <AvatarImage src={skin ?? m.avatar_url ?? undefined} alt={name} />
+                                <AvatarFallback>{initials}</AvatarFallback>
+                              </Avatar>
+                              <div className="min-w-0">
+                                <p className="font-semibold truncate">{name}</p>
+                                <p className="text-xs text-primary/90 truncate">{roleLabel(m.role)}</p>
+                              </div>
+                            </Link>
+                          </GlassCard>
+                        </Reveal>
+                      );
+                    })}
+                  </div>
+                </section>
+              ))}
+            </div>
+          )}
+        </div>
       </main>
       <Footer />
     </div>
