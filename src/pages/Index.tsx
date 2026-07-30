@@ -525,7 +525,63 @@ const Index = () => {
               View all features <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
-        </section>
+
+        {/* Featured game modes */}
+        {gameModes.length > 0 && (
+          <section id="gamemodes">
+            <SectionHead
+              eyebrow="Game Modes"
+              title="Pick Your Battlefield"
+              sub="Survival, Lifesteal and more — each world with its own rules and rewards."
+            />
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {gameModes.slice(0, 4).map((m, i) => (
+                <Reveal key={m.id} delay={i * 70}>
+                  <GlassCard interactive className="h-full overflow-hidden">
+                    <Link to={`/gamemodes/${m.slug}`} className="group block h-full">
+                      <div className="relative h-32 overflow-hidden">
+                        {m.banner_url ? (
+                          <img
+                            src={m.banner_url}
+                            alt={m.name}
+                            loading="lazy"
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                        ) : (
+                          <div className="h-full w-full bg-gradient-to-br from-primary/30 to-accent/20 flex items-center justify-center text-3xl">
+                            {m.icon}
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
+                        <Badge
+                          variant="secondary"
+                          className="absolute top-3 right-3 text-primary border-primary/40 text-[10px]"
+                        >
+                          {STATUS_LABEL[m.status] ?? m.status}
+                        </Badge>
+                      </div>
+                      <div className="p-5 pt-3">
+                        <h3 className="font-display font-bold text-lg">{m.name}</h3>
+                        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                          {m.tagline || m.description}
+                        </p>
+                        <span className="mt-3 inline-flex items-center text-xs text-primary opacity-0 transition group-hover:opacity-100">
+                          Explore <ArrowRight className="h-3 w-3 ml-1" />
+                        </span>
+                      </div>
+                    </Link>
+                  </GlassCard>
+                </Reveal>
+              ))}
+            </div>
+            <div className="mt-8 text-center">
+              <Button variant="glass" onClick={() => nav("/gamemodes")} className="font-display uppercase tracking-wider">
+                All game modes <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
+          </section>
+        )}
+
 
         {/* Countdown */}
         <section>
