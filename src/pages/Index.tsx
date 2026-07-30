@@ -72,6 +72,7 @@ const Index = () => {
 
   useEffect(() => {
     fetchFeatures().then(setFeatures);
+    fetchGameModes().then(setGameModes);
   }, []);
 
   useEffect(() => {
