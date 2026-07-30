@@ -188,3 +188,22 @@
     100% { background-position: 200% 50%; }
   }
 }
+
+@layer utilities {
+  /* Phase 2 — shared design system primitives */
+  .surface-glass {
+    @apply rounded-2xl border border-border/60 bg-card/60 backdrop-blur-xl;
+  }
+  .bg-gradient-fire { background-image: var(--gradient-fire); }
+  .bg-gradient-primary { background-image: var(--gradient-primary); }
+  .bg-gradient-card { background-image: var(--gradient-card); }
+  .radial-fade {
+    mask-image: radial-gradient(ellipse at center, black 35%, transparent 78%);
+  }
+  .section-y { @apply py-16 md:py-24; }
+  .scroll-smooth-page { scroll-behavior: smooth; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
