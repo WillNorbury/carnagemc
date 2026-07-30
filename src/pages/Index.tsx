@@ -68,6 +68,7 @@ const Index = () => {
   const [discordInviteError, setDiscordInviteError] = useState<string | null>(null);
   const [voteCount, setVoteCount] = useState<number>(0);
   const [features, setFeatures] = useState<Feature[]>([]);
+  const [gameModes, setGameModes] = useState<GameMode[]>([]);
   const { isAdmin } = useAuth();
 
   useEffect(() => {
