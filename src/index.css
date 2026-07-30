@@ -203,3 +203,7 @@
   .section-y { @apply py-16 md:py-24; }
   .scroll-smooth-page { scroll-behavior: smooth; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
