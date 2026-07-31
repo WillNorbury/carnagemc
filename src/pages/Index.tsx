@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GlassCard, Reveal } from "@/components/site/ui-kit";
 import { fetchGameModes, STATUS_LABEL, type GameMode } from "@/lib/gameModes";
+import { getIcon } from "@/lib/features";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import Particles from "@/components/site/Particles";
