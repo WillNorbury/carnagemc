@@ -47,6 +47,7 @@ import {
   Send,
   ShieldCheck,
   ExternalLink,
+  Terminal,
 } from "lucide-react";
 
 export type AdminSection =
