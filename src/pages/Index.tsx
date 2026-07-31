@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GlassCard, Reveal } from "@/components/site/ui-kit";
 import { fetchGameModes, STATUS_LABEL, type GameMode } from "@/lib/gameModes";
