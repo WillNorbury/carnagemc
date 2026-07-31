@@ -80,6 +80,7 @@ export type AdminSection =
   | "reports"
   | "bot-dashboard"
   | "bot-management"
+  | "bot-config"
   | "punishments"
   | "console"
   | "mysql"
@@ -110,6 +111,7 @@ export const SECTION_PERMISSIONS: Partial<Record<AdminSection, string>> = {
   tickets: "tickets.view_all",
   "bot-dashboard": "bot.view",
   "bot-management": "bot.configure",
+  "bot-config": "bot.configure",
 };
 
 
@@ -157,6 +159,7 @@ const items: NavItem[] = [
   { kind: "section", title: "Discord Bot", icon: Bot },
   { kind: "link", id: "bot-dashboard", icon: LayoutDashboard, label: "Bot Dashboard" },
   { kind: "link", id: "bot-management", icon: Code, label: "Management" },
+  { kind: "link", id: "bot-config", icon: Terminal, label: "Commands & Templates" },
 ];
 
 export const AdminLayout = ({
@@ -188,10 +191,10 @@ export const AdminLayout = ({
       // Hide the section header when the user cannot see any bot links.
       if (isOwner) return true;
       if (!canSee) return false;
-      return canSee("bot-dashboard") || canSee("bot-management");
+      return canSee("bot-dashboard") || canSee("bot-management") || canSee("bot-config");
     }
     if (it.kind === "link") {
-      if (it.id === "permissions" || it.id === "bot-dashboard" || it.id === "bot-management" || it.id === "console" || it.id === "mysql") {
+      if (it.id === "permissions" || it.id === "bot-dashboard" || it.id === "bot-management" || it.id === "bot-config" || it.id === "console" || it.id === "mysql") {
         // Owner-only sections (also gated by their permission key).
         if (!isOwner) return false;
       }
