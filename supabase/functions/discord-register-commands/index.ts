@@ -29,7 +29,20 @@ Deno.serve(async (req) => {
     const token = Deno.env.get("DISCORD_BOT_TOKEN");
     if (!appId || !token) return json({ ok: false, error: "Missing DISCORD_APPLICATION_ID or DISCORD_BOT_TOKEN" }, 400);
 
-    const cmds = [
+    // Commands are configured in the admin panel (site_content -> discord_commands).
+    const { data: cfgRow } = await userClient
+      .from("site_content").select("value").eq("key", "discord_commands").maybeSingle();
+    const configured = Array.isArray((cfgRow?.value as any)?.commands)
+      ? ((cfgRow!.value as any).commands as any[])
+      : [];
+    const fromConfig = configured
+      .filter((c) => c && c.enabled !== false && typeof c.name === "string" && c.name.trim())
+      .map((c) => ({
+        name: String(c.name).toLowerCase().slice(0, 32),
+        description: String(c.description ?? "").slice(0, 100) || "CarnageMC command",
+        type: 1,
+      }));
+    const cmds = fromConfig.length > 0 ? fromConfig : [
       { name: "rules", description: "Show the CarnageMC server rules", type: 1 },
       { name: "subscribe", description: "Subscribe to email notifications from CarnageMC", type: 1 },
       { name: "unsubscribe", description: "Unsubscribe from email notifications from CarnageMC", type: 1 },

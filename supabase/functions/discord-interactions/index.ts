@@ -70,6 +70,34 @@ Deno.serve(async (req) => {
 
   if (body.type === InteractionType.APPLICATION_COMMAND) {
     const name = body.data?.name;
+
+    // Admin-configured commands (site_content -> discord_commands)
+    const cfgClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+    const { data: cmdRow } = await cfgClient
+      .from("site_content").select("value").eq("key", "discord_commands").maybeSingle();
+    const configured: any[] = Array.isArray((cmdRow?.value as any)?.commands)
+      ? (cmdRow!.value as any).commands
+      : [];
+    const cmd = configured.find((c) => c?.name === name);
+    const say = (content: string, ephemeral = true) => new Response(
+      JSON.stringify({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: { content, ...(ephemeral ? { flags: 64 } : {}) },
+      }),
+      { headers: { "Content-Type": "application/json" } },
+    );
+
+    if (cmd && cmd.enabled === false) {
+      return say("⚠️ This command is currently disabled.");
+    }
+    if (cmd && cmd.kind === "text") {
+      const who = body.member?.user?.username ?? body.user?.username ?? "there";
+      const text = String(cmd.response ?? "").replace(/\{user\}/g, who) || "…";
+      return say(text, !!cmd.ephemeral);
+    }
     if (name === "rules") {
       const embed = await buildRulesEmbed();
       return new Response(

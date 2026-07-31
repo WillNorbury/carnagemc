@@ -90,6 +90,7 @@ import { VoteLinksAdminSection } from "@/components/admin/VoteLinksAdminSection"
 import { GameModesAdminSection } from "@/components/admin/GameModesAdminSection";
 import { PartnersAdminSection } from "@/components/admin/PartnersAdminSection";
 import { AdminSkriptsSection } from "@/components/admin/AdminSkriptsSection";
+import { DiscordConfigSection } from "@/components/admin/DiscordConfigSection";
 
 
 type Profile = { id: string; display_name: string | null; mc_username: string | null; created_at: string };
@@ -129,6 +130,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
     description: "Status and overview of the CarnageMC Discord bot.",
   },
   "bot-management": { title: "Discord Bot — Management", description: "Configure commands and bot integration." },
+  "bot-config": { title: "Discord Bot — Commands & Templates", description: "Configure slash commands, channel routing, and message templates." },
   "ban-appeals": { title: "Ban Appeals", description: "Review and respond to user ban appeals." },
   wiki: { title: "Wiki", description: "Manage wiki articles." },
   gallery: { title: "Gallery", description: "Manage gallery images." },
@@ -257,6 +259,7 @@ const Admin = () => {
           {section === "permissions" && (isOwner ? <PermissionsTab /> : denied)}
           {section === "bot-dashboard" && (isOwner ? <BotDashboardSection /> : denied)}
           {section === "bot-management" && (isOwner ? <BotManagementSection /> : denied)}
+          {section === "bot-config" && (isOwner ? <DiscordConfigSection /> : denied)}
           {section === "console" && (isOwner ? <ConsoleAdminSection /> : denied)}
           {section === "mysql" && (isOwner ? <MySqlAdminSection /> : denied)}
           {section === "servers-status" && <ServersStatusAdminSection />}
