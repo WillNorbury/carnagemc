@@ -557,7 +557,7 @@ const Index = () => {
                           />
                         ) : (
                           <div className="h-full w-full bg-gradient-to-br from-primary/30 to-accent/20 flex items-center justify-center text-3xl">
-                            {m.icon}
+                            {React.createElement(getIcon(m.icon), { className: "h-8 w-8 text-primary" })}
                           </div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
