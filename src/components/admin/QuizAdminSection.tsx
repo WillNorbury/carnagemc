@@ -241,12 +241,20 @@ const QuestionsEditor = ({ quiz, onBack }: { quiz: Quiz; onBack: () => void }) =
   const load = async () => {
     setLoading(true);
     const { data: qs } = await (supabase.from("quiz_questions" as any) as any)
-      .select("*")
+      .select("id, quiz_id, prompt, points, sort_order, created_at")
       .eq("quiz_id", quiz.id)
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: true });
-    const qList = (qs as Question[]) ?? [];
+    const qList = (((qs as any[]) ?? []).map((q) => ({ ...q, explanation: null })) as Question[]);
+    if (qList.length) {
+      const { data: ex } = await (supabase.rpc as any)("get_quiz_explanations", {
+        _question_ids: qList.map((q) => q.id),
+      });
+      const em = new Map<string, string | null>(((ex as any[]) ?? []).map((e) => [e.id, e.explanation]));
+      for (const q of qList) q.explanation = em.get(q.id) ?? null;
+    }
     setQuestions(qList);
+
     if (qList.length) {
       const { data: opts } = await (supabase.from("quiz_options" as any) as any)
         .select("*")
@@ -269,10 +277,11 @@ const QuestionsEditor = ({ quiz, onBack }: { quiz: Quiz; onBack: () => void }) =
     const sort = questions.length;
     const { data, error } = await (supabase.from("quiz_questions" as any) as any)
       .insert({ quiz_id: quiz.id, prompt: "New question", points: 1, sort_order: sort })
-      .select()
+      .select("id, quiz_id, prompt, points, sort_order, created_at")
       .single();
     if (error) return toast.error(error.message);
-    const q = data as Question;
+    const q = { ...(data as any), explanation: null } as Question;
+
     // Two starter options
     const { data: opts } = await (supabase.from("quiz_options" as any) as any)
       .insert([

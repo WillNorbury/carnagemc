@@ -46,11 +46,14 @@ const QuizResult = () => {
       const ids = ((a as any).answers ?? []).map((x: any) => x.question_id);
       if (ids.length) {
         const { data: qs } = await (supabase.from("quiz_questions" as any) as any)
-          .select("id,prompt,explanation")
+          .select("id,prompt")
           .in("id", ids);
+        const { data: ex } = await (supabase.rpc as any)("get_quiz_explanations", { _question_ids: ids });
+        const em = new Map<string, string | null>(((ex as any[]) ?? []).map((e) => [e.id, e.explanation]));
         const m: any = {};
-        for (const row of (qs as any[]) ?? []) m[row.id] = { prompt: row.prompt, explanation: row.explanation };
+        for (const row of (qs as any[]) ?? []) m[row.id] = { prompt: row.prompt, explanation: em.get(row.id) ?? null };
         setQuestionMap(m);
+
       }
       setLoading(false);
       document.title = `Result — ${quizTitle}`;

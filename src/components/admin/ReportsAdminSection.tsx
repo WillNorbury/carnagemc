@@ -76,15 +76,25 @@ export const ReportsAdminSection = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("user_reports")
-      .select("*")
+      .select(
+        "id, reporter_id, target_type, target_id, target_label, target_url, reason, details, status, resolved_at, resolved_by, created_at, updated_at"
+      )
       .order("created_at", { ascending: false });
     if (error) {
       toast.error(error.message);
       setLoading(false);
       return;
     }
-    const rows = (data ?? []) as Report[];
+    const rows = ((data as any[]) ?? []).map((r) => ({ ...r, admin_notes: null })) as Report[];
+    if (rows.length) {
+      const { data: notes } = await (supabase.rpc as any)("admin_get_report_notes", {
+        _ids: rows.map((r) => r.id),
+      });
+      const nmap = new Map<string, string | null>(((notes as any[]) ?? []).map((n) => [n.id, n.admin_notes]));
+      for (const r of rows) r.admin_notes = nmap.get(r.id) ?? null;
+    }
     setReports(rows);
+
     const ids = Array.from(new Set(rows.map((r) => r.reporter_id).filter(Boolean))) as string[];
     if (ids.length > 0) {
       const { data: profiles } = await supabase

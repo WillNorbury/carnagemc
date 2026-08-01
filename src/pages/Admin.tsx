@@ -4133,11 +4133,25 @@ const ApplicationsTab = () => {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase.from("applications").select("*").order("created_at", { ascending: false });
+    const { data, error } = await supabase
+      .from("applications")
+      .select(
+        "id, user_id, type, status, mc_username, discord, age, timezone, experience, why, portfolio_url, extra, reviewed_by, reviewed_at, created_at, updated_at"
+      )
+      .order("created_at", { ascending: false });
     if (error) toast.error(error.message);
-    setItems((data as ApplicationRow[]) ?? []);
+    const rows = ((data as any[]) ?? []).map((r) => ({ ...r, reviewer_notes: null })) as ApplicationRow[];
+    if (rows.length) {
+      const { data: notes } = await (supabase.rpc as any)("admin_get_application_notes", {
+        _ids: rows.map((r) => r.id),
+      });
+      const map = new Map<string, string | null>(((notes as any[]) ?? []).map((n) => [n.id, n.reviewer_notes]));
+      for (const r of rows) r.reviewer_notes = map.get(r.id) ?? null;
+    }
+    setItems(rows);
     setLoading(false);
   };
+
 
   useEffect(() => {
     load();
