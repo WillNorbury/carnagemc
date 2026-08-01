@@ -3017,6 +3017,20 @@ export type Database = {
       }
     }
     Functions: {
+      admin_get_application_notes: {
+        Args: { _ids: string[] }
+        Returns: {
+          id: string
+          reviewer_notes: string
+        }[]
+      }
+      admin_get_report_notes: {
+        Args: { _ids: string[] }
+        Returns: {
+          admin_notes: string
+          id: string
+        }[]
+      }
       admin_get_user_email: { Args: { _user_id: string }; Returns: string }
       apply_creator_code: {
         Args: { _code: string }
@@ -3152,6 +3166,13 @@ export type Database = {
           last_error: string
           opened_at: string
           service_key: string
+        }[]
+      }
+      get_quiz_explanations: {
+        Args: { _question_ids: string[] }
+        Returns: {
+          explanation: string
+          id: string
         }[]
       }
       get_quiz_leaderboard: {
