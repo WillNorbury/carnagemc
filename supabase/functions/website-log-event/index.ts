@@ -28,13 +28,14 @@ Deno.serve(async (req) => {
     );
 
     // Resolve webhook URL
-    const { data: setting } = await supabase
+    const { data: alertSettings } = await supabase
       .from("alert_settings")
-      .select("value")
-      .eq("key", "website_webhook")
+      .select("webhook_urls")
+      .eq("id", 1)
       .maybeSingle();
 
-    const url = (setting?.value as { website_webhook_url?: string } | null)?.website_webhook_url;
+    const urls = (alertSettings?.webhook_urls ?? []) as string[];
+    const url = urls[0];
     if (!url || !/^https?:\/\//i.test(url)) {
       return new Response(JSON.stringify({ skipped: true, reason: "no webhook url" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
