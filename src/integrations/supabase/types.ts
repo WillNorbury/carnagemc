@@ -3288,6 +3288,16 @@ export type Database = {
         Returns: string
       }
       toggle_plugin_favorite: { Args: { _plugin_id: string }; Returns: boolean }
+      validate_creator_code: {
+        Args: { _code: string }
+        Returns: {
+          code: string
+          creator_name: string
+          discount_percent: number
+          id: string
+          limit_reached: boolean
+        }[]
+      }
     }
     Enums: {
       app_role:
