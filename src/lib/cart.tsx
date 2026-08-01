@@ -294,19 +294,17 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setApplyingCreatorCode(true);
     try {
       const { data, error } = await supabase
-        .from("creator_codes")
-        .select("id, code, creator_name, discount_percent, active, max_uses, uses_count")
-        .ilike("code", code)
+        .rpc("validate_creator_code", { _code: code })
         .maybeSingle();
       if (error) {
         setCreatorCodeError(error.message);
         return false;
       }
-      if (!data || !data.active) {
+      if (!data) {
         setCreatorCodeError("Invalid or inactive creator code.");
         return false;
       }
-      if (data.max_uses != null && (data.uses_count ?? 0) >= data.max_uses) {
+      if (data.limit_reached) {
         setCreatorCodeError("This creator code has reached its usage limit.");
         return false;
       }
