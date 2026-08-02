@@ -112,6 +112,11 @@ const communityGroup: NavGroup = {
     { to: "/mod-tiers", label: "Mod Tiers", icon: Star },
     { to: "/gallery", label: "Gallery", icon: ImageIcon },
     { to: "/quiz", label: "Quizzes", icon: Brain },
+    { to: "/clans", label: "Clans", icon: UsersIcon },
+    { to: "/hall-of-fame", label: "Hall of Fame", icon: Trophy },
+    { to: "/suggestions", label: "Suggestions", icon: Star },
+    { to: "/polls", label: "Polls", icon: Star },
+    { to: "/media-team", label: "Media Team", icon: Star },
   ],
 };
 
@@ -136,6 +141,24 @@ const helpGroup: NavGroup = {
     { to: "/contact", label: "Contact", icon: Mail },
     { to: "/trust", label: "Trust & Safety", icon: ShieldQuestion },
     { to: "/subscribe", label: "Subscribe", icon: MailPlus },
+    { to: "/how-to-join", label: "How to Join", icon: Download },
+    { to: "/guides", label: "Player Guides", icon: BookOpen },
+    { to: "/ranks-comparison", label: "Ranks Compared", icon: Star },
+    { to: "/server-map", label: "Server Map", icon: Compass },
+    { to: "/achievements", label: "Achievements", icon: Trophy },
+  ],
+};
+
+const aboutGroup: NavGroup = {
+  id: "about",
+  label: "About",
+  icon: Info,
+  items: [
+    { to: "/about", label: "About Us", icon: Info },
+    { to: "/roadmap", label: "Roadmap", icon: Compass },
+    { to: "/press-kit", label: "Press Kit", icon: ImageIcon },
+    { to: "/credits", label: "Credits", icon: Star },
+    { to: "/sitemap", label: "Site Index", icon: ScrollText },
   ],
 };
 
@@ -187,7 +210,7 @@ const accountGroup: NavGroup = {
 };
 
 const staticPublicGroupsBefore: NavGroup[] = [websiteGroup, mainGroup, communityGroup];
-const staticPublicGroupsAfter: NavGroup[] = [helpGroup, actionsGroup, discoverGroup, weatherGroup, soonGroup];
+const staticPublicGroupsAfter: NavGroup[] = [helpGroup, actionsGroup, discoverGroup, aboutGroup, weatherGroup, soonGroup];
 
 export function AppSidebar() {
   const { state, isMobile, setOpenMobile } = useSidebar();
