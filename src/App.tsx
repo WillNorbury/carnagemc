@@ -265,6 +265,11 @@ const Shell = () => {
                   <Route path="/refund-policy" element={<Navigate to="/refund" replace />} />
                   <Route path="/partners" element={<Partners />} />
                   <Route path="/partners/:slug" element={<PartnerDetail />} />
+
+                  {CONTENT_PAGES.map((slug) => (
+                    <Route key={slug} path={`/${slug}`} element={<ContentPage slug={slug} />} />
+                  ))}
+
                    
                    <Route path="*" element={<NotFound />} />
           </Routes>
