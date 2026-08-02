@@ -48,6 +48,21 @@ const entries: SitemapEntry[] = [
   { path: "/wiki", changefreq: "weekly", priority: "0.7" },
   { path: "/gallery", changefreq: "weekly", priority: "0.6" },
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
+  { path: "/guides", changefreq: "monthly", priority: "0.6" },
+  { path: "/ranks-comparison", changefreq: "monthly", priority: "0.6" },
+  { path: "/how-to-join", changefreq: "monthly", priority: "0.6" },
+  { path: "/server-map", changefreq: "monthly", priority: "0.6" },
+  { path: "/achievements", changefreq: "monthly", priority: "0.6" },
+  { path: "/hall-of-fame", changefreq: "monthly", priority: "0.6" },
+  { path: "/clans", changefreq: "monthly", priority: "0.6" },
+  { path: "/suggestions", changefreq: "monthly", priority: "0.6" },
+  { path: "/polls", changefreq: "monthly", priority: "0.6" },
+  { path: "/media-team", changefreq: "monthly", priority: "0.6" },
+  { path: "/about", changefreq: "monthly", priority: "0.6" },
+  { path: "/roadmap", changefreq: "monthly", priority: "0.6" },
+  { path: "/press-kit", changefreq: "monthly", priority: "0.6" },
+  { path: "/credits", changefreq: "monthly", priority: "0.6" },
+  { path: "/sitemap", changefreq: "monthly", priority: "0.6" },
 ]
 
 function generateSitemap(entries: SitemapEntry[]) {
