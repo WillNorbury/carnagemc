@@ -2248,6 +2248,57 @@ export type Database = {
         }
         Relationships: []
       }
+      site_pages: {
+        Row: {
+          created_at: string
+          eyebrow: string
+          highlight: string
+          icon: string
+          id: string
+          intro: string
+          published: boolean
+          sections: Json
+          seo_description: string
+          slug: string
+          sort_order: number
+          title: string
+          updated_at: string
+          updated_label: string
+        }
+        Insert: {
+          created_at?: string
+          eyebrow?: string
+          highlight?: string
+          icon?: string
+          id?: string
+          intro?: string
+          published?: boolean
+          sections?: Json
+          seo_description?: string
+          slug: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          updated_label?: string
+        }
+        Update: {
+          created_at?: string
+          eyebrow?: string
+          highlight?: string
+          icon?: string
+          id?: string
+          intro?: string
+          published?: boolean
+          sections?: Json
+          seo_description?: string
+          slug?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          updated_label?: string
+        }
+        Relationships: []
+      }
       status_subscribers: {
         Row: {
           confirmed: boolean

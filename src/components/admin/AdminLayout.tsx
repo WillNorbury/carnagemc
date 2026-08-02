@@ -90,7 +90,8 @@ export type AdminSection =
   | "vote-links"
   | "partners"
   | "skripts"
-  | "game-modes";
+  | "game-modes"
+  | "site-pages";
 
 
 type NavItem =
@@ -139,6 +140,7 @@ const items: NavItem[] = [
   { kind: "link", id: "features", icon: Sparkles, label: "Features" },
   { kind: "link", id: "rules", icon: Gavel, label: "Rules" },
   { kind: "link", id: "game-modes", icon: Sparkles, label: "Game Modes" },
+  { kind: "link", id: "site-pages", icon: FileText, label: "Site Pages" },
 
 
   { kind: "link", id: "faqs", icon: HelpCircle, label: "FAQs" },

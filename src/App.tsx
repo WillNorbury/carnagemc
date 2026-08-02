@@ -92,6 +92,26 @@ import Commands from "./pages/Commands.tsx";
 import Servers from "./pages/Servers.tsx";
 import ServerDetail from "./pages/ServerDetail.tsx";
 import SkriptDetail from "./pages/SkriptDetail.tsx";
+import ContentPage from "./components/site/ContentPage.tsx";
+
+const CONTENT_PAGES = [
+  "guides",
+  "ranks-comparison",
+  "how-to-join",
+  "server-map",
+  "achievements",
+  "hall-of-fame",
+  "clans",
+  "suggestions",
+  "polls",
+  "media-team",
+  "about",
+  "roadmap",
+  "press-kit",
+  "credits",
+  "sitemap",
+] as const;
+
 
 
 const queryClient = new QueryClient();
@@ -245,6 +265,11 @@ const Shell = () => {
                   <Route path="/refund-policy" element={<Navigate to="/refund" replace />} />
                   <Route path="/partners" element={<Partners />} />
                   <Route path="/partners/:slug" element={<PartnerDetail />} />
+
+                  {CONTENT_PAGES.map((slug) => (
+                    <Route key={slug} path={`/${slug}`} element={<ContentPage slug={slug} />} />
+                  ))}
+
                    
                    <Route path="*" element={<NotFound />} />
           </Routes>
