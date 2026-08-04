@@ -91,7 +91,11 @@ export type AdminSection =
   | "partners"
   | "skripts"
   | "game-modes"
-  | "site-pages";
+  | "site-pages"
+  | "mod-skripts"
+  | "mod-servers"
+  | "mod-mods"
+  | "mod-reviews";
 
 
 type NavItem =
@@ -159,6 +163,11 @@ const items: NavItem[] = [
   { kind: "link", id: "quizzes", icon: Brain, label: "Quizzes" },
   { kind: "link", id: "reports", icon: Flag, label: "Reports" },
   { kind: "link", id: "console", icon: Code, label: "Console" },
+  { kind: "section", title: "Moderation Tools", icon: ShieldCheck },
+  { kind: "link", id: "mod-skripts", icon: FileText, label: "Community Skripts" },
+  { kind: "link", id: "mod-servers", icon: Server, label: "Community Servers" },
+  { kind: "link", id: "mod-mods", icon: Boxes, label: "Mods" },
+  { kind: "link", id: "mod-reviews", icon: Sparkles, label: "Reviews" },
   { kind: "section", title: "Discord Bot", icon: Bot },
   { kind: "link", id: "bot-dashboard", icon: LayoutDashboard, label: "Bot Dashboard" },
   { kind: "link", id: "bot-management", icon: Code, label: "Management" },
