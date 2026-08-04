@@ -63,6 +63,22 @@ const entries: SitemapEntry[] = [
   { path: "/press-kit", changefreq: "monthly", priority: "0.6" },
   { path: "/credits", changefreq: "monthly", priority: "0.6" },
   { path: "/sitemap", changefreq: "monthly", priority: "0.6" },
+  { path: "/anti-cheat", changefreq: "monthly", priority: "0.6" },
+  { path: "/seasons", changefreq: "monthly", priority: "0.6" },
+  { path: "/staff-handbook", changefreq: "monthly", priority: "0.5" },
+  { path: "/bug-bounty", changefreq: "monthly", priority: "0.6" },
+  { path: "/discord-rules", changefreq: "monthly", priority: "0.5" },
+  { path: "/appeals-guide", changefreq: "monthly", priority: "0.6" },
+  { path: "/pvp-guide", changefreq: "monthly", priority: "0.6" },
+  { path: "/economy-guide", changefreq: "monthly", priority: "0.6" },
+  { path: "/building-guide", changefreq: "monthly", priority: "0.6" },
+  { path: "/community-standards", changefreq: "monthly", priority: "0.6" },
+  { path: "/glossary", changefreq: "monthly", priority: "0.5" },
+  { path: "/network-history", changefreq: "monthly", priority: "0.5" },
+  { path: "/safety", changefreq: "monthly", priority: "0.6" },
+  { path: "/brand-guidelines", changefreq: "monthly", priority: "0.5" },
+  { path: "/support-guide", changefreq: "monthly", priority: "0.6" },
+
 ]
 
 function generateSitemap(entries: SitemapEntry[]) {

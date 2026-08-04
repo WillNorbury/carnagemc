@@ -90,6 +90,12 @@ import { VoteLinksAdminSection } from "@/components/admin/VoteLinksAdminSection"
 import { GameModesAdminSection } from "@/components/admin/GameModesAdminSection";
 import { PartnersAdminSection } from "@/components/admin/PartnersAdminSection";
 import { SitePagesAdminSection } from "@/components/admin/SitePagesAdminSection";
+import {
+  SkriptsModerationSection,
+  ServersModerationSection,
+  ModsModerationSection,
+  ReviewsModerationSection,
+} from "@/components/admin/tools/ModerationTools";
 import { AdminSkriptsSection } from "@/components/admin/AdminSkriptsSection";
 import { DiscordConfigSection } from "@/components/admin/DiscordConfigSection";
 
@@ -150,6 +156,10 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   partners: { title: "Partners", description: "Manage the partners shown in the sidebar Partners dropdown." },
   skripts: { title: "Skripts", description: "Upload and download Skript (.sk) files staff can add to the server." },
   "site-pages": { title: "Site Pages", description: "Create and edit standalone content pages such as /guides, /about, /roadmap and /credits." },
+  "mod-skripts": { title: "Community Skripts", description: "Moderate member-uploaded Skripts." },
+  "mod-servers": { title: "Community Servers", description: "Moderate member-submitted servers." },
+  "mod-mods": { title: "Mods", description: "Publish, feature or remove mods." },
+  "mod-reviews": { title: "Reviews", description: "Moderate player reviews." },
   "game-modes": { title: "Game Modes", description: "Manage the game modes shown on /gamemodes and their detail pages." },
 
 };
@@ -276,6 +286,10 @@ const Admin = () => {
           {section === "skripts" && <AdminSkriptsSection />}
           {section === "game-modes" && <GameModesAdminSection />}
           {section === "site-pages" && <SitePagesAdminSection />}
+          {section === "mod-skripts" && <SkriptsModerationSection />}
+          {section === "mod-servers" && <ServersModerationSection />}
+          {section === "mod-mods" && <ModsModerationSection />}
+          {section === "mod-reviews" && <ReviewsModerationSection />}
         </>
       )}
     </AdminLayout>
