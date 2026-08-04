@@ -146,6 +146,16 @@ const helpGroup: NavGroup = {
     { to: "/ranks-comparison", label: "Ranks Compared", icon: Star },
     { to: "/server-map", label: "Server Map", icon: Compass },
     { to: "/achievements", label: "Achievements", icon: Trophy },
+    { to: "/support-guide", label: "Support Guide", icon: LifeBuoy },
+    { to: "/appeals-guide", label: "Appeals Guide", icon: Gavel },
+    { to: "/pvp-guide", label: "PvP Guide", icon: Sparkles },
+    { to: "/economy-guide", label: "Economy Guide", icon: Package },
+    { to: "/building-guide", label: "Building Guide", icon: Boxes },
+    { to: "/glossary", label: "Glossary", icon: BookOpen },
+    { to: "/seasons", label: "Seasons", icon: Clock },
+    { to: "/safety", label: "Player Safety", icon: ShieldCheck },
+    { to: "/anti-cheat", label: "Anti-Cheat", icon: Shield },
+    { to: "/bug-bounty", label: "Bug Bounty", icon: Activity },
   ],
 };
 
@@ -159,8 +169,14 @@ const aboutGroup: NavGroup = {
     { to: "/press-kit", label: "Press Kit", icon: ImageIcon },
     { to: "/credits", label: "Credits", icon: Star },
     { to: "/sitemap", label: "Site Index", icon: ScrollText },
+    { to: "/network-history", label: "Network History", icon: Clock },
+    { to: "/brand-guidelines", label: "Brand Guidelines", icon: ImageIcon },
+    { to: "/community-standards", label: "Community Standards", icon: UsersIcon },
+    { to: "/discord-rules", label: "Discord Rules", icon: ScrollText },
+    { to: "/staff-handbook", label: "Staff Handbook", icon: FileText },
   ],
 };
+
 
 const actionsGroup: NavGroup = {
   id: "actions",
