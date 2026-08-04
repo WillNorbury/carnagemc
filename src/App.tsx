@@ -110,6 +110,22 @@ const CONTENT_PAGES = [
   "press-kit",
   "credits",
   "sitemap",
+  "anti-cheat",
+  "seasons",
+  "staff-handbook",
+  "bug-bounty",
+  "discord-rules",
+  "appeals-guide",
+  "pvp-guide",
+  "economy-guide",
+  "building-guide",
+  "community-standards",
+  "glossary",
+  "network-history",
+  "safety",
+  "brand-guidelines",
+  "support-guide",
+
 ] as const;
 
 
