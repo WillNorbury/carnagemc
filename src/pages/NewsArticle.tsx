@@ -143,8 +143,10 @@ const NewsArticle = () => {
               {article.title}
             </h1>
 
-            <div className="prose prose-invert max-w-none whitespace-pre-wrap text-foreground/85 leading-relaxed text-[15px]">
-              {article.content}
+            <div className="prose prose-invert max-w-none text-foreground/85 leading-relaxed text-[15px] prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary prose-strong:text-foreground prose-code:text-primary">
+              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                {article.content}
+              </ReactMarkdown>
             </div>
           </article>
         )}
