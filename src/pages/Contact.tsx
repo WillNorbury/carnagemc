@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -84,6 +84,14 @@ export default function Contact() {
     });
     setForm({ name: "", email: "", subject: "", message: "" });
   }
+
+  const ownerPreview = useMemo(() => {
+    const subject = ownerForm.reason ? `[CarnageMC] ${ownerForm.reason}` : "";
+    const body = ownerForm.email || ownerForm.message
+      ? `Reply-to: ${ownerForm.email}\n\n${ownerForm.message}`
+      : "";
+    return { subject, body };
+  }, [ownerForm.email, ownerForm.reason, ownerForm.message]);
 
   function buildOwnerMailto() {
     const parsed = ownerSchema.safeParse(ownerForm);
@@ -179,6 +187,29 @@ export default function Contact() {
             <Label>Message *</Label>
             <Textarea rows={5} value={ownerForm.message} onChange={(e) => setOwnerForm({ ...ownerForm, message: e.target.value })} maxLength={4000} placeholder="Write your message to the owner..." />
           </div>
+
+          {(ownerPreview.subject || ownerPreview.body) && (
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-2">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                <Mail className="h-3 w-3" /> Email preview
+              </p>
+              <div className="text-sm">
+                <span className="text-muted-foreground">To: </span>
+                <span className="font-medium">{OWNER_EMAIL}</span>
+              </div>
+              <div className="text-sm break-words">
+                <span className="text-muted-foreground">Subject: </span>
+                <span className="font-medium">{ownerPreview.subject || <span className="italic text-muted-foreground/60">— enter a reason —</span>}</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Body:</span>
+                <pre className="mt-1 whitespace-pre-wrap font-sans text-sm text-foreground/90 break-words">
+                  {ownerPreview.body || <span className="italic text-muted-foreground/60">— start typing your message —</span>}
+                </pre>
+              </div>
+            </div>
+          )}
+
           <Button onClick={openOwnerMail} className="w-full">
             <Mail className="h-4 w-4 mr-2" /> Open email to owner
           </Button>
