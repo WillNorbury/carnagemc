@@ -478,7 +478,7 @@ const Index = () => {
                   className={`h-2 w-2 rounded-full ${status?.online ? "bg-primary animate-pulse" : "bg-destructive"}`}
                 />
                 {status?.online ? `${status.players_online} players online` : "Server offline"}
-                {status?.version && <span className="opacity-60">• {status.version}</span>}
+                {status?.online && <span className="opacity-60">• {displayVersion}</span>}
               </div>
             </div>
           </div>
