@@ -227,3 +227,23 @@
 [data-sidebar="content"]::-webkit-scrollbar-thumb:hover {
   background-color: hsl(var(--sidebar-border) / 0.7);
 }
+
+/* Thin, subtle scrollbar for the main website pages */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border) / 0.4) transparent;
+}
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--border) / 0.4);
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--border) / 0.6);
+}
