@@ -134,8 +134,11 @@ const RankComparison = () => {
                         name: r.name,
                         price: Number(r.price ?? 0),
                         currency: r.currency ?? "USD",
+                        image_url: null,
+                        external_url: null,
                         maxQuantity: 1,
                       })
+
                     }
                   >
                     Add to cart
