@@ -160,11 +160,7 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
   };
 
   const loadOrgs = async () => {
-    const { data } = await supabase
-      .from("organizations")
-      .select("id, name")
-      .eq("owner_id", userId)
-      .order("name");
+    const { data } = await supabase.rpc("get_my_organizations");
     setOrgs((data ?? []) as { id: string; name: string }[]);
   };
 
