@@ -968,10 +968,13 @@ export type Database = {
           created_at: string
           id: string
           image_url: string
+          media_type: string
           published: boolean
           sort_order: number
           title: string | null
           updated_at: string
+          video_provider: string | null
+          video_url: string | null
         }
         Insert: {
           caption?: string | null
@@ -979,10 +982,13 @@ export type Database = {
           created_at?: string
           id?: string
           image_url: string
+          media_type?: string
           published?: boolean
           sort_order?: number
           title?: string | null
           updated_at?: string
+          video_provider?: string | null
+          video_url?: string | null
         }
         Update: {
           caption?: string | null
@@ -990,10 +996,13 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string
+          media_type?: string
           published?: boolean
           sort_order?: number
           title?: string | null
           updated_at?: string
+          video_provider?: string | null
+          video_url?: string | null
         }
         Relationships: []
       }
@@ -1705,6 +1714,62 @@ export type Database = {
           url?: string
         }
         Relationships: []
+      }
+      player_stats: {
+        Row: {
+          balance: number
+          best_killstreak: number
+          deaths: number
+          id: string
+          kills: number
+          killstreak: number
+          last_seen_at: string | null
+          mob_kills: number
+          player_name: string
+          player_uuid: string
+          playtime_seconds: number
+          server_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          balance?: number
+          best_killstreak?: number
+          deaths?: number
+          id?: string
+          kills?: number
+          killstreak?: number
+          last_seen_at?: string | null
+          mob_kills?: number
+          player_name: string
+          player_uuid: string
+          playtime_seconds?: number
+          server_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          balance?: number
+          best_killstreak?: number
+          deaths?: number
+          id?: string
+          kills?: number
+          killstreak?: number
+          last_seen_at?: string | null
+          mob_kills?: number
+          player_name?: string
+          player_uuid?: string
+          playtime_seconds?: number
+          server_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_stats_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "mc_servers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       plugin_downloads: {
         Row: {
@@ -3141,6 +3206,22 @@ export type Database = {
           plugin_id: string
         }[]
       }
+      get_player_stats_by_name: {
+        Args: { _player_name: string }
+        Returns: {
+          balance: number
+          best_killstreak: number
+          deaths: number
+          kdr: number
+          kills: number
+          killstreak: number
+          last_seen_at: string
+          mob_kills: number
+          player_name: string
+          playtime_seconds: number
+          updated_at: string
+        }[]
+      }
       get_plugin_download_counts: {
         Args: { _plugin_ids?: string[] }
         Returns: {
@@ -3286,6 +3367,20 @@ export type Database = {
         }[]
       }
       get_quiz_with_questions: { Args: { _slug: string }; Returns: Json }
+      get_stats_leaderboard: {
+        Args: { _limit?: number; _metric: string }
+        Returns: {
+          balance: number
+          best_killstreak: number
+          deaths: number
+          kdr: number
+          kills: number
+          killstreak: number
+          mob_kills: number
+          player_name: string
+          playtime_seconds: number
+        }[]
+      }
       get_streak_leaderboard: {
         Args: { _limit?: number; _metric?: string }
         Returns: {

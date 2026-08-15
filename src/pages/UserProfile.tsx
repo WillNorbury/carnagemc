@@ -42,6 +42,14 @@ import {
   UserCheck,
   Boxes,
   Building2,
+  Swords,
+  Skull,
+  Target,
+  Crosshair,
+  Trophy,
+  Clock,
+  Coins,
+  Bug,
 } from "lucide-react";
 import { toast } from "sonner";
 import ReportDialog from "@/components/site/ReportDialog";
@@ -66,6 +74,20 @@ type Project = {
   tags: string[];
   likes: number;
   short_id: string;
+  updated_at: string | null;
+};
+
+type PlayerStats = {
+  player_name: string;
+  kills: number;
+  deaths: number;
+  killstreak: number;
+  best_killstreak: number;
+  playtime_seconds: number;
+  balance: number;
+  mob_kills: number;
+  kdr: number;
+  last_seen_at: string | null;
   updated_at: string | null;
 };
 
@@ -109,10 +131,13 @@ const UserProfile = () => {
   const [editBusy, setEditBusy] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
 
+  const [stats, setStats] = useState<PlayerStats | null>(null);
+
   const isOwn = !!user && !!profile && user.id === profile.id;
 
   useEffect(() => {
     if (!slug) return;
+    let cancelled = false;
     (async () => {
       setLoading(true);
       setNotFound(false);
@@ -141,6 +166,28 @@ const UserProfile = () => {
       const { data: r } = await supabase
         .from("user_roles").select("role").eq("user_id", p.id);
       setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role).sort((a, b) => roleRank(a) - roleRank(b)));
+
+      // Gameplay stats (matched by Minecraft username)
+      if (p.mc_username) {
+        (supabase as any).rpc("get_player_stats_by_name", { _player_name: p.mc_username })
+          .then(({ data: sdata }: any) => {
+            if (cancelled) return;
+            const s = (sdata as any[])?.[0];
+            if (s) setStats({
+              player_name: s.player_name,
+              kills: s.kills ?? 0,
+              deaths: s.deaths ?? 0,
+              killstreak: s.killstreak ?? 0,
+              best_killstreak: s.best_killstreak ?? 0,
+              playtime_seconds: s.playtime_seconds ?? 0,
+              balance: s.balance ?? 0,
+              mob_kills: s.mob_kills ?? 0,
+              kdr: Number(s.kdr) || 0,
+              last_seen_at: s.last_seen_at ?? null,
+              updated_at: s.updated_at ?? null,
+            });
+          });
+      }
 
       // Projects: match by author = display_name or mc_username
       const authorMatches = [p.display_name, p.mc_username].filter(Boolean) as string[];
@@ -405,6 +452,41 @@ const UserProfile = () => {
             )}
           </div>
         </div>
+
+        {/* Gameplay stats */}
+        {stats && (
+          <Card className="p-5 mt-6">
+            <h3 className="font-bold mb-4 flex items-center gap-2">
+              <Swords className="h-4 w-4 text-primary" /> In-Game Stats
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+              {[
+                { label: "Kills", value: stats.kills.toLocaleString(), icon: Swords },
+                { label: "Deaths", value: stats.deaths.toLocaleString(), icon: Skull },
+                { label: "KDR", value: Number(stats.kdr).toFixed(2), icon: Target },
+                { label: "Killstreak", value: stats.killstreak.toLocaleString(), icon: Crosshair },
+                { label: "Best Streak", value: stats.best_killstreak.toLocaleString(), icon: Trophy },
+                { label: "Playtime", value: stats.playtime_seconds >= 3600 ? `${Math.floor(stats.playtime_seconds / 3600)}h` : `${Math.floor(stats.playtime_seconds / 60)}m`, icon: Clock },
+                { label: "Balance", value: `$${stats.balance.toLocaleString()}`, icon: Coins },
+                { label: "Mob Kills", value: stats.mob_kills.toLocaleString(), icon: Bug },
+              ].map((s) => {
+                const Icon = s.icon;
+                return (
+                  <div key={s.label} className="rounded-lg border border-border/60 bg-card/50 p-3 text-center">
+                    <Icon className="h-4 w-4 mx-auto mb-1.5 text-muted-foreground" />
+                    <div className="font-display text-lg font-bold text-foreground">{s.value}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
+                  </div>
+                );
+              })}
+            </div>
+            {stats.last_seen_at && (
+              <p className="text-xs text-muted-foreground mt-3">
+                Last seen {timeAgo(stats.last_seen_at)}
+              </p>
+            )}
+          </Card>
+        )}
 
         {/* Body: projects + sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 mt-6">

@@ -85,6 +85,33 @@ Deno.serve(async (req) => {
       return json({ inserted: insert.length })
     }
 
+    if (kind === 'stats') {
+      // Player gameplay stats — upserted by player_uuid.
+      const rows = Array.isArray(body?.stats) ? body.stats : []
+      if (!rows.length) return json({ upserted: 0 })
+      const now = new Date().toISOString()
+      const payload = rows.slice(0, 500).map((s: any) => ({
+        server_id: serverId,
+        player_uuid: String(s?.player_uuid ?? '').slice(0, 64),
+        player_name: String(s?.player_name ?? '').slice(0, 32),
+        kills: Math.max(0, Number(s?.kills) || 0),
+        deaths: Math.max(0, Number(s?.deaths) || 0),
+        killstreak: Math.max(0, Number(s?.killstreak) || 0),
+        best_killstreak: Math.max(0, Number(s?.best_killstreak) || 0),
+        playtime_seconds: Math.max(0, Number(s?.playtime_seconds) || 0),
+        balance: Number(s?.balance) || 0,
+        mob_kills: Math.max(0, Number(s?.mob_kills) || 0),
+        last_seen_at: now,
+        updated_at: now,
+      })).filter((r: any) => r.player_uuid.length > 0 && r.player_name.length > 0)
+      if (!payload.length) return json({ upserted: 0 })
+      const { error } = await admin
+        .from('player_stats')
+        .upsert(payload, { onConflict: 'player_uuid' })
+      if (error) return json({ error: error.message }, 500)
+      return json({ upserted: payload.length })
+    }
+
     // results: [{ id, status: 'done'|'error', response }]
     const results = Array.isArray(body?.results) ? body.results : []
     let updated = 0
