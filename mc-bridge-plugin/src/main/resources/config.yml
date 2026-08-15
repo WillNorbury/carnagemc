@@ -4,3 +4,5 @@ server-slug: "survival"
 server-secret: "REPLACE_ME"
 poll-interval-ms: 500
 log-batch-ms: 1000
+# How often (ms) to report player gameplay stats (kills, deaths, KDR, playtime, balance) to the website.
+stats-interval-ms: 60000
