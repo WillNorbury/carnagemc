@@ -445,6 +445,41 @@ const UserProfile = () => {
           </div>
         </div>
 
+        {/* Gameplay stats */}
+        {stats && (
+          <Card className="p-5 mt-6">
+            <h3 className="font-bold mb-4 flex items-center gap-2">
+              <Swords className="h-4 w-4 text-primary" /> In-Game Stats
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+              {[
+                { label: "Kills", value: stats.kills.toLocaleString(), icon: Swords },
+                { label: "Deaths", value: stats.deaths.toLocaleString(), icon: Skull },
+                { label: "KDR", value: Number(stats.kdr).toFixed(2), icon: Target },
+                { label: "Killstreak", value: stats.killstreak.toLocaleString(), icon: Crosshair },
+                { label: "Best Streak", value: stats.best_killstreak.toLocaleString(), icon: Trophy },
+                { label: "Playtime", value: stats.playtime_seconds >= 3600 ? `${Math.floor(stats.playtime_seconds / 3600)}h` : `${Math.floor(stats.playtime_seconds / 60)}m`, icon: Clock },
+                { label: "Balance", value: `$${stats.balance.toLocaleString()}`, icon: Coins },
+                { label: "Mob Kills", value: stats.mob_kills.toLocaleString(), icon: Bug },
+              ].map((s) => {
+                const Icon = s.icon;
+                return (
+                  <div key={s.label} className="rounded-lg border border-border/60 bg-card/50 p-3 text-center">
+                    <Icon className="h-4 w-4 mx-auto mb-1.5 text-muted-foreground" />
+                    <div className="font-display text-lg font-bold text-foreground">{s.value}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
+                  </div>
+                );
+              })}
+            </div>
+            {stats.last_seen_at && (
+              <p className="text-xs text-muted-foreground mt-3">
+                Last seen {timeAgo(stats.last_seen_at)}
+              </p>
+            )}
+          </Card>
+        )}
+
         {/* Body: projects + sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 mt-6">
           <div className="space-y-3">
