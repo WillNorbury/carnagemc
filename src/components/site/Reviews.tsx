@@ -58,30 +58,14 @@ const StarRow = ({
 const Reviews = () => {
   const { user } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [profiles, setProfiles] = useState<Record<string, Profile>>({});
   const [rating, setRating] = useState(5);
   const [body, setBody] = useState("");
   const [editing, setEditing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const load = async () => {
-    const { data } = await supabase
-      .from("reviews")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(30);
-    const list = (data ?? []) as Review[];
-    setReviews(list);
-    const ids = [...new Set(list.map((r) => r.user_id))];
-    if (ids.length) {
-      const { data: ps } = await supabase
-        .from("profiles")
-        .select("id, display_name, avatar_url, mc_username")
-        .in("id", ids);
-      const map: Record<string, Profile> = {};
-      (ps ?? []).forEach((p: any) => (map[p.id] = p));
-      setProfiles(map);
-    }
+    const { data } = await supabase.rpc("get_public_reviews", { _limit: 30 });
+    setReviews((data ?? []) as unknown as Review[]);
   };
 
   useEffect(() => {
@@ -95,7 +79,7 @@ const Reviews = () => {
     };
   }, []);
 
-  const myReview = user ? reviews.find((r) => r.user_id === user.id) : null;
+  const myReview = user ? reviews.find((r) => r.is_mine) ?? null : null;
 
   useEffect(() => {
     if (myReview && editing) {
