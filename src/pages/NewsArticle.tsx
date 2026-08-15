@@ -147,7 +147,7 @@ const NewsArticle = () => {
             </h1>
 
             <div className="prose prose-invert max-w-none text-foreground/85 leading-relaxed text-[15px] prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary prose-strong:text-foreground prose-code:text-primary">
-              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]} breaks>
                 {article.content}
               </ReactMarkdown>
             </div>
