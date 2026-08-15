@@ -129,6 +129,7 @@ const UserProfile = () => {
 
   useEffect(() => {
     if (!slug) return;
+    let cancelled = false;
     (async () => {
       setLoading(true);
       setNotFound(false);
