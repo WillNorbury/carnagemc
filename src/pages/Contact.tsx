@@ -85,6 +85,14 @@ export default function Contact() {
     setForm({ name: "", email: "", subject: "", message: "" });
   }
 
+  const ownerPreview = useMemo(() => {
+    const subject = ownerForm.reason ? `[CarnageMC] ${ownerForm.reason}` : "";
+    const body = ownerForm.email || ownerForm.message
+      ? `Reply-to: ${ownerForm.email}\n\n${ownerForm.message}`
+      : "";
+    return { subject, body };
+  }, [ownerForm.email, ownerForm.reason, ownerForm.message]);
+
   function buildOwnerMailto() {
     const parsed = ownerSchema.safeParse(ownerForm);
     if (!parsed.success) {
