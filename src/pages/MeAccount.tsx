@@ -62,7 +62,7 @@ export default function MeAccount() {
           .order("created_at", { ascending: false })
           .limit(5),
         supabase.from("user_streaks").select("total_votes, current_streak").eq("user_id", user.id).maybeSingle(),
-        supabase.from("wishlists").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("store_wishlists").select("id", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("support_tickets").select("id", { count: "exact", head: true }).eq("user_id", user.id),
       ]);
 
