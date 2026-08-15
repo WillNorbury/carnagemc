@@ -67,7 +67,9 @@ const Index = () => {
 
   const [discordMembers, setDiscordMembers] = useState<number | null>(null);
   const [discordInviteError, setDiscordInviteError] = useState<string | null>(null);
-  const [voteCount, setVoteCount] = useState<number>(0);
+  const [voteCount, setVoteCount] = useState<number | null>(null);
+  const [uptimePct, setUptimePct] = useState<number | null>(null);
+  const [reviewCount, setReviewCount] = useState<number>(0);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [gameModes, setGameModes] = useState<GameMode[]>([]);
   const { isAdmin } = useAuth();
@@ -75,7 +77,26 @@ const Index = () => {
   useEffect(() => {
     fetchFeatures().then(setFeatures);
     fetchGameModes().then(setGameModes);
+    // Total community votes
+    supabase
+      .rpc("get_streak_leaderboard", { _metric: "total_votes", _limit: 500 })
+      .then(({ data }) => {
+        if (!Array.isArray(data)) return;
+        const total = data.reduce((sum: number, r: any) => sum + (r.total_votes ?? 0), 0);
+        setVoteCount(total > 0 ? total : null);
+      });
+    // Real 30-day uptime across tracked servers
+    supabase
+      .from("mc_public_servers")
+      .select("uptime_pct")
+      .then(({ data }) => {
+        const vals = (data ?? []).map((r: any) => Number(r.uptime_pct)).filter((n) => Number.isFinite(n) && n > 0);
+        if (vals.length) setUptimePct(Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10);
+      });
+    // Only show the review wall once there are enough genuine reviews
+    supabase.rpc("get_public_reviews").then(({ data }) => setReviewCount(Array.isArray(data) ? data.length : 0));
   }, []);
+
 
   useEffect(() => {
     supabase
