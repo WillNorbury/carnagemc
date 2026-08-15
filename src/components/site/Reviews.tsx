@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { userProfilePath } from "@/lib/userSlug";
+import { toUserSlug } from "@/lib/userSlug";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -247,9 +247,8 @@ const Reviews = () => {
       ) : (
         <div className="grid md:grid-cols-3 gap-5">
           {reviews.map((r) => {
-            const p = profiles[r.user_id];
-            const name = p?.display_name ?? p?.mc_username ?? "Player";
-            const av = avatarFor(p);
+            const name = r.author_name ?? r.author_mc_username ?? "Player";
+            const av = avatarFor(r);
             return (
               <Card key={r.id} className="p-6 hover-lift border-border/60 relative">
                 <div className="mb-3">
@@ -265,7 +264,7 @@ const Reviews = () => {
                     </div>
                   )}
                   <div className="min-w-0">
-                    <Link to={p ? userProfilePath(p) : `/user/${r.user_id.slice(0, 8)}`} className="font-semibold text-sm hover:text-primary truncate block">
+                    <Link to={authorPath(r)} className="font-semibold text-sm hover:text-primary truncate block">
                       {name}
                     </Link>
                     <div className="text-xs text-muted-foreground">
