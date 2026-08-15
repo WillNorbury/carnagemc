@@ -398,14 +398,11 @@ export function AppSidebar() {
           <Button
             variant="outline"
             size="sm"
-            onClick={async () => {
-              await signOut();
-              nav("/");
-            }}
+            onClick={() => nav("/profile")}
             className="w-full justify-start"
           >
-            <LogOut className="h-4 w-4" />
-            {!collapsed && <span className="ml-1">Sign out</span>}
+            <UserIcon className="h-4 w-4" />
+            {!collapsed && <span className="ml-1">Profile</span>}
           </Button>
         ) : (
           <Button size="sm" onClick={() => nav("/auth")} className="w-full justify-start glow">
