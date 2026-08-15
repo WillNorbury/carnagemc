@@ -111,6 +111,8 @@ const UserProfile = () => {
 
   const [stats, setStats] = useState<PlayerStats | null>(null);
 
+  const isOwn = !!user && !!profile && user.id === profile.id;
+
   useEffect(() => {
     if (!slug) return;
     (async () => {
