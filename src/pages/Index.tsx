@@ -188,6 +188,9 @@ const Index = () => {
   const ip = content.server?.ip ?? "play.carnagemc.net";
   const bedrockIp = content.server?.bedrockIp ?? "Soon";
   const bedrockPort = content.server?.bedrockPort ?? "Soon";
+  // One canonical version string site-wide (mcsrvstat reports the proxy's protocol range, which confuses players)
+  const displayVersion = content.server?.version ?? "1.21.x";
+
 
   const [alert, setAlert] = useState<{ type: "online" | "offline"; message: string } | null>(null);
   const prevOnlineRef = useRef<boolean | undefined>(undefined);
