@@ -95,6 +95,7 @@ export default function OrgProfile() {
   const [org, setOrg] = useState<Org | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [isOwner, setIsOwner] = useState(false);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -182,9 +183,7 @@ export default function OrgProfile() {
       await loadProjects(o.id);
       setLoading(false);
     })();
-  }, [slug]);
-
-  const [isOwner, setIsOwner] = useState(false);
+  }, [slug, user]);
 
   const openAttach = async () => {
     if (!user || !org) return;

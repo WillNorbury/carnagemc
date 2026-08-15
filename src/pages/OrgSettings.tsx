@@ -31,6 +31,7 @@ export default function OrgSettings() {
   const navigate = useNavigate();
 
   const [org, setOrg] = useState<Org | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -68,9 +69,7 @@ export default function OrgSettings() {
     return () => {
       active = false;
     };
-  }, [slug]);
-
-  const [isOwner, setIsOwner] = useState(false);
+  }, [slug, user]);
 
   const save = async () => {
     if (!org) return;
