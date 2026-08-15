@@ -2490,6 +2490,7 @@ export type Database = {
           id: string
           image_url: string | null
           name: string
+          perks: string[]
           price: number
           published: boolean
           sort_order: number
@@ -2506,6 +2507,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           name: string
+          perks?: string[]
           price?: number
           published?: boolean
           sort_order?: number
@@ -2522,6 +2524,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           name?: string
+          perks?: string[]
           price?: number
           published?: boolean
           sort_order?: number

@@ -6,6 +6,7 @@ import { getIcon } from "@/lib/features";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import Particles from "@/components/site/Particles";
+import Showcase from "@/components/site/Showcase";
 import MouseTrail from "@/components/site/MouseTrail";
 import AnimatedCounter from "@/components/site/AnimatedCounter";
 import Countdown from "@/components/site/Countdown";
@@ -537,6 +538,9 @@ const Index = () => {
 
 
       <main className="container space-y-28 py-24">
+        {/* Trailer + world screenshots */}
+        <Showcase />
+
         {/* Features */}
         <section id="features">
           <SectionHead

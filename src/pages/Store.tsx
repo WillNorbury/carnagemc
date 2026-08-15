@@ -4,6 +4,8 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import SaleBanner from "@/components/site/SaleBanner";
 import StickyCartBar from "@/components/site/StickyCartBar";
+import RankComparison from "@/components/site/RankComparison";
+
 import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart, formatMoney } from "@/lib/cart";
@@ -770,7 +772,13 @@ export default function Store() {
                 );
               })}
 
+              {/* Rank comparison */}
+              <div className="md:col-span-12 mt-10">
+                <RankComparison />
+              </div>
+
               {/* Cart summary */}
+
               <section
                 id="cart"
                 ref={cartRef}

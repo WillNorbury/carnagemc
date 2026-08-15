@@ -40,6 +40,9 @@ import Dashboard from "./pages/Dashboard.tsx";
 import MeStatus from "./pages/MeStatus.tsx";
 import MeOrders from "./pages/MeOrders.tsx";
 import MeWishlist from "./pages/MeWishlist.tsx";
+import MeAccount from "./pages/MeAccount.tsx";
+import Join from "./pages/Join.tsx";
+import MapPage from "./pages/MapPage.tsx";
 import LinkAccount from "./pages/LinkAccount.tsx";
 import Apply from "./pages/Apply.tsx";
 import Features from "./pages/Features.tsx";
@@ -173,6 +176,9 @@ const Shell = () => {
                   <Route path="/me/status" element={<MeStatus />} />
                   <Route path="/me/orders" element={<MeOrders />} />
                   <Route path="/me/wishlist" element={<MeWishlist />} />
+                  <Route path="/me" element={<MeAccount />} />
+                  <Route path="/join" element={<Join />} />
+                  <Route path="/map" element={<MapPage />} />
                   <Route path="/link-account" element={<LinkAccount />} />
                   <Route path="/apply" element={<Apply />} />
                   <Route path="/apply/:slug" element={<Apply />} />

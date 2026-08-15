@@ -40,6 +40,7 @@ type Item = {
   external_url: string | null;
   sort_order: number;
   published: boolean;
+  perks: string[] | null;
 };
 
 function slugify(s: string) {
@@ -67,6 +68,7 @@ const emptyItem: Omit<Item, "id"> = {
   external_url: "",
   sort_order: 0,
   published: true,
+  perks: [],
 };
 
 type Coupon = {
@@ -219,6 +221,7 @@ export function StoreAdminSection() {
       external_url: it.external_url || null,
       sort_order: it.sort_order ?? 0,
       published: !!it.published,
+      perks: it.perks ?? [],
     };
     if ("id" in it && it.id) {
       const { error } = await supabase.from("store_items").update(payload).eq("id", it.id);
@@ -367,6 +370,20 @@ export function StoreAdminSection() {
                     value={editingItem.description ?? ""}
                     onChange={(e) =>
                       setEditingItem({ ...editingItem, description: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label>Perks (one per line — powers the rank comparison table)</Label>
+                  <Textarea
+                    rows={6}
+                    placeholder={"Colored chat & custom nickname\nPriority queue\n/kit weekly"}
+                    value={(editingItem.perks ?? []).join("\n")}
+                    onChange={(e) =>
+                      setEditingItem({
+                        ...editingItem,
+                        perks: e.target.value.split("\n").map((l) => l.trim()).filter(Boolean),
+                      })
                     }
                   />
                 </div>
