@@ -7,8 +7,16 @@ import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.Property;
 import org.bukkit.Bukkit;
+import org.bukkit.Statistic;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import net.milkbowl.vault.economy.Economy;
 
 import java.io.OutputStream;
 import java.net.URI;
@@ -19,6 +27,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -26,26 +36,36 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *  - Captures all log4j console output and POSTs it in batches.
  *  - Polls the website for pending commands, runs them on the main thread,
  *    captures their direct output, and POSTs the result back.
+ *  - Periodically reports per-player gameplay stats (kills, deaths, KDR,
+ *    killstreak, playtime, balance, mob kills) to the website.
  *
  * Outbound HTTPS only — no inbound ports needed.
  */
-public final class ConsoleBridgePlugin extends JavaPlugin {
+public final class ConsoleBridgePlugin extends JavaPlugin implements Listener {
 
     private final HttpClient http = HttpClient.newHttpClient();
     private final ConcurrentLinkedQueue<LogLine> pendingLogs = new ConcurrentLinkedQueue<>();
     private BridgeAppender appender;
     private BukkitTask pollTask;
     private BukkitTask flushTask;
+    private BukkitTask statsTask;
 
     private String endpoint;
     private String slug;
     private String secret;
     private long pollMs;
     private long flushMs;
+    private long statsMs;
 
     // While a command runs we redirect console output into this list so we can
     // mirror the response back to the website.
     private volatile List<String> capture = null;
+
+    // Killstreak tracking (Bukkit has no built-in stat for this)
+    private final ConcurrentHashMap<UUID, Integer> killstreaks = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, Integer> bestKillstreaks = new ConcurrentHashMap<>();
+
+    private Economy economy = null;
 
     @Override
     public void onEnable() {
@@ -55,6 +75,7 @@ public final class ConsoleBridgePlugin extends JavaPlugin {
         secret = getConfig().getString("server-secret", "");
         pollMs = getConfig().getLong("poll-interval-ms", 500);
         flushMs = getConfig().getLong("log-batch-ms", 1000);
+        statsMs = getConfig().getLong("stats-interval-ms", 60000);
 
         if (endpoint.isBlank() || slug.isBlank() || secret.isBlank()) {
             getLogger().severe("ConsoleBridge: endpoint/slug/secret not configured. Disabling.");
@@ -62,16 +83,32 @@ public final class ConsoleBridgePlugin extends JavaPlugin {
             return;
         }
 
+        // Hook Vault economy if present (optional)
+        if (getServer().getPluginManager().getPlugin("Vault") != null) {
+            try {
+                RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+                if (rsp != null) economy = rsp.getProvider();
+            } catch (Throwable ignored) { }
+        }
+        if (economy == null) getLogger().info("ConsoleBridge: Vault economy not found — balance will report 0.");
+
         // Attach log appender
         appender = new BridgeAppender();
         appender.start();
         ((Logger) LogManager.getRootLogger()).addAppender(appender);
 
-        // Schedule poll + flush on async scheduler
+        // Event listener for killstreak tracking
+        getServer().getPluginManager().registerEvents(this, this);
+
+        // Schedule poll + flush + stats on async scheduler
         pollTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::pollCommands,
                 20L, Math.max(1L, pollMs / 50L));
         flushTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::flushLogs,
                 20L, Math.max(1L, flushMs / 50L));
+        if (statsMs > 0) {
+            statsTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::flushStats,
+                    20L * 10, Math.max(20L, statsMs / 50L));
+        }
 
         getLogger().info("ConsoleBridge enabled for server slug `" + slug + "`.");
     }
@@ -80,11 +117,13 @@ public final class ConsoleBridgePlugin extends JavaPlugin {
     public void onDisable() {
         if (pollTask != null) pollTask.cancel();
         if (flushTask != null) flushTask.cancel();
+        if (statsTask != null) statsTask.cancel();
         if (appender != null) {
             ((Logger) LogManager.getRootLogger()).removeAppender(appender);
             appender.stop();
         }
         flushLogs();
+        flushStats();
     }
 
     // ------------------------------------------------------------------
@@ -189,6 +228,64 @@ public final class ConsoleBridgePlugin extends JavaPlugin {
             // Send asynchronously so we don't block the main thread
             Bukkit.getScheduler().runTaskAsynchronously(this, () -> post(endpoint + "?kind=results", body));
         });
+    }
+
+    // ------------------------------------------------------------------
+    // Killstreak tracking
+    // ------------------------------------------------------------------
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onDeath(PlayerDeathEvent event) {
+        Player victim = event.getEntity();
+        Player killer = victim.getKiller();
+        // Reset victim streak
+        killstreaks.put(victim.getUniqueId(), 0);
+        // Increment killer streak
+        if (killer != null && !killer.getUniqueId().equals(victim.getUniqueId())) {
+            int cur = killstreaks.getOrDefault(killer.getUniqueId(), 0) + 1;
+            killstreaks.put(killer.getUniqueId(), cur);
+            bestKillstreaks.merge(killer.getUniqueId(), cur, Math::max);
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Player stats reporting
+    // ------------------------------------------------------------------
+
+    private void flushStats() {
+        List<? extends Player> online = new ArrayList<>(Bukkit.getOnlinePlayers());
+        if (online.isEmpty()) return;
+
+        StringBuilder sb = new StringBuilder("{\"stats\":[");
+        boolean first = true;
+        for (Player p : online) {
+            UUID id = p.getUniqueId();
+            int kills = p.getStatistic(Statistic.PLAYER_KILLS);
+            int deaths = p.getStatistic(Statistic.DEATHS);
+            int mobKills = p.getStatistic(Statistic.MOB_KILLS);
+            long playtime = p.getStatistic(Statistic.PLAY_ONE_TICK) / 20L; // ticks -> seconds
+            double balance = 0;
+            if (economy != null) {
+                try { balance = economy.getBalance(p); } catch (Throwable ignored) { }
+            }
+            int ks = killstreaks.getOrDefault(id, 0);
+            int best = bestKillstreaks.getOrDefault(id, 0);
+
+            if (!first) sb.append(',');
+            first = false;
+            sb.append("{\"player_uuid\":\"").append(id.toString())
+              .append("\",\"player_name\":\"").append(escape(p.getName()))
+              .append("\",\"kills\":").append(kills)
+              .append(",\"deaths\":").append(deaths)
+              .append(",\"killstreak\":").append(ks)
+              .append(",\"best_killstreak\":").append(Math.max(best, ks))
+              .append(",\"playtime_seconds\":").append(playtime)
+              .append(",\"balance\":").append(balance)
+              .append(",\"mob_kills\":").append(mobKills)
+              .append("}");
+        }
+        sb.append("]}");
+        post(endpoint + "?kind=stats", sb.toString());
     }
 
     // ------------------------------------------------------------------
