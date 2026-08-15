@@ -207,3 +207,23 @@
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+/* Thin, subtle scrollbar for the sidebar */
+[data-sidebar="content"] {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--sidebar-border) / 0.5) transparent;
+}
+[data-sidebar="content"]::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+[data-sidebar="content"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+[data-sidebar="content"]::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--sidebar-border) / 0.45);
+  border-radius: 9999px;
+}
+[data-sidebar="content"]::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--sidebar-border) / 0.7);
+}
