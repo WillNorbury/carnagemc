@@ -7,14 +7,16 @@ import { Star, Loader2, Trash2 } from "lucide-react";
 
 type Review = {
   id: string;
-  user_id: string;
   rating: number;
   body: string | null;
   created_at: string;
   updated_at: string;
+  author_name: string | null;
+  author_avatar: string | null;
+  author_mc_username: string | null;
+  author_ref: string;
+  is_mine: boolean;
 };
-
-type Profile = { id: string; display_name: string | null; avatar_url: string | null };
 
 function StarRow({
   value,
@@ -60,7 +62,6 @@ function StarRow({
 export function StorePackageReviews({ itemId }: { itemId: string }) {
   const { user } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [profiles, setProfiles] = useState<Record<string, Profile>>({});
   const [loading, setLoading] = useState(true);
   const [rating, setRating] = useState(0);
   const [body, setBody] = useState("");
@@ -68,26 +69,11 @@ export function StorePackageReviews({ itemId }: { itemId: string }) {
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("item_reviews")
-      .select("id, user_id, rating, body, created_at, updated_at")
-      .eq("target_type", "store_item")
-      .eq("target_id", itemId)
-      .order("created_at", { ascending: false });
-    const list = (data as Review[]) ?? [];
-    setReviews(list);
-    const ids = Array.from(new Set(list.map((r) => r.user_id)));
-    if (ids.length) {
-      const { data: profs } = await supabase
-        .from("profiles")
-        .select("id, display_name, avatar_url")
-        .in("id", ids);
-      const map: Record<string, Profile> = {};
-      (profs ?? []).forEach((p: any) => (map[p.id] = p));
-      setProfiles(map);
-    } else {
-      setProfiles({});
-    }
+    const { data } = await supabase.rpc("get_public_item_reviews", {
+      _target_type: "store_item",
+      _target_id: itemId,
+    });
+    setReviews((data ?? []) as unknown as Review[]);
     setLoading(false);
   };
 
@@ -97,7 +83,7 @@ export function StorePackageReviews({ itemId }: { itemId: string }) {
   }, [itemId]);
 
   const myReview = useMemo(
-    () => reviews.find((r) => r.user_id === user?.id) ?? null,
+    () => (user ? reviews.find((r) => r.is_mine) ?? null : null),
     [reviews, user],
   );
 
@@ -247,17 +233,21 @@ export function StorePackageReviews({ itemId }: { itemId: string }) {
       ) : (
         <ul className="space-y-3">
           {reviews.map((r) => {
-            const p = profiles[r.user_id];
-            const name = p?.display_name || "Player";
+            const name = r.author_name || r.author_mc_username || "Player";
+            const avatarUrl =
+              r.author_avatar ||
+              (r.author_mc_username
+                ? `https://mc-heads.net/avatar/${r.author_mc_username}/64`
+                : null);
             return (
               <li
                 key={r.id}
                 className="border border-white/5 bg-[#12121a] p-4 flex gap-3"
               >
                 <div className="w-9 h-9 rounded-full bg-[#1a1a24] border border-white/10 overflow-hidden shrink-0">
-                  {p?.avatar_url && (
+                  {avatarUrl && (
                     <img
-                      src={p.avatar_url}
+                      src={avatarUrl}
                       alt={name}
                       className="w-full h-full object-cover"
                     />
