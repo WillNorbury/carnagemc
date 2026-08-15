@@ -522,7 +522,7 @@ const Index = () => {
         );
       })()}
 
-      </section>
+
 
       <main className="container space-y-28 py-24">
         {/* Features */}
