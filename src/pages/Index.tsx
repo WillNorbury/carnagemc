@@ -476,30 +476,52 @@ const Index = () => {
         </section>
       )}
 
-      {/* Server stats counters */}
-      <section className="relative py-20 border-y border-primary/10">
-        <div className="absolute inset-0 bg-grid opacity-[0.07]" />
-        <div className="container relative grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[
-            { label: "Online Players", value: status?.players_online ?? 0, icon: Users, suffix: "" },
-            { label: "Discord Members", value: discordMembers ?? 0, icon: MessageCircle, suffix: "" },
-            { label: "Total Votes", value: voteCount, icon: Star, suffix: "" },
-            { label: "Uptime", value: 99.9, icon: Zap, suffix: "%", decimals: 1 },
-          ].map((s) => (
-            <Card
-              key={s.label}
-              className="p-6 text-center hover-lift hover-glow border-primary/10 bg-card/60 backdrop-blur"
+      {/* Server stats counters — a stat we can't populate is hidden, never shown as 0 */}
+      {(() => {
+        const stats = [
+          status?.online
+            ? { label: "Online Players", value: status.players_online, icon: Users, suffix: "" }
+            : null,
+          discordMembers != null
+            ? { label: "Discord Members", value: discordMembers, icon: MessageCircle, suffix: "" }
+            : null,
+          voteCount != null ? { label: "Total Votes", value: voteCount, icon: Star, suffix: "" } : null,
+          uptimePct != null
+            ? { label: "Uptime (30d)", value: uptimePct, icon: Zap, suffix: "%", decimals: 1 }
+            : null,
+        ].filter(Boolean) as Array<{
+          label: string;
+          value: number;
+          icon: any;
+          suffix: string;
+          decimals?: number;
+        }>;
+        if (stats.length === 0) return null;
+        return (
+          <section className="relative py-20 border-y border-primary/10">
+            <div className="absolute inset-0 bg-grid opacity-[0.07]" />
+            <div
+              className={`container relative grid grid-cols-2 gap-6 ${stats.length >= 4 ? "md:grid-cols-4" : stats.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"}`}
             >
-              <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary mb-3">
-                <s.icon className="h-5 w-5" />
-              </div>
-              <div className="font-display text-3xl md:text-4xl font-bold text-gradient">
-                <AnimatedCounter to={s.value} suffix={s.suffix} decimals={s.decimals ?? 0} />
-              </div>
-              <div className="text-xs uppercase tracking-widest text-muted-foreground mt-1">{s.label}</div>
-            </Card>
-          ))}
-        </div>
+              {stats.map((s) => (
+                <Card
+                  key={s.label}
+                  className="p-6 text-center hover-lift hover-glow border-primary/10 bg-card/60 backdrop-blur"
+                >
+                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary mb-3">
+                    <s.icon className="h-5 w-5" />
+                  </div>
+                  <div className="font-display text-3xl md:text-4xl font-bold text-gradient">
+                    <AnimatedCounter to={s.value} suffix={s.suffix} decimals={s.decimals ?? 0} />
+                  </div>
+                  <div className="text-xs uppercase tracking-widest text-muted-foreground mt-1">{s.label}</div>
+                </Card>
+              ))}
+            </div>
+          </section>
+        );
+      })()}
+
       </section>
 
       <main className="container space-y-28 py-24">
