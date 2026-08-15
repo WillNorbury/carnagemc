@@ -47,6 +47,7 @@ export default function Contact() {
   const [methods, setMethods] = useState<Method[]>([]);
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
+  const [ownerForm, setOwnerForm] = useState({ email: "", reason: "", message: "" });
 
   useEffect(() => {
     supabase
