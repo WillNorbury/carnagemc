@@ -1,111 +1,121 @@
-import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/auth";
 import logoAsset from "@/assets/carnagemc-logo.png.asset.json";
 const logo = logoAsset.url;
-import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download, ShoppingCart } from "lucide-react";
+import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download, ShoppingCart, MoreHorizontal } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
 import { ThemeToggle } from "./ThemeToggle";
 import { NotificationsBell } from "./NotificationsBell";
 import { useCart } from "@/lib/cart";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
   const { count: cartCount, openCart } = useCart();
   const nav = useNavigate();
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   return (
-    <header
-      className={`sticky top-0 z-40 transition-all ${
-        scrolled
-          ? "bg-background/85 backdrop-blur-xl border-b border-primary/20 shadow-elegant"
-          : "bg-background/40 backdrop-blur-sm border-b border-border/40"
-      }`}
-      style={{ paddingTop: "env(safe-area-inset-top)" }}
-    >
-      <div className="flex items-center justify-between gap-2 h-14 px-3 md:px-6 pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))]">
-        <div className="flex items-center gap-2 min-w-0">
-          <SidebarTrigger />
-          <Link to="/" className="flex items-center gap-2 group min-w-0">
-            <img src={logo} alt="CarnageMC" className="h-7 w-7 shrink-0 transition-transform group-hover:scale-110" />
-            <span className="font-display font-bold text-sm md:text-base tracking-wider truncate">
-              CARNAGE<span className="text-gradient">MC</span>
-            </span>
-          </Link>
-        </div>
-
-        <div className="flex items-center gap-1">
-          <GlobalSearch />
-          <NotificationsBell />
-          <ThemeToggle />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={openCart}
-            title="Cart"
-            aria-label={`Cart (${cartCount} item${cartCount === 1 ? "" : "s"})`}
-            className="relative"
-          >
-            <ShoppingCart className="h-4 w-4" />
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-[18px] text-center shadow">
-                {cartCount > 99 ? "99+" : cartCount}
-              </span>
-            )}
-          </Button>
-          {user && (
-            <Button variant="ghost" size="sm" onClick={() => nav("/dashboard")} className="hidden sm:inline-flex">
-              <LayoutDashboard className="h-4 w-4 sm:mr-1" />
-              <span className="hidden md:inline">Dashboard</span>
-            </Button>
-          )}
-          {user && (
-            <Button variant="ghost" size="sm" onClick={() => nav("/profile")} className="hidden sm:inline-flex">
-              <UserIcon className="h-4 w-4 sm:mr-1" />
-              <span className="hidden md:inline">Profile</span>
-            </Button>
-          )}
-          {isAdmin && (
-            <Button variant="ghost" size="sm" onClick={() => nav("/admin")} className="hidden sm:inline-flex">
-              <Shield className="h-4 w-4 sm:mr-1" />
-              <span className="hidden md:inline">Admin</span>
-            </Button>
-          )}
-          <Button variant="ghost" size="sm" onClick={() => nav("/install")} title="How to install">
-            <Download className="h-4 w-4 sm:mr-1" />
-            <span className="hidden md:inline">How to install</span>
-          </Button>
-          {user ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={async () => {
-                await signOut();
-                nav("/");
-              }}
-            >
-              <LogOut className="h-4 w-4 sm:mr-1" />
-              <span className="hidden sm:inline">Sign out</span>
-            </Button>
-          ) : (
-            <Button size="sm" onClick={() => nav("/auth")} className="glow">
-              <LogIn className="h-4 w-4 sm:mr-1" />
-              <span className="hidden sm:inline">Sign in</span>
-            </Button>
-          )}
-        </div>
+    <>
+      {/* Floating brand / sidebar toggle (top-left) */}
+      <div
+        className="fixed z-40 flex items-center gap-2 rounded-full border border-border/50 bg-background/70 px-2 py-1.5 backdrop-blur-xl shadow-elegant"
+        style={{
+          top: "max(0.75rem, env(safe-area-inset-top))",
+          left: "max(0.75rem, env(safe-area-inset-left))",
+        }}
+      >
+        <SidebarTrigger />
+        <Link to="/" className="flex items-center gap-2 group min-w-0 pr-1">
+          <img src={logo} alt="CarnageMC" className="h-6 w-6 shrink-0 transition-transform group-hover:scale-110" />
+          <span className="font-display font-bold text-sm tracking-wider truncate hidden sm:inline">
+            CARNAGE<span className="text-gradient">MC</span>
+          </span>
+        </Link>
       </div>
-    </header>
+
+      {/* Floating right-hand menu */}
+      <div
+        className="fixed z-40 flex items-center gap-1 rounded-full border border-border/50 bg-background/70 px-1.5 py-1.5 backdrop-blur-xl shadow-elegant"
+        style={{
+          top: "max(0.75rem, env(safe-area-inset-top))",
+          right: "max(0.75rem, env(safe-area-inset-right))",
+          maxWidth: "calc(100vw - 2rem)",
+        }}
+      >
+        <GlobalSearch />
+        <NotificationsBell />
+        <ThemeToggle />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={openCart}
+          title="Cart"
+          aria-label={`Cart (${cartCount} item${cartCount === 1 ? "" : "s"})`}
+          className="relative rounded-full"
+        >
+          <ShoppingCart className="h-4 w-4" />
+          {cartCount > 0 && (
+            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-[18px] text-center shadow">
+              {cartCount > 99 ? "99+" : cartCount}
+            </span>
+          )}
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="rounded-full" aria-label="More menu">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-52 bg-popover z-50">
+            <DropdownMenuLabel>Menu</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {user && (
+              <DropdownMenuItem onSelect={() => nav("/dashboard")}>
+                <LayoutDashboard className="h-4 w-4 mr-2" /> Dashboard
+              </DropdownMenuItem>
+            )}
+            {user && (
+              <DropdownMenuItem onSelect={() => nav("/profile")}>
+                <UserIcon className="h-4 w-4 mr-2" /> Profile
+              </DropdownMenuItem>
+            )}
+            {isAdmin && (
+              <DropdownMenuItem onSelect={() => nav("/admin")}>
+                <Shield className="h-4 w-4 mr-2" /> Admin
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem onSelect={() => nav("/install")}>
+              <Download className="h-4 w-4 mr-2" /> How to install
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            {user ? (
+              <DropdownMenuItem
+                onSelect={async () => {
+                  await signOut();
+                  nav("/");
+                }}
+              >
+                <LogOut className="h-4 w-4 mr-2" /> Sign out
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem onSelect={() => nav("/auth")}>
+                <LogIn className="h-4 w-4 mr-2" /> Sign in
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </>
   );
 };
 
