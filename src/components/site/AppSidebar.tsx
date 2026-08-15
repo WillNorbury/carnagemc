@@ -374,7 +374,7 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
         {publicGroups.map(renderGroup)}
 
         {user && renderGroup(accountGroup)}
@@ -392,7 +392,8 @@ export function AppSidebar() {
         )}
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="shrink-0 border-t border-sidebar-border bg-sidebar p-2 shadow-[0_-8px_16px_-12px_hsl(var(--background))]">
+
         {user ? (
           <Button
             variant="outline"
