@@ -45,7 +45,16 @@ type Status = {
 };
 type SiteContent = Record<string, any>;
 
+const stripMarkdown = (s?: string | null) =>
+  (s ?? "")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/[*_~`>#]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
 const formatUptime = (ms: number) => {
+
   if (ms <= 0) return "—";
   const s = Math.floor(ms / 1000);
   const d = Math.floor(s / 86400);
