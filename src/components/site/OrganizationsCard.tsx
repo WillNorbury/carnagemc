@@ -28,7 +28,6 @@ type OrgRow = {
     name: string;
     description: string;
     avatar_url: string | null;
-    owner_id: string;
   } | null;
 };
 
@@ -59,7 +58,7 @@ export default function OrganizationsCard({ userId }: { userId: string }) {
     setLoading(true);
     const { data, error } = await supabase
       .from("organization_members")
-      .select("org_id, role, organizations(id, slug, name, description, avatar_url, owner_id)")
+      .select("org_id, role, organizations(id, slug, name, description, avatar_url)")
       .eq("user_id", userId);
     if (error) toast.error(error.message);
     setMemberships((data ?? []) as unknown as OrgRow[]);
