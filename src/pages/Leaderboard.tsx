@@ -169,12 +169,6 @@ const Leaderboard = () => {
   const allTabs = [...TABS, ...STAT_TABS];
   const order = [1, 0, 2];
 
-  // Build a uniform podium/rest list for rendering
-  const isStatMode = !isStreak;
-  const podiumCount = 3;
-  const effectiveRows = isStreakMode ? rows : [];
-  const effectiveStatRows = isStatMode ? statRows : [];
-
   // Determine whether streak or stat mode
   const isStreakMode = TABS.some((t) => t.key === tab);
 
