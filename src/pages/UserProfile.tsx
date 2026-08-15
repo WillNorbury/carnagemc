@@ -109,7 +109,7 @@ const UserProfile = () => {
   const [editBusy, setEditBusy] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
 
-  const isOwn = !!user && !!profile && user.id === profile.id;
+  const [stats, setStats] = useState<PlayerStats | null>(null);
 
   useEffect(() => {
     if (!slug) return;
