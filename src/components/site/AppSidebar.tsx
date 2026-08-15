@@ -143,7 +143,6 @@ const helpGroup: NavGroup = {
     { to: "/contact", label: "Contact", icon: Mail },
     { to: "/trust", label: "Trust & Safety", icon: ShieldQuestion },
     { to: "/subscribe", label: "Subscribe", icon: MailPlus },
-    { to: "/how-to-join", label: "How to Join", icon: Download },
     { to: "/guides", label: "Player Guides", icon: BookOpen },
     { to: "/ranks-comparison", label: "Ranks Compared", icon: Star },
     { to: "/server-map", label: "Server Map", icon: Compass },
