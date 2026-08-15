@@ -136,18 +136,29 @@ export default function Store() {
       .then(({ data }) => setItems((data as Item[]) ?? []));
   }, []);
 
-  // Scroll to #cart when hash is present (also after items load so section exists).
+  // Scroll to #cart or #compare when hash is present (also after items load so section exists).
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const onHash = () => {
-      if (window.location.hash === "#cart") scrollToCart();
+    const scrollToHash = () => {
+      const hash = window.location.hash;
+      if (hash === "#cart") {
+        scrollToCart();
+      } else if (hash === "#compare") {
+        const el = document.getElementById("compare");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
     };
-    onHash();
-    const t = window.setTimeout(onHash, 250);
-    window.addEventListener("hashchange", onHash);
+    scrollToHash();
+    // The compare section loads async via its own fetch, so retry a few times.
+    const t1 = window.setTimeout(scrollToHash, 300);
+    const t2 = window.setTimeout(scrollToHash, 800);
+    window.addEventListener("hashchange", scrollToHash);
     return () => {
-      window.clearTimeout(t);
-      window.removeEventListener("hashchange", onHash);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      window.removeEventListener("hashchange", scrollToHash);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
