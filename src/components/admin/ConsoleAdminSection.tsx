@@ -498,7 +498,7 @@ export const ConsoleAdminSection = () => {
   const reload = async () => {
     const { data } = await supabase
       .from("mc_servers")
-      .select("*")
+      .select("id, name, slug, description, enabled, last_seen_at, created_by, created_at, updated_at")
       .order("created_at", { ascending: true });
     setServers((data as Server[]) ?? []);
     setLoading(false);
