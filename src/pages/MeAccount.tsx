@@ -61,7 +61,7 @@ export default function MeAccount() {
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
           .limit(5),
-        supabase.from("user_streaks").select("total_votes, current_streak").eq("user_id", user.id).maybeSingle(),
+        supabase.from("user_streaks").select("total_votes, vote_streak").eq("user_id", user.id).maybeSingle(),
         supabase.from("store_wishlists").select("id", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("support_tickets").select("id", { count: "exact", head: true }).eq("user_id", user.id),
       ]);
@@ -69,8 +69,8 @@ export default function MeAccount() {
       setProfile((p.data as any) ?? null);
       setOrders((o.data as Order[]) ?? []);
       setAppeals((a.data as Appeal[]) ?? []);
-      const sv = s.data as { total_votes?: number; current_streak?: number } | null;
-      setVotes(sv ? { total: sv.total_votes ?? 0, streak: sv.current_streak ?? 0 } : null);
+      const sv = s.data as { total_votes?: number; vote_streak?: number } | null;
+      setVotes(sv ? { total: sv.total_votes ?? 0, streak: sv.vote_streak ?? 0 } : null);
       setWishlist(w.count ?? 0);
       setTickets(t.count ?? 0);
 
