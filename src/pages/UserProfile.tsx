@@ -69,6 +69,20 @@ type Project = {
   updated_at: string | null;
 };
 
+type PlayerStats = {
+  player_name: string;
+  kills: number;
+  deaths: number;
+  killstreak: number;
+  best_killstreak: number;
+  playtime_seconds: number;
+  balance: number;
+  mob_kills: number;
+  kdr: number;
+  last_seen_at: string | null;
+  updated_at: string | null;
+};
+
 const roleRank = (r: AppRole) => {
   const idx = ALL_ROLES.findIndex((x) => x.value === r);
   return idx === -1 ? 999 : idx;
@@ -143,6 +157,28 @@ const UserProfile = () => {
       const { data: r } = await supabase
         .from("user_roles").select("role").eq("user_id", p.id);
       setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role).sort((a, b) => roleRank(a) - roleRank(b)));
+
+      // Gameplay stats (matched by Minecraft username)
+      if (p.mc_username) {
+        (supabase as any).rpc("get_player_stats_by_name", { _player_name: p.mc_username })
+          .then(({ data: sdata }: any) => {
+            if (cancelled) return;
+            const s = (sdata as any[])?.[0];
+            if (s) setStats({
+              player_name: s.player_name,
+              kills: s.kills ?? 0,
+              deaths: s.deaths ?? 0,
+              killstreak: s.killstreak ?? 0,
+              best_killstreak: s.best_killstreak ?? 0,
+              playtime_seconds: s.playtime_seconds ?? 0,
+              balance: s.balance ?? 0,
+              mob_kills: s.mob_kills ?? 0,
+              kdr: Number(s.kdr) || 0,
+              last_seen_at: s.last_seen_at ?? null,
+              updated_at: s.updated_at ?? null,
+            });
+          });
+      }
 
       // Projects: match by author = display_name or mc_username
       const authorMatches = [p.display_name, p.mc_username].filter(Boolean) as string[];
