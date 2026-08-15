@@ -136,6 +136,8 @@ const helpGroup: NavGroup = {
     { to: "/faq", label: "FAQ", icon: HelpCircle },
     { to: "/commands", label: "Commands", icon: Terminal },
     { to: "/wiki", label: "Wiki", icon: BookOpen },
+    { to: "/join", label: "How to Join", icon: Download },
+    { to: "/map", label: "Live Map", icon: Compass },
     { to: "/install", label: "How to Install", icon: Download },
     { to: "/support", label: "Support", icon: LifeBuoy },
     { to: "/contact", label: "Contact", icon: Mail },
@@ -218,6 +220,7 @@ const accountGroup: NavGroup = {
   label: "Account",
   icon: UserIcon,
   items: [
+    { to: "/me", label: "My Account", icon: UserIcon },
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/profile", label: "Profile", icon: UserIcon },
     { to: "/tickets", label: "Tickets", icon: Ticket },
