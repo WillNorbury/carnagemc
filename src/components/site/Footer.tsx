@@ -68,7 +68,7 @@ const Footer = () => (
           <li>
             IP: <span className="text-foreground font-mono">play.carnagemc.net</span>
           </li>
-          <li>Version: 1.21.x Velocity</li>
+          <li>Version: 1.21.x Paper (Velocity proxy)</li>
           <li>
             <a href="https://discord.gg/wD6K3nr2MG" className="hover:text-primary transition">
               Join Discord
