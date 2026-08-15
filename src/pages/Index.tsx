@@ -634,21 +634,23 @@ const Index = () => {
         )}
 
 
-        {/* Countdown */}
-        <section>
-          <Card className="relative p-10 md:p-14 overflow-hidden border-primary/30 text-center scan-line">
-            <div className="absolute inset-0 opacity-25" style={{ background: "var(--gradient-fire)" }} />
-            <div className="absolute inset-0 bg-grid opacity-[0.1]" />
-            <div className="relative">
-              <Badge variant="secondary" className="mb-4 text-primary border-primary/40">
-                Mark your calendar
-              </Badge>
-              <h2 className="font-display text-3xl md:text-5xl font-bold mb-2">Don't Miss the Action</h2>
-              <p className="text-muted-foreground mb-8">Big things drop weekly. Be here when the timer hits zero.</p>
-              <Countdown target={eventTarget} label={eventLabel} />
-            </div>
-          </Card>
-        </section>
+        {/* Countdown — only while the event is still ahead of us */}
+        {eventTarget > now && (
+          <section>
+            <Card className="relative p-10 md:p-14 overflow-hidden border-primary/30 text-center scan-line">
+              <div className="absolute inset-0 opacity-25" style={{ background: "var(--gradient-fire)" }} />
+              <div className="absolute inset-0 bg-grid opacity-[0.1]" />
+              <div className="relative">
+                <Badge variant="secondary" className="mb-4 text-primary border-primary/40">
+                  Mark your calendar
+                </Badge>
+                <h2 className="font-display text-3xl md:text-5xl font-bold mb-2">Don't Miss the Action</h2>
+                <p className="text-muted-foreground mb-8">Big things drop weekly. Be here when the timer hits zero.</p>
+                <Countdown target={eventTarget} label={eventLabel} />
+              </div>
+            </Card>
+          </section>
+        )}
 
         {/* News */}
         {news.length > 0 && (
@@ -669,7 +671,7 @@ const Index = () => {
                     {new Date(n.created_at).toLocaleDateString()}
                   </div>
                   <h3 className="font-display font-bold text-lg mb-2 group-hover:text-primary transition">{n.title}</h3>
-                  <p className="text-sm text-muted-foreground line-clamp-3">{n.excerpt}</p>
+                  <p className="text-sm text-muted-foreground line-clamp-3">{stripMarkdown(n.excerpt)}</p>
                   <div className="mt-4 inline-flex items-center text-sm text-primary opacity-0 group-hover:opacity-100 transition">
                     Read more <ArrowRight className="h-3 w-3 ml-1" />
                   </div>
@@ -679,11 +681,14 @@ const Index = () => {
           </section>
         )}
 
-        {/* Reviews */}
-        <section>
-          <SectionHead eyebrow="Reviews" title="What Players Say" sub="Real voices from the CarnageMC community." />
-          <Reviews />
-        </section>
+        {/* Reviews — hidden until there are enough genuine reviews to be credible */}
+        {reviewCount >= 5 && (
+          <section>
+            <SectionHead eyebrow="Reviews" title="What Players Say" sub="Real voices from the CarnageMC community." />
+            <Reviews />
+          </section>
+        )}
+
 
         {/* CTA */}
         <section>
