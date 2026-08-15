@@ -10,7 +10,15 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { logWebsiteEvent } from "@/lib/logEvent";
 import { Helmet } from "react-helmet-async";
-import { Mail, MessageCircle, ExternalLink, Phone } from "lucide-react";
+import { Mail, MessageCircle, ExternalLink, Phone, Crown } from "lucide-react";
+
+const OWNER_EMAIL = "william@norbury.com.au";
+
+const ownerSchema = z.object({
+  email: z.string().trim().email("Enter a valid email").max(255),
+  reason: z.string().trim().min(3, "Reason must be at least 3 characters").max(200),
+  message: z.string().trim().min(10, "Message must be at least 10 characters").max(4000),
+});
 
 type Method = { id: string; label: string; type: string; value: string; icon: string | null };
 
