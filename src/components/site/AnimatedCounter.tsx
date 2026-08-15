@@ -11,29 +11,48 @@ interface Props {
 const AnimatedCounter = ({ to, duration = 1600, suffix = "", prefix = "", decimals = 0 }: Props) => {
   const [val, setVal] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
-  const started = useRef(false);
+  const visible = useRef(false);
+  const from = useRef(0);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting && !started.current) {
-          started.current = true;
-          const start = performance.now();
-          const tick = (now: number) => {
-            const t = Math.min(1, (now - start) / duration);
-            const eased = 1 - Math.pow(1 - t, 3);
-            setVal(to * eased);
-            if (t < 1) requestAnimationFrame(tick);
-          };
-          requestAnimationFrame(tick);
-        }
-      });
-    }, { threshold: 0.3 });
+
+    let raf = 0;
+    const run = () => {
+      const start = performance.now();
+      const startVal = from.current;
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const v = startVal + (to - startVal) * eased;
+        setVal(v);
+        from.current = v;
+        if (t < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    };
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            visible.current = true;
+            run();
+          }
+        });
+      },
+      { threshold: 0.3 },
+    );
     obs.observe(el);
-    return () => obs.disconnect();
+    // If already visible (value arrived after first animation), re-animate to the new target
+    if (visible.current) run();
+    return () => {
+      obs.disconnect();
+      cancelAnimationFrame(raf);
+    };
   }, [to, duration]);
+
 
   return (
     <span ref={ref}>

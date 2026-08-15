@@ -45,7 +45,16 @@ type Status = {
 };
 type SiteContent = Record<string, any>;
 
+const stripMarkdown = (s?: string | null) =>
+  (s ?? "")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/[*_~`>#]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
 const formatUptime = (ms: number) => {
+
   if (ms <= 0) return "—";
   const s = Math.floor(ms / 1000);
   const d = Math.floor(s / 86400);
@@ -67,7 +76,9 @@ const Index = () => {
 
   const [discordMembers, setDiscordMembers] = useState<number | null>(null);
   const [discordInviteError, setDiscordInviteError] = useState<string | null>(null);
-  const [voteCount, setVoteCount] = useState<number>(0);
+  const [voteCount, setVoteCount] = useState<number | null>(null);
+  const [uptimePct, setUptimePct] = useState<number | null>(null);
+  const [reviewCount, setReviewCount] = useState<number>(0);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [gameModes, setGameModes] = useState<GameMode[]>([]);
   const { isAdmin } = useAuth();
@@ -75,7 +86,26 @@ const Index = () => {
   useEffect(() => {
     fetchFeatures().then(setFeatures);
     fetchGameModes().then(setGameModes);
+    // Total community votes
+    supabase
+      .rpc("get_streak_leaderboard", { _metric: "total_votes", _limit: 500 })
+      .then(({ data }) => {
+        if (!Array.isArray(data)) return;
+        const total = data.reduce((sum: number, r: any) => sum + (r.total_votes ?? 0), 0);
+        setVoteCount(total > 0 ? total : null);
+      });
+    // Real 30-day uptime across tracked servers
+    supabase
+      .from("mc_public_servers")
+      .select("uptime_pct")
+      .then(({ data }) => {
+        const vals = (data ?? []).map((r: any) => Number(r.uptime_pct)).filter((n) => Number.isFinite(n) && n > 0);
+        if (vals.length) setUptimePct(Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10);
+      });
+    // Only show the review wall once there are enough genuine reviews
+    supabase.rpc("get_public_reviews").then(({ data }) => setReviewCount(Array.isArray(data) ? data.length : 0));
   }, []);
+
 
   useEffect(() => {
     supabase
@@ -158,6 +188,9 @@ const Index = () => {
   const ip = content.server?.ip ?? "play.carnagemc.net";
   const bedrockIp = content.server?.bedrockIp ?? "Soon";
   const bedrockPort = content.server?.bedrockPort ?? "Soon";
+  // One canonical version string site-wide (mcsrvstat reports the proxy's protocol range, which confuses players)
+  const displayVersion = content.server?.version ?? "1.21.x";
+
 
   const [alert, setAlert] = useState<{ type: "online" | "offline"; message: string } | null>(null);
   const prevOnlineRef = useRef<boolean | undefined>(undefined);
@@ -448,38 +481,60 @@ const Index = () => {
                   className={`h-2 w-2 rounded-full ${status?.online ? "bg-primary animate-pulse" : "bg-destructive"}`}
                 />
                 {status?.online ? `${status.players_online} players online` : "Server offline"}
-                {status?.version && <span className="opacity-60">• {status.version}</span>}
+                {status?.online && <span className="opacity-60">• {displayVersion}</span>}
               </div>
             </div>
           </div>
         </section>
       )}
 
-      {/* Server stats counters */}
-      <section className="relative py-20 border-y border-primary/10">
-        <div className="absolute inset-0 bg-grid opacity-[0.07]" />
-        <div className="container relative grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[
-            { label: "Online Players", value: status?.players_online ?? 0, icon: Users, suffix: "" },
-            { label: "Discord Members", value: discordMembers ?? 0, icon: MessageCircle, suffix: "" },
-            { label: "Total Votes", value: voteCount, icon: Star, suffix: "" },
-            { label: "Uptime", value: 99.9, icon: Zap, suffix: "%", decimals: 1 },
-          ].map((s) => (
-            <Card
-              key={s.label}
-              className="p-6 text-center hover-lift hover-glow border-primary/10 bg-card/60 backdrop-blur"
+      {/* Server stats counters — a stat we can't populate is hidden, never shown as 0 */}
+      {(() => {
+        const stats = [
+          status?.online
+            ? { label: "Online Players", value: status.players_online, icon: Users, suffix: "" }
+            : null,
+          discordMembers != null
+            ? { label: "Discord Members", value: discordMembers, icon: MessageCircle, suffix: "" }
+            : null,
+          voteCount != null ? { label: "Total Votes", value: voteCount, icon: Star, suffix: "" } : null,
+          uptimePct != null
+            ? { label: "Uptime (30d)", value: uptimePct, icon: Zap, suffix: "%", decimals: 1 }
+            : null,
+        ].filter(Boolean) as Array<{
+          label: string;
+          value: number;
+          icon: any;
+          suffix: string;
+          decimals?: number;
+        }>;
+        if (stats.length === 0) return null;
+        return (
+          <section className="relative py-20 border-y border-primary/10">
+            <div className="absolute inset-0 bg-grid opacity-[0.07]" />
+            <div
+              className={`container relative grid grid-cols-2 gap-6 ${stats.length >= 4 ? "md:grid-cols-4" : stats.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"}`}
             >
-              <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary mb-3">
-                <s.icon className="h-5 w-5" />
-              </div>
-              <div className="font-display text-3xl md:text-4xl font-bold text-gradient">
-                <AnimatedCounter to={s.value} suffix={s.suffix} decimals={s.decimals ?? 0} />
-              </div>
-              <div className="text-xs uppercase tracking-widest text-muted-foreground mt-1">{s.label}</div>
-            </Card>
-          ))}
-        </div>
-      </section>
+              {stats.map((s) => (
+                <Card
+                  key={s.label}
+                  className="p-6 text-center hover-lift hover-glow border-primary/10 bg-card/60 backdrop-blur"
+                >
+                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary mb-3">
+                    <s.icon className="h-5 w-5" />
+                  </div>
+                  <div className="font-display text-3xl md:text-4xl font-bold text-gradient">
+                    <AnimatedCounter to={s.value} suffix={s.suffix} decimals={s.decimals ?? 0} />
+                  </div>
+                  <div className="text-xs uppercase tracking-widest text-muted-foreground mt-1">{s.label}</div>
+                </Card>
+              ))}
+            </div>
+          </section>
+        );
+      })()}
+
+
 
       <main className="container space-y-28 py-24">
         {/* Features */}
@@ -591,21 +646,23 @@ const Index = () => {
         )}
 
 
-        {/* Countdown */}
-        <section>
-          <Card className="relative p-10 md:p-14 overflow-hidden border-primary/30 text-center scan-line">
-            <div className="absolute inset-0 opacity-25" style={{ background: "var(--gradient-fire)" }} />
-            <div className="absolute inset-0 bg-grid opacity-[0.1]" />
-            <div className="relative">
-              <Badge variant="secondary" className="mb-4 text-primary border-primary/40">
-                Mark your calendar
-              </Badge>
-              <h2 className="font-display text-3xl md:text-5xl font-bold mb-2">Don't Miss the Action</h2>
-              <p className="text-muted-foreground mb-8">Big things drop weekly. Be here when the timer hits zero.</p>
-              <Countdown target={eventTarget} label={eventLabel} />
-            </div>
-          </Card>
-        </section>
+        {/* Countdown — only while the event is still ahead of us */}
+        {eventTarget > now && (
+          <section>
+            <Card className="relative p-10 md:p-14 overflow-hidden border-primary/30 text-center scan-line">
+              <div className="absolute inset-0 opacity-25" style={{ background: "var(--gradient-fire)" }} />
+              <div className="absolute inset-0 bg-grid opacity-[0.1]" />
+              <div className="relative">
+                <Badge variant="secondary" className="mb-4 text-primary border-primary/40">
+                  Mark your calendar
+                </Badge>
+                <h2 className="font-display text-3xl md:text-5xl font-bold mb-2">Don't Miss the Action</h2>
+                <p className="text-muted-foreground mb-8">Big things drop weekly. Be here when the timer hits zero.</p>
+                <Countdown target={eventTarget} label={eventLabel} />
+              </div>
+            </Card>
+          </section>
+        )}
 
         {/* News */}
         {news.length > 0 && (
@@ -626,7 +683,7 @@ const Index = () => {
                     {new Date(n.created_at).toLocaleDateString()}
                   </div>
                   <h3 className="font-display font-bold text-lg mb-2 group-hover:text-primary transition">{n.title}</h3>
-                  <p className="text-sm text-muted-foreground line-clamp-3">{n.excerpt}</p>
+                  <p className="text-sm text-muted-foreground line-clamp-3">{stripMarkdown(n.excerpt)}</p>
                   <div className="mt-4 inline-flex items-center text-sm text-primary opacity-0 group-hover:opacity-100 transition">
                     Read more <ArrowRight className="h-3 w-3 ml-1" />
                   </div>
@@ -636,11 +693,14 @@ const Index = () => {
           </section>
         )}
 
-        {/* Reviews */}
-        <section>
-          <SectionHead eyebrow="Reviews" title="What Players Say" sub="Real voices from the CarnageMC community." />
-          <Reviews />
-        </section>
+        {/* Reviews — hidden until there are enough genuine reviews to be credible */}
+        {reviewCount >= 5 && (
+          <section>
+            <SectionHead eyebrow="Reviews" title="What Players Say" sub="Real voices from the CarnageMC community." />
+            <Reviews />
+          </section>
+        )}
+
 
         {/* CTA */}
         <section>
