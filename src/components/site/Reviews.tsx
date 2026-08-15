@@ -132,11 +132,14 @@ const Reviews = () => {
     load();
   };
 
-  const avatarFor = (p?: Profile, fallback?: string) => {
-    if (p?.avatar_url) return p.avatar_url;
-    if (p?.mc_username) return `https://mc-heads.net/avatar/${p.mc_username}/64`;
+  const avatarFor = (r: Review) => {
+    if (r.author_avatar) return r.author_avatar;
+    if (r.author_mc_username) return `https://mc-heads.net/avatar/${r.author_mc_username}/64`;
     return null;
   };
+
+  const authorPath = (r: Review) =>
+    `/user/${toUserSlug(r.author_mc_username) ?? toUserSlug(r.author_name) ?? r.author_ref}`;
 
   const showForm = !myReview || editing;
 
