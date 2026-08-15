@@ -52,7 +52,10 @@ const RankComparison = () => {
   // Union of every perk across ranks, ordered by first appearance (cheapest rank first).
   const allPerks = useMemo(() => {
     const seen: string[] = [];
-    for (const r of ranks) for (const p of r.perks ?? []) if (!seen.includes(p)) seen.push(p);
+    // "Everything in X" lines are redundant — inheritance is already shown by the ticks.
+    const rollup = /^everything in /i;
+    for (const r of ranks)
+      for (const p of r.perks ?? []) if (!rollup.test(p) && !seen.includes(p)) seen.push(p);
     return seen;
   }, [ranks]);
 
