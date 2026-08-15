@@ -13,17 +13,14 @@ import { toast } from "sonner";
 
 type Review = {
   id: string;
-  user_id: string;
   rating: number;
   body: string;
   created_at: string;
-};
-
-type Profile = {
-  id: string;
-  display_name: string | null;
-  avatar_url: string | null;
-  mc_username: string | null;
+  author_name: string | null;
+  author_avatar: string | null;
+  author_mc_username: string | null;
+  author_ref: string;
+  is_mine: boolean;
 };
 
 const reviewSchema = z.object({
