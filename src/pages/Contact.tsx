@@ -152,6 +152,38 @@ export default function Contact() {
           <Button onClick={submit} disabled={submitting}>{submitting ? "Sending..." : "Send message"}</Button>
         </CardContent>
       </Card>
+
+      <Card className="border-primary/40">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Crown className="h-5 w-5 text-primary" /> Email the Owner
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            For direct, private matters reach the owner at{" "}
+            <span className="font-medium text-foreground">{OWNER_EMAIL}</span>. Fill in your details and a reason —
+            your email client will open with everything prefilled.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <Label>Your email *</Label>
+              <Input type="email" value={ownerForm.email} onChange={(e) => setOwnerForm({ ...ownerForm, email: e.target.value })} maxLength={255} placeholder="you@example.com" />
+            </div>
+            <div>
+              <Label>Reason *</Label>
+              <Input value={ownerForm.reason} onChange={(e) => setOwnerForm({ ...ownerForm, reason: e.target.value })} maxLength={200} placeholder="e.g. Partnership inquiry" />
+            </div>
+          </div>
+          <div>
+            <Label>Message *</Label>
+            <Textarea rows={5} value={ownerForm.message} onChange={(e) => setOwnerForm({ ...ownerForm, message: e.target.value })} maxLength={4000} placeholder="Write your message to the owner..." />
+          </div>
+          <Button onClick={openOwnerMail} className="w-full">
+            <Mail className="h-4 w-4 mr-2" /> Open email to owner
+          </Button>
+        </CardContent>
+      </Card>
     </main>
   );
 }
