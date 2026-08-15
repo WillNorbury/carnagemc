@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import rehypeRaw from "rehype-raw";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
@@ -147,7 +148,7 @@ const NewsArticle = () => {
             </h1>
 
             <div className="prose prose-invert max-w-none text-foreground/85 leading-relaxed text-[15px] prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary prose-strong:text-foreground prose-code:text-primary">
-              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]} breaks>
+              <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw]}>
                 {article.content}
               </ReactMarkdown>
             </div>
