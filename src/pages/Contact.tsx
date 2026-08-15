@@ -85,6 +85,32 @@ export default function Contact() {
     setForm({ name: "", email: "", subject: "", message: "" });
   }
 
+  function buildOwnerMailto() {
+    const parsed = ownerSchema.safeParse(ownerForm);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Invalid input");
+      return null;
+    }
+    const d = parsed.data;
+    const subject = `[CarnageMC] ${d.reason}`;
+    const body = `Reply-to: ${d.email}\n\n${d.message}`;
+    return `mailto:${OWNER_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  function openOwnerMail() {
+    const href = buildOwnerMailto();
+    if (!href) return;
+    window.location.href = href;
+    logWebsiteEvent({
+      kind: "owner_contact",
+      title: "Owner mailto opened",
+      detail: `Reason: ${ownerForm.reason} — from ${ownerForm.email}`,
+      color: 0xf59e0b,
+    });
+  }
+
+
+
   return (
     <main className="container mx-auto p-6 max-w-3xl space-y-6">
       <Helmet>
