@@ -770,7 +770,13 @@ export default function Store() {
                 );
               })}
 
+              {/* Rank comparison */}
+              <div className="md:col-span-12 mt-10">
+                <RankComparison />
+              </div>
+
               {/* Cart summary */}
+
               <section
                 id="cart"
                 ref={cartRef}
