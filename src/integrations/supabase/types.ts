@@ -3192,6 +3192,14 @@ export type Database = {
           mod_id: string
         }[]
       }
+      get_my_organizations: {
+        Args: never
+        Returns: {
+          id: string
+          name: string
+          slug: string
+        }[]
+      }
       get_my_private_profile: {
         Args: never
         Returns: {
