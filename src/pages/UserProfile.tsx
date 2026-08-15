@@ -42,6 +42,14 @@ import {
   UserCheck,
   Boxes,
   Building2,
+  Swords,
+  Skull,
+  Target,
+  Crosshair,
+  Trophy,
+  Clock,
+  Coins,
+  Bug,
 } from "lucide-react";
 import { toast } from "sonner";
 import ReportDialog from "@/components/site/ReportDialog";
