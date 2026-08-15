@@ -8,28 +8,26 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { confirm } from "@/lib/confirm";
-import { userProfilePath } from "@/lib/userSlug";
+import { toUserSlug } from "@/lib/userSlug";
 import { Star, Trash2, Loader2, MessageSquare } from "lucide-react";
 
 export type ReviewTarget = "discover_item" | "plugin";
 
 type Review = {
   id: string;
-  target_type: ReviewTarget;
-  target_id: string;
-  user_id: string;
   rating: number;
   body: string;
   created_at: string;
   updated_at: string;
+  author_name: string | null;
+  author_avatar: string | null;
+  author_mc_username: string | null;
+  author_ref: string;
+  is_mine: boolean;
 };
 
-type Profile = {
-  id: string;
-  display_name: string | null;
-  avatar_url: string | null;
-  mc_username: string | null;
-};
+const authorPath = (r: Review) =>
+  `/user/${toUserSlug(r.author_mc_username) ?? toUserSlug(r.author_name) ?? r.author_ref}`;
 
 const Stars = ({
   value,
@@ -71,7 +69,6 @@ type Props = {
 const ItemReviews = ({ targetType, targetId }: Props) => {
   const { user } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [profiles, setProfiles] = useState<Record<string, Profile>>({});
   const [loading, setLoading] = useState(true);
   const [rating, setRating] = useState(5);
   const [body, setBody] = useState("");
@@ -79,29 +76,16 @@ const ItemReviews = ({ targetType, targetId }: Props) => {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("item_reviews")
-      .select("*")
-      .eq("target_type", targetType)
-      .eq("target_id", targetId)
-      .order("created_at", { ascending: false });
+    const { data, error } = await supabase.rpc("get_public_item_reviews", {
+      _target_type: targetType,
+      _target_id: targetId,
+    });
     if (error) {
       toast.error(error.message);
       setLoading(false);
       return;
     }
-    const list = (data ?? []) as Review[];
-    setReviews(list);
-    const ids = Array.from(new Set(list.map((r) => r.user_id)));
-    if (ids.length) {
-      const { data: profs } = await supabase
-        .from("profiles")
-        .select("id, display_name, avatar_url, mc_username")
-        .in("id", ids);
-      const map: Record<string, Profile> = {};
-      ((profs ?? []) as Profile[]).forEach((p) => { map[p.id] = p; });
-      setProfiles(map);
-    }
+    setReviews((data ?? []) as unknown as Review[]);
     setLoading(false);
   };
 
@@ -111,14 +95,14 @@ const ItemReviews = ({ targetType, targetId }: Props) => {
   }, [targetType, targetId]);
 
   const myReview = useMemo(
-    () => reviews.find((r) => r.user_id === user?.id) ?? null,
+    () => (user ? reviews.find((r) => r.is_mine) ?? null : null),
     [reviews, user?.id],
   );
 
   useEffect(() => {
     if (myReview) {
       setRating(myReview.rating);
-      setBody(myReview.body);
+      setBody(myReview.body ?? "");
     }
   }, [myReview]);
 
@@ -243,13 +227,12 @@ const ItemReviews = ({ targetType, targetId }: Props) => {
       ) : (
         <div className="space-y-3">
           {reviews.map((r) => {
-            const p = profiles[r.user_id];
-            const name = p?.display_name ?? p?.mc_username ?? "Anonymous";
+            const name = r.author_name ?? r.author_mc_username ?? "Anonymous";
             const initials = name.slice(0, 2).toUpperCase();
             const avatar =
-              p?.avatar_url ||
-              (p?.mc_username
-                ? `https://mc-heads.net/avatar/${p.mc_username}/64`
+              r.author_avatar ||
+              (r.author_mc_username
+                ? `https://mc-heads.net/avatar/${r.author_mc_username}/64`
                 : undefined);
             return (
               <div
@@ -257,7 +240,7 @@ const ItemReviews = ({ targetType, targetId }: Props) => {
                 className="rounded-lg border border-border bg-background/40 p-4"
               >
                 <div className="flex items-start gap-3">
-                  <Link to={p ? userProfilePath(p) : "#"}>
+                  <Link to={authorPath(r)}>
                     <Avatar className="h-9 w-9">
                       <AvatarImage src={avatar} />
                       <AvatarFallback className="text-xs">
@@ -268,16 +251,12 @@ const ItemReviews = ({ targetType, targetId }: Props) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <div className="flex items-center gap-2 flex-wrap">
-                        {p ? (
-                          <Link
-                            to={userProfilePath(p)}
-                            className="font-medium hover:text-primary"
-                          >
-                            {name}
-                          </Link>
-                        ) : (
-                          <span className="font-medium">{name}</span>
-                        )}
+                        <Link
+                          to={authorPath(r)}
+                          className="font-medium hover:text-primary"
+                        >
+                          {name}
+                        </Link>
                         <Stars value={r.rating} size={14} />
                       </div>
                       <span className="text-xs text-muted-foreground">

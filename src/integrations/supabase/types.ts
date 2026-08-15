@@ -3175,6 +3175,51 @@ export type Database = {
           service_key: string
         }[]
       }
+      get_public_item_reviews: {
+        Args: { _target_id: string; _target_type: string }
+        Returns: {
+          author_avatar: string
+          author_mc_username: string
+          author_name: string
+          author_ref: string
+          body: string
+          created_at: string
+          id: string
+          is_mine: boolean
+          rating: number
+          updated_at: string
+        }[]
+      }
+      get_public_mod_reviews: {
+        Args: { _mod_id: string }
+        Returns: {
+          author_avatar: string
+          author_mc_username: string
+          author_name: string
+          author_ref: string
+          body: string
+          created_at: string
+          id: string
+          is_mine: boolean
+          rating: number
+          updated_at: string
+        }[]
+      }
+      get_public_reviews: {
+        Args: { _limit?: number }
+        Returns: {
+          author_avatar: string
+          author_mc_username: string
+          author_name: string
+          author_ref: string
+          body: string
+          created_at: string
+          id: string
+          is_mine: boolean
+          rating: number
+          updated_at: string
+        }[]
+      }
       get_public_uptime_checks_between: {
         Args: { _from: string; _service_key: string; _to: string }
         Returns: {
@@ -3278,6 +3323,7 @@ export type Database = {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
+      is_org_owner: { Args: { _org_id: string }; Returns: boolean }
       is_staff_user: { Args: { _uid: string }; Returns: boolean }
       mc_server_get_ingest_secret: {
         Args: { _server_id: string }

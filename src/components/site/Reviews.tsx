@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { userProfilePath } from "@/lib/userSlug";
+import { toUserSlug } from "@/lib/userSlug";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,17 +13,14 @@ import { toast } from "sonner";
 
 type Review = {
   id: string;
-  user_id: string;
   rating: number;
   body: string;
   created_at: string;
-};
-
-type Profile = {
-  id: string;
-  display_name: string | null;
-  avatar_url: string | null;
-  mc_username: string | null;
+  author_name: string | null;
+  author_avatar: string | null;
+  author_mc_username: string | null;
+  author_ref: string;
+  is_mine: boolean;
 };
 
 const reviewSchema = z.object({
@@ -61,30 +58,14 @@ const StarRow = ({
 const Reviews = () => {
   const { user } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [profiles, setProfiles] = useState<Record<string, Profile>>({});
   const [rating, setRating] = useState(5);
   const [body, setBody] = useState("");
   const [editing, setEditing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const load = async () => {
-    const { data } = await supabase
-      .from("reviews")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(30);
-    const list = (data ?? []) as Review[];
-    setReviews(list);
-    const ids = [...new Set(list.map((r) => r.user_id))];
-    if (ids.length) {
-      const { data: ps } = await supabase
-        .from("profiles")
-        .select("id, display_name, avatar_url, mc_username")
-        .in("id", ids);
-      const map: Record<string, Profile> = {};
-      (ps ?? []).forEach((p: any) => (map[p.id] = p));
-      setProfiles(map);
-    }
+    const { data } = await supabase.rpc("get_public_reviews", { _limit: 30 });
+    setReviews((data ?? []) as unknown as Review[]);
   };
 
   useEffect(() => {
@@ -98,7 +79,7 @@ const Reviews = () => {
     };
   }, []);
 
-  const myReview = user ? reviews.find((r) => r.user_id === user.id) : null;
+  const myReview = user ? reviews.find((r) => r.is_mine) ?? null : null;
 
   useEffect(() => {
     if (myReview && editing) {
@@ -151,11 +132,14 @@ const Reviews = () => {
     load();
   };
 
-  const avatarFor = (p?: Profile, fallback?: string) => {
-    if (p?.avatar_url) return p.avatar_url;
-    if (p?.mc_username) return `https://mc-heads.net/avatar/${p.mc_username}/64`;
+  const avatarFor = (r: Review) => {
+    if (r.author_avatar) return r.author_avatar;
+    if (r.author_mc_username) return `https://mc-heads.net/avatar/${r.author_mc_username}/64`;
     return null;
   };
+
+  const authorPath = (r: Review) =>
+    `/user/${toUserSlug(r.author_mc_username) ?? toUserSlug(r.author_name) ?? r.author_ref}`;
 
   const showForm = !myReview || editing;
 
@@ -263,9 +247,8 @@ const Reviews = () => {
       ) : (
         <div className="grid md:grid-cols-3 gap-5">
           {reviews.map((r) => {
-            const p = profiles[r.user_id];
-            const name = p?.display_name ?? p?.mc_username ?? "Player";
-            const av = avatarFor(p);
+            const name = r.author_name ?? r.author_mc_username ?? "Player";
+            const av = avatarFor(r);
             return (
               <Card key={r.id} className="p-6 hover-lift border-border/60 relative">
                 <div className="mb-3">
@@ -281,7 +264,7 @@ const Reviews = () => {
                     </div>
                   )}
                   <div className="min-w-0">
-                    <Link to={p ? userProfilePath(p) : `/user/${r.user_id.slice(0, 8)}`} className="font-semibold text-sm hover:text-primary truncate block">
+                    <Link to={authorPath(r)} className="font-semibold text-sm hover:text-primary truncate block">
                       {name}
                     </Link>
                     <div className="text-xs text-muted-foreground">

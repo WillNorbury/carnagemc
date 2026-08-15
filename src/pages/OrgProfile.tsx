@@ -47,7 +47,6 @@ type Org = {
   name: string;
   description: string;
   avatar_url: string | null;
-  owner_id: string;
   created_at: string;
 };
 
@@ -96,6 +95,7 @@ export default function OrgProfile() {
   const [org, setOrg] = useState<Org | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [isOwner, setIsOwner] = useState(false);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -142,7 +142,7 @@ export default function OrgProfile() {
       setNotFound(false);
       const { data: o } = await supabase
         .from("organizations")
-        .select("id, slug, name, description, avatar_url, owner_id, created_at")
+        .select("id, slug, name, description, avatar_url, created_at")
         .eq("slug", slug.toLowerCase())
         .maybeSingle();
       if (!o) {
@@ -173,12 +173,17 @@ export default function OrgProfile() {
         }))
       );
 
+      if (user) {
+        const { data: ownerFlag } = await supabase.rpc("is_org_owner", { _org_id: o.id });
+        setIsOwner(!!ownerFlag);
+      } else {
+        setIsOwner(false);
+      }
+
       await loadProjects(o.id);
       setLoading(false);
     })();
-  }, [slug]);
-
-  const isOwner = !!user && !!org && user.id === org.owner_id;
+  }, [slug, user]);
 
   const openAttach = async () => {
     if (!user || !org) return;

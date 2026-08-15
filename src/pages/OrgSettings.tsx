@@ -20,7 +20,6 @@ type Org = {
   name: string;
   description: string | null;
   avatar_url: string | null;
-  owner_id: string;
 };
 
 const slugify = (s: string) =>
@@ -32,6 +31,7 @@ export default function OrgSettings() {
   const navigate = useNavigate();
 
   const [org, setOrg] = useState<Org | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -46,7 +46,7 @@ export default function OrgSettings() {
     (async () => {
       setLoading(true);
       const { data } = await (supabase.from("organizations" as any) as any)
-        .select("id, slug, name, description, avatar_url, owner_id")
+        .select("id, slug, name, description, avatar_url")
         .eq("slug", slug)
         .maybeSingle();
       if (!active) return;
@@ -57,15 +57,19 @@ export default function OrgSettings() {
         setOrgSlug(row.slug ?? "");
         setDescription(row.description ?? "");
         setAvatarUrl(row.avatar_url ?? "");
+        if (user) {
+          const { data: ownerFlag } = await supabase.rpc("is_org_owner", { _org_id: row.id });
+          if (active) setIsOwner(!!ownerFlag);
+        } else {
+          setIsOwner(false);
+        }
       }
       setLoading(false);
     })();
     return () => {
       active = false;
     };
-  }, [slug]);
-
-  const isOwner = !!user && !!org && org.owner_id === user.id;
+  }, [slug, user]);
 
   const save = async () => {
     if (!org) return;
