@@ -302,9 +302,11 @@ const Index = () => {
       <MouseTrail />
       <Navbar />
 
-      <div className="container pt-4">
+      {/* Offset for the fixed floating navbar pills so the live badge never sits under them */}
+      <div className="container pt-20 sm:pt-24">
         <TwitchLiveWidget login="will_norbury" variant="compact" className="w-full" />
       </div>
+
 
 
 
