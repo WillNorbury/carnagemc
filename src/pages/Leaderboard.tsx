@@ -113,9 +113,11 @@ function formatStatLabel(tab: StatTab, v: number): string {
 
 const Leaderboard = () => {
   const [tab, setTab] = useState<Tab | StatTab>("login_streak");
+  const [query, setQuery] = useState("");
   const [rows, setRows] = useState<Row[]>([]);
   const [statRows, setStatRows] = useState<StatRow[]>([]);
   const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     document.title = "Leaderboard — CarnageMC";
