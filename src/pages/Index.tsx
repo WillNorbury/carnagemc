@@ -684,6 +684,58 @@ const Index = () => {
           </section>
         )}
 
+        {/* Community / Discord CTA */}
+        <section id="community">
+          <Card className="relative overflow-hidden border-primary/30 p-8 md:p-12">
+            <div className="absolute inset-0 opacity-[0.18]" style={{ background: "var(--gradient-fire)" }} aria-hidden />
+            <div className="absolute inset-0 bg-grid opacity-[0.08]" aria-hidden />
+            <div className="relative grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-center">
+              <div>
+                <div className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-primary">Community</div>
+                <h2 className="font-display text-3xl font-bold md:text-4xl">
+                  Join the <span className="text-gradient">CarnageMC</span> Discord
+                </h2>
+                <p className="mt-3 max-w-xl text-muted-foreground">
+                  Events, giveaways, patch notes and support — everything happens in Discord first. Link your account to
+                  sync your in-game rank automatically.
+                </p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Button size="lg" asChild className="glow font-display uppercase tracking-wider">
+                    <a
+                      href={content.server?.discord ?? "https://discord.gg/wD6K3nr2MG"}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <MessageCircle className="mr-2 h-4 w-4" /> Join Discord
+                    </a>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => nav("/community")}
+                    className="font-display uppercase tracking-wider border-primary/40 hover:border-primary hover:text-primary"
+                  >
+                    Community hub <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-primary/25 bg-background/50 p-6 text-center backdrop-blur">
+                <MessageCircle className="mx-auto mb-3 h-8 w-8 text-primary" aria-hidden />
+                {discordMembers != null ? (
+                  <>
+                    <div className="font-display text-4xl font-black text-gradient">
+                      <AnimatedCounter to={discordMembers} />
+                    </div>
+                    <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">Members</div>
+                  </>
+                ) : (
+                  <div className="text-sm text-muted-foreground">Loading member count…</div>
+                )}
+              </div>
+            </div>
+          </Card>
+        </section>
+
 
         {/* CTA */}
         <section>
