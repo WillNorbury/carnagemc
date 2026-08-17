@@ -208,9 +208,33 @@
   .scroll-smooth-page { scroll-behavior: smooth; }
 }
 
+/* Accessibility: visible keyboard focus everywhere */
+@layer base {
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: calc(var(--radius) - 4px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .ember,
+  .scan-line::after,
+  .animate-float,
+  .animate-pulse-glow {
+    display: none !important;
+  }
 }
+
 
 /* Thin, subtle scrollbar for the sidebar */
 [data-sidebar="content"] {
