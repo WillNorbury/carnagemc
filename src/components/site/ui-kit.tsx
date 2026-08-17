@@ -200,40 +200,42 @@ export const PageHero = ({
   children?: ReactNode;
   className?: string;
 }) => (
-  <section className={cn("relative overflow-hidden pt-28 pb-16", className)}>
+  <section className={cn("relative overflow-hidden border-b border-border/70 pt-24 pb-12 md:pt-28 md:pb-16", className)}>
     {banner ? (
       <>
         <img
           src={banner}
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover opacity-30"
+          className="absolute inset-0 h-full w-full object-cover opacity-25"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/85 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/75 via-background/90 to-background" />
       </>
     ) : (
-      <div className="absolute inset-0 bg-grid opacity-[0.08]" />
+      <div className="absolute inset-0 bg-grid opacity-[0.06]" />
     )}
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute -top-32 left-1/2 h-72 w-[42rem] -translate-x-1/2 rounded-full bg-primary/20 blur-[120px]"
+      className="pointer-events-none absolute -top-40 left-1/2 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]"
     />
     <div className="container relative">
       <Reveal className="max-w-3xl">
         {eyebrow && (
-          <Badge variant="secondary" className="mb-4 text-primary border-primary/40">
+          <div className="eyebrow mb-3 flex items-center gap-2 text-primary">
+            <span aria-hidden className="h-px w-6 bg-primary/60" />
             {eyebrow}
-          </Badge>
+          </div>
         )}
-        <h1 className="font-display text-4xl md:text-6xl font-black tracking-tight mb-4">
+        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-3">
           {title} {highlight && <span className="text-gradient">{highlight}</span>}
         </h1>
         {description && (
           <p className="text-muted-foreground md:text-lg max-w-2xl leading-relaxed">{description}</p>
         )}
-        {children && <div className="mt-8">{children}</div>}
+        {children && <div className="mt-7">{children}</div>}
       </Reveal>
     </div>
+
   </section>
 );
 
