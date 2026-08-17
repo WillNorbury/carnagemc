@@ -8,6 +8,8 @@ import Footer from "@/components/site/Footer";
 import Particles from "@/components/site/Particles";
 import Showcase from "@/components/site/Showcase";
 import MouseTrail from "@/components/site/MouseTrail";
+import ServerIP from "@/components/site/ServerIP";
+
 import AnimatedCounter from "@/components/site/AnimatedCounter";
 import Countdown from "@/components/site/Countdown";
 import Reviews from "@/components/site/Reviews";
