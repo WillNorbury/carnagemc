@@ -224,7 +224,7 @@ const Leaderboard = () => {
               ))}
             </div>
           ) : isStreakMode ? (
-            rows.length === 0 ? (
+            fRows.length === 0 ? (
               <GlassCard className="p-12 text-center">
                 <p className="text-muted-foreground">No data yet — be the first!</p>
               </GlassCard>
@@ -232,7 +232,7 @@ const Leaderboard = () => {
               <div className="space-y-10">
                 <div className="grid grid-cols-3 gap-3 sm:gap-5 items-end">
                   {order.map((idx) => {
-                    const r = rows[idx];
+                    const r = fRows[idx];
                     if (!r) return <div key={idx} />;
                     const name = r.profile?.display_name || r.profile?.mc_username || "Player";
                     const value = (r as any)[tab] as number;
@@ -262,9 +262,9 @@ const Leaderboard = () => {
                   })}
                 </div>
 
-                {rows.slice(3).length > 0 && (
+                {fRows.slice(3).length > 0 && (
                   <GlassCard className="divide-y divide-border/50 overflow-hidden">
-                    {rows.slice(3).map((r, i) => {
+                    {fRows.slice(3).map((r, i) => {
                       const value = (r as any)[tab] as number;
                       const name = r.profile?.display_name || r.profile?.mc_username || "Player";
                       const rank = i + 4;
@@ -288,7 +288,7 @@ const Leaderboard = () => {
                 )}
               </div>
             )
-          ) : statRows.length === 0 ? (
+          ) : fStatRows.length === 0 ? (
             <GlassCard className="p-12 text-center">
               <p className="text-muted-foreground">No gameplay stats yet. Stats appear once the server bridge starts reporting.</p>
             </GlassCard>
@@ -296,7 +296,7 @@ const Leaderboard = () => {
             <div className="space-y-10">
               <div className="grid grid-cols-3 gap-3 sm:gap-5 items-end">
                 {order.map((idx) => {
-                  const r = statRows[idx];
+                  const r = fStatRows[idx];
                   if (!r) return <div key={idx} />;
                   const name = r.player_name || "Player";
                   const value = formatStat(tab as StatTab, r);
@@ -326,9 +326,9 @@ const Leaderboard = () => {
                 })}
               </div>
 
-              {statRows.slice(3).length > 0 && (
+              {fStatRows.slice(3).length > 0 && (
                 <GlassCard className="divide-y divide-border/50 overflow-hidden">
-                  {statRows.slice(3).map((r, i) => {
+                  {fStatRows.slice(3).map((r, i) => {
                     const value = formatStat(tab as StatTab, r);
                     const name = r.player_name || "Player";
                     const rank = i + 4;
@@ -357,7 +357,7 @@ const Leaderboard = () => {
 
           {!loading && (
             <p className="text-center text-xs text-muted-foreground mt-8">
-              Showing top {(isStreakMode ? rows : statRows).length} players ·{" "}
+              Showing top {(isStreakMode ? fRows : fStatRows).length} players ·{" "}
               <Badge variant="secondary" className="border-primary/30 align-middle">
                 {allTabs.find((t) => t.key === tab)?.label}
               </Badge>
