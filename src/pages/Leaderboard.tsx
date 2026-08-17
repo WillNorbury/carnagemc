@@ -268,7 +268,7 @@ const Leaderboard = () => {
               </GlassCard>
             ) : (
               <div className="space-y-10">
-                <div className="grid grid-cols-3 gap-3 sm:gap-5 items-end">
+                <div className="grid grid-cols-3 gap-3 sm:gap-5 items-end pt-14">
                   {order.map((idx) => {
                     const r = fRows[idx];
                     if (!r) return <div key={idx} />;
@@ -337,7 +337,7 @@ const Leaderboard = () => {
             </GlassCard>
           ) : (
             <div className="space-y-10">
-              <div className="grid grid-cols-3 gap-3 sm:gap-5 items-end">
+              <div className="grid grid-cols-3 gap-3 sm:gap-5 items-end pt-14">
                 {order.map((idx) => {
                   const r = fStatRows[idx];
                   if (!r) return <div key={idx} />;
