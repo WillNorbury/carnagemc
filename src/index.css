@@ -47,14 +47,15 @@
     --shadow-neon: 0 0 12px hsl(var(--primary) / 0.55), 0 0 30px hsl(var(--primary-glow) / 0.35);
 
 
-    --sidebar-background: 20 40% 8%;
-    --sidebar-foreground: 30 30% 96%;
-    --sidebar-primary: 22 100% 55%;
-    --sidebar-primary-foreground: 20 60% 8%;
-    --sidebar-accent: 20 30% 14%;
-    --sidebar-accent-foreground: 30 30% 96%;
-    --sidebar-border: 22 60% 22%;
-    --sidebar-ring: 22 100% 55%;
+    --sidebar-background: 8 38% 8%;
+    --sidebar-foreground: 20 25% 96%;
+    --sidebar-primary: 4 84% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 8 28% 14%;
+    --sidebar-accent-foreground: 20 25% 96%;
+    --sidebar-border: 4 45% 22%;
+    --sidebar-ring: 4 84% 55%;
+
   }
 
   .light {
