@@ -131,24 +131,26 @@ export const SectionHeader = ({
 }) => (
   <header
     className={cn(
-      "max-w-2xl mb-10",
+      "max-w-2xl mb-8 md:mb-10",
       align === "center" ? "mx-auto text-center" : "text-left",
       className,
     )}
   >
     {eyebrow && (
-      <Badge variant="secondary" className="mb-4 text-primary border-primary/40">
+      <div className={cn("eyebrow mb-3 flex items-center gap-2 text-primary", align === "center" && "justify-center")}>
+        <span aria-hidden className="h-px w-6 bg-primary/60" />
         {eyebrow}
-      </Badge>
+      </div>
     )}
-    <h2 className="font-display text-3xl md:text-5xl font-black tracking-tight">
+    <h2 className="font-display text-2xl md:text-4xl font-black tracking-tight">
       {title} {highlight && <span className="text-gradient">{highlight}</span>}
     </h2>
     {description && (
-      <p className="text-muted-foreground md:text-lg mt-4 leading-relaxed">{description}</p>
+      <p className="text-muted-foreground md:text-lg mt-3 leading-relaxed">{description}</p>
     )}
   </header>
 );
+
 
 /* ------------------------------------------------------------------ */
 /* StatTile                                                            */
