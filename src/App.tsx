@@ -252,7 +252,7 @@ const Shell = () => {
                   <Route path="/status/unsubscribe" element={<StatusUnsubscribe />} />
                   <Route path="/live" element={<Live />} />
                   <Route path="/status/:number" element={<StatusIncident />} />
-                  <Route path="/servers-status" element={<ServersStatus />} />
+                  <Route path="/servers-status" element={<Navigate to="/status" replace />} />
                   <Route path="/appeal" element={<BanAppeals />} />
                   <Route path="/unsubscribe" element={<Unsubscribe />} />
                   <Route path="/subscribe" element={<Subscribe />} />
