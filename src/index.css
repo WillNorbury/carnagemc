@@ -6,57 +6,59 @@
 
 @layer base {
   :root {
-    --background: 8 38% 6%;
-    --foreground: 20 25% 96%;
+    /* Deep black base, charcoal surfaces, crimson highlights */
+    --background: 0 0% 4%;
+    --foreground: 0 0% 96%;
 
-    --card: 8 32% 9%;
-    --card-foreground: 20 25% 96%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 96%;
 
-    --popover: 8 32% 9%;
-    --popover-foreground: 20 25% 96%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 96%;
 
 
-    --primary: 4 84% 52%;
+    --primary: 356 82% 50%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 20 100% 57%;
+    --primary-glow: 4 90% 60%;
 
-    --secondary: 12 26% 14%;
-    --secondary-foreground: 30 30% 96%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 96%;
 
-    --muted: 12 22% 14%;
-    --muted-foreground: 20 16% 72%;
+    --muted: 0 0% 11%;
+    --muted-foreground: 0 0% 64%;
 
-    --accent: 20 96% 55%;
-    --accent-foreground: 20 60% 8%;
+    --accent: 356 70% 22%;
+    --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 75% 55%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 4 45% 22%;
-    --input: 12 26% 14%;
-    --ring: 4 84% 55%;
+    --border: 0 0% 16%;
+    --input: 0 0% 14%;
+    --ring: 356 82% 55%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    --gradient-hero: linear-gradient(135deg, hsl(8 55% 5% / 0.94) 0%, hsl(6 45% 10% / 0.72) 50%, hsl(4 84% 32% / 0.55) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 3% / 0.96) 0%, hsl(0 0% 5% / 0.85) 55%, hsl(356 70% 20% / 0.55) 100%);
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-fire: linear-gradient(135deg, hsl(352 90% 46%) 0%, hsl(4 88% 52%) 45%, hsl(28 100% 58%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(8 30% 10%), hsl(8 38% 7%));
-    --shadow-glow: 0 0 30px hsl(var(--primary) / 0.42), 0 0 60px hsl(var(--primary) / 0.18);
-    --shadow-elegant: 0 20px 50px -20px hsl(4 80% 2% / 0.85);
-    --shadow-neon: 0 0 12px hsl(var(--primary) / 0.55), 0 0 30px hsl(var(--primary-glow) / 0.35);
+    --gradient-fire: linear-gradient(120deg, hsl(352 85% 44%) 0%, hsl(356 84% 52%) 50%, hsl(8 88% 58%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 8%), hsl(0 0% 5%));
+    --shadow-glow: 0 0 24px hsl(var(--primary) / 0.28), 0 0 60px hsl(var(--primary) / 0.12);
+    --shadow-elegant: 0 18px 44px -22px hsl(0 0% 0% / 0.9);
+    --shadow-neon: 0 0 10px hsl(var(--primary) / 0.4), 0 0 26px hsl(var(--primary) / 0.2);
 
 
-    --sidebar-background: 8 38% 8%;
-    --sidebar-foreground: 20 25% 96%;
-    --sidebar-primary: 4 84% 52%;
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 92%;
+    --sidebar-primary: 356 82% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 8 28% 14%;
-    --sidebar-accent-foreground: 20 25% 96%;
-    --sidebar-border: 4 45% 22%;
-    --sidebar-ring: 4 84% 55%;
+    --sidebar-accent: 0 0% 11%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 356 82% 55%;
 
   }
+
 
   .light {
     --background: 30 30% 98%;
