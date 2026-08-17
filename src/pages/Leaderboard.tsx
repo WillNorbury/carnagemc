@@ -119,6 +119,8 @@ const Leaderboard = () => {
   const [rows, setRows] = useState<Row[]>([]);
   const [statRows, setStatRows] = useState<StatRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
 
   useEffect(() => {
@@ -130,9 +132,10 @@ const Leaderboard = () => {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    setLoadError(false);
     if (isStreak) {
       (async () => {
-        const { data } = await supabase.rpc("get_streak_leaderboard", { _metric: tab, _limit: 50 });
+        const { data, error } = await supabase.rpc("get_streak_leaderboard", { _metric: tab, _limit: 50 });
         const raw = (data as any[]) ?? [];
         const list: Row[] = raw.map((r) => ({
           user_id: r.user_id,
@@ -148,11 +151,11 @@ const Leaderboard = () => {
             avatar_url: r.avatar_url,
           },
         }));
-        if (!cancelled) { setRows(list); setStatRows([]); setLoading(false); }
+        if (!cancelled) { setLoadError(!!error); setRows(list); setStatRows([]); setLoading(false); }
       })();
     } else {
       (async () => {
-        const { data } = await (supabase as any).rpc("get_stats_leaderboard", { _metric: tab, _limit: 50 });
+        const { data, error } = await (supabase as any).rpc("get_stats_leaderboard", { _metric: tab, _limit: 50 });
         const list: StatRow[] = ((data as any[]) ?? []).map((r) => ({
           player_name: r.player_name,
           kills: r.kills,
@@ -164,11 +167,12 @@ const Leaderboard = () => {
           mob_kills: r.mob_kills,
           kdr: Number(r.kdr) || 0,
         }));
-        if (!cancelled) { setStatRows(list); setRows([]); setLoading(false); }
+        if (!cancelled) { setLoadError(!!error); setStatRows(list); setRows([]); setLoading(false); }
       })();
     }
     return () => { cancelled = true; };
-  }, [tab]);
+  }, [tab, reloadKey]);
+
 
   const allTabs = [...TABS, ...STAT_TABS];
   const order = [1, 0, 2];
