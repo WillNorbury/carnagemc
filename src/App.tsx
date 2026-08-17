@@ -99,37 +99,41 @@ import ContentPage from "./components/site/ContentPage.tsx";
 
 const CONTENT_PAGES = [
   "guides",
-  "ranks-comparison",
   "how-to-join",
-  "server-map",
   "achievements",
-  "hall-of-fame",
-  "clans",
-  "suggestions",
-  "polls",
-  "media-team",
   "about",
   "roadmap",
   "press-kit",
-  "credits",
-  "sitemap",
   "anti-cheat",
   "seasons",
   "staff-handbook",
-  "bug-bounty",
-  "discord-rules",
-  "appeals-guide",
   "pvp-guide",
   "economy-guide",
   "building-guide",
   "community-standards",
-  "glossary",
-  "network-history",
   "safety",
-  "brand-guidelines",
-  "support-guide",
-
 ] as const;
+
+// Retired filler/duplicate pages -> nearest real destination (keeps old URLs alive).
+const RETIRED_PAGES: Record<string, string> = {
+  "ranks-comparison": "/store#compare",
+  "server-map": "/map",
+  "appeals-guide": "/appeal",
+  "support-guide": "/support",
+  "discord-rules": "/rules",
+  applications: "/apply",
+  polls: "/community",
+  suggestions: "/community",
+  clans: "/community",
+  "hall-of-fame": "/leaderboard",
+  "media-team": "/apply",
+  glossary: "/wiki",
+  "network-history": "/about",
+  "bug-bounty": "/support",
+  "brand-guidelines": "/press-kit",
+  credits: "/about",
+};
+
 
 
 
