@@ -198,9 +198,13 @@
 }
 
 @layer utilities {
-  /* Phase 2 — shared design system primitives */
+  /* Shared design system primitives */
   .surface-glass {
-    @apply rounded-2xl border border-border/60 bg-card/60 backdrop-blur-xl;
+    @apply rounded-lg border border-border bg-card/80 backdrop-blur-md;
+  }
+  /* Solid charcoal panel — the default surface across the site */
+  .surface-panel {
+    @apply rounded-lg border border-border bg-card;
   }
   .bg-gradient-fire { background-image: var(--gradient-fire); }
   .bg-gradient-primary { background-image: var(--gradient-primary); }
@@ -208,9 +212,14 @@
   .radial-fade {
     mask-image: radial-gradient(ellipse at center, black 35%, transparent 78%);
   }
-  .section-y { @apply py-16 md:py-24; }
+  .section-y { @apply py-14 md:py-20; }
   .scroll-smooth-page { scroll-behavior: smooth; }
+  /* Small uppercase label used for eyebrows / table headers */
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground;
+  }
 }
+
 
 /* Accessibility: visible keyboard focus everywhere */
 @layer base {
