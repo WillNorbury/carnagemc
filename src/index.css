@@ -15,35 +15,36 @@
     --popover: 20 35% 9%;
     --popover-foreground: 30 30% 96%;
 
-    --primary: 22 100% 55%;
-    --primary-foreground: 20 60% 8%;
-    --primary-glow: 38 100% 58%;
+    --primary: 4 84% 52%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 20 100% 57%;
 
-    --secondary: 20 30% 14%;
+    --secondary: 12 26% 14%;
     --secondary-foreground: 30 30% 96%;
 
-    --muted: 20 25% 14%;
-    --muted-foreground: 28 20% 70%;
+    --muted: 12 22% 14%;
+    --muted-foreground: 20 16% 72%;
 
-    --accent: 38 100% 55%;
+    --accent: 20 96% 55%;
     --accent-foreground: 20 60% 8%;
 
     --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 22 60% 22%;
-    --input: 20 30% 14%;
-    --ring: 22 100% 55%;
+    --border: 4 45% 22%;
+    --input: 12 26% 14%;
+    --ring: 4 84% 55%;
 
     --radius: 0.75rem;
 
-    --gradient-hero: linear-gradient(135deg, hsl(20 60% 5% / 0.92) 0%, hsl(20 50% 10% / 0.7) 50%, hsl(22 100% 30% / 0.55) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(8 55% 5% / 0.94) 0%, hsl(6 45% 10% / 0.72) 50%, hsl(4 84% 32% / 0.55) 100%);
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-fire: linear-gradient(135deg, hsl(14 100% 50%) 0%, hsl(22 100% 55%) 50%, hsl(40 100% 60%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(20 35% 10%), hsl(20 40% 7%));
-    --shadow-glow: 0 0 30px hsl(var(--primary) / 0.45), 0 0 60px hsl(var(--primary) / 0.2);
-    --shadow-elegant: 0 20px 50px -20px hsl(20 80% 2% / 0.8);
-    --shadow-neon: 0 0 12px hsl(var(--primary) / 0.6), 0 0 30px hsl(var(--primary-glow) / 0.4);
+    --gradient-fire: linear-gradient(135deg, hsl(352 90% 46%) 0%, hsl(4 88% 52%) 45%, hsl(28 100% 58%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(8 30% 10%), hsl(8 38% 7%));
+    --shadow-glow: 0 0 30px hsl(var(--primary) / 0.42), 0 0 60px hsl(var(--primary) / 0.18);
+    --shadow-elegant: 0 20px 50px -20px hsl(4 80% 2% / 0.85);
+    --shadow-neon: 0 0 12px hsl(var(--primary) / 0.55), 0 0 30px hsl(var(--primary-glow) / 0.35);
+
 
     --sidebar-background: 20 40% 8%;
     --sidebar-foreground: 30 30% 96%;
