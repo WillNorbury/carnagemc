@@ -296,6 +296,13 @@ const Shell = () => {
                     <Route key={slug} path={`/${slug}`} element={<ContentPage slug={slug} />} />
                   ))}
 
+                  {Object.entries(RETIRED_PAGES).map(([slug, to]) => (
+                    <Route key={slug} path={`/${slug}`} element={<Navigate to={to} replace />} />
+                  ))}
+
+                  <Route path="/sitemap" element={<SiteIndex />} />
+
+
                    
                    <Route path="*" element={<NotFound />} />
           </Routes>
