@@ -93,13 +93,13 @@ export const GlassCard = forwardRef<
   <div
     ref={ref}
     className={cn(
-      "relative rounded-2xl border border-border/60 bg-card/60 backdrop-blur-xl",
-      "shadow-[0_8px_40px_-12px_hsl(var(--background))]",
+      "relative rounded-lg border border-border bg-card/90 backdrop-blur-md",
+      "shadow-[0_12px_32px_-20px_hsl(0_0%_0%/0.9)]",
       "before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px",
-      "before:bg-gradient-to-r before:from-transparent before:via-primary/40 before:to-transparent",
+      "before:bg-gradient-to-r before:from-transparent before:via-primary/30 before:to-transparent",
       interactive &&
-        "transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_20px_50px_-18px_hsl(var(--primary)/0.55)]",
-      glow && "shadow-[0_0_40px_-14px_hsl(var(--primary)/0.5)]",
+        "transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-[0_16px_36px_-20px_hsl(var(--primary)/0.5)]",
+      glow && "shadow-[0_0_32px_-16px_hsl(var(--primary)/0.45)]",
       className,
     )}
     {...props}
@@ -107,6 +107,7 @@ export const GlassCard = forwardRef<
     {children}
   </div>
 ));
+
 GlassCard.displayName = "GlassCard";
 
 /* ------------------------------------------------------------------ */
