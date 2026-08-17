@@ -80,13 +80,13 @@ const Plugins = () => {
     (async () => {
       const { data } = await supabase
         .from("plugins")
-        .select("id, short_id, slug, name, description, version, author, user_id, icon_url, category, tags, platform, platforms, mc_versions, featured, updated_at")
+        .select("id, short_id, slug, name, description, version, author, icon_url, category, tags, platform, platforms, mc_versions, featured, updated_at")
         .eq("published", true)
         .order("featured", { ascending: false })
         .order("updated_at", { ascending: false });
       const rows = (data ?? []) as Plugin[];
       setPlugins(rows);
-      const ids = Array.from(new Set(rows.map((r) => r.user_id).filter(Boolean) as string[]));
+      const ids: string[] = [];
       const pluginIds = rows.map((r) => r.id);
 
       const [profRes, dlRes, favRes, trendRes]: any = await Promise.all([
@@ -363,7 +363,7 @@ const Plugins = () => {
               const platforms = [...basePlatforms, ...p.tags.filter((t) => PLATFORM_COLORS[t.toLowerCase()])]
                 .filter(Boolean)
                 .filter((v, i, a) => a.findIndex((x) => x?.toLowerCase() === v?.toLowerCase()) === i) as string[];
-              const creator = p.user_id ? creators[p.user_id] : undefined;
+              const creator = undefined as CreatorProfile | undefined;
               const username = creator?.display_name || creator?.mc_username || p.author;
 
               return (

@@ -64,7 +64,6 @@ type Plugin = {
   jar_filename: string | null;
   jar_size: number | null;
   screenshots: string[];
-  user_id: string | null;
   website_url?: string | null;
   source_url?: string | null;
   issues_url?: string | null;
@@ -156,14 +155,15 @@ const PluginDetail = () => {
   const [platformOpen, setPlatformOpen] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
   const [reportOpen, setReportOpen] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     if (!key) return;
     (async () => {
       setLoading(true);
-      let { data } = await supabase.from("plugins").select("*").eq("published", true).eq("slug", key).maybeSingle();
+      let { data } = await supabase.from("plugins").select("id, short_id, slug, name, description, long_description, version, author, download_url, icon_url, category, platform, platforms, mc_versions, tags, featured, created_at, updated_at, jar_filename, jar_size, screenshots, website_url, source_url, issues_url, discord_url").eq("published", true).eq("slug", key).maybeSingle();
       if (!data) {
-        const fb = await supabase.from("plugins").select("*").eq("published", true).eq("short_id", key).maybeSingle();
+        const fb = await supabase.from("plugins").select("id, short_id, slug, name, description, long_description, version, author, download_url, icon_url, category, platform, platforms, mc_versions, tags, featured, created_at, updated_at, jar_filename, jar_size, screenshots, website_url, source_url, issues_url, discord_url").eq("published", true).eq("short_id", key).maybeSingle();
         data = fb.data;
       }
       if (!data) setNotFound(true);
@@ -190,6 +190,12 @@ const PluginDetail = () => {
         setDownloadCount(Number((dlRes.data?.[0]?.total) ?? 0));
         setFavoriteCount(Number((favRes.data?.[0]?.total) ?? 0));
         setSaved(!!myFavRes.data);
+        if (user) {
+          const own = await supabase.from("plugins").select("id").eq("id", p.id).eq("user_id", user.id).maybeSingle();
+          setIsOwner(!!own.data);
+        } else {
+          setIsOwner(false);
+        }
         setLiked(!!myFavRes.data);
       }
       setLoading(false);
@@ -396,7 +402,7 @@ const PluginDetail = () => {
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  {plugin && user && (plugin.user_id === user.id || isAdmin) && (
+                  {plugin && user && (isOwner || isAdmin) && (
                     <Button
                       asChild
                       variant="outline"

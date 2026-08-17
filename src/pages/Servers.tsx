@@ -23,7 +23,6 @@ import {
 
 type Row = {
   id: string;
-  user_id: string;
   name: string;
   slug: string;
   ip: string;
@@ -73,7 +72,7 @@ const Servers = () => {
     (async () => {
       const { data, error } = await supabase
         .from("user_servers" as any)
-        .select("*")
+        .select("id, name, slug, ip, port, description, version, tags, icon_url, banner_url, website_url, discord_url, featured, updated_at")
         .eq("published", true)
         .order("featured", { ascending: false })
         .order("updated_at", { ascending: false });
