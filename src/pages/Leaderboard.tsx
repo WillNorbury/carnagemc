@@ -5,11 +5,13 @@ import Footer from "@/components/site/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  Flame, Trophy, Vote as VoteIcon, LogIn, Crown,
+  Flame, Trophy, Vote as VoteIcon, LogIn, Crown, Search,
   Swords, Skull, Crosshair, Clock, Coins, Bug, Target,
 } from "lucide-react";
+
 import { GlassCard, PageHero, Reveal, AnimatedCounter } from "@/components/site/ui-kit";
 import { cn } from "@/lib/utils";
 
@@ -113,9 +115,11 @@ function formatStatLabel(tab: StatTab, v: number): string {
 
 const Leaderboard = () => {
   const [tab, setTab] = useState<Tab | StatTab>("login_streak");
+  const [query, setQuery] = useState("");
   const [rows, setRows] = useState<Row[]>([]);
   const [statRows, setStatRows] = useState<StatRow[]>([]);
   const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     document.title = "Leaderboard — CarnageMC";
@@ -172,6 +176,17 @@ const Leaderboard = () => {
   // Determine whether streak or stat mode
   const isStreakMode = TABS.some((t) => t.key === tab);
 
+  const needle = query.trim().toLowerCase();
+  const fRows = needle
+    ? rows.filter((r) =>
+        `${r.profile?.display_name ?? ""} ${r.profile?.mc_username ?? ""}`.toLowerCase().includes(needle),
+      )
+    : rows;
+  const fStatRows = needle
+    ? statRows.filter((r) => (r.player_name ?? "").toLowerCase().includes(needle))
+    : statRows;
+
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
@@ -184,13 +199,19 @@ const Leaderboard = () => {
         />
 
         <div className="container pb-24 max-w-4xl">
-          <div className="flex flex-wrap gap-2 justify-center mb-10">
+          <div
+            role="tablist"
+            aria-label="Leaderboard metric"
+            className="flex flex-wrap gap-2 justify-center mb-6"
+          >
             {allTabs.map((t) => {
               const Icon = t.icon;
               const active = tab === t.key;
               return (
                 <Button
                   key={t.key}
+                  role="tab"
+                  aria-selected={active}
                   size="sm"
                   variant={active ? "premium" : "glass"}
                   onClick={() => setTab(t.key)}
@@ -203,6 +224,19 @@ const Leaderboard = () => {
             })}
           </div>
 
+          <div className="relative mx-auto mb-10 max-w-sm">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+            <Input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search players…"
+              aria-label="Search players on the leaderboard"
+              className="rounded-full pl-9"
+            />
+          </div>
+
+
           {loading ? (
             <div className="space-y-3">
               <Skeleton className="h-48 rounded-2xl" />
@@ -211,15 +245,18 @@ const Leaderboard = () => {
               ))}
             </div>
           ) : isStreakMode ? (
-            rows.length === 0 ? (
+            fRows.length === 0 ? (
               <GlassCard className="p-12 text-center">
-                <p className="text-muted-foreground">No data yet — be the first!</p>
+                <p className="text-muted-foreground">
+                  {needle ? `No players matching “${query.trim()}”.` : "No data yet — be the first!"}
+                </p>
+
               </GlassCard>
             ) : (
               <div className="space-y-10">
                 <div className="grid grid-cols-3 gap-3 sm:gap-5 items-end">
                   {order.map((idx) => {
-                    const r = rows[idx];
+                    const r = fRows[idx];
                     if (!r) return <div key={idx} />;
                     const name = r.profile?.display_name || r.profile?.mc_username || "Player";
                     const value = (r as any)[tab] as number;
@@ -249,9 +286,9 @@ const Leaderboard = () => {
                   })}
                 </div>
 
-                {rows.slice(3).length > 0 && (
+                {fRows.slice(3).length > 0 && (
                   <GlassCard className="divide-y divide-border/50 overflow-hidden">
-                    {rows.slice(3).map((r, i) => {
+                    {fRows.slice(3).map((r, i) => {
                       const value = (r as any)[tab] as number;
                       const name = r.profile?.display_name || r.profile?.mc_username || "Player";
                       const rank = i + 4;
@@ -275,15 +312,20 @@ const Leaderboard = () => {
                 )}
               </div>
             )
-          ) : statRows.length === 0 ? (
+          ) : fStatRows.length === 0 ? (
             <GlassCard className="p-12 text-center">
-              <p className="text-muted-foreground">No gameplay stats yet. Stats appear once the server bridge starts reporting.</p>
+              <p className="text-muted-foreground">
+                {needle
+                  ? `No players matching “${query.trim()}”.`
+                  : "No gameplay stats yet. Stats appear once the server bridge starts reporting."}
+              </p>
+
             </GlassCard>
           ) : (
             <div className="space-y-10">
               <div className="grid grid-cols-3 gap-3 sm:gap-5 items-end">
                 {order.map((idx) => {
-                  const r = statRows[idx];
+                  const r = fStatRows[idx];
                   if (!r) return <div key={idx} />;
                   const name = r.player_name || "Player";
                   const value = formatStat(tab as StatTab, r);
@@ -313,9 +355,9 @@ const Leaderboard = () => {
                 })}
               </div>
 
-              {statRows.slice(3).length > 0 && (
+              {fStatRows.slice(3).length > 0 && (
                 <GlassCard className="divide-y divide-border/50 overflow-hidden">
-                  {statRows.slice(3).map((r, i) => {
+                  {fStatRows.slice(3).map((r, i) => {
                     const value = formatStat(tab as StatTab, r);
                     const name = r.player_name || "Player";
                     const rank = i + 4;
@@ -344,7 +386,7 @@ const Leaderboard = () => {
 
           {!loading && (
             <p className="text-center text-xs text-muted-foreground mt-8">
-              Showing top {(isStreakMode ? rows : statRows).length} players ·{" "}
+              Showing top {(isStreakMode ? fRows : fStatRows).length} players ·{" "}
               <Badge variant="secondary" className="border-primary/30 align-middle">
                 {allTabs.find((t) => t.key === tab)?.label}
               </Badge>

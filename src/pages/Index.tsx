@@ -8,6 +8,8 @@ import Footer from "@/components/site/Footer";
 import Particles from "@/components/site/Particles";
 import Showcase from "@/components/site/Showcase";
 import MouseTrail from "@/components/site/MouseTrail";
+import ServerIP from "@/components/site/ServerIP";
+
 import AnimatedCounter from "@/components/site/AnimatedCounter";
 import Countdown from "@/components/site/Countdown";
 import Reviews from "@/components/site/Reviews";
@@ -453,38 +455,15 @@ const Index = () => {
             </div>
 
             {/* IP card */}
-            <div className="max-w-lg mx-auto">
-              <button onClick={copyIp} aria-label="Copy CarnageMC Java server IP to clipboard" className="group w-full relative">
-                <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-primary to-accent opacity-60 group-hover:opacity-100 blur transition" />
-                <div className="relative flex items-center justify-between gap-3 px-6 py-4 rounded-xl bg-card border border-primary/30">
-                  <div className="text-left">
-                    <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Java IP</div>
-                    <div className="font-mono text-lg md:text-2xl font-bold">{ip}</div>
-                  </div>
-                  <div className="flex items-center gap-2 text-primary group-hover:scale-110 transition">
-                    <Copy className="h-5 w-5" />
-                    <span className="text-xs uppercase tracking-wider hidden sm:inline">Copy</span>
-                  </div>
-                </div>
-              </button>
-              <div className="mt-3 grid grid-cols-2 gap-3">
-                <div className="px-4 py-3 rounded-xl bg-card border border-primary/20">
-                  <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Bedrock IP</div>
-                  <div className="font-mono text-sm md:text-base font-semibold">{bedrockIp}</div>
-                </div>
-                <div className="px-4 py-3 rounded-xl bg-card border border-primary/20">
-                  <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Bedrock Port</div>
-                  <div className="font-mono text-sm md:text-base font-semibold">{bedrockPort}</div>
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <span
-                  className={`h-2 w-2 rounded-full ${status?.online ? "bg-primary animate-pulse" : "bg-destructive"}`}
-                />
-                {status?.online ? `${status.players_online} players online` : "Server offline"}
-                {status?.online && <span className="opacity-60">• {displayVersion}</span>}
-              </div>
-            </div>
+            <ServerIP
+              ip={ip}
+              bedrockIp={bedrockIp}
+              bedrockPort={bedrockPort}
+              online={status?.online}
+              playersOnline={status?.players_online}
+              version={displayVersion}
+            />
+
           </div>
         </section>
       )}
@@ -704,6 +683,58 @@ const Index = () => {
             <Reviews />
           </section>
         )}
+
+        {/* Community / Discord CTA */}
+        <section id="community">
+          <Card className="relative overflow-hidden border-primary/30 p-8 md:p-12">
+            <div className="absolute inset-0 opacity-[0.18]" style={{ background: "var(--gradient-fire)" }} aria-hidden />
+            <div className="absolute inset-0 bg-grid opacity-[0.08]" aria-hidden />
+            <div className="relative grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-center">
+              <div>
+                <div className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-primary">Community</div>
+                <h2 className="font-display text-3xl font-bold md:text-4xl">
+                  Join the <span className="text-gradient">CarnageMC</span> Discord
+                </h2>
+                <p className="mt-3 max-w-xl text-muted-foreground">
+                  Events, giveaways, patch notes and support — everything happens in Discord first. Link your account to
+                  sync your in-game rank automatically.
+                </p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Button size="lg" asChild className="glow font-display uppercase tracking-wider">
+                    <a
+                      href={content.server?.discord ?? "https://discord.gg/wD6K3nr2MG"}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <MessageCircle className="mr-2 h-4 w-4" /> Join Discord
+                    </a>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => nav("/community")}
+                    className="font-display uppercase tracking-wider border-primary/40 hover:border-primary hover:text-primary"
+                  >
+                    Community hub <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-primary/25 bg-background/50 p-6 text-center backdrop-blur">
+                <MessageCircle className="mx-auto mb-3 h-8 w-8 text-primary" aria-hidden />
+                {discordMembers != null ? (
+                  <>
+                    <div className="font-display text-4xl font-black text-gradient">
+                      <AnimatedCounter to={discordMembers} />
+                    </div>
+                    <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">Members</div>
+                  </>
+                ) : (
+                  <div className="text-sm text-muted-foreground">Loading member count…</div>
+                )}
+              </div>
+            </div>
+          </Card>
+        </section>
 
 
         {/* CTA */}
