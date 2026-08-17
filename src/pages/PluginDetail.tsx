@@ -64,7 +64,6 @@ type Plugin = {
   jar_filename: string | null;
   jar_size: number | null;
   screenshots: string[];
-  user_id: string | null;
   website_url?: string | null;
   source_url?: string | null;
   issues_url?: string | null;
@@ -156,6 +155,7 @@ const PluginDetail = () => {
   const [platformOpen, setPlatformOpen] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
   const [reportOpen, setReportOpen] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     if (!key) return;
@@ -190,6 +190,12 @@ const PluginDetail = () => {
         setDownloadCount(Number((dlRes.data?.[0]?.total) ?? 0));
         setFavoriteCount(Number((favRes.data?.[0]?.total) ?? 0));
         setSaved(!!myFavRes.data);
+        if (user) {
+          const own = await supabase.from("plugins").select("id").eq("id", p.id).eq("user_id", user.id).maybeSingle();
+          setIsOwner(!!own.data);
+        } else {
+          setIsOwner(false);
+        }
         setLiked(!!myFavRes.data);
       }
       setLoading(false);
@@ -396,7 +402,7 @@ const PluginDetail = () => {
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  {plugin && user && (plugin.user_id === user.id || isAdmin) && (
+                  {plugin && user && (isOwner || isAdmin) && (
                     <Button
                       asChild
                       variant="outline"
