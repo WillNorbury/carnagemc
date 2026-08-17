@@ -1,0 +1,1 @@
+DELETE FROM public.site_pages WHERE slug IN ('ranks-comparison','server-map','appeals-guide','support-guide','discord-rules','applications','polls','suggestions','clans','hall-of-fame','media-team','glossary','network-history','bug-bounty','brand-guidelines','credits','sitemap');

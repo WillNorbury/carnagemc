@@ -60,7 +60,7 @@ import Status from "./pages/Status.tsx";
 import StatusIncident from "./pages/StatusIncident.tsx";
 import StatusUnsubscribe from "./pages/StatusUnsubscribe.tsx";
 import Live from "./pages/Live.tsx";
-import ServersStatus from "./pages/ServersStatus.tsx";
+import SiteIndex from "./pages/SiteIndex.tsx";
 import BanAppeals from "./pages/BanAppeals.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
 import Subscribe from "./pages/Subscribe.tsx";
@@ -99,37 +99,41 @@ import ContentPage from "./components/site/ContentPage.tsx";
 
 const CONTENT_PAGES = [
   "guides",
-  "ranks-comparison",
   "how-to-join",
-  "server-map",
   "achievements",
-  "hall-of-fame",
-  "clans",
-  "suggestions",
-  "polls",
-  "media-team",
   "about",
   "roadmap",
   "press-kit",
-  "credits",
-  "sitemap",
   "anti-cheat",
   "seasons",
   "staff-handbook",
-  "bug-bounty",
-  "discord-rules",
-  "appeals-guide",
   "pvp-guide",
   "economy-guide",
   "building-guide",
   "community-standards",
-  "glossary",
-  "network-history",
   "safety",
-  "brand-guidelines",
-  "support-guide",
-
 ] as const;
+
+// Retired filler/duplicate pages -> nearest real destination (keeps old URLs alive).
+const RETIRED_PAGES: Record<string, string> = {
+  "ranks-comparison": "/store#compare",
+  "server-map": "/map",
+  "appeals-guide": "/appeal",
+  "support-guide": "/support",
+  "discord-rules": "/rules",
+  applications: "/apply",
+  polls: "/community",
+  suggestions: "/community",
+  clans: "/community",
+  "hall-of-fame": "/leaderboard",
+  "media-team": "/apply",
+  glossary: "/wiki",
+  "network-history": "/about",
+  "bug-bounty": "/support",
+  "brand-guidelines": "/press-kit",
+  credits: "/about",
+};
+
 
 
 
@@ -248,7 +252,7 @@ const Shell = () => {
                   <Route path="/status/unsubscribe" element={<StatusUnsubscribe />} />
                   <Route path="/live" element={<Live />} />
                   <Route path="/status/:number" element={<StatusIncident />} />
-                  <Route path="/servers-status" element={<ServersStatus />} />
+                  <Route path="/servers-status" element={<Navigate to="/status" replace />} />
                   <Route path="/appeal" element={<BanAppeals />} />
                   <Route path="/unsubscribe" element={<Unsubscribe />} />
                   <Route path="/subscribe" element={<Subscribe />} />
@@ -291,6 +295,13 @@ const Shell = () => {
                   {CONTENT_PAGES.map((slug) => (
                     <Route key={slug} path={`/${slug}`} element={<ContentPage slug={slug} />} />
                   ))}
+
+                  {Object.entries(RETIRED_PAGES).map(([slug, to]) => (
+                    <Route key={slug} path={`/${slug}`} element={<Navigate to={to} replace />} />
+                  ))}
+
+                  <Route path="/sitemap" element={<SiteIndex />} />
+
 
                    
                    <Route path="*" element={<NotFound />} />
