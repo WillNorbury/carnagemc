@@ -488,7 +488,7 @@ const Index = () => {
         }>;
         if (stats.length === 0) return null;
         return (
-          <section className="relative py-20 border-y border-primary/10">
+          <section className="relative border-y border-border py-14">
             <div className="absolute inset-0 bg-grid opacity-[0.07]" />
             <div
               className={`container relative grid grid-cols-2 gap-6 ${stats.length >= 4 ? "md:grid-cols-4" : stats.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"}`}
@@ -514,7 +514,7 @@ const Index = () => {
 
 
 
-      <main className="container space-y-28 py-24">
+      <main className="container space-y-20 py-20 md:space-y-24">
         {/* Trailer + world screenshots */}
         <Showcase />
 
