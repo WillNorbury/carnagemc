@@ -397,7 +397,7 @@ const Index = () => {
 
       {/* Hero */}
       {content.hero?.enabled !== false && (
-        <section className="relative flex min-h-[80vh] items-center overflow-hidden pt-20">
+        <section className="relative flex items-center overflow-hidden pt-24 pb-10 md:min-h-[620px]">
           <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
           <div className="absolute inset-0 bg-grid opacity-[0.1]" />
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background to-transparent" />
