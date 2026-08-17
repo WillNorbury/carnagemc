@@ -247,7 +247,10 @@ const Leaderboard = () => {
           ) : isStreakMode ? (
             fRows.length === 0 ? (
               <GlassCard className="p-12 text-center">
-                <p className="text-muted-foreground">No data yet — be the first!</p>
+                <p className="text-muted-foreground">
+                  {needle ? `No players matching “${query.trim()}”.` : "No data yet — be the first!"}
+                </p>
+
               </GlassCard>
             ) : (
               <div className="space-y-10">
