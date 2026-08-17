@@ -207,7 +207,7 @@ const Leaderboard = () => {
             <div
               role="tablist"
               aria-label="Leaderboard metric"
-              className="flex w-max min-w-full flex-nowrap gap-2 sm:flex-wrap sm:justify-center"
+              className="flex w-max min-w-full flex-nowrap gap-2 sm:w-full sm:flex-wrap sm:justify-center"
             >
               {allTabs.map((t) => {
                 const Icon = t.icon;
