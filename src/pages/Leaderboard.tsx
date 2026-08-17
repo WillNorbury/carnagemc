@@ -197,13 +197,19 @@ const Leaderboard = () => {
         />
 
         <div className="container pb-24 max-w-4xl">
-          <div className="flex flex-wrap gap-2 justify-center mb-10">
+          <div
+            role="tablist"
+            aria-label="Leaderboard metric"
+            className="flex flex-wrap gap-2 justify-center mb-6"
+          >
             {allTabs.map((t) => {
               const Icon = t.icon;
               const active = tab === t.key;
               return (
                 <Button
                   key={t.key}
+                  role="tab"
+                  aria-selected={active}
                   size="sm"
                   variant={active ? "premium" : "glass"}
                   onClick={() => setTab(t.key)}
@@ -215,6 +221,19 @@ const Leaderboard = () => {
               );
             })}
           </div>
+
+          <div className="relative mx-auto mb-10 max-w-sm">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+            <Input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search players…"
+              aria-label="Search players on the leaderboard"
+              className="rounded-full pl-9"
+            />
+          </div>
+
 
           {loading ? (
             <div className="space-y-3">
