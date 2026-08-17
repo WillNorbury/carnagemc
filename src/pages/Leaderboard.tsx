@@ -172,6 +172,17 @@ const Leaderboard = () => {
   // Determine whether streak or stat mode
   const isStreakMode = TABS.some((t) => t.key === tab);
 
+  const needle = query.trim().toLowerCase();
+  const fRows = needle
+    ? rows.filter((r) =>
+        `${r.profile?.display_name ?? ""} ${r.profile?.mc_username ?? ""}`.toLowerCase().includes(needle),
+      )
+    : rows;
+  const fStatRows = needle
+    ? statRows.filter((r) => (r.player_name ?? "").toLowerCase().includes(needle))
+    : statRows;
+
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
