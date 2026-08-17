@@ -1,43 +1,79 @@
-## Context
+# CarnageMC Route Audit + Recommendations
 
-The site already has working, backend-connected versions of most requested pages: Home, News, Leaderboards, Staff, Store, Rules, FAQ, Status, Gallery, Vote, Events, Support, Dashboard, and Careers (via `/apply`). Replacing those with placeholder-data rebuilds would remove real functionality, so the plan keeps their data layers and upgrades presentation instead.
+No pages created or deleted yet. This is the audit and the shortlist for your approval.
 
-Genuinely missing: Game Modes pages, Privacy Policy, Terms of Service, Refund Policy.
+## 1. What already exists (full inventory)
 
-## Phase 1 — New pages (nothing exists today)
+**Core / marketing**
+`/` `/features` `/features/:slug` `/gamemodes` `/gamemodes/:slug` `/gallery` `/live` `/map` `/partners` `/partners/:slug` `/vote` `/events` `/community` `/discord` `/trust` `/fire-market`
 
-**Game Modes**
-- `/gamemodes` — grid of glass cards for Survival, Lifesteal, 4Dupe, Hub-2, each with banner art, tagline, live player count, and hover lift.
-- `/gamemodes/:slug` — detail page: full-width banner, gameplay description, feature list, screenshots strip with lightbox, "Join Server" IP copy button, related modes.
-- Content stored in a `game_modes` table so you can edit modes from the admin panel rather than hardcoding.
+**Onboarding**
+`/join` `/install` `/how-to-join` (CMS page) `/commands`
 
-**Legal pages**
-- `/privacy`, `/terms`, `/refund` — clean long-form editorial layout, sticky section nav, last-updated date. Copy drafted from your actual store/ticket/data flows, marked for your review before publishing.
+**News / updates**
+`/news` (+ `/announcements` alias) `/news/:slug` `/changelog` `/changelog/:slug` `/release-notes`
 
-## Phase 2 — Shared design system pass
+**Status**
+`/status` `/status/:number` `/status/unsubscribe` `/servers-status`
 
-Introduce reusable primitives so every page inherits the AAA feel instead of one-off styling:
-- `GlassCard`, `SectionHeader`, `StatTile`, `GradientButton`, `PageHero`
-- Scroll-reveal wrapper (IntersectionObserver, respects reduced-motion)
-- Animated counters reused across Home / Status / Leaderboards
-- Consistent radius, spacing scale, and orange→amber gradient tokens in `index.css`
+**Competitive**
+`/leaderboard` `/punishments` `/punishments/:player` `/quiz` (+ 3 sub-routes)
 
-## Phase 3 — Upgrade existing pages (data untouched)
+**Community content**
+`/plugins` `/plugins/:slug` `/skripts` `/skripts/:id` `/servers` `/servers/:slug` `/modrinth-plugins` `/resource-packs` `/modpacks` `/data-packs` `/shaders` `/mod/:slug` (+ detail routes) `/wiki` `/wiki/:slug` `/wiki/more` `/users` `/user/:slug` `/org/:slug` `/org/:slug/settings`
 
-- **Home**: animated hero with parallax layers, IP copy button, live player count + status pill, featured game modes row, "Why CarnageMC", recent announcements, triple CTA.
-- **Leaderboards**: animated podium for top 3, tab set expanded to Richest / Kills / Deaths / Killstreak / Playtime / Votes / Balance / Mob Kills.
-- **Staff**: grouped by rank (Owner → Builder), avatar, role colour, description, Discord button.
-- **News**: featured post hero, category chips, tag filter, search, pagination.
-- **Gallery**: true masonry, video support, hover zoom, improved lightbox.
-- **Vote / Events / Support / Rules / FAQ / Status / Store**: styling and layout polish to match the new system; existing logic preserved.
+**Support / staff**
+`/support` `/tickets` `/contact` `/faq` `/rules` `/staff` `/staffchat` `/apply` `/apply/:slug` `/appeal` `/ban-appeals`
 
-## Technical notes
+**Account**
+`/auth` `/reset-password` `/dashboard` `/profile` `/me` `/me/orders` `/me/status` `/me/wishlist` `/link-account` `/subscribe` `/unsubscribe`
 
-- Orange / black / dark-gray branding kept; all colour via semantic tokens, no hardcoded hex in components.
-- New tables (`game_modes`, screenshots) get RLS + GRANTs; public read, admin write.
-- Pages are lazy-loaded via route-level code splitting to protect load time.
-- Each page gets `<SEO>` with unique title, description, canonical, and JSON-LD where applicable.
+**Store** (untouched)
+`/store` `/store/category/:slug` `/store/package/:id` `/checkout`
 
-## Suggested order
+**Legal**
+`/privacy` `/terms` `/refund`
 
-Phase 1 first (real gaps), then Phase 2, then Phase 3 in batches so you can review as we go rather than in one giant unreviewable change.
+**Admin**
+`/admin` + `/admin/*` tab routes
+
+**CMS pages** (31 rows in `site_pages`, all auto-generated 3–4 section stubs)
+guides, ranks-comparison, how-to-join, server-map, achievements, hall-of-fame, clans, suggestions, polls, media-team, about, roadmap, press-kit, credits, sitemap, anti-cheat, seasons, staff-handbook, bug-bounty, discord-rules, appeals-guide, pvp-guide, economy-guide, building-guide, community-standards, glossary, network-history, safety, brand-guidelines, support-guide, applications
+
+**Redirect aliases already in place** (keep — they preserve URLs)
+`/game-modes` `/privacy-policy` `/tos` `/refund-policy` `/mods` `/mod-tiers` `/discover*` `/cart` `/wishlist` `/orders` `/staff-chat` `/firemarket` `/announcements`
+
+## 2. Verdict on your examples
+
+Every page you named already exists: `/status`, `/how-to-join`, `/leaderboard`, `/store`, `/faq`, `/changelog`, `/staff`, `/support`, `/gamemodes`. Player profiles exist as `/user/:slug` and `/punishments/:player`. So: no `/how-to-play`, no `/server-status`, no `/rankings`, no `/player/:username`.
+
+## 3. Genuinely missing — recommended additions (5)
+
+1. **Branded 404** — `NotFound.tsx` is still the untouched template (plain grey box, no nav, no branding). Not a new route; a rewrite of the existing catch-all with navbar, crimson styling, and links to Home / Store / Status / Discord.
+2. **Player profile by IGN** — `/user/:slug` is keyed to website accounts. Leaderboard rows point at in-game names with no destination. Add resolution from Minecraft username to a profile view (stats, punishments, rank) reusing existing `get_player_stats_by_name`. Can be folded into `/user/:slug` rather than a new route if you prefer.
+3. **Search results page** — `GlobalSearch` is a modal only. A `/search?q=` results page makes search linkable and indexable.
+4. **Seasons / season archive with real data** — `seasons` is a CMS stub. If seasons matter competitively, it deserves a real data-backed page (season, dates, winners) rather than static text.
+5. **Sitemap page fed by real routes** — the `sitemap` CMS stub is hand-written and already stale. Replace with a generated index of live routes.
+
+Nothing else in the audit looked like a real gap. Everything else worth doing is polish on pages that already exist.
+
+## 4. Recommended deletions
+
+**Delete (duplicates or empty filler, low/zero value)**
+- `/servers-status` — duplicates `/status`. Convert to a redirect so the URL doesn't break.
+- CMS stubs with no unique content and an existing equivalent: `ranks-comparison` (→ `/store` comparison), `server-map` (→ `/map`), `appeals-guide` (→ `/appeal`), `support-guide` (→ `/support`), `discord-rules` (→ `/rules`), `applications` (→ `/apply`), `sitemap` (replace per item 5 above).
+- Low-value stubs unless you want to write real copy: `polls`, `suggestions`, `clans`, `hall-of-fame`, `media-team`, `glossary`, `network-history`, `bug-bounty`, `brand-guidelines`, `credits`.
+
+**Keep** (thin today, but genuinely needed): about, guides, how-to-join, roadmap, press-kit, anti-cheat, seasons, staff-handbook, pvp-guide, economy-guide, building-guide, community-standards, safety, achievements.
+
+Deletions would unpublish the `site_pages` rows and remove the sidebar links, leaving redirects where a URL was previously public — no hard 404s.
+
+## 5. Proposed order once approved
+
+1. Branded 404 + delete/redirect the filler set.
+2. Polish pass on `/how-to-join`, `/status`, `/leaderboard` (hierarchy, server IP, loading/empty/error states, mobile).
+3. Player-profile-by-IGN linking from the leaderboard.
+4. `/search` results page.
+5. Seasons + generated sitemap.
+
+Store stays untouched throughout.
