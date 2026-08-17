@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
-import SEO from "@/components/site/SEO";
+import { SEO } from "@/components/site/SEO";
 import { PageHero, GlassCard } from "@/components/site/ui-kit";
 
 const GROUPS: { title: string; links: { to: string; label: string }[] }[] = [

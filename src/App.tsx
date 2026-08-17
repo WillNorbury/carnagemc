@@ -60,7 +60,7 @@ import Status from "./pages/Status.tsx";
 import StatusIncident from "./pages/StatusIncident.tsx";
 import StatusUnsubscribe from "./pages/StatusUnsubscribe.tsx";
 import Live from "./pages/Live.tsx";
-import ServersStatus from "./pages/ServersStatus.tsx";
+import SiteIndex from "./pages/SiteIndex.tsx";
 import BanAppeals from "./pages/BanAppeals.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
 import Subscribe from "./pages/Subscribe.tsx";
