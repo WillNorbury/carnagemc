@@ -1,4 +1,7 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/auth";
@@ -22,20 +25,39 @@ const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
   const { count: cartCount, openCart } = useCart();
   const nav = useNavigate();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const pill = cn(
+    "fixed z-40 flex items-center rounded-full border transition-all duration-200",
+    scrolled
+      ? "border-border bg-background/90 backdrop-blur-xl shadow-elegant"
+      : "border-border/50 bg-background/60 backdrop-blur-md",
+  );
 
   return (
     <>
       {/* Floating brand / sidebar toggle (top-left) */}
       <div
-        className="fixed z-40 flex items-center gap-2 rounded-full border border-border/50 bg-background/70 px-2 py-1.5 backdrop-blur-xl shadow-elegant"
+        className={cn(pill, "gap-2 px-2 py-1.5")}
         style={{
           top: "max(0.75rem, env(safe-area-inset-top))",
           left: "max(0.75rem, env(safe-area-inset-left))",
         }}
       >
         <SidebarTrigger />
-        <Link to="/" className="flex items-center gap-2 group min-w-0 pr-1">
-          <img src={logo} alt="CarnageMC" className="h-6 w-6 shrink-0 transition-transform group-hover:scale-110" />
+        <Link
+          to="/"
+          className="flex items-center gap-2 group min-w-0 pr-1"
+          aria-label="CarnageMC home"
+        >
+          <img src={logo} alt="" aria-hidden className="h-6 w-6 shrink-0 transition-transform duration-200 group-hover:scale-105" />
           <span className="font-display font-bold text-sm tracking-wider truncate hidden sm:inline">
             CARNAGE<span className="text-gradient">MC</span>
           </span>
@@ -44,7 +66,7 @@ const Navbar = () => {
 
       {/* Floating right-hand menu */}
       <div
-        className="fixed z-40 flex items-center gap-1 rounded-full border border-border/50 bg-background/70 px-1.5 py-1.5 backdrop-blur-xl shadow-elegant"
+        className={cn(pill, "gap-0.5 px-1.5 py-1.5")}
         style={{
           top: "max(0.75rem, env(safe-area-inset-top))",
           right: "max(0.75rem, env(safe-area-inset-right))",
@@ -54,6 +76,7 @@ const Navbar = () => {
         <GlobalSearch />
         <NotificationsBell />
         <ThemeToggle />
+
         <Button
           variant="ghost"
           size="icon"

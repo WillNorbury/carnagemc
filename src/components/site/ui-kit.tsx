@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+
 import { Button, type ButtonProps } from "@/components/ui/button";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -93,13 +93,13 @@ export const GlassCard = forwardRef<
   <div
     ref={ref}
     className={cn(
-      "relative rounded-2xl border border-border/60 bg-card/60 backdrop-blur-xl",
-      "shadow-[0_8px_40px_-12px_hsl(var(--background))]",
+      "relative rounded-lg border border-border bg-card/90 backdrop-blur-md",
+      "shadow-[0_12px_32px_-20px_hsl(0_0%_0%/0.9)]",
       "before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px",
-      "before:bg-gradient-to-r before:from-transparent before:via-primary/40 before:to-transparent",
+      "before:bg-gradient-to-r before:from-transparent before:via-primary/30 before:to-transparent",
       interactive &&
-        "transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_20px_50px_-18px_hsl(var(--primary)/0.55)]",
-      glow && "shadow-[0_0_40px_-14px_hsl(var(--primary)/0.5)]",
+        "transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-[0_16px_36px_-20px_hsl(var(--primary)/0.5)]",
+      glow && "shadow-[0_0_32px_-16px_hsl(var(--primary)/0.45)]",
       className,
     )}
     {...props}
@@ -107,6 +107,7 @@ export const GlassCard = forwardRef<
     {children}
   </div>
 ));
+
 GlassCard.displayName = "GlassCard";
 
 /* ------------------------------------------------------------------ */
@@ -130,24 +131,26 @@ export const SectionHeader = ({
 }) => (
   <header
     className={cn(
-      "max-w-2xl mb-10",
+      "max-w-2xl mb-8 md:mb-10",
       align === "center" ? "mx-auto text-center" : "text-left",
       className,
     )}
   >
     {eyebrow && (
-      <Badge variant="secondary" className="mb-4 text-primary border-primary/40">
+      <div className={cn("eyebrow mb-3 flex items-center gap-2 text-primary", align === "center" && "justify-center")}>
+        <span aria-hidden className="h-px w-6 bg-primary/60" />
         {eyebrow}
-      </Badge>
+      </div>
     )}
-    <h2 className="font-display text-3xl md:text-5xl font-black tracking-tight">
+    <h2 className="font-display text-2xl md:text-4xl font-black tracking-tight">
       {title} {highlight && <span className="text-gradient">{highlight}</span>}
     </h2>
     {description && (
-      <p className="text-muted-foreground md:text-lg mt-4 leading-relaxed">{description}</p>
+      <p className="text-muted-foreground md:text-lg mt-3 leading-relaxed">{description}</p>
     )}
   </header>
 );
+
 
 /* ------------------------------------------------------------------ */
 /* StatTile                                                            */
@@ -197,40 +200,42 @@ export const PageHero = ({
   children?: ReactNode;
   className?: string;
 }) => (
-  <section className={cn("relative overflow-hidden pt-28 pb-16", className)}>
+  <section className={cn("relative overflow-hidden border-b border-border/70 pt-24 pb-12 md:pt-28 md:pb-16", className)}>
     {banner ? (
       <>
         <img
           src={banner}
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover opacity-30"
+          className="absolute inset-0 h-full w-full object-cover opacity-25"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/85 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/75 via-background/90 to-background" />
       </>
     ) : (
-      <div className="absolute inset-0 bg-grid opacity-[0.08]" />
+      <div className="absolute inset-0 bg-grid opacity-[0.06]" />
     )}
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute -top-32 left-1/2 h-72 w-[42rem] -translate-x-1/2 rounded-full bg-primary/20 blur-[120px]"
+      className="pointer-events-none absolute -top-40 left-1/2 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]"
     />
     <div className="container relative">
       <Reveal className="max-w-3xl">
         {eyebrow && (
-          <Badge variant="secondary" className="mb-4 text-primary border-primary/40">
+          <div className="eyebrow mb-3 flex items-center gap-2 text-primary">
+            <span aria-hidden className="h-px w-6 bg-primary/60" />
             {eyebrow}
-          </Badge>
+          </div>
         )}
-        <h1 className="font-display text-4xl md:text-6xl font-black tracking-tight mb-4">
+        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-3">
           {title} {highlight && <span className="text-gradient">{highlight}</span>}
         </h1>
         {description && (
           <p className="text-muted-foreground md:text-lg max-w-2xl leading-relaxed">{description}</p>
         )}
-        {children && <div className="mt-8">{children}</div>}
+        {children && <div className="mt-7">{children}</div>}
       </Reveal>
     </div>
+
   </section>
 );
 

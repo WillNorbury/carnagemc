@@ -397,43 +397,41 @@ const Index = () => {
 
       {/* Hero */}
       {content.hero?.enabled !== false && (
-        <section className="relative min-h-[92vh] flex items-center overflow-hidden pt-16">
+        <section className="relative flex items-center overflow-hidden pt-24 pb-10 md:min-h-[620px]">
           <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
-          <div className="absolute inset-0 bg-grid opacity-[0.15]" />
+          <div className="absolute inset-0 bg-grid opacity-[0.1]" />
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background to-transparent" />
-          <Particles count={40} />
+          <Particles count={28} />
           {/* glowing orbs */}
-          <div className="absolute -top-20 -left-20 h-96 w-96 rounded-full bg-primary/20 blur-[120px] animate-float" />
-          <div
-            className="absolute -bottom-20 -right-20 h-96 w-96 rounded-full bg-accent/20 blur-[120px] animate-float"
-            style={{ animationDelay: "2s" }}
-          />
+          <div className="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-primary/10 blur-[130px]" />
+          <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-primary/10 blur-[130px]" />
 
-          <div className="container relative z-10 text-center py-20">
+          <div className="container relative z-10 py-14 text-center">
             <Badge
               variant="secondary"
-              className="mb-6 text-primary border-primary/40 px-4 py-1.5 text-xs uppercase tracking-[0.2em] backdrop-blur-md"
+              className="mb-5 border-primary/40 px-4 py-1.5 text-[11px] uppercase tracking-[0.24em] text-primary"
             >
-              <span className="h-2 w-2 rounded-full bg-primary animate-pulse mr-2" />
+              <span className="mr-2 h-1.5 w-1.5 rounded-full bg-primary" />
               Season 3 — Now Live
             </Badge>
-            <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-[1.05]">
-              <span className="text-gradient text-glow">CarnageMC</span>
-              <span className="block text-lg md:text-2xl lg:text-3xl font-semibold text-muted-foreground mt-4 tracking-normal">
+            <h1 className="font-display mb-5 text-4xl font-black leading-[1.05] sm:text-5xl md:text-7xl">
+              <span className="text-gradient">CarnageMC</span>
+              <span className="mt-4 block text-base font-semibold tracking-normal text-muted-foreground sm:text-lg md:text-2xl">
                 Minecraft Lifesteal &amp; Economy Server
               </span>
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
+            <p className="mx-auto mb-8 max-w-2xl text-base text-muted-foreground md:text-lg">
               {heroSub} Forge alliances. Steal hearts. Build legacies.
             </p>
-            <div className="flex flex-wrap justify-center gap-3 mb-12">
+            <div className="mb-10 flex flex-wrap justify-center gap-3">
               <Button
                 size="lg"
                 onClick={copyIp}
-                className="glow font-display uppercase tracking-wider px-7 animate-pulse-glow"
+                className="font-display uppercase tracking-wider px-7"
               >
                 <Server className="h-4 w-4 mr-2" /> Join Server
               </Button>
+
               <Button
                 size="lg"
                 variant="outline"
@@ -490,7 +488,7 @@ const Index = () => {
         }>;
         if (stats.length === 0) return null;
         return (
-          <section className="relative py-20 border-y border-primary/10">
+          <section className="relative border-y border-border py-14">
             <div className="absolute inset-0 bg-grid opacity-[0.07]" />
             <div
               className={`container relative grid grid-cols-2 gap-6 ${stats.length >= 4 ? "md:grid-cols-4" : stats.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"}`}
@@ -516,7 +514,7 @@ const Index = () => {
 
 
 
-      <main className="container space-y-28 py-24">
+      <main className="container space-y-20 py-20 md:space-y-24">
         {/* Trailer + world screenshots */}
         <Showcase />
 

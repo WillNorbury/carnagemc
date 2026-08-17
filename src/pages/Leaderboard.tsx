@@ -119,6 +119,8 @@ const Leaderboard = () => {
   const [rows, setRows] = useState<Row[]>([]);
   const [statRows, setStatRows] = useState<StatRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
 
   useEffect(() => {
@@ -130,9 +132,10 @@ const Leaderboard = () => {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    setLoadError(false);
     if (isStreak) {
       (async () => {
-        const { data } = await supabase.rpc("get_streak_leaderboard", { _metric: tab, _limit: 50 });
+        const { data, error } = await supabase.rpc("get_streak_leaderboard", { _metric: tab, _limit: 50 });
         const raw = (data as any[]) ?? [];
         const list: Row[] = raw.map((r) => ({
           user_id: r.user_id,
@@ -148,11 +151,11 @@ const Leaderboard = () => {
             avatar_url: r.avatar_url,
           },
         }));
-        if (!cancelled) { setRows(list); setStatRows([]); setLoading(false); }
+        if (!cancelled) { setLoadError(!!error); setRows(list); setStatRows([]); setLoading(false); }
       })();
     } else {
       (async () => {
-        const { data } = await (supabase as any).rpc("get_stats_leaderboard", { _metric: tab, _limit: 50 });
+        const { data, error } = await (supabase as any).rpc("get_stats_leaderboard", { _metric: tab, _limit: 50 });
         const list: StatRow[] = ((data as any[]) ?? []).map((r) => ({
           player_name: r.player_name,
           kills: r.kills,
@@ -164,11 +167,12 @@ const Leaderboard = () => {
           mob_kills: r.mob_kills,
           kdr: Number(r.kdr) || 0,
         }));
-        if (!cancelled) { setStatRows(list); setRows([]); setLoading(false); }
+        if (!cancelled) { setLoadError(!!error); setStatRows(list); setRows([]); setLoading(false); }
       })();
     }
     return () => { cancelled = true; };
-  }, [tab]);
+  }, [tab, reloadKey]);
+
 
   const allTabs = [...TABS, ...STAT_TABS];
   const order = [1, 0, 2];
@@ -199,32 +203,34 @@ const Leaderboard = () => {
         />
 
         <div className="container pb-24 max-w-4xl">
-          <div
-            role="tablist"
-            aria-label="Leaderboard metric"
-            className="flex flex-wrap gap-2 justify-center mb-6"
-          >
-            {allTabs.map((t) => {
-              const Icon = t.icon;
-              const active = tab === t.key;
-              return (
-                <Button
-                  key={t.key}
-                  role="tab"
-                  aria-selected={active}
-                  size="sm"
-                  variant={active ? "premium" : "glass"}
-                  onClick={() => setTab(t.key)}
-                  className="rounded-full"
-                >
-                  <Icon className="h-3 w-3 mr-1" />
-                  {t.label}
-                </Button>
-              );
-            })}
+          <div className="-mx-4 mb-5 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+            <div
+              role="tablist"
+              aria-label="Leaderboard metric"
+              className="flex w-max min-w-full flex-nowrap gap-2 sm:w-full sm:flex-wrap sm:justify-center"
+            >
+              {allTabs.map((t) => {
+                const Icon = t.icon;
+                const active = tab === t.key;
+                return (
+                  <Button
+                    key={t.key}
+                    role="tab"
+                    aria-selected={active}
+                    size="sm"
+                    variant={active ? "default" : "outline"}
+                    onClick={() => setTab(t.key)}
+                    className="shrink-0 rounded-full"
+                  >
+                    <Icon className="h-3 w-3 mr-1" />
+                    {t.label}
+                  </Button>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="relative mx-auto mb-10 max-w-sm">
+          <div className="relative mx-auto mb-8 max-w-sm">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
             <Input
               type="search"
@@ -239,12 +245,20 @@ const Leaderboard = () => {
 
           {loading ? (
             <div className="space-y-3">
-              <Skeleton className="h-48 rounded-2xl" />
+              <Skeleton className="h-44 rounded-lg" />
               {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-16 rounded-xl" />
+                <Skeleton key={i} className="h-16 rounded-lg" />
               ))}
             </div>
+          ) : loadError ? (
+            <GlassCard className="p-10 text-center">
+              <p className="text-muted-foreground">Couldn't load the leaderboard right now.</p>
+              <Button variant="outline" className="mt-4" onClick={() => setReloadKey((k) => k + 1)}>
+                Try again
+              </Button>
+            </GlassCard>
           ) : isStreakMode ? (
+
             fRows.length === 0 ? (
               <GlassCard className="p-12 text-center">
                 <p className="text-muted-foreground">
@@ -254,7 +268,7 @@ const Leaderboard = () => {
               </GlassCard>
             ) : (
               <div className="space-y-10">
-                <div className="grid grid-cols-3 gap-3 sm:gap-5 items-end">
+                <div className="grid grid-cols-3 gap-3 sm:gap-5 items-end pt-14">
                   {order.map((idx) => {
                     const r = fRows[idx];
                     if (!r) return <div key={idx} />;
@@ -323,7 +337,7 @@ const Leaderboard = () => {
             </GlassCard>
           ) : (
             <div className="space-y-10">
-              <div className="grid grid-cols-3 gap-3 sm:gap-5 items-end">
+              <div className="grid grid-cols-3 gap-3 sm:gap-5 items-end pt-14">
                 {order.map((idx) => {
                   const r = fStatRows[idx];
                   if (!r) return <div key={idx} />;
