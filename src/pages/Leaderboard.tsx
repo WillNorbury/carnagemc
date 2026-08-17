@@ -5,11 +5,13 @@ import Footer from "@/components/site/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  Flame, Trophy, Vote as VoteIcon, LogIn, Crown,
+  Flame, Trophy, Vote as VoteIcon, LogIn, Crown, Search,
   Swords, Skull, Crosshair, Clock, Coins, Bug, Target,
 } from "lucide-react";
+
 import { GlassCard, PageHero, Reveal, AnimatedCounter } from "@/components/site/ui-kit";
 import { cn } from "@/lib/utils";
 
