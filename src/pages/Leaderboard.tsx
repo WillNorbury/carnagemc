@@ -314,7 +314,12 @@ const Leaderboard = () => {
             )
           ) : fStatRows.length === 0 ? (
             <GlassCard className="p-12 text-center">
-              <p className="text-muted-foreground">No gameplay stats yet. Stats appear once the server bridge starts reporting.</p>
+              <p className="text-muted-foreground">
+                {needle
+                  ? `No players matching “${query.trim()}”.`
+                  : "No gameplay stats yet. Stats appear once the server bridge starts reporting."}
+              </p>
+
             </GlassCard>
           ) : (
             <div className="space-y-10">
