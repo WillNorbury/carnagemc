@@ -161,9 +161,9 @@ const PluginDetail = () => {
     if (!key) return;
     (async () => {
       setLoading(true);
-      let { data } = await supabase.from("plugins").select("*").eq("published", true).eq("slug", key).maybeSingle();
+      let { data } = await supabase.from("plugins").select("id, short_id, slug, name, description, long_description, version, author, download_url, icon_url, category, platform, platforms, mc_versions, tags, featured, created_at, updated_at, jar_filename, jar_size, screenshots, website_url, source_url, issues_url, discord_url").eq("published", true).eq("slug", key).maybeSingle();
       if (!data) {
-        const fb = await supabase.from("plugins").select("*").eq("published", true).eq("short_id", key).maybeSingle();
+        const fb = await supabase.from("plugins").select("id, short_id, slug, name, description, long_description, version, author, download_url, icon_url, category, platform, platforms, mc_versions, tags, featured, created_at, updated_at, jar_filename, jar_size, screenshots, website_url, source_url, issues_url, discord_url").eq("published", true).eq("short_id", key).maybeSingle();
         data = fb.data;
       }
       if (!data) setNotFound(true);

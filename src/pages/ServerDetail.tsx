@@ -54,7 +54,7 @@ export default function ServerDetail() {
       setLoading(true);
       const { data } = await supabase
         .from("user_servers")
-        .select("*")
+        .select("id, name, slug, ip, port, description, long_description, version, tags, icon_url, banner_url, website_url, discord_url, featured, created_at, updated_at")
         .eq("slug", slug!)
         .eq("published", true)
         .maybeSingle();
