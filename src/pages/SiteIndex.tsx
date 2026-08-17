@@ -117,7 +117,7 @@ const SiteIndex = () => (
     <SEO
       title="Site Index — Every CarnageMC Page"
       description="A complete index of every page on the CarnageMC website: play guides, leaderboards, store, support, and account pages."
-      canonical="/sitemap"
+      path="/sitemap"
     />
     <Navbar />
     <main className="flex-1">
