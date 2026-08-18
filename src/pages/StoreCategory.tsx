@@ -155,8 +155,8 @@ export default function StoreCategory() {
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAdd(it); }}
         className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono tracking-widest uppercase border transition ${
           added
-            ? "bg-emerald-500 border-emerald-500 text-white"
-            : "border-[#ff5722] text-[#ff5722] hover:bg-[#ff5722] hover:text-white"
+            ? "bg-emerald-500 border-emerald-500 text-primary-foreground"
+            : "border-primary text-primary hover:bg-primary hover:text-primary-foreground"
         }`}
       >
         {added ? <><Check className="w-3 h-3" /> Added</> : <><Plus className="w-3 h-3" /> Add</>}
@@ -167,7 +167,7 @@ export default function StoreCategory() {
   const Icon = iconFor(cat?.icon);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white">
+    <div className="min-h-screen bg-background text-primary-foreground">
       <Helmet>
         <title>{cat ? `${cat.name} — Store` : "Category — Store"}</title>
         <meta
@@ -180,24 +180,24 @@ export default function StoreCategory() {
       <main className="container mx-auto px-4 md:px-6 py-10 max-w-6xl">
         <Link
           to="/store"
-          className="inline-flex items-center gap-2 text-xs font-mono tracking-widest uppercase text-[#9ca3af] hover:text-[#ff5722] transition"
+          className="inline-flex items-center gap-2 text-xs font-mono tracking-widest uppercase text-muted-foreground hover:text-primary transition"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back to store
         </Link>
 
         {loading ? (
-          <p className="text-[#9ca3af] mt-10">Loading…</p>
+          <p className="text-muted-foreground mt-10">Loading…</p>
         ) : notFound ? (
           <div className="mt-10">
             <h1 className="text-3xl font-bold font-['Space_Grotesk']">Category not found</h1>
-            <p className="text-[#9ca3af] mt-2">
+            <p className="text-muted-foreground mt-2">
               We couldn't find a store category with that name.
             </p>
           </div>
         ) : (
           <>
             <header className="mt-6 mb-10">
-              <div className="flex items-center gap-3 text-[#ff5722]">
+              <div className="flex items-center gap-3 text-primary">
                 <Icon className="w-5 h-5" strokeWidth={1.5} />
                 <span className="text-xs font-mono uppercase tracking-[0.3em]">Category</span>
               </div>
@@ -205,17 +205,17 @@ export default function StoreCategory() {
                 {cat!.name}
               </h1>
               {cat!.description && (
-                <p className="text-[#9ca3af] mt-3 max-w-2xl">{cat!.description}</p>
+                <p className="text-muted-foreground mt-3 max-w-2xl">{cat!.description}</p>
               )}
             </header>
 
             {featured.length === 0 && pageItems.length === 0 ? (
-              <p className="text-[#9ca3af]">No items in this category yet.</p>
+              <p className="text-muted-foreground">No items in this category yet.</p>
             ) : (
               <div className="space-y-10">
                 {featured.length > 0 && (
                   <section>
-                    <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em] mb-4">
+                    <h2 className="text-sm font-mono text-primary uppercase tracking-[0.3em] mb-4">
                       Featured
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -223,7 +223,7 @@ export default function StoreCategory() {
                         <Link
                           key={it.id}
                           to={`/store/package/${it.id}`}
-                          className="relative bg-[#1a1a24] border border-white/5 hover:border-[#ff5722]/40 transition p-6 min-h-[200px] flex flex-col justify-between overflow-hidden group"
+                          className="relative bg-muted border border-white/5 hover:border-primary/40 transition p-6 min-h-[200px] flex flex-col justify-between overflow-hidden group"
                         >
                           {it.image_url && (
                             <img
@@ -234,11 +234,11 @@ export default function StoreCategory() {
                             />
                           )}
                           <div className="relative z-10">
-                            <h3 className="text-2xl font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                            <h3 className="text-2xl font-bold font-['Space_Grotesk'] group-hover:text-primary transition-colors">
                               {it.name}
                             </h3>
                             {it.description && (
-                              <p className="text-[#9ca3af] text-sm mt-2 line-clamp-2">{it.description}</p>
+                              <p className="text-muted-foreground text-sm mt-2 line-clamp-2">{it.description}</p>
                             )}
                           </div>
                           <div className="relative z-10 flex items-center justify-between mt-4 gap-3">
@@ -256,7 +256,7 @@ export default function StoreCategory() {
                 {pageItems.length > 0 && (
                   <section>
                     {featured.length > 0 && (
-                      <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em] mb-4">
+                      <h2 className="text-sm font-mono text-primary uppercase tracking-[0.3em] mb-4">
                         All items
                       </h2>
                     )}
@@ -265,21 +265,21 @@ export default function StoreCategory() {
                         <Link
                           key={it.id}
                           to={`/store/package/${it.id}`}
-                          className="p-6 bg-[#1a1a24] border border-white/5 hover:border-[#ff5722]/30 transition group flex flex-col justify-between"
+                          className="p-6 bg-muted border border-white/5 hover:border-primary/30 transition group flex flex-col justify-between"
                         >
                           <div>
                             <div className="flex items-start justify-between gap-2">
-                              <h4 className="font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                              <h4 className="font-bold font-['Space_Grotesk'] group-hover:text-primary transition-colors">
                                 {it.name}
                               </h4>
                               {it.badge && (
-                                <span className="text-[9px] font-mono tracking-widest uppercase bg-[#ff5722]/10 text-[#ff5722] px-1.5 py-0.5 border border-[#ff5722]/30">
+                                <span className="text-[9px] font-mono tracking-widest uppercase bg-primary/10 text-primary px-1.5 py-0.5 border border-primary/30">
                                   {it.badge}
                                 </span>
                               )}
                             </div>
                             {it.description && (
-                              <p className="text-sm text-[#9ca3af] mt-1 line-clamp-2">{it.description}</p>
+                              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{it.description}</p>
                             )}
                           </div>
                           <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5 gap-3">
@@ -300,17 +300,17 @@ export default function StoreCategory() {
                         <button
                           onClick={() => goToPage(page - 1)}
                           disabled={page <= 1}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono tracking-widest uppercase border border-white/10 text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-white/10 disabled:hover:text-[#9ca3af]"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono tracking-widest uppercase border border-white/10 text-muted-foreground hover:border-primary hover:text-primary transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-white/10 disabled:hover:text-muted-foreground"
                         >
                           <ChevronLeft className="w-3 h-3" /> Prev
                         </button>
-                        <span className="text-xs font-mono tracking-widest uppercase text-[#9ca3af]">
+                        <span className="text-xs font-mono tracking-widest uppercase text-muted-foreground">
                           Page {page} of {totalPages}
                         </span>
                         <button
                           onClick={() => goToPage(page + 1)}
                           disabled={page >= totalPages}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono tracking-widest uppercase border border-white/10 text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-white/10 disabled:hover:text-[#9ca3af]"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono tracking-widest uppercase border border-white/10 text-muted-foreground hover:border-primary hover:text-primary transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-white/10 disabled:hover:text-muted-foreground"
                         >
                           Next <ChevronRight className="w-3 h-3" />
                         </button>

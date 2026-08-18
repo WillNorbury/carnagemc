@@ -28,15 +28,15 @@ export default function StickyCartBar() {
       role="region"
       aria-label="Cart summary"
     >
-      <div className="flex items-center gap-3 bg-[#12121a] border border-[#ff5722]/40 shadow-2xl shadow-black/50 px-4 py-3">
+      <div className="flex items-center gap-3 bg-card border border-primary/40 shadow-2xl shadow-black/50 px-4 py-3">
         <div className="relative">
-          <ShoppingCart className="w-5 h-5 text-[#ff5722]" strokeWidth={1.75} />
-          <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 grid place-items-center bg-[#ff5722] text-white text-[10px] font-bold leading-none">
+          <ShoppingCart className="w-5 h-5 text-primary" strokeWidth={1.75} />
+          <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 grid place-items-center bg-primary text-primary-foreground text-[10px] font-bold leading-none">
             {cart.count > 99 ? "99+" : cart.count}
           </span>
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-[10px] font-mono uppercase tracking-widest text-[#9ca3af]">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
             {cart.count} item{cart.count === 1 ? "" : "s"} in cart
           </div>
           <div className="text-sm font-bold font-['Space_Grotesk'] truncate">
@@ -46,14 +46,14 @@ export default function StickyCartBar() {
         <button
           type="button"
           onClick={() => cart.openCart()}
-          className="px-3 py-2 text-[10px] font-mono uppercase tracking-widest border border-white/10 text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition"
+          className="px-3 py-2 text-[10px] font-mono uppercase tracking-widest border border-white/10 text-muted-foreground hover:border-primary hover:text-primary transition"
         >
           View
         </button>
         <button
           type="button"
           onClick={() => nav("/checkout")}
-          className="inline-flex items-center gap-1.5 px-4 py-2 text-[10px] font-mono uppercase tracking-widest bg-[#ff5722] text-white hover:bg-[#ff5722]/90 transition"
+          className="inline-flex items-center gap-1.5 px-4 py-2 text-[10px] font-mono uppercase tracking-widest bg-primary text-primary-foreground hover:bg-primary/90 transition"
         >
           Checkout <ArrowRight className="w-3 h-3" />
         </button>

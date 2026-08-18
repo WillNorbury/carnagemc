@@ -151,7 +151,7 @@ export default function StorePackage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Helmet>
         <title>{item ? `${item.name} — Store` : "Store"} | CarnageMC</title>
         <meta
@@ -168,20 +168,20 @@ export default function StorePackage() {
         <div className="max-w-5xl w-full mx-auto px-4 md:px-8 py-8 md:py-12 space-y-8">
           <Link
             to="/store"
-            className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#9ca3af] hover:text-[#ff5722] transition"
+            className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-muted-foreground hover:text-primary transition"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back to store
           </Link>
 
           {loading ? (
-            <p className="text-[#9ca3af]">Loading…</p>
+            <p className="text-muted-foreground">Loading…</p>
           ) : notFound || !item ? (
-            <div className="border border-white/10 bg-[#12121a] p-10 text-center space-y-3">
+            <div className="border border-white/10 bg-card p-10 text-center space-y-3">
               <h1 className="text-3xl font-bold font-['Space_Grotesk']">Package not found</h1>
-              <p className="text-[#9ca3af]">This package is unavailable or unpublished.</p>
+              <p className="text-muted-foreground">This package is unavailable or unpublished.</p>
               <Link
                 to="/store"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#ff5722] text-white text-xs font-mono uppercase tracking-widest hover:bg-[#ff5722]/90 transition"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-xs font-mono uppercase tracking-widest hover:bg-primary/90 transition"
               >
                 Browse the store
               </Link>
@@ -191,7 +191,7 @@ export default function StorePackage() {
               <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
                 {/* Image */}
                 <div className="md:col-span-2">
-                  <div className="relative aspect-square bg-[#1a1a24] border border-white/5 overflow-hidden">
+                  <div className="relative aspect-square bg-muted border border-white/5 overflow-hidden">
                     {item.image_url ? (
                       <img
                         src={item.image_url}
@@ -200,11 +200,11 @@ export default function StorePackage() {
                       />
                     ) : (
                       <div className="absolute inset-0 grid place-items-center">
-                        <Package className="w-16 h-16 text-[#ff5722]/40" strokeWidth={1.25} />
+                        <Package className="w-16 h-16 text-primary/40" strokeWidth={1.25} />
                       </div>
                     )}
                     {item.badge && (
-                      <span className="absolute top-3 left-3 bg-[#ff5722] text-white text-[10px] font-bold px-2 py-1 tracking-widest uppercase">
+                      <span className="absolute top-3 left-3 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-1 tracking-widest uppercase">
                         {item.badge}
                       </span>
                     )}
@@ -216,7 +216,7 @@ export default function StorePackage() {
                   {cat && (
                     <Link
                       to={`/store?cat=${cat.slug}`}
-                      className="text-[10px] font-mono uppercase tracking-widest text-[#ff5722] hover:underline"
+                      className="text-[10px] font-mono uppercase tracking-widest text-primary hover:underline"
                     >
                       {cat.name}
                     </Link>
@@ -240,7 +240,7 @@ export default function StorePackage() {
                         type="button"
                         aria-label="Decrease quantity"
                         onClick={() => setQty((q) => Math.max(1, q - 1))}
-                        className="w-9 h-10 grid place-items-center text-[#9ca3af] hover:text-[#ff5722] hover:bg-white/5"
+                        className="w-9 h-10 grid place-items-center text-muted-foreground hover:text-primary hover:bg-white/5"
                       >
                         −
                       </button>
@@ -249,7 +249,7 @@ export default function StorePackage() {
                         type="button"
                         aria-label="Increase quantity"
                         onClick={() => setQty((q) => Math.min(99, q + 1))}
-                        className="w-9 h-10 grid place-items-center text-[#9ca3af] hover:text-[#ff5722] hover:bg-white/5"
+                        className="w-9 h-10 grid place-items-center text-muted-foreground hover:text-primary hover:bg-white/5"
                       >
                         +
                       </button>
@@ -260,7 +260,7 @@ export default function StorePackage() {
                       className={`inline-flex items-center gap-2 px-6 py-3 text-xs font-mono tracking-widest uppercase border transition ${
                         justAdded
                           ? "bg-emerald-500/20 border-emerald-400/60 text-emerald-300"
-                          : "bg-[#ff5722] border-[#ff5722] text-white hover:bg-[#ff5722]/90"
+                          : "bg-primary border-primary text-primary-foreground hover:bg-primary/90"
                       }`}
                     >
                       {justAdded ? (
@@ -280,7 +280,7 @@ export default function StorePackage() {
                         handleAdd();
                         cart.openCart();
                       }}
-                      className="inline-flex items-center gap-2 px-6 py-3 text-xs font-mono tracking-widest uppercase border border-white/10 hover:border-[#ff5722] hover:text-[#ff5722] transition"
+                      className="inline-flex items-center gap-2 px-6 py-3 text-xs font-mono tracking-widest uppercase border border-white/10 hover:border-primary hover:text-primary transition"
                     >
                       Buy now
                     </button>
@@ -311,7 +311,7 @@ export default function StorePackage() {
                           toast.error("Couldn't copy link");
                         }
                       }}
-                      className="inline-flex items-center gap-2 px-4 h-[46px] text-xs font-mono tracking-widest uppercase border border-white/10 hover:border-[#ff5722] hover:text-[#ff5722] transition"
+                      className="inline-flex items-center gap-2 px-4 h-[46px] text-xs font-mono tracking-widest uppercase border border-white/10 hover:border-primary hover:text-primary transition"
                       aria-label="Share package"
                     >
                       <Share2 className="w-3.5 h-3.5" /> Share
@@ -327,7 +327,7 @@ export default function StorePackage() {
               {/* Related */}
               {related.length > 0 && (
                 <section className="pt-10 border-t border-white/5">
-                  <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em] mb-6">
+                  <h2 className="text-sm font-mono text-primary uppercase tracking-[0.3em] mb-6">
                     More in {cat?.name ?? "this category"}
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -335,14 +335,14 @@ export default function StorePackage() {
                       <Link
                         key={r.id}
                         to={`/store/package/${r.id}`}
-                        className="p-5 bg-[#1a1a24] border border-white/5 hover:border-[#ff5722]/40 transition group flex flex-col justify-between"
+                        className="p-5 bg-muted border border-white/5 hover:border-primary/40 transition group flex flex-col justify-between"
                       >
                         <div>
-                          <h3 className="font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                          <h3 className="font-bold font-['Space_Grotesk'] group-hover:text-primary transition-colors">
                             {r.name}
                           </h3>
                           {r.description && (
-                            <p className="text-sm text-[#9ca3af] mt-1 line-clamp-2">
+                            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                               {r.description}
                             </p>
                           )}
@@ -359,7 +359,7 @@ export default function StorePackage() {
               {/* You might also like — cross-category popular */}
               {alsoLike.length > 0 && (
                 <section className="pt-10 border-t border-white/5">
-                  <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em] mb-6">
+                  <h2 className="text-sm font-mono text-primary uppercase tracking-[0.3em] mb-6">
                     You might also like
                   </h2>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -367,9 +367,9 @@ export default function StorePackage() {
                       <Link
                         key={r.id}
                         to={`/store/package/${r.id}`}
-                        className="group block bg-[#0a0a0f] border border-white/5 hover:border-[#ff5722]/40 transition overflow-hidden"
+                        className="group block bg-background border border-white/5 hover:border-primary/40 transition overflow-hidden"
                       >
-                        <div className="aspect-square bg-[#1a1a24] relative overflow-hidden">
+                        <div className="aspect-square bg-muted relative overflow-hidden">
                           {r.image_url ? (
                             <img
                               src={r.image_url}
@@ -378,16 +378,16 @@ export default function StorePackage() {
                               className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[#ff5722]/30">
+                            <div className="w-full h-full flex items-center justify-center text-primary/30">
                               <Package className="w-8 h-8" strokeWidth={1.5} />
                             </div>
                           )}
                         </div>
                         <div className="p-2.5">
-                          <div className="text-xs font-semibold truncate group-hover:text-[#ff5722] transition">
+                          <div className="text-xs font-semibold truncate group-hover:text-primary transition">
                             {r.name}
                           </div>
-                          <div className="text-[10px] font-mono text-[#9ca3af] mt-0.5">
+                          <div className="text-[10px] font-mono text-muted-foreground mt-0.5">
                             {formatPrice(r.price, r.currency)}
                           </div>
                         </div>

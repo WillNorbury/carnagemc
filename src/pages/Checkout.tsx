@@ -178,7 +178,7 @@ export default function Checkout() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Helmet>
         <title>Checkout — CarnageMC Store</title>
         <meta name="description" content="Review your cart, apply a coupon, and complete checkout." />
@@ -192,33 +192,33 @@ export default function Checkout() {
         <div className="max-w-5xl w-full mx-auto px-4 md:px-8 py-8 md:py-12 space-y-6">
           <Link
             to="/store"
-            className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#9ca3af] hover:text-[#ff5722] transition"
+            className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-muted-foreground hover:text-primary transition"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Continue shopping
           </Link>
 
           <div className="flex items-end justify-between gap-4 border-b border-white/5 pb-6">
             <div className="space-y-1">
-              <span className="text-[#ff5722] font-mono text-xs tracking-widest uppercase">
+              <span className="text-primary font-mono text-xs tracking-widest uppercase">
                 Marketplace
               </span>
               <h1 className="text-5xl md:text-6xl font-bold font-['Space_Grotesk'] tracking-tighter italic">
                 CHECKOUT
               </h1>
             </div>
-            <div className="text-xs font-mono text-[#9ca3af] tracking-widest hidden sm:block">
+            <div className="text-xs font-mono text-muted-foreground tracking-widest hidden sm:block">
               {cart.count} {cart.count === 1 ? "ITEM" : "ITEMS"}
             </div>
           </div>
 
           {cart.items.length === 0 ? (
-            <div className="border border-white/10 bg-[#12121a] p-10 text-center space-y-3">
-              <ShoppingCart className="w-8 h-8 mx-auto text-[#ff5722]" />
+            <div className="border border-white/10 bg-card p-10 text-center space-y-3">
+              <ShoppingCart className="w-8 h-8 mx-auto text-primary" />
               <h2 className="text-2xl font-bold font-['Space_Grotesk']">Your cart is empty</h2>
-              <p className="text-[#9ca3af]">Browse the store and add a package to check out.</p>
+              <p className="text-muted-foreground">Browse the store and add a package to check out.</p>
               <Link
                 to="/store"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#ff5722] text-white text-xs font-mono uppercase tracking-widest hover:bg-[#ff5722]/90 transition"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-xs font-mono uppercase tracking-widest hover:bg-primary/90 transition"
               >
                 Go to store
               </Link>
@@ -226,16 +226,16 @@ export default function Checkout() {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Items */}
-              <section className="lg:col-span-2 bg-[#12121a] border border-white/10">
+              <section className="lg:col-span-2 bg-card border border-white/10">
                 <div className="flex items-center gap-3 px-5 py-4 border-b border-white/5">
-                  <ShoppingCart className="w-4 h-4 text-[#ff5722]" />
-                  <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
+                  <ShoppingCart className="w-4 h-4 text-primary" />
+                  <h2 className="text-sm font-mono text-primary uppercase tracking-[0.3em]">
                     Order items
                   </h2>
                   <div className="flex-1 h-px bg-white/5" />
                   <button
                     onClick={cart.clear}
-                    className="text-[10px] font-mono uppercase tracking-widest text-[#9ca3af] hover:text-[#ff5722] transition inline-flex items-center gap-1"
+                    className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground hover:text-primary transition inline-flex items-center gap-1"
                   >
                     <Trash2 className="w-3 h-3" /> Clear
                   </button>
@@ -248,7 +248,7 @@ export default function Checkout() {
                       <div className="flex items-center gap-4">
                       <Link
                         to={`/store/package/${ci.id}`}
-                        className="w-14 h-14 shrink-0 bg-[#1a1a24] border border-white/5 overflow-hidden flex items-center justify-center"
+                        className="w-14 h-14 shrink-0 bg-muted border border-white/5 overflow-hidden flex items-center justify-center"
                       >
                         {ci.image_url ? (
                           <img
@@ -258,17 +258,17 @@ export default function Checkout() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <Package className="w-5 h-5 text-[#ff5722]" />
+                          <Package className="w-5 h-5 text-primary" />
                         )}
                       </Link>
                       <div className="flex-1 min-w-0">
                         <Link
                           to={`/store/package/${ci.id}`}
-                          className="font-bold font-['Space_Grotesk'] truncate hover:text-[#ff5722] transition"
+                          className="font-bold font-['Space_Grotesk'] truncate hover:text-primary transition"
                         >
                           {ci.name}
                         </Link>
-                        <div className="text-xs text-[#9ca3af] font-mono">
+                        <div className="text-xs text-muted-foreground font-mono">
                           {formatMoney(Number(ci.price) || 0, (ci.currency || "USD").toUpperCase())} each
                         </div>
                       </div>
@@ -277,7 +277,7 @@ export default function Checkout() {
                           type="button"
                           aria-label={`Decrease ${ci.name}`}
                           onClick={() => cart.setQty(ci.id, ci.quantity - 1)}
-                          className="w-8 h-8 grid place-items-center text-[#9ca3af] hover:text-[#ff5722] hover:bg-white/5"
+                          className="w-8 h-8 grid place-items-center text-muted-foreground hover:text-primary hover:bg-white/5"
                         >
                           <Minus className="w-3.5 h-3.5" />
                         </button>
@@ -288,7 +288,7 @@ export default function Checkout() {
                           type="button"
                           aria-label={`Increase ${ci.name}`}
                           onClick={() => cart.setQty(ci.id, ci.quantity + 1)}
-                          className="w-8 h-8 grid place-items-center text-[#9ca3af] hover:text-[#ff5722] hover:bg-white/5"
+                          className="w-8 h-8 grid place-items-center text-muted-foreground hover:text-primary hover:bg-white/5"
                         >
                           <Plus className="w-3.5 h-3.5" />
                         </button>
@@ -303,7 +303,7 @@ export default function Checkout() {
                         type="button"
                         aria-label={`Remove ${ci.name}`}
                         onClick={() => cart.remove(ci.id)}
-                        className="text-[#9ca3af] hover:text-[#ff5722] transition"
+                        className="text-muted-foreground hover:text-primary transition"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -311,8 +311,8 @@ export default function Checkout() {
                       {giftEligible && (
                         <div className="space-y-2 pl-[72px]">
                           <div className="flex items-center gap-2 text-xs">
-                            <Gift className="w-3.5 h-3.5 text-[#ff5722] shrink-0" />
-                            <span className="text-[10px] font-mono uppercase tracking-widest text-[#9ca3af]">
+                            <Gift className="w-3.5 h-3.5 text-primary shrink-0" />
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
                               Gift to
                             </span>
                             <input
@@ -321,7 +321,7 @@ export default function Checkout() {
                               onChange={(e) => cart.setRecipient(ci.id, e.target.value)}
                               placeholder="Minecraft username (optional)"
                               maxLength={32}
-                              className="flex-1 max-w-xs px-2 py-1 bg-[#1a1a24] border border-white/10 focus:border-[#ff5722] focus:outline-none text-xs font-mono text-slate-100 placeholder:text-[#5f6472]"
+                              className="flex-1 max-w-xs px-2 py-1 bg-muted border border-white/10 focus:border-primary focus:outline-none text-xs font-mono text-foreground placeholder:text-muted-foreground"
                             />
                           </div>
                           {ci.recipient && (
@@ -331,7 +331,7 @@ export default function Checkout() {
                               placeholder="Optional gift message (max 200 chars)"
                               maxLength={200}
                               rows={2}
-                              className="w-full px-2 py-1 bg-[#1a1a24] border border-white/10 focus:border-[#ff5722] focus:outline-none text-xs text-slate-100 placeholder:text-[#5f6472] resize-none"
+                              className="w-full px-2 py-1 bg-muted border border-white/10 focus:border-primary focus:outline-none text-xs text-foreground placeholder:text-muted-foreground resize-none"
                             />
                           )}
                         </div>
@@ -344,9 +344,9 @@ export default function Checkout() {
               </section>
 
               {/* Summary */}
-              <aside className="bg-[#12121a] border border-white/10 h-fit lg:sticky lg:top-24">
+              <aside className="bg-card border border-white/10 h-fit lg:sticky lg:top-24">
                 <div className="px-5 py-4 border-b border-white/5">
-                  <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
+                  <h2 className="text-sm font-mono text-primary uppercase tracking-[0.3em]">
                     Summary
                   </h2>
                 </div>
@@ -356,13 +356,13 @@ export default function Checkout() {
                   <div className="space-y-2">
 
                     {cart.coupon ? (
-                      <div className="flex items-center justify-between gap-2 p-2 border border-[#ff5722]/50 bg-[#ff5722]/5">
+                      <div className="flex items-center justify-between gap-2 p-2 border border-primary/50 bg-primary/5">
                         <div className="flex items-center gap-2 text-sm min-w-0">
-                          <BadgePercent className="h-4 w-4 text-[#ff5722] shrink-0" />
+                          <BadgePercent className="h-4 w-4 text-primary shrink-0" />
                           <span className="font-mono font-semibold truncate">
                             {cart.coupon.code}
                           </span>
-                          <span className="text-xs text-[#9ca3af] font-mono truncate">
+                          <span className="text-xs text-muted-foreground font-mono truncate">
                             {cart.coupon.discount_type === "percent"
                               ? `${cart.coupon.discount_value}% off`
                               : `${formatMoney(cart.coupon.discount_value, cart.currency)} off`}
@@ -371,7 +371,7 @@ export default function Checkout() {
                         <button
                           type="button"
                           onClick={cart.clearCoupon}
-                          className="text-[#9ca3af] hover:text-[#ff5722]"
+                          className="text-muted-foreground hover:text-primary"
                           aria-label="Remove coupon"
                         >
                           <X className="h-4 w-4" />
@@ -380,7 +380,7 @@ export default function Checkout() {
                     ) : (
                       <div className="flex gap-2">
                         <div className="relative flex-1">
-                          <Tag className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#5f6472]" />
+                          <Tag className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                           <input
                             type="text"
                             value={couponInput}
@@ -389,14 +389,14 @@ export default function Checkout() {
                               if (e.key === "Enter") applyCoupon();
                             }}
                             placeholder="COUPON CODE"
-                            className="w-full pl-7 pr-2 py-2 bg-[#1a1a24] border border-white/10 focus:border-[#ff5722] focus:outline-none text-xs font-mono uppercase tracking-widest text-slate-100 placeholder:text-[#5f6472]"
+                            className="w-full pl-7 pr-2 py-2 bg-muted border border-white/10 focus:border-primary focus:outline-none text-xs font-mono uppercase tracking-widest text-foreground placeholder:text-muted-foreground"
                           />
                         </div>
                         <button
                           type="button"
                           onClick={applyCoupon}
                           disabled={cart.applyingCoupon || !couponInput.trim()}
-                          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition disabled:opacity-50"
+                          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-muted-foreground hover:border-primary hover:text-primary transition disabled:opacity-50"
                         >
                           {cart.applyingCoupon ? "…" : "Apply"}
                         </button>
@@ -412,7 +412,7 @@ export default function Checkout() {
                       </div>
                     )}
                     {cart.coupon && cart.discount === 0 && cart.subtotal < cart.coupon.min_subtotal && (
-                      <p className="text-xs text-[#9ca3af] font-mono">
+                      <p className="text-xs text-muted-foreground font-mono">
                         Add {formatMoney(cart.coupon.min_subtotal - cart.subtotal, cart.currency)}{" "}
                         more to unlock this discount.
                       </p>
@@ -428,14 +428,14 @@ export default function Checkout() {
                           <span className="font-mono font-semibold truncate">
                             {cart.creatorCode.code}
                           </span>
-                          <span className="text-xs text-[#9ca3af] font-mono truncate">
+                          <span className="text-xs text-muted-foreground font-mono truncate">
                             {cart.creatorCode.discount_percent}% off · supporting {cart.creatorCode.creator_name}
                           </span>
                         </div>
                         <button
                           type="button"
                           onClick={cart.clearCreatorCode}
-                          className="text-[#9ca3af] hover:text-fuchsia-300"
+                          className="text-muted-foreground hover:text-fuchsia-300"
                           aria-label="Remove creator code"
                         >
                           <X className="h-4 w-4" />
@@ -444,7 +444,7 @@ export default function Checkout() {
                     ) : (
                       <div className="flex gap-2">
                         <div className="relative flex-1">
-                          <Sparkles className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#5f6472]" />
+                          <Sparkles className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                           <input
                             type="text"
                             value={creatorInput}
@@ -453,14 +453,14 @@ export default function Checkout() {
                               if (e.key === "Enter") applyCreator();
                             }}
                             placeholder="CREATOR CODE"
-                            className="w-full pl-7 pr-2 py-2 bg-[#1a1a24] border border-white/10 focus:border-fuchsia-400 focus:outline-none text-xs font-mono uppercase tracking-widest text-slate-100 placeholder:text-[#5f6472]"
+                            className="w-full pl-7 pr-2 py-2 bg-muted border border-white/10 focus:border-fuchsia-400 focus:outline-none text-xs font-mono uppercase tracking-widest text-foreground placeholder:text-muted-foreground"
                           />
                         </div>
                         <button
                           type="button"
                           onClick={applyCreator}
                           disabled={cart.applyingCreatorCode || !creatorInput.trim()}
-                          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-[#9ca3af] hover:border-fuchsia-400 hover:text-fuchsia-300 transition disabled:opacity-50"
+                          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-muted-foreground hover:border-fuchsia-400 hover:text-fuchsia-300 transition disabled:opacity-50"
                         >
                           {cart.applyingCreatorCode ? "…" : "Apply"}
                         </button>
@@ -480,14 +480,14 @@ export default function Checkout() {
 
                   {/* Totals */}
                   <div className="space-y-1.5 text-sm border-t border-white/5 pt-4">
-                    <div className="flex items-center justify-between text-[#9ca3af]">
+                    <div className="flex items-center justify-between text-muted-foreground">
                       <span className="text-xs font-mono uppercase tracking-widest">Subtotal</span>
                       <span className="tabular-nums font-mono">
                         {formatMoney(cart.subtotal, cart.currency)}
                       </span>
                     </div>
                     {cart.discount > 0 && (
-                      <div className="flex items-center justify-between text-[#ff5722]">
+                      <div className="flex items-center justify-between text-primary">
                         <span className="text-xs font-mono uppercase tracking-widest">
                           Discount
                         </span>
@@ -507,7 +507,7 @@ export default function Checkout() {
                       </div>
                     )}
                     {cart.bundleDiscount > 0 && (
-                      <div className="flex items-center justify-between text-[#ff5722]">
+                      <div className="flex items-center justify-between text-primary">
                         <span className="text-xs font-mono uppercase tracking-widest">
                           Bundle {cart.bundlePercent}%
                         </span>
@@ -517,13 +517,13 @@ export default function Checkout() {
                       </div>
                     )}
                     {cart.nextBundle && (
-                      <p className="text-[11px] text-[#9ca3af] font-mono">
+                      <p className="text-[11px] text-muted-foreground font-mono">
                         + {cart.nextBundle.minItems - cart.count} more item
                         {cart.nextBundle.minItems - cart.count === 1 ? "" : "s"} → {cart.nextBundle.percent}% bundle discount
                       </p>
                     )}
                     <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                      <span className="text-xs font-mono uppercase tracking-widest text-[#9ca3af]">
+                      <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
                         Total
                       </span>
                       <span className="text-2xl font-bold font-['Space_Grotesk'] tabular-nums">
@@ -536,13 +536,13 @@ export default function Checkout() {
                     type="button"
                     onClick={checkout}
                     disabled={submitting}
-                    className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff5722] hover:bg-[#ff5722]/90 disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-mono tracking-widest uppercase transition"
+                    className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed text-primary-foreground text-xs font-mono tracking-widest uppercase transition"
                   >
                     {submitting ? "Sending…" : "Complete checkout"}
                     <ShoppingCart className="w-3.5 h-3.5" />
                   </button>
                   {!user && (
-                    <p className="text-[11px] text-[#9ca3af] font-mono text-center">
+                    <p className="text-[11px] text-muted-foreground font-mono text-center">
                       You'll be asked to sign in to complete your order.
                     </p>
                   )}

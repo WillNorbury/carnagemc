@@ -46,7 +46,7 @@ export default function MeOrders() {
   if (!authLoading && !user) return <Navigate to="/auth" replace />;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Helmet>
         <title>My Orders — CarnageMC</title>
         <meta name="description" content="View your CarnageMC store order history and fulfillment status." />
@@ -57,34 +57,34 @@ export default function MeOrders() {
         <div className="max-w-5xl w-full mx-auto px-4 md:px-8 py-8 md:py-12 space-y-6">
           <div className="flex items-end justify-between gap-4 border-b border-white/5 pb-6">
             <div>
-              <div className="text-[10px] font-mono tracking-widest uppercase text-[#ff5722] mb-2">
+              <div className="text-[10px] font-mono tracking-widest uppercase text-primary mb-2">
                 Account · Orders
               </div>
               <h1 className="font-['Space_Grotesk'] text-3xl md:text-4xl font-bold tracking-tight">
                 Order history
               </h1>
-              <p className="text-sm text-[#9ca3af] mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 Every purchase is tracked as a support ticket so staff can reach you with fulfillment updates.
               </p>
             </div>
             <Link
               to="/store"
-              className="hidden md:inline-flex items-center gap-2 px-4 py-2 border border-white/10 text-xs font-mono uppercase tracking-widest text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition"
+              className="hidden md:inline-flex items-center gap-2 px-4 py-2 border border-white/10 text-xs font-mono uppercase tracking-widest text-muted-foreground hover:border-primary hover:text-primary transition"
             >
               Back to store
             </Link>
           </div>
 
           {loading ? (
-            <div className="text-sm text-[#9ca3af] font-mono">Loading orders…</div>
+            <div className="text-sm text-muted-foreground font-mono">Loading orders…</div>
           ) : orders.length === 0 ? (
-            <div className="border border-white/10 bg-[#12121a] p-10 text-center space-y-3">
-              <Package className="w-8 h-8 mx-auto text-[#5f6472]" strokeWidth={1.5} />
+            <div className="border border-white/10 bg-card p-10 text-center space-y-3">
+              <Package className="w-8 h-8 mx-auto text-muted-foreground" strokeWidth={1.5} />
               <div className="font-['Space_Grotesk'] text-xl">No orders yet</div>
-              <p className="text-sm text-[#9ca3af]">When you place an order it will show up here.</p>
+              <p className="text-sm text-muted-foreground">When you place an order it will show up here.</p>
               <Link
                 to="/store"
-                className="inline-flex items-center gap-2 mt-3 px-4 py-2 border border-[#ff5722]/60 text-[#ff5722] hover:bg-[#ff5722] hover:text-white text-xs font-mono uppercase tracking-widest transition"
+                className="inline-flex items-center gap-2 mt-3 px-4 py-2 border border-primary/60 text-primary hover:bg-primary hover:text-primary-foreground text-xs font-mono uppercase tracking-widest transition"
               >
                 Browse the store <ArrowRight className="w-3.5 h-3.5" />
               </Link>
@@ -102,24 +102,24 @@ export default function MeOrders() {
                   <Link
                     key={o.id}
                     to={`/tickets?ticket=${o.id}`}
-                    className="block bg-[#12121a] border border-white/10 hover:border-[#ff5722]/50 transition p-5 group"
+                    className="block bg-card border border-white/10 hover:border-primary/50 transition p-5 group"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[10px] font-mono tracking-widest uppercase text-[#5f6472]">
+                          <span className="text-[10px] font-mono tracking-widest uppercase text-muted-foreground">
                             #{o.id.slice(0, 8)}
                           </span>
-                          <span className="text-[10px] font-mono text-[#5f6472]">·</span>
-                          <span className="text-[10px] font-mono text-[#9ca3af]">
+                          <span className="text-[10px] font-mono text-muted-foreground">·</span>
+                          <span className="text-[10px] font-mono text-muted-foreground">
                             {new Date(o.created_at).toLocaleString()}
                           </span>
                         </div>
-                        <div className="font-['Space_Grotesk'] text-lg font-semibold text-slate-100 truncate">
+                        <div className="font-['Space_Grotesk'] text-lg font-semibold text-foreground truncate">
                           {o.subject}
                         </div>
                         {firstLines.length > 0 && (
-                          <ul className="mt-2 space-y-0.5 text-xs text-[#9ca3af] font-mono">
+                          <ul className="mt-2 space-y-0.5 text-xs text-muted-foreground font-mono">
                             {firstLines.map((l, i) => (
                               <li key={i} className="truncate">{l}</li>
                             ))}
@@ -133,7 +133,7 @@ export default function MeOrders() {
                           <Icon className={`w-3 h-3 ${o.status === "in_progress" ? "animate-spin" : ""}`} />
                           {meta.label}
                         </span>
-                        <span className="text-[10px] font-mono text-[#5f6472] group-hover:text-[#ff5722] transition inline-flex items-center gap-1">
+                        <span className="text-[10px] font-mono text-muted-foreground group-hover:text-primary transition inline-flex items-center gap-1">
                           View <ArrowRight className="w-3 h-3" />
                         </span>
                       </div>
