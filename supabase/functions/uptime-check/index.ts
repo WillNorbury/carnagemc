@@ -26,7 +26,7 @@ const SERVICE_ENDPOINTS: Record<string, string> = {
   website: "https://carnagemc.lovable.app",
   minecraft: "",
   api: "",
-  panel: "https://panel.voxelnode.dev",
+  panel: "https://dash.nightly.host",
   discord: "https://discord.gg/V8xYY2DasZ",
   portfolio: "https://portfolio.carnagemc.net",
 };
@@ -298,7 +298,7 @@ Deno.serve(async (req) => {
     checkHttp("website", siteUrl, true, {}, false),
     checkMinecraft("minecraft", mcHost),
     checkHttp("api", apiHealth, false),
-    checkHttp("panel", "https://panel.voxelnode.dev"),
+    checkHttp("panel", "https://dash.nightly.host"),
     checkHttp("discord", "https://discord.gg/V8xYY2DasZ"),
     checkHttp("portfolio", "https://portfolio.carnagemc.net"),
   ]);
