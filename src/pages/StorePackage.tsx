@@ -151,7 +151,12 @@ export default function StorePackage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="relative min-h-screen flex flex-col bg-background text-foreground">
+      <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
+        <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
+        <div className="absolute inset-0 bg-grid opacity-[0.35]" />
+        <div className="absolute inset-x-0 top-0 h-72 opacity-[0.12]" style={{ background: "var(--gradient-fire)" }} />
+      </div>
       <Helmet>
         <title>{item ? `${item.name} — Store` : "Store"} | CarnageMC</title>
         <meta
