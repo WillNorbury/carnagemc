@@ -48,8 +48,8 @@ function StarRow({
             style={{ width: size, height: size }}
             className={
               n <= active
-                ? "fill-[#ff5722] text-[#ff5722]"
-                : "text-white/20"
+                ? "fill-primary text-primary"
+                : "text-primary-foreground/20"
             }
             strokeWidth={1.5}
           />
@@ -157,14 +157,14 @@ export function StorePackageReviews({ itemId }: { itemId: string }) {
     <section className="pt-10 border-t border-white/5">
       <div className="flex items-end justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em] mb-2">
+          <h2 className="text-sm font-mono text-primary uppercase tracking-[0.3em] mb-2">
             Reviews
           </h2>
           <div className="flex items-center gap-3">
             <StarRow value={Math.round(avg)} size={18} />
             <div className="font-['Space_Grotesk'] text-lg">
               {count > 0 ? avg.toFixed(1) : "—"}
-              <span className="text-xs text-[#9ca3af] font-mono ml-2">
+              <span className="text-xs text-muted-foreground font-mono ml-2">
                 ({count} review{count === 1 ? "" : "s"})
               </span>
             </div>
@@ -173,11 +173,11 @@ export function StorePackageReviews({ itemId }: { itemId: string }) {
       </div>
 
       {/* Write/edit form */}
-      <div className="border border-white/10 bg-[#12121a] p-5 space-y-3 mb-6">
+      <div className="border border-white/10 bg-card p-5 space-y-3 mb-6">
         {user ? (
           <>
             <div className="flex items-center gap-3">
-              <span className="text-xs font-mono text-[#9ca3af] uppercase tracking-widest">
+              <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
                 Your rating:
               </span>
               <StarRow value={rating} onChange={setRating} interactive size={22} />
@@ -187,10 +187,10 @@ export function StorePackageReviews({ itemId }: { itemId: string }) {
               onChange={(e) => setBody(e.target.value.slice(0, 1000))}
               rows={3}
               placeholder="Share your experience with this package (optional)…"
-              className="w-full bg-[#0a0a0f] border border-white/10 focus:border-[#ff5722] outline-none text-sm p-3 text-slate-100 placeholder:text-[#5f6472]"
+              className="w-full bg-background border border-white/10 focus:border-primary outline-none text-sm p-3 text-foreground placeholder:text-muted-foreground"
             />
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono text-[#5f6472]">
+              <span className="text-[10px] font-mono text-muted-foreground">
                 {body.length}/1000
               </span>
               <div className="flex items-center gap-2">
@@ -198,7 +198,7 @@ export function StorePackageReviews({ itemId }: { itemId: string }) {
                   <button
                     type="button"
                     onClick={remove}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 border border-white/10 text-[10px] font-mono uppercase tracking-widest text-[#9ca3af] hover:border-red-500/40 hover:text-red-300 transition"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 border border-white/10 text-[10px] font-mono uppercase tracking-widest text-muted-foreground hover:border-red-500/40 hover:text-red-300 transition"
                   >
                     <Trash2 className="w-3 h-3" /> Delete
                   </button>
@@ -207,7 +207,7 @@ export function StorePackageReviews({ itemId }: { itemId: string }) {
                   type="button"
                   onClick={submit}
                   disabled={submitting || rating < 1}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#ff5722] text-white text-[10px] font-mono uppercase tracking-widest hover:bg-[#ff5722]/90 disabled:opacity-50 transition"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-[10px] font-mono uppercase tracking-widest hover:bg-primary/90 disabled:opacity-50 transition"
                 >
                   {submitting && <Loader2 className="w-3 h-3 animate-spin" />}
                   {myReview ? "Update review" : "Post review"}
@@ -216,8 +216,8 @@ export function StorePackageReviews({ itemId }: { itemId: string }) {
             </div>
           </>
         ) : (
-          <p className="text-sm text-[#9ca3af]">
-            <Link to="/auth" className="text-[#ff5722] hover:underline">
+          <p className="text-sm text-muted-foreground">
+            <Link to="/auth" className="text-primary hover:underline">
               Sign in
             </Link>{" "}
             to leave a review.
@@ -227,9 +227,9 @@ export function StorePackageReviews({ itemId }: { itemId: string }) {
 
       {/* List */}
       {loading ? (
-        <p className="text-sm text-[#9ca3af] font-mono">Loading reviews…</p>
+        <p className="text-sm text-muted-foreground font-mono">Loading reviews…</p>
       ) : reviews.length === 0 ? (
-        <p className="text-sm text-[#9ca3af]">No reviews yet — be the first!</p>
+        <p className="text-sm text-muted-foreground">No reviews yet — be the first!</p>
       ) : (
         <ul className="space-y-3">
           {reviews.map((r) => {
@@ -242,9 +242,9 @@ export function StorePackageReviews({ itemId }: { itemId: string }) {
             return (
               <li
                 key={r.id}
-                className="border border-white/5 bg-[#12121a] p-4 flex gap-3"
+                className="border border-white/5 bg-card p-4 flex gap-3"
               >
-                <div className="w-9 h-9 rounded-full bg-[#1a1a24] border border-white/10 overflow-hidden shrink-0">
+                <div className="w-9 h-9 rounded-full bg-muted border border-white/10 overflow-hidden shrink-0">
                   {avatarUrl && (
                     <img
                       src={avatarUrl}
@@ -259,7 +259,7 @@ export function StorePackageReviews({ itemId }: { itemId: string }) {
                       {name}
                     </span>
                     <StarRow value={r.rating} size={12} />
-                    <span className="text-[10px] font-mono text-[#5f6472]">
+                    <span className="text-[10px] font-mono text-muted-foreground">
                       {new Date(r.created_at).toLocaleDateString()}
                     </span>
                   </div>

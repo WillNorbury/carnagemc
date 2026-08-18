@@ -57,21 +57,21 @@ export default function SaleBanner() {
   };
 
   return (
-    <div className="relative overflow-hidden border border-[#ff5722]/40 bg-gradient-to-r from-[#ff5722]/10 via-[#ff5722]/5 to-transparent">
-      <div className="absolute inset-y-0 left-0 w-1 bg-[#ff5722]" />
+    <div className="relative overflow-hidden border border-primary/40 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent">
+      <div className="absolute inset-y-0 left-0 w-1 bg-primary" />
       <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6 px-5 py-4 md:pl-6">
         <div className="flex items-center gap-3">
-          <div className="inline-flex items-center justify-center w-10 h-10 bg-[#ff5722]/15 text-[#ff5722]">
+          <div className="inline-flex items-center justify-center w-10 h-10 bg-primary/15 text-primary">
             <Tag className="w-5 h-5" strokeWidth={1.75} />
           </div>
           <div className="min-w-0">
-            <div className="text-[10px] font-mono tracking-widest uppercase text-[#ff5722]">
+            <div className="text-[10px] font-mono tracking-widest uppercase text-primary">
               Active sale
             </div>
-            <div className="font-['Space_Grotesk'] text-xl md:text-2xl font-bold tracking-tight text-slate-100">
+            <div className="font-['Space_Grotesk'] text-xl md:text-2xl font-bold tracking-tight text-foreground">
               {discountLabel}
               {coupon.description && (
-                <span className="ml-2 text-sm font-normal font-['Inter'] text-[#9ca3af]">
+                <span className="ml-2 text-sm font-normal font-['Inter'] text-muted-foreground">
                   {coupon.description}
                 </span>
               )}
@@ -79,19 +79,19 @@ export default function SaleBanner() {
           </div>
         </div>
         <div className="md:ml-auto flex items-center gap-2">
-          <span className="text-[10px] font-mono tracking-widest uppercase text-[#9ca3af]">
+          <span className="text-[10px] font-mono tracking-widest uppercase text-muted-foreground">
             Code
           </span>
           <button
             type="button"
             onClick={copy}
-            className="inline-flex items-center gap-2 px-3 py-2 border border-[#ff5722]/60 text-[#ff5722] hover:bg-[#ff5722] hover:text-white font-mono text-sm tracking-widest uppercase transition"
+            className="inline-flex items-center gap-2 px-3 py-2 border border-primary/60 text-primary hover:bg-primary hover:text-primary-foreground font-mono text-sm tracking-widest uppercase transition"
           >
             {coupon.code}
             {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
           {coupon.expires_at && (
-            <span className="hidden md:inline text-[10px] font-mono text-[#9ca3af]">
+            <span className="hidden md:inline text-[10px] font-mono text-muted-foreground">
               ends {new Date(coupon.expires_at).toLocaleDateString()}
             </span>
           )}

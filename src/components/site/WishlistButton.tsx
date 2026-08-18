@@ -79,7 +79,7 @@ export function WishlistButton({ itemId, className = "", size = "md" }: Props) {
       disabled={loading || !ready}
       aria-label={saved ? "Remove from wishlist" : "Save to wishlist"}
       className={`inline-flex items-center justify-center transition ${
-        saved ? "text-[#ff5722]" : "text-[#9ca3af] hover:text-[#ff5722]"
+        saved ? "text-primary" : "text-muted-foreground hover:text-primary"
       } ${className}`}
     >
       <Heart className={dim} fill={saved ? "currentColor" : "none"} strokeWidth={1.75} />

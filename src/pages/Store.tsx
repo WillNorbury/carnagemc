@@ -319,7 +319,7 @@ export default function Store() {
         className={`${base} font-mono tracking-widest uppercase inline-flex items-center gap-2 border transition ${
           added
             ? "bg-emerald-500/20 border-emerald-400/60 text-emerald-300"
-            : "bg-[#ff5722] border-[#ff5722] text-white hover:bg-[#ff5722]/90"
+            : "bg-primary border-primary text-primary-foreground hover:bg-primary/90"
         }`}
         aria-label={`Add ${it.name} to cart`}
       >
@@ -354,7 +354,7 @@ export default function Store() {
             }
           }}
           placeholder="COUPON CODE"
-          className="bg-[#1a1a24] border border-white/10 focus:border-[#ff5722] focus:outline-none px-3 py-2 text-xs font-mono tracking-widest uppercase text-slate-100 placeholder:text-[#5f6472] w-48"
+          className="bg-muted border border-white/10 focus:border-primary focus:outline-none px-3 py-2 text-xs font-mono tracking-widest uppercase text-foreground placeholder:text-muted-foreground w-48"
         />
         <button
           type="button"
@@ -366,7 +366,7 @@ export default function Store() {
             }
           }}
           disabled={cart.applyingCoupon || !code.trim()}
-          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition disabled:opacity-50"
+          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-muted-foreground hover:border-primary hover:text-primary transition disabled:opacity-50"
         >
           {cart.applyingCoupon ? "…" : "Apply"}
         </button>
@@ -393,13 +393,13 @@ export default function Store() {
             if (e.key === "Enter") apply();
           }}
           placeholder="CREATOR CODE"
-          className="bg-[#1a1a24] border border-white/10 focus:border-fuchsia-400 focus:outline-none px-3 py-2 text-xs font-mono tracking-widest uppercase text-slate-100 placeholder:text-[#5f6472] w-48"
+          className="bg-muted border border-white/10 focus:border-fuchsia-400 focus:outline-none px-3 py-2 text-xs font-mono tracking-widest uppercase text-foreground placeholder:text-muted-foreground w-48"
         />
         <button
           type="button"
           onClick={apply}
           disabled={cart.applyingCreatorCode || !code.trim()}
-          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-[#9ca3af] hover:border-fuchsia-400 hover:text-fuchsia-300 transition disabled:opacity-50"
+          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-muted-foreground hover:border-fuchsia-400 hover:text-fuchsia-300 transition disabled:opacity-50"
         >
           {cart.applyingCreatorCode ? "…" : "Apply"}
         </button>
@@ -408,7 +408,12 @@ export default function Store() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
+    <div className="relative min-h-screen flex flex-col bg-background text-foreground">
+      <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
+        <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
+        <div className="absolute inset-0 bg-grid opacity-[0.35]" />
+        <div className="absolute inset-x-0 top-0 h-72 opacity-[0.12]" style={{ background: "var(--gradient-fire)" }} />
+      </div>
       <Helmet>
         <title>Store — CarnageMC</title>
         <meta
@@ -426,7 +431,7 @@ export default function Store() {
           {/* Header & Search */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
             <div className="space-y-2">
-              <span className="text-[#ff5722] font-mono text-sm tracking-widest uppercase">
+              <span className="text-primary font-mono text-sm tracking-widest uppercase">
                 Marketplace
               </span>
               <h1 className="text-6xl md:text-8xl font-bold font-['Space_Grotesk'] tracking-tighter italic">
@@ -437,27 +442,27 @@ export default function Store() {
               <button
                 type="button"
                 onClick={scrollToCart}
-                className="inline-flex items-center justify-center gap-2 px-4 py-3 border border-[#ff5722]/60 text-[#ff5722] hover:bg-[#ff5722] hover:text-white text-xs font-mono tracking-widest uppercase transition relative"
+                className="inline-flex items-center justify-center gap-2 px-4 py-3 border border-primary/60 text-primary hover:bg-primary hover:text-primary-foreground text-xs font-mono tracking-widest uppercase transition relative"
                 aria-label={`Open cart (${cart.count} items)`}
               >
                 <ShoppingCart className="w-4 h-4" strokeWidth={1.75} />
                 Open Cart
                 {cart.count > 0 && (
-                  <span className="ml-1 min-w-[20px] h-5 px-1.5 grid place-items-center bg-[#ff5722] text-white text-[10px] font-bold leading-none">
+                  <span className="ml-1 min-w-[20px] h-5 px-1.5 grid place-items-center bg-primary text-primary-foreground text-[10px] font-bold leading-none">
                     {cart.count > 99 ? "99+" : cart.count}
                   </span>
                 )}
               </button>
               <div className="relative group max-w-md w-full">
-                <div className="absolute -inset-0.5 bg-[#ff5722] opacity-20 blur-sm group-focus-within:opacity-40 transition pointer-events-none" />
+                <div className="absolute -inset-0.5 bg-primary opacity-20 blur-sm group-focus-within:opacity-40 transition pointer-events-none" />
                 <input
                   type="text"
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                   placeholder="Search the store..."
-                  className="relative w-full bg-[#1a1a24] border border-white/10 px-6 py-4 rounded-none focus:outline-none focus:border-[#ff5722] text-lg font-['Space_Grotesk'] tracking-wide text-slate-100 placeholder:text-[#5f6472]"
+                  className="relative w-full bg-muted border border-white/10 px-6 py-4 rounded-none focus:outline-none focus:border-primary text-lg font-['Space_Grotesk'] tracking-wide text-foreground placeholder:text-muted-foreground"
                 />
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#ff5722] font-mono text-xs opacity-50 hidden sm:block">
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-primary font-mono text-xs opacity-50 hidden sm:block">
                   [/]
                 </div>
               </div>
@@ -474,8 +479,8 @@ export default function Store() {
                 onClick={() => setActiveCat("all")}
                 className={`px-4 py-2 text-xs font-mono tracking-widest uppercase border transition ${
                   activeCat === "all"
-                    ? "bg-[#ff5722] border-[#ff5722] text-white"
-                    : "border-white/10 text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722]"
+                    ? "bg-primary border-primary text-primary-foreground"
+                    : "border-white/10 text-muted-foreground hover:border-primary hover:text-primary"
                 }`}
               >
                 All
@@ -488,8 +493,8 @@ export default function Store() {
                     to={`/store/category/${c.slug}`}
                     className={`px-4 py-2 text-xs font-mono tracking-widest uppercase border transition inline-flex items-center gap-2 ${
                       activeCat === c.id
-                        ? "bg-[#ff5722] border-[#ff5722] text-white"
-                        : "border-white/10 text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722]"
+                        ? "bg-primary border-primary text-primary-foreground"
+                        : "border-white/10 text-muted-foreground hover:border-primary hover:text-primary"
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" strokeWidth={1.5} />
@@ -501,10 +506,10 @@ export default function Store() {
           )}
 
           {popularItems.length > 0 && (
-            <section className="mb-10 border border-white/5 bg-[#12121a] p-5">
+            <section className="mb-10 border border-white/5 bg-card p-5">
               <div className="flex items-center gap-2 mb-4">
-                <Flame className="w-3.5 h-3.5 text-[#ff5722]" strokeWidth={1.5} />
-                <h2 className="text-xs font-mono tracking-widest uppercase text-[#9ca3af]">
+                <Flame className="w-3.5 h-3.5 text-primary" strokeWidth={1.5} />
+                <h2 className="text-xs font-mono tracking-widest uppercase text-muted-foreground">
                   Popular — most wishlisted
                 </h2>
               </div>
@@ -512,13 +517,13 @@ export default function Store() {
                 {popularItems.map((it, idx) => (
                   <div
                     key={it.id}
-                    className="group relative bg-[#0a0a0f] border border-white/5 hover:border-[#ff5722]/40 transition overflow-hidden"
+                    className="group relative bg-background border border-white/5 hover:border-primary/40 transition overflow-hidden"
                   >
                     <Link to={`/store/package/${it.id}`} className="block">
-                      <span className="absolute top-2 left-2 z-10 bg-[#ff5722] text-white text-[10px] font-bold px-1.5 py-0.5 tracking-widest">
+                      <span className="absolute top-2 left-2 z-10 bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 tracking-widest">
                         #{idx + 1}
                       </span>
-                      <div className="aspect-square bg-[#1a1a24] relative overflow-hidden">
+                      <div className="aspect-square bg-muted relative overflow-hidden">
                         {it.image_url ? (
                           <img
                             src={it.image_url}
@@ -527,16 +532,16 @@ export default function Store() {
                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[#ff5722]/30">
+                          <div className="w-full h-full flex items-center justify-center text-primary/30">
                             <Package className="w-8 h-8" strokeWidth={1.5} />
                           </div>
                         )}
                       </div>
                       <div className="p-2.5">
-                        <div className="text-xs font-semibold truncate group-hover:text-[#ff5722] transition">
+                        <div className="text-xs font-semibold truncate group-hover:text-primary transition">
                           {it.name}
                         </div>
-                        <div className="text-[10px] font-mono text-[#9ca3af] mt-0.5">
+                        <div className="text-[10px] font-mono text-muted-foreground mt-0.5">
                           {formatPrice(it.price, it.currency)}
                         </div>
                       </div>
@@ -553,7 +558,7 @@ export default function Store() {
                       className={`absolute top-2 right-2 z-10 w-7 h-7 grid place-items-center border transition ${
                         justAdded === it.id
                           ? "bg-emerald-500/20 border-emerald-400/60 text-emerald-300"
-                          : "bg-[#0a0a0f]/80 border-white/10 text-[#9ca3af] opacity-0 group-hover:opacity-100 hover:bg-[#ff5722] hover:border-[#ff5722] hover:text-white"
+                          : "bg-background/80 border-white/10 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-primary hover:border-primary hover:text-primary-foreground"
                       }`}
                     >
                       {justAdded === it.id ? (
@@ -571,15 +576,15 @@ export default function Store() {
 
 
           {recentItems.length > 0 && (
-            <section className="mb-10 border border-white/5 bg-[#12121a] p-5">
+            <section className="mb-10 border border-white/5 bg-card p-5">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xs font-mono tracking-widest uppercase text-[#9ca3af]">
+                <h2 className="text-xs font-mono tracking-widest uppercase text-muted-foreground">
                   Recently viewed
                 </h2>
                 <button
                   type="button"
                   onClick={clearRecentlyViewed}
-                  className="text-[10px] font-mono tracking-widest uppercase text-[#9ca3af] hover:text-[#ff5722] transition"
+                  className="text-[10px] font-mono tracking-widest uppercase text-muted-foreground hover:text-primary transition"
                 >
                   Clear
                 </button>
@@ -588,10 +593,10 @@ export default function Store() {
                 {recentItems.map((it) => (
                   <div
                     key={it.id}
-                    className="group relative bg-[#0a0a0f] border border-white/5 hover:border-[#ff5722]/40 transition overflow-hidden"
+                    className="group relative bg-background border border-white/5 hover:border-primary/40 transition overflow-hidden"
                   >
                     <Link to={`/store/package/${it.id}`} className="block">
-                      <div className="aspect-square bg-[#1a1a24] relative overflow-hidden">
+                      <div className="aspect-square bg-muted relative overflow-hidden">
                         {it.image_url ? (
                           <img
                             src={it.image_url}
@@ -600,16 +605,16 @@ export default function Store() {
                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[#ff5722]/30">
+                          <div className="w-full h-full flex items-center justify-center text-primary/30">
                             <Package className="w-8 h-8" strokeWidth={1.5} />
                           </div>
                         )}
                       </div>
                       <div className="p-2.5">
-                        <div className="text-xs font-semibold truncate group-hover:text-[#ff5722] transition">
+                        <div className="text-xs font-semibold truncate group-hover:text-primary transition">
                           {it.name}
                         </div>
-                        <div className="text-[10px] font-mono text-[#9ca3af] mt-0.5">
+                        <div className="text-[10px] font-mono text-muted-foreground mt-0.5">
                           {formatPrice(it.price, it.currency)}
                         </div>
                       </div>
@@ -626,7 +631,7 @@ export default function Store() {
                       className={`absolute top-2 right-2 z-10 w-7 h-7 grid place-items-center border transition ${
                         justAdded === it.id
                           ? "bg-emerald-500/20 border-emerald-400/60 text-emerald-300"
-                          : "bg-[#0a0a0f]/80 border-white/10 text-[#9ca3af] opacity-0 group-hover:opacity-100 hover:bg-[#ff5722] hover:border-[#ff5722] hover:text-white"
+                          : "bg-background/80 border-white/10 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-primary hover:border-primary hover:text-primary-foreground"
                       }`}
                     >
                       {justAdded === it.id ? (
@@ -644,7 +649,7 @@ export default function Store() {
 
 
           {filtered.length === 0 ? (
-            <p className="text-[#9ca3af]">
+            <p className="text-muted-foreground">
               {items.length === 0 ? "The store is empty." : "No items match your search."}
             </p>
           ) : (
@@ -653,9 +658,9 @@ export default function Store() {
               {heroItem && (
                 <ItemLink
                   it={heroItem}
-                  className="md:col-span-8 group relative bg-[#1a1a24] overflow-hidden min-h-[320px] md:min-h-[380px] flex flex-col justify-end p-8 border border-white/5 hover:border-[#ff5722]/40 transition-colors"
+                  className="md:col-span-8 group relative bg-muted overflow-hidden min-h-[320px] md:min-h-[380px] flex flex-col justify-end p-8 border border-white/5 hover:border-primary/40 transition-colors"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-transparent to-transparent z-10" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10" />
                   {heroItem.image_url ? (
                     <img
                       src={heroItem.image_url}
@@ -673,21 +678,21 @@ export default function Store() {
                     />
                   )}
                   <div className="absolute top-0 right-0 p-4 z-20">
-                    <span className="bg-[#ff5722] text-white text-[10px] font-bold px-2 py-1 tracking-widest uppercase">
+                    <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-1 tracking-widest uppercase">
                       {heroItem.badge || catName(heroItem.category_id)}
                     </span>
                   </div>
                   <div className="relative z-20 space-y-4">
-                    <h2 className="text-4xl md:text-5xl font-bold font-['Space_Grotesk'] leading-none group-hover:text-[#ff5722] transition-colors">
+                    <h2 className="text-4xl md:text-5xl font-bold font-['Space_Grotesk'] leading-none group-hover:text-primary transition-colors">
                       {heroItem.name}
                     </h2>
                     {heroItem.description && (
-                      <p className="text-[#9ca3af] max-w-md line-clamp-2">
+                      <p className="text-muted-foreground max-w-md line-clamp-2">
                         {heroItem.description}
                       </p>
                     )}
-                    <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-[#ff5722] uppercase tracking-widest">
-                      <span className="text-2xl md:text-3xl font-bold font-['Space_Grotesk'] not-italic normal-case tracking-normal text-white">
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-primary uppercase tracking-widest">
+                      <span className="text-2xl md:text-3xl font-bold font-['Space_Grotesk'] not-italic normal-case tracking-normal text-primary-foreground">
                         {formatPrice(heroItem.price, heroItem.currency)}
                       </span>
                       <AddToCartButton it={heroItem} size="lg" />
@@ -703,18 +708,18 @@ export default function Store() {
                     <ItemLink
                       key={it.id}
                       it={it}
-                      className={`bg-[#1a1a24] p-6 border-l-4 flex flex-col justify-between min-h-[180px] hover:bg-[#23232f] transition-all group ${
+                      className={`bg-muted p-6 border-l-4 flex flex-col justify-between min-h-[180px] hover:bg-accent transition-all group ${
                         i === 0
-                          ? "border-[#ff5722]"
-                          : "border-white/10 hover:border-[#ff5722]"
+                          ? "border-primary"
+                          : "border-white/10 hover:border-primary"
                       }`}
                     >
                       <div>
-                        <h3 className="text-xl font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                        <h3 className="text-xl font-bold font-['Space_Grotesk'] group-hover:text-primary transition-colors">
                           {it.name}
                         </h3>
                         {it.description && (
-                          <p className="text-[#9ca3af] text-sm mt-2 line-clamp-2">
+                          <p className="text-muted-foreground text-sm mt-2 line-clamp-2">
                             {it.description}
                           </p>
                         )}
@@ -737,10 +742,10 @@ export default function Store() {
                 return (
                   <div key={catId} className="md:col-span-12 mt-4">
                     <div className="flex items-center gap-4 mb-6">
-                      <Icon className="w-4 h-4 text-[#ff5722]" strokeWidth={1.5} />
+                      <Icon className="w-4 h-4 text-primary" strokeWidth={1.5} />
                       <Link
                         to={`/store/category/${cat?.slug ?? ""}`}
-                        className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em] hover:underline"
+                        className="text-sm font-mono text-primary uppercase tracking-[0.3em] hover:underline"
                       >
                         {catName(catId)}
                       </Link>
@@ -751,21 +756,21 @@ export default function Store() {
                         <ItemLink
                           key={it.id}
                           it={it}
-                          className="p-6 bg-[#1a1a24] border border-white/5 hover:border-[#ff5722]/30 transition group flex flex-col justify-between"
+                          className="p-6 bg-muted border border-white/5 hover:border-primary/30 transition group flex flex-col justify-between"
                         >
                           <div>
                             <div className="flex items-start justify-between gap-2">
-                              <h4 className="font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                              <h4 className="font-bold font-['Space_Grotesk'] group-hover:text-primary transition-colors">
                                 {it.name}
                               </h4>
                               {it.badge && (
-                                <span className="text-[9px] font-mono tracking-widest uppercase bg-[#ff5722]/10 text-[#ff5722] px-1.5 py-0.5 border border-[#ff5722]/30">
+                                <span className="text-[9px] font-mono tracking-widest uppercase bg-primary/10 text-primary px-1.5 py-0.5 border border-primary/30">
                                   {it.badge}
                                 </span>
                               )}
                             </div>
                             {it.description && (
-                              <p className="text-sm text-[#9ca3af] mt-1 line-clamp-2">
+                              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                                 {it.description}
                               </p>
                             )}
@@ -793,21 +798,21 @@ export default function Store() {
               <section
                 id="cart"
                 ref={cartRef}
-                className="md:col-span-12 mt-8 scroll-mt-24 bg-[#12121a] border border-white/10"
+                className="md:col-span-12 mt-8 scroll-mt-24 bg-card border border-white/10"
               >
                 <div className="flex items-center gap-4 px-6 py-4 border-b border-white/5">
-                  <ShoppingCart className="w-4 h-4 text-[#ff5722]" strokeWidth={1.75} />
-                  <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
+                  <ShoppingCart className="w-4 h-4 text-primary" strokeWidth={1.75} />
+                  <h2 className="text-sm font-mono text-primary uppercase tracking-[0.3em]">
                     Your Cart
                   </h2>
-                  <span className="text-xs font-mono text-[#9ca3af] tracking-widest">
+                  <span className="text-xs font-mono text-muted-foreground tracking-widest">
                     {cart.count} {cart.count === 1 ? "ITEM" : "ITEMS"}
                   </span>
                   <div className="flex-1 h-px bg-white/5" />
                   {cart.items.length > 0 && (
                     <button
                       onClick={() => cart.clear()}
-                      className="text-[10px] font-mono uppercase tracking-widest text-[#9ca3af] hover:text-[#ff5722] transition inline-flex items-center gap-1"
+                      className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground hover:text-primary transition inline-flex items-center gap-1"
                     >
                       <Trash2 className="w-3 h-3" /> Clear
                     </button>
@@ -815,7 +820,7 @@ export default function Store() {
                 </div>
 
                 {cart.items.length === 0 ? (
-                  <div className="px-6 py-10 text-center text-[#9ca3af] font-mono text-xs tracking-widest uppercase">
+                  <div className="px-6 py-10 text-center text-muted-foreground font-mono text-xs tracking-widest uppercase">
                     Your cart is empty — pick something above.
                   </div>
                 ) : (
@@ -826,7 +831,7 @@ export default function Store() {
                           key={ci.id}
                           className="flex items-center gap-4 px-6 py-4"
                         >
-                          <div className="w-12 h-12 shrink-0 bg-[#1a1a24] border border-white/5 overflow-hidden flex items-center justify-center">
+                          <div className="w-12 h-12 shrink-0 bg-muted border border-white/5 overflow-hidden flex items-center justify-center">
                             {ci.image_url ? (
                               <img
                                 src={ci.image_url}
@@ -835,14 +840,14 @@ export default function Store() {
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <Package className="w-5 h-5 text-[#ff5722]" strokeWidth={1.5} />
+                              <Package className="w-5 h-5 text-primary" strokeWidth={1.5} />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="font-bold font-['Space_Grotesk'] truncate">
                               {ci.name}
                             </div>
-                            <div className="text-xs text-[#9ca3af] font-mono">
+                            <div className="text-xs text-muted-foreground font-mono">
                               {formatPrice(ci.price, ci.currency)} each
                             </div>
                           </div>
@@ -851,7 +856,7 @@ export default function Store() {
                               type="button"
                               aria-label={`Decrease ${ci.name}`}
                               onClick={() => cart.setQty(ci.id, ci.quantity - 1)}
-                              className="w-8 h-8 grid place-items-center text-[#9ca3af] hover:text-[#ff5722] hover:bg-white/5"
+                              className="w-8 h-8 grid place-items-center text-muted-foreground hover:text-primary hover:bg-white/5"
                             >
                               <Minus className="w-3.5 h-3.5" />
                             </button>
@@ -862,7 +867,7 @@ export default function Store() {
                               type="button"
                               aria-label={`Increase ${ci.name}`}
                               onClick={() => cart.setQty(ci.id, ci.quantity + 1)}
-                              className="w-8 h-8 grid place-items-center text-[#9ca3af] hover:text-[#ff5722] hover:bg-white/5"
+                              className="w-8 h-8 grid place-items-center text-muted-foreground hover:text-primary hover:bg-white/5"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -877,23 +882,23 @@ export default function Store() {
                             type="button"
                             aria-label={`Remove ${ci.name}`}
                             onClick={() => cart.remove(ci.id)}
-                            className="text-[#9ca3af] hover:text-[#ff5722] transition"
+                            className="text-muted-foreground hover:text-primary transition"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </li>
                       ))}
                     </ul>
-                    <div className="flex flex-col gap-4 px-6 py-5 border-t border-white/5 bg-[#0f0f16]">
+                    <div className="flex flex-col gap-4 px-6 py-5 border-t border-white/5 bg-card">
                       {/* Coupon row */}
                       <div className="flex flex-col md:flex-row md:items-center gap-3">
                         {cart.coupon ? (
-                          <div className="flex items-center gap-3 border border-[#ff5722]/50 bg-[#ff5722]/5 px-3 py-2">
-                            <span className="text-[10px] font-mono uppercase tracking-widest text-[#ff5722]">
+                          <div className="flex items-center gap-3 border border-primary/50 bg-primary/5 px-3 py-2">
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-primary">
                               Coupon
                             </span>
                             <span className="font-mono font-bold text-sm">{cart.coupon.code}</span>
-                            <span className="text-xs text-[#9ca3af]">
+                            <span className="text-xs text-muted-foreground">
                               {cart.coupon.discount_type === "percent"
                                 ? `${cart.coupon.discount_value}% off`
                                 : `${formatMoney(cart.coupon.discount_value, cart.currency)} off`}
@@ -901,7 +906,7 @@ export default function Store() {
                             <button
                               type="button"
                               onClick={cart.clearCoupon}
-                              className="ml-2 text-[#9ca3af] hover:text-[#ff5722]"
+                              className="ml-2 text-muted-foreground hover:text-primary"
                               aria-label="Remove coupon"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -929,13 +934,13 @@ export default function Store() {
                               Creator
                             </span>
                             <span className="font-mono font-bold text-sm">{cart.creatorCode.code}</span>
-                            <span className="text-xs text-[#9ca3af]">
+                            <span className="text-xs text-muted-foreground">
                               {cart.creatorCode.discount_percent}% off · supporting {cart.creatorCode.creator_name}
                             </span>
                             <button
                               type="button"
                               onClick={cart.clearCreatorCode}
-                              className="ml-2 text-[#9ca3af] hover:text-fuchsia-300"
+                              className="ml-2 text-muted-foreground hover:text-fuchsia-300"
                               aria-label="Remove creator code"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -958,7 +963,7 @@ export default function Store() {
                       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div className="flex flex-col gap-1 text-sm">
                           <div className="flex items-center gap-3">
-                            <span className="text-xs font-mono uppercase tracking-widest text-[#9ca3af] w-24">
+                            <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground w-24">
                               Subtotal
                             </span>
                             <span className="tabular-nums font-mono">
@@ -966,7 +971,7 @@ export default function Store() {
                             </span>
                           </div>
                           {cart.discount > 0 && (
-                            <div className="flex items-center gap-3 text-[#ff5722]">
+                            <div className="flex items-center gap-3 text-primary">
                               <span className="text-xs font-mono uppercase tracking-widest w-24">
                                 Discount
                               </span>
@@ -986,7 +991,7 @@ export default function Store() {
                             </div>
                           )}
                           <div className="flex items-center gap-3">
-                            <span className="text-xs font-mono uppercase tracking-widest text-[#9ca3af] w-24">
+                            <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground w-24">
                               Total
                             </span>
                             <span className="text-2xl font-bold font-['Space_Grotesk'] tabular-nums">
@@ -997,7 +1002,7 @@ export default function Store() {
                         <button
                           type="button"
                           onClick={() => nav("/checkout")}
-                          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff5722] hover:bg-[#ff5722]/90 text-white text-xs font-mono tracking-widest uppercase transition"
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-mono tracking-widest uppercase transition"
                         >
                           Checkout
                           <ShoppingCart className="w-3.5 h-3.5" />
@@ -1014,36 +1019,36 @@ export default function Store() {
                 <div className="flex flex-wrap gap-6 md:gap-8">
                   <Link
                     to="/support"
-                    className="text-xs font-mono text-[#9ca3af] hover:text-[#ff5722] tracking-widest transition"
+                    className="text-xs font-mono text-muted-foreground hover:text-primary tracking-widest transition"
                   >
                     SUPPORT
                   </Link>
                   <Link
                     to="/wiki"
-                    className="text-xs font-mono text-[#9ca3af] hover:text-[#ff5722] tracking-widest transition"
+                    className="text-xs font-mono text-muted-foreground hover:text-primary tracking-widest transition"
                   >
                     WIKI
                   </Link>
                   <Link
                     to="/changelog"
-                    className="text-xs font-mono text-[#9ca3af] hover:text-[#ff5722] tracking-widest transition"
+                    className="text-xs font-mono text-muted-foreground hover:text-primary tracking-widest transition"
                   >
                     CHANGELOG
                   </Link>
                   <a
                     href="#cart"
-                    className="text-xs font-mono text-[#9ca3af] hover:text-[#ff5722] tracking-widest transition"
+                    className="text-xs font-mono text-muted-foreground hover:text-primary tracking-widest transition"
                   >
                     CART ({cart.count})
                   </a>
                   <Link
                     to="/wiki/ranks-carnage"
-                    className="text-xs font-mono text-[#ff5722] hover:text-white tracking-widest transition"
+                    className="text-xs font-mono text-primary hover:text-primary-foreground tracking-widest transition"
                   >
                     RANK PERKS
                   </Link>
                 </div>
-                <div className="text-[10px] text-white/20 font-mono flex items-center gap-2">
+                <div className="text-[10px] text-primary-foreground/20 font-mono flex items-center gap-2">
                   <ShoppingBag className="w-3 h-3" /> CARNAGEMC MARKETPLACE
                 </div>
               </div>

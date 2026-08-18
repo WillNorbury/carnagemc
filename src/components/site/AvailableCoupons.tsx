@@ -56,13 +56,13 @@ export function AvailableCoupons({ variant = "light" }: { variant?: Variant }) {
 
   const isDark = variant === "dark";
   const box = isDark
-    ? "border border-white/10 bg-[#12121a]"
+    ? "border border-white/10 bg-card"
     : "border rounded-md bg-muted/20";
   const chip = isDark
-    ? "border border-white/10 hover:border-[#ff5722] hover:text-[#ff5722] bg-[#1a1a24]"
+    ? "border border-white/10 hover:border-primary hover:text-primary bg-muted"
     : "border rounded-md hover:border-primary hover:text-primary bg-background";
   const label = isDark
-    ? "text-[10px] font-mono uppercase tracking-widest text-[#9ca3af]"
+    ? "text-[10px] font-mono uppercase tracking-widest text-muted-foreground"
     : "text-[10px] font-mono uppercase tracking-widest text-muted-foreground";
 
   return (
