@@ -1608,7 +1608,7 @@ const StatusTab = () => {
             { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
             { key: "minecraft", name: "Minecraft Server", desc: "carnagemc.net", url: "" },
             { key: "api", name: "API & Database", desc: "Backend services", url: "" },
-            { key: "panel", name: "Panel", desc: "panel.voxelnode.dev", url: "" },
+            { key: "panel", name: "Panel", desc: "dash.nightly.host", url: "" },
             { key: "discord", name: "Discord Server", desc: "https://discord.gg/wD6K3nr2MG", url: "" },
           ],
         }));
