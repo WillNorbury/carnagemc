@@ -10,6 +10,7 @@ const logo = logoAsset.url;
 import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download, ShoppingCart, MoreHorizontal } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
 import { ThemeToggle } from "./ThemeToggle";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { NotificationsBell } from "./NotificationsBell";
 import { useCart } from "@/lib/cart";
 import {
