@@ -234,9 +234,17 @@ export default function Contact() {
             </div>
           )}
 
-          <Button onClick={openOwnerMail} className="w-full">
-            <Mail className="h-4 w-4 mr-2" /> Open email to owner
-          </Button>
+          <div className="grid sm:grid-cols-2 gap-2">
+            <Button onClick={openOwnerMail} className="w-full">
+              <Mail className="h-4 w-4 mr-2" /> Open email to owner
+            </Button>
+            <Button onClick={copyOwnerEmail} variant="outline" className="w-full">
+              Copy email instead
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground text-center">
+            If nothing opens, your browser has no mail app linked — use “Copy email instead”.
+          </p>
         </CardContent>
       </Card>
     </main>
