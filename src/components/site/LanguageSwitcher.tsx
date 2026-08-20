@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Check, Globe } from "lucide-react";
+import { Check, Globe, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   DropdownMenu,
