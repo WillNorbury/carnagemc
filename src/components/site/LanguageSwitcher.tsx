@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Check, Globe } from "lucide-react";
+import { Check, Globe, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   DropdownMenu,
@@ -86,6 +87,62 @@ const clearCookie = () => {
   });
 };
 
+const STORAGE_KEY = "cmc-lang";
+const URL_PARAM = "lang";
+
+const readStored = (): string | null => {
+  try {
+    return localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return null;
+  }
+};
+
+const store = (code: string) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, code);
+  } catch {}
+};
+
+const normalize = (raw: string | null | undefined): string | null => {
+  if (!raw) return null;
+  const val = raw.trim();
+  const exact = LANGUAGES.find((l) => l.code.toLowerCase() === val.toLowerCase());
+  if (exact) return exact.code;
+  const base = val.split("-")[0].toLowerCase();
+  if (base === "zh") return val.toLowerCase().includes("tw") || val.toLowerCase().includes("hant") ? "zh-TW" : "zh-CN";
+  const partial = LANGUAGES.find((l) => l.code.split("-")[0].toLowerCase() === base);
+  return partial ? partial.code : null;
+};
+
+const readUrlLang = (): string | null => {
+  try {
+    return normalize(new URLSearchParams(window.location.search).get(URL_PARAM));
+  } catch {
+    return null;
+  }
+};
+
+const detectBrowserLang = (): string | null => {
+  const list = navigator.languages?.length ? navigator.languages : [navigator.language];
+  for (const l of list) {
+    const match = normalize(l);
+    if (match) return match;
+  }
+  return null;
+};
+
+const syncUrl = (code: string, replace = true) => {
+  try {
+    const url = new URL(window.location.href);
+    if (code === "en") url.searchParams.delete(URL_PARAM);
+    else url.searchParams.set(URL_PARAM, code);
+    const next = url.pathname + url.search + url.hash;
+    const currentPath = window.location.pathname + window.location.search + window.location.hash;
+    if (next !== currentPath) window.history[replace ? "replaceState" : "pushState"]({}, "", next);
+  } catch {}
+};
+
 let scriptLoaded = false;
 
 const loadTranslateScript = () => {
@@ -112,26 +169,68 @@ const loadTranslateScript = () => {
   document.body.appendChild(s);
 };
 
+const applyLang = (code: string) => {
+  if (code === "en") clearCookie();
+  else setCookie(code);
+  store(code);
+};
+
 export const LanguageSwitcher = ({ className }: { className?: string }) => {
   const [current, setCurrent] = useState<string>("en");
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
-    const code = readCurrent();
-    setCurrent(code);
-    if (code !== "en") loadTranslateScript();
+    const cookieLang = readCurrent();
+    // Priority: URL param > saved preference > cookie > browser language
+    const desired = readUrlLang() ?? readStored() ?? (cookieLang !== "en" ? cookieLang : null) ?? detectBrowserLang() ?? "en";
+
+    if (desired !== cookieLang) {
+      applyLang(desired);
+      syncUrl(desired);
+      window.location.reload();
+      return;
+    }
+
+    store(desired);
+    setCurrent(desired);
+    syncUrl(desired);
+    document.documentElement.lang = desired;
+    if (desired !== "en") loadTranslateScript();
   }, []);
+
+  // Keep the ?lang= param present across client-side navigation
+  useEffect(() => {
+    if (current === "en") return;
+    const keep = () => syncUrl(current);
+    const id = window.setInterval(keep, 600);
+    window.addEventListener("popstate", keep);
+    return () => {
+      window.clearInterval(id);
+      window.removeEventListener("popstate", keep);
+    };
+  }, [current]);
 
   const active = LANGUAGES.find((l) => l.code === current) ?? LANGUAGES[0];
 
+  const filtered = LANGUAGES.filter((l) => {
+    const q = query.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      l.label.toLowerCase().includes(q) ||
+      l.code.toLowerCase().includes(q) ||
+      l.short.toLowerCase().includes(q)
+    );
+  });
+
   const pick = (code: string) => {
     if (code === current) return;
-    if (code === "en") clearCookie();
-    else setCookie(code);
+    applyLang(code);
+    syncUrl(code);
     window.location.reload();
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={(o) => !o && setQuery("")}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -147,11 +246,30 @@ export const LanguageSwitcher = ({ className }: { className?: string }) => {
           <Globe className="h-3.5 w-3.5 sm:hidden" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 bg-popover z-50 notranslate">
+      <DropdownMenuContent align="end" className="w-60 bg-popover z-50 notranslate">
         <DropdownMenuLabel>Language</DropdownMenuLabel>
+        <div className="px-2 pb-2">
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              autoFocus
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                e.stopPropagation();
+                if (e.key === "Enter" && filtered[0]) pick(filtered[0].code);
+              }}
+              placeholder="Search languages…"
+              className="h-8 pl-7 text-sm"
+            />
+          </div>
+        </div>
         <DropdownMenuSeparator />
         <ScrollArea className="h-72">
-          {LANGUAGES.map((l) => (
+          {filtered.length === 0 && (
+            <div className="px-3 py-6 text-center text-sm text-muted-foreground">No languages found</div>
+          )}
+          {filtered.map((l) => (
             <DropdownMenuItem key={l.code} onSelect={() => pick(l.code)} className="gap-2">
               <span className="text-base leading-none" aria-hidden>
                 {l.flag}
