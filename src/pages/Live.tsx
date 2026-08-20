@@ -8,7 +8,7 @@ import { MessageSquare, Tv } from "lucide-react";
 
 const CHANNELS: { tab: string; login: string; label: string }[] = [
   { tab: "WillNorbury", login: "will_norbury", label: "WillNorbury" },
-  { tab: "ItzVoxel", login: "itzvoxelwastaken", label: "ItzVoxel" },
+  { tab: "ItzVoxel", login: "voxelisadev", label: "ItzVoxel" },
 ];
 
 export default function Live() {
