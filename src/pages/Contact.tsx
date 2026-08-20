@@ -108,13 +108,37 @@ export default function Contact() {
   function openOwnerMail() {
     const href = buildOwnerMailto();
     if (!href) return;
-    window.location.href = href;
+    // Open via a real anchor click so it works inside sandboxed/preview iframes
+    try {
+      const a = document.createElement("a");
+      a.href = href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch {
+      window.location.href = href;
+    }
     logWebsiteEvent({
       kind: "owner_contact",
       title: "Owner mailto opened",
       detail: `Reason: ${ownerForm.reason} — from ${ownerForm.email}`,
       color: 0xf59e0b,
     });
+  }
+
+  async function copyOwnerEmail() {
+    const parsed = ownerSchema.safeParse(ownerForm);
+    const text = parsed.success
+      ? `To: ${OWNER_EMAIL}\nSubject: [CarnageMC] ${parsed.data.reason}\n\nReply-to: ${parsed.data.email}\n\n${parsed.data.message}`
+      : OWNER_EMAIL;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(parsed.success ? "Email copied to clipboard" : `Copied ${OWNER_EMAIL}`);
+    } catch {
+      toast.error("Couldn't copy — select the preview text manually");
+    }
   }
 
 
