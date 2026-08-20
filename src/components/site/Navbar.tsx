@@ -74,6 +74,7 @@ const Navbar = () => {
         }}
       >
         <GlobalSearch />
+        <LanguageSwitcher />
         <NotificationsBell />
         <ThemeToggle />
 
