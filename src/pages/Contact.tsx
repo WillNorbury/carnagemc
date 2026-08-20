@@ -108,13 +108,37 @@ export default function Contact() {
   function openOwnerMail() {
     const href = buildOwnerMailto();
     if (!href) return;
-    window.location.href = href;
+    // Open via a real anchor click so it works inside sandboxed/preview iframes
+    try {
+      const a = document.createElement("a");
+      a.href = href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch {
+      window.location.href = href;
+    }
     logWebsiteEvent({
       kind: "owner_contact",
       title: "Owner mailto opened",
       detail: `Reason: ${ownerForm.reason} — from ${ownerForm.email}`,
       color: 0xf59e0b,
     });
+  }
+
+  async function copyOwnerEmail() {
+    const parsed = ownerSchema.safeParse(ownerForm);
+    const text = parsed.success
+      ? `To: ${OWNER_EMAIL}\nSubject: [CarnageMC] ${parsed.data.reason}\n\nReply-to: ${parsed.data.email}\n\n${parsed.data.message}`
+      : OWNER_EMAIL;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(parsed.success ? "Email copied to clipboard" : `Copied ${OWNER_EMAIL}`);
+    } catch {
+      toast.error("Couldn't copy — select the preview text manually");
+    }
   }
 
 
@@ -210,9 +234,17 @@ export default function Contact() {
             </div>
           )}
 
-          <Button onClick={openOwnerMail} className="w-full">
-            <Mail className="h-4 w-4 mr-2" /> Open email to owner
-          </Button>
+          <div className="grid sm:grid-cols-2 gap-2">
+            <Button onClick={openOwnerMail} className="w-full">
+              <Mail className="h-4 w-4 mr-2" /> Open email to owner
+            </Button>
+            <Button onClick={copyOwnerEmail} variant="outline" className="w-full">
+              Copy email instead
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground text-center">
+            If nothing opens, your browser has no mail app linked — use “Copy email instead”.
+          </p>
         </CardContent>
       </Card>
     </main>
