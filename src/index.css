@@ -307,3 +307,18 @@ body::-webkit-scrollbar-thumb:hover,
 *::-webkit-scrollbar-corner {
   background: transparent !important;
 }
+
+/* Google Translate widget cleanup */
+.goog-te-banner-frame,
+.skiptranslate iframe,
+#goog-gt-tt,
+.goog-te-balloon-frame {
+  display: none !important;
+}
+body {
+  top: 0 !important;
+}
+font[style] {
+  background: none !important;
+  box-shadow: none !important;
+}
