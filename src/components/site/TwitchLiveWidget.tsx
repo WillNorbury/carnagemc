@@ -50,7 +50,7 @@ export default function TwitchLiveWidget({
   const [error, setError] = useState<string | null>(null);
   const mounted = useRef(true);
 
-  const load = async () => {
+  const load = async (attempt = 0) => {
     try {
       const url = new URL(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/twitch-status`,
@@ -59,8 +59,16 @@ export default function TwitchLiveWidget({
       const res = await fetch(url.toString(), {
         headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error ?? `HTTP ${res.status}`);
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        // Transient edge-runtime / upstream errors: retry a couple of times, then fall back quietly
+        if (res.status >= 500 && attempt < 2) {
+          await new Promise((r) => setTimeout(r, 1200 * (attempt + 1)));
+          if (mounted.current) return load(attempt + 1);
+          return;
+        }
+        throw new Error(data?.error ?? `HTTP ${res.status}`);
+      }
       if (mounted.current) {
         setStatus(data);
         setError(null);
