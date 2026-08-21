@@ -23,13 +23,6 @@ export default function TwitchClipsGallery({ login, parents }: { login: string; 
     let cancelled = false;
     (async () => {
       try {
-        const { data, error } = await supabase.functions.invoke("twitch-status", {
-          body: null,
-          method: "GET" as any,
-        });
-        // functions.invoke doesn't pass query params cleanly; use fetch instead
-      } catch {}
-      try {
         const url = `${(import.meta as any).env.VITE_SUPABASE_URL}/functions/v1/twitch-status?mode=clips&login=${encodeURIComponent(login)}&limit=8`;
         const r = await fetch(url, {
           headers: {
