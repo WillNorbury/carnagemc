@@ -46,6 +46,8 @@ const entries: SitemapEntry[] = [
   { path: "/unsubscribe", changefreq: "yearly", priority: "0.3" },
   { path: "/ban-appeals", changefreq: "monthly", priority: "0.5" },
   { path: "/wiki", changefreq: "weekly", priority: "0.7" },
+  { path: "/wiki/lifesteal-guide", changefreq: "monthly", priority: "0.7" },
+
   { path: "/gallery", changefreq: "weekly", priority: "0.6" },
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
   { path: "/guides", changefreq: "monthly", priority: "0.6" },
