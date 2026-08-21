@@ -149,7 +149,10 @@ const Index = () => {
     const inviteRaw: string = content.server?.discord ?? "https://discord.gg/wD6K3nr2MG";
     let cancelled = false;
 
-    const load = async () => {
+    const isTransient = (msg: string) =>
+      /503|degraded|temporarily unavailable|failed to fetch|networkerror/i.test(msg);
+
+    const load = async (attempt = 0) => {
       try {
         const { data, error } = await supabase.functions.invoke("discord-invite", {
           body: null,
@@ -166,19 +169,28 @@ const Index = () => {
         // Fallback: direct call to the function URL with query string
         const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/discord-invite?invite=${encodeURIComponent(inviteRaw)}`;
         const r = await fetch(url, { headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } });
-        const j = await r.json();
+        const j = await r.json().catch(() => null);
         if (cancelled) return;
         if (j?.ok && typeof j.approximate_member_count === "number") {
           setDiscordMembers(j.approximate_member_count);
           setDiscordInviteError(null);
-        } else {
-          const msg = (data as any)?.error || j?.error || error?.message || "Unknown error";
-          setDiscordInviteError(msg);
+          return;
         }
+        const msg = String((data as any)?.error || j?.error || error?.message || "Unknown error");
+        // Transient edge-runtime hiccups: retry with backoff, never surface an error
+        if (isTransient(msg) || r.status >= 500) {
+          if (attempt < 2) {
+            setTimeout(() => !cancelled && load(attempt + 1), 1500 * (attempt + 1));
+            return;
+          }
+          return;
+        }
+        setDiscordInviteError(msg);
       } catch {
         /* silent */
       }
     };
+
 
     load();
     const poll = setInterval(load, 5 * 60_000); // refresh every 5 minutes
