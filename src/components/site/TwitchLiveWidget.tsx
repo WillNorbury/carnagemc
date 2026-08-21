@@ -84,7 +84,7 @@ export default function TwitchLiveWidget({
   useEffect(() => {
     mounted.current = true;
     load();
-    const id = window.setInterval(load, 60_000);
+    const id = window.setInterval(() => load(), 60_000);
     return () => {
       mounted.current = false;
       window.clearInterval(id);
