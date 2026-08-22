@@ -1,0 +1,1 @@
+INSERT INTO public.allowed_from_addresses (email, display_name, active) VALUES ('status@carnagemc.net', 'CarnageMC Status', true) ON CONFLICT DO NOTHING;
