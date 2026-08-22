@@ -183,15 +183,15 @@ const Admin = () => {
   }, [location.pathname, location.search]);
 
   // Surface a notice when an unknown ?tab= value redirected to the dashboard.
+  const unknownTab = isUnknownAdminTab(tabParam);
   useEffect(() => {
     if (location.pathname !== "/admin") return;
-    const rawTab = new URLSearchParams(location.search).get("tab");
-    if (isUnknownAdminTab(rawTab)) {
-      toast(`Unknown tab "${rawTab}" — redirected to the dashboard.`, {
+    if (unknownTab) {
+      toast(`Unknown tab "${tabParam}" — redirected to the dashboard.`, {
         description: "That admin section doesn't exist or isn't available.",
       });
     }
-  }, [location.pathname, location.search]);
+  }, [location.pathname, location.search, unknownTab]);
 
 
   const onNavigate = (s: AdminSection) => {
