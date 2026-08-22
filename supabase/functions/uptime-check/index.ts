@@ -219,7 +219,7 @@ async function emailAdmins(
           body: {
             templateName: 'admin-alert',
             recipientEmail: to,
-            from: 'CarnageMC Admin <admin@carnagemc.net>',
+            from: 'CarnageMC Status <status@carnagemc.net>',
             idempotencyKey: `${payload.idempotencyKey}-${to}`,
             templateData: {
               title: payload.title,
