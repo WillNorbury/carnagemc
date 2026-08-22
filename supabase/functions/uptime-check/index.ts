@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { STATUS_URL } from '../_shared/site-urls.ts'
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -394,7 +395,7 @@ Deno.serve(async (req) => {
             severity: 'critical',
             summary: `${name} has failed multiple consecutive checks.`,
             details: `Service: ${name}\nEndpoint: ${SERVICE_ENDPOINTS[c.service_key] || 'n/a'}\nUptime (24h): ${uptimePct}\nError: ${c.error || 'Unknown error'}`,
-            link: 'https://carnagemc.net/status',
+            link: STATUS_URL,
             linkLabel: 'View Status',
             idempotencyKey: `uptime-down-${inc.id}`,
             serviceName: name,
@@ -445,7 +446,7 @@ Deno.serve(async (req) => {
           severity: 'critical',
           summary: `${name} is still failing after ${duration}.`,
           details: `Service: ${name}\nEndpoint: ${SERVICE_ENDPOINTS[c.service_key] || 'n/a'}\nUptime (24h): ${uptimePct}\nIncident duration: ${duration}\nError: ${c.error || 'Unknown error'}`,
-          link: 'https://carnagemc.net/status',
+          link: STATUS_URL,
           linkLabel: 'View Status',
           idempotencyKey: `uptime-down-${openIncident.id}-rep`,
           serviceName: name,
@@ -494,7 +495,7 @@ Deno.serve(async (req) => {
           severity: 'success',
           summary: `${name} is responding successfully again.`,
           details: `Service: ${name}\nEndpoint: ${SERVICE_ENDPOINTS[c.service_key] || 'n/a'}\nUptime (24h): ${uptimePct}\nIncident lasted: ${duration}`,
-          link: 'https://carnagemc.net/status',
+          link: STATUS_URL,
           linkLabel: 'View Status',
           idempotencyKey: `uptime-up-${openIncident.id}`,
           serviceName: name,
