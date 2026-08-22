@@ -183,15 +183,15 @@ const Admin = () => {
   }, [location.pathname, location.search]);
 
   // Surface a notice when an unknown ?tab= value redirected to the dashboard.
+  const unknownTab = isUnknownAdminTab(tabParam);
   useEffect(() => {
     if (location.pathname !== "/admin") return;
-    const rawTab = new URLSearchParams(location.search).get("tab");
-    if (isUnknownAdminTab(rawTab)) {
-      toast(`Unknown tab "${rawTab}" — redirected to the dashboard.`, {
+    if (unknownTab) {
+      toast(`Unknown tab "${tabParam}" — redirected to the dashboard.`, {
         description: "That admin section doesn't exist or isn't available.",
       });
     }
-  }, [location.pathname, location.search]);
+  }, [location.pathname, location.search, unknownTab]);
 
 
   const onNavigate = (s: AdminSection) => {
@@ -247,6 +247,29 @@ const Admin = () => {
     >
       {!allowed ? denied : (
         <>
+          {unknownTab && (
+            <div className="mb-6 flex flex-col gap-3 rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+                <div className="space-y-0.5">
+                  <p className="font-semibold text-amber-200">
+                    Unknown tab &ldquo;{tabParam}&rdquo; — redirected to the dashboard.
+                  </p>
+                  <p className="text-sm text-amber-200/70">
+                    That admin section doesn&rsquo;t exist or isn&rsquo;t available.
+                  </p>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-amber-500/50 bg-transparent text-amber-200 hover:bg-amber-500/20 hover:text-amber-100"
+                onClick={() => onNavigate("dashboard")}
+              >
+                Go to dashboard
+              </Button>
+            </div>
+          )}
           {section === "dashboard" && <DashboardSection onNavigate={onNavigate} />}
           {section === "users" && <UsersTab />}
           {section === "roles" && <RolesSection />}
