@@ -4,6 +4,7 @@ import {
   Body, Button, Container, Head, Heading, Html, Preview, Section, Text,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
+import { STATUS_URL, adminUrl as buildAdminUrl } from '../site-urls.ts'
 
 interface Props {
   title?: string
@@ -32,7 +33,7 @@ const Email = ({
   severity = 'info',
   summary = '',
   details = '',
-  link = 'https://carnagemc.net/admin',
+  link = buildAdminUrl(),
   linkLabel = 'Open Admin',
   timestamp,
   serviceName,
@@ -79,6 +80,7 @@ const Email = ({
             </Section>
           )}
           {link && <Button style={{ ...button, background: accent }} href={link}>{linkLabel}</Button>}
+          {link !== STATUS_URL && <Button style={secondaryButton} href={STATUS_URL}>View Status</Button>}
           <Text style={muted}>
             Sent from status@carnagemc.net{timestamp ? ` · ${timestamp}` : ''}
           </Text>
@@ -121,3 +123,4 @@ const factsBox = { background: 'hsl(20, 15%, 98%)', border: '1px solid hsl(20, 1
 const factLine = { fontSize: '13px', color: 'hsl(20, 25%, 25%)', margin: '2px 0' }
 const factKey = { fontWeight: 600 as const, color: 'hsl(20, 15%, 40%)' }
 const factVal = { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }
+const secondaryButton = { backgroundColor: 'hsl(20, 15%, 96%)', border: '1px solid hsl(20, 15%, 86%)', color: 'hsl(20, 25%, 20%)', fontSize: '14px', borderRadius: '12px', padding: '11px 20px', textDecoration: 'none', display: 'inline-block', marginLeft: '8px' }

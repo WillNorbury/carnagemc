@@ -4,6 +4,7 @@ import {
   Body, Button, Container, Head, Heading, Html, Preview, Section, Text,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
+import { STATUS_URL, adminUrl as buildAdminUrl } from '../site-urls.ts'
 
 interface Props {
   minecraftUsername?: string
@@ -20,7 +21,7 @@ const Email = ({
   email = '',
   banReason = '',
   appealText = '',
-  adminUrl = 'https://carnagemc.net/admin?tab=ban-appeals',
+  adminUrl = buildAdminUrl('ban-appeals'),
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
@@ -36,6 +37,7 @@ const Email = ({
           <Text style={quoteText}>{appealText}</Text>
         </Section>
         <Button style={button} href={adminUrl}>Review in admin</Button>
+        <Button style={secondaryButton} href={STATUS_URL}>View Status</Button>
       </Container>
     </Body>
   </Html>
@@ -56,3 +58,4 @@ const text = { fontSize: '14px', color: 'hsl(20, 25%, 25%)', lineHeight: '1.6', 
 const quote = { borderLeft: '3px solid hsl(22, 100%, 55%)', padding: '10px 14px', background: 'hsl(20, 15%, 97%)', margin: '16px 0' }
 const quoteText = { fontSize: '13px', color: 'hsl(20, 25%, 25%)', whiteSpace: 'pre-wrap' as const, margin: 0 }
 const button = { backgroundColor: 'hsl(22, 100%, 55%)', color: '#fff', fontSize: '14px', borderRadius: '12px', padding: '12px 20px', textDecoration: 'none', display: 'inline-block' }
+const secondaryButton = { backgroundColor: 'hsl(20, 15%, 96%)', border: '1px solid hsl(20, 15%, 86%)', color: 'hsl(20, 25%, 20%)', fontSize: '14px', borderRadius: '12px', padding: '11px 20px', textDecoration: 'none', display: 'inline-block', marginLeft: '8px' }
