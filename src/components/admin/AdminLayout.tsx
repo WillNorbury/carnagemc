@@ -136,6 +136,20 @@ export function resolveAdminSection(raw: string | null | undefined): AdminSectio
   return ADMIN_SECTION_ALIASES[key] ?? "dashboard";
 }
 
+/**
+ * Returns true when the given ?tab= value is non-empty but does NOT map to any
+ * known section or alias (i.e. resolveAdminSection() would fall back to the
+ * dashboard). Used to surface a redirect notice to the user.
+ */
+export function isUnknownAdminTab(raw: string | null | undefined): boolean {
+  if (!raw) return false; // no tab param is a normal dashboard visit, not a redirect
+  const key = raw.trim().toLowerCase();
+  if (!key) return false;
+  if ((ADMIN_SECTIONS as string[]).includes(key)) return false;
+  if (ADMIN_SECTION_ALIASES[key]) return false;
+  return true;
+}
+
 
 
 
