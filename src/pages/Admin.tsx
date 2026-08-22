@@ -171,16 +171,16 @@ const Admin = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const search = new URLSearchParams(location.search);
-  const tabParam = search.get("tab") as AdminSection | null;
-  const initial: AdminSection = tabParam ?? "dashboard";
+  const tabParam = search.get("tab");
+  const initial: AdminSection = resolveAdminSection(tabParam);
   const [section, setSection] = useState<AdminSection>(initial);
 
   // Keep tab in sync with URL query (back/forward navigation)
   useEffect(() => {
     if (location.pathname !== "/admin") return;
-    const t = (new URLSearchParams(location.search).get("tab") as AdminSection | null) ?? "dashboard";
-    setSection(t);
+    setSection(resolveAdminSection(new URLSearchParams(location.search).get("tab")));
   }, [location.pathname, location.search]);
+
 
   const onNavigate = (s: AdminSection) => {
     setSection(s);
