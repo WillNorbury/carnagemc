@@ -97,7 +97,7 @@ export default function MapPage() {
                 </li>
               </ol>
               <Button asChild variant="outline" size="sm">
-                <a href="/admin?tab=pages">
+                <a href="/admin?tab=content">
                   Open admin <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
                 </a>
               </Button>
