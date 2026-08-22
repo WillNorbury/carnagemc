@@ -55,7 +55,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { AdminLayout, type AdminSection, SECTION_PERMISSIONS } from "@/components/admin/AdminLayout";
+import { AdminLayout, type AdminSection, SECTION_PERMISSIONS, resolveAdminSection } from "@/components/admin/AdminLayout";
 import { BanAppealsAdminSection } from "@/components/admin/BanAppealsAdminSection";
 import { WikiAdminSection } from "@/components/admin/WikiAdminSection";
 import { GalleryAdminSection } from "@/components/admin/GalleryAdminSection";
@@ -171,16 +171,16 @@ const Admin = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const search = new URLSearchParams(location.search);
-  const tabParam = search.get("tab") as AdminSection | null;
-  const initial: AdminSection = tabParam ?? "dashboard";
+  const tabParam = search.get("tab");
+  const initial: AdminSection = resolveAdminSection(tabParam);
   const [section, setSection] = useState<AdminSection>(initial);
 
   // Keep tab in sync with URL query (back/forward navigation)
   useEffect(() => {
     if (location.pathname !== "/admin") return;
-    const t = (new URLSearchParams(location.search).get("tab") as AdminSection | null) ?? "dashboard";
-    setSection(t);
+    setSection(resolveAdminSection(new URLSearchParams(location.search).get("tab")));
   }, [location.pathname, location.search]);
+
 
   const onNavigate = (s: AdminSection) => {
     setSection(s);

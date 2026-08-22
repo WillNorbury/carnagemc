@@ -97,6 +97,47 @@ export type AdminSection =
   | "mod-mods"
   | "mod-reviews";
 
+// Every valid section id, used to validate the ?tab= query param.
+export const ADMIN_SECTIONS: AdminSection[] = [
+  "dashboard", "users", "roles", "permissions", "news", "content", "status",
+  "logs", "tickets", "plugins", "changelog", "applications", "apply",
+  "features", "rules", "alerts", "maintenance", "faqs", "events",
+  "ban-appeals", "wiki", "gallery", "contact", "email-test", "send-email",
+  "email-diagnostics", "quizzes", "reports", "bot-dashboard", "bot-management",
+  "bot-config", "punishments", "console", "mysql", "servers-status", "store",
+  "vote-links", "partners", "skripts", "game-modes", "site-pages",
+  "mod-skripts", "mod-servers", "mod-mods", "mod-reviews",
+];
+
+// Friendly/legacy ?tab= values mapped onto their real section id.
+export const ADMIN_SECTION_ALIASES: Record<string, AdminSection> = {
+  pages: "site-pages",
+  "site-page": "site-pages",
+  page: "site-pages",
+  gamemodes: "game-modes",
+  "game-mode": "game-modes",
+  votes: "vote-links",
+  vote: "vote-links",
+  servers: "servers-status",
+  user: "users",
+  ticket: "tickets",
+  application: "applications",
+  appeals: "ban-appeals",
+  bot: "bot-dashboard",
+  emails: "send-email",
+  mods: "mod-mods",
+  reviews: "mod-reviews",
+};
+
+export function resolveAdminSection(raw: string | null | undefined): AdminSection {
+  if (!raw) return "dashboard";
+  const key = raw.trim().toLowerCase();
+  if ((ADMIN_SECTIONS as string[]).includes(key)) return key as AdminSection;
+  return ADMIN_SECTION_ALIASES[key] ?? "dashboard";
+}
+
+
+
 
 type NavItem =
   | { kind: "link"; id: AdminSection; icon: any; label: string }
