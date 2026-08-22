@@ -19,6 +19,7 @@ const ALLOWED_FROM = [
   'CarnageMC Updates <updates@notify.carnagemc.net>',
   '"William @ CarnageMC" <william@notify.carnagemc.net>',
   '"William @ CarnageMC" <william@carnagemc.net>',
+  'CarnageMC Status <status@carnagemc.net>',
 ]
 
 const extractEmail = (s: string): string | null => {

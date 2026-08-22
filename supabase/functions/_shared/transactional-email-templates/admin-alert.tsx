@@ -80,7 +80,7 @@ const Email = ({
           )}
           {link && <Button style={{ ...button, background: accent }} href={link}>{linkLabel}</Button>}
           <Text style={muted}>
-            Sent from admin@carnagemc.net{timestamp ? ` · ${timestamp}` : ''}
+            Sent from status@carnagemc.net{timestamp ? ` · ${timestamp}` : ''}
           </Text>
         </Container>
       </Body>
