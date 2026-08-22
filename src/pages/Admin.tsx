@@ -178,7 +178,19 @@ const Admin = () => {
   // Keep tab in sync with URL query (back/forward navigation)
   useEffect(() => {
     if (location.pathname !== "/admin") return;
-    setSection(resolveAdminSection(new URLSearchParams(location.search).get("tab")));
+    const rawTab = new URLSearchParams(location.search).get("tab");
+    setSection(resolveAdminSection(rawTab));
+  }, [location.pathname, location.search]);
+
+  // Surface a notice when an unknown ?tab= value redirected to the dashboard.
+  useEffect(() => {
+    if (location.pathname !== "/admin") return;
+    const rawTab = new URLSearchParams(location.search).get("tab");
+    if (isUnknownAdminTab(rawTab)) {
+      toast(`Unknown tab "${rawTab}" — redirected to the dashboard.`, {
+        description: "That admin section doesn't exist or isn't available.",
+      });
+    }
   }, [location.pathname, location.search]);
 
 
