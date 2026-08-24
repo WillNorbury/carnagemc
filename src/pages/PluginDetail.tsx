@@ -417,7 +417,7 @@ const PluginDetail = () => {
                       </Link>
                     </Button>
                   )}
-                  {latestDownloadUrl ? (
+                  {latestDownloadSource ? (
                     <Button
                       onClick={handleDownload}
                       className="rounded-full px-6 bg-gradient-to-br from-orange-500 to-rose-600 hover:from-orange-400 hover:to-rose-500 text-white shadow-[0_0_20px_-4px_hsl(24_95%_53%/0.6)] border-0"
@@ -456,7 +456,7 @@ const PluginDetail = () => {
                       <DropdownMenuItem onClick={copyLink}>
                         <LinkIcon className="h-4 w-4 mr-2" /> Copy link
                       </DropdownMenuItem>
-                      {latestDownloadUrl && (
+                      {latestDownloadSource && (
                         <DropdownMenuItem onClick={handleDownload}>
                           <Download className="h-4 w-4 mr-2" /> Download jar
                         </DropdownMenuItem>
@@ -597,7 +597,7 @@ const PluginDetail = () => {
                             </div>
                           );
                         })
-                      ) : latestDownloadUrl && plugin ? (
+                      ) : latestDownloadSource && plugin ? (
                         <div className="flex items-center justify-between p-3 rounded-md border border-border gap-3">
                           <div className="min-w-0">
                             <div className="font-medium text-sm truncate">
@@ -925,7 +925,7 @@ const PluginDetail = () => {
                   doDownload();
                   setDownloadOpen(false);
                 }}
-                disabled={!latestDownloadUrl}
+                disabled={!latestDownloadSource}
                 className="relative w-full font-display font-bold tracking-wide bg-primary hover:bg-primary/90 shadow-[0_8px_30px_-8px_rgba(249,115,22,0.6)]"
               >
                 <Download className="h-4 w-4 mr-2" />
