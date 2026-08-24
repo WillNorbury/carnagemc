@@ -1,6 +1,298 @@
 {
-  "generatedAt": "2026-06-24T04:29:33.442Z",
+  "generatedAt": "2026-08-24T06:09:16.411Z",
   "notes": [
+    {
+      "version": null,
+      "date": "2026-08-23",
+      "entries": [
+        {
+          "title": "CarnageMC Network Changelog – August 23, 2026",
+          "content": "**1. 🤝 Official Partnership with 4Dupe**\nWe are proud to announce our official partnership with the 4Dupe network!\n- **Server Upgrades:** Improved TPS and tick rates across all lobbies.\n- **Staff Synergy:** We are merging our mod teams to provide 24/7 moderation coverage.\n\n**2. 🏗️ BoxPvP – Coming Soon (ETA: 2-3 Weeks)**\nWe heard you loud and clear. The BoxPvP gamemode is currently in final development and is scheduled to launch within the next 2-3 weeks.\n- **Features:** 1v1 Box fights, Killstreak leaderboards, and a brand new \"Shulker Box\" loot system.\n- **Beta Access:** Closed Beta for Partners and staff begins next Friday.",
+          "category": "update"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-08-19",
+      "entries": [
+        {
+          "title": "Support Center polish & public changelog",
+          "content": "The /support page is now fully live: questions sent through the form reach staff for real (previously it only simulated sending), FAQs are pulled from the live knowledge base, your details are pre-filled when signed in, and the page links straight to tickets, the FAQ, and contact. The /changelog page continues to list every real update so visitors can track changes.",
+          "category": "update"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-08-17",
+      "entries": [
+        {
+          "title": "Site polish: navigation, footer, 404 and page cleanup",
+          "content": "A cleanup and polish pass across the whole site:\n\n- Rebuilt the footer as one cohesive block — matching headings, consistent link hover states, an even grid that collapses cleanly on mobile, real Java/Bedrock connection details, and a legal bar. It now uses the correct CarnageMC logo.\n- Branded 404 page with navigation and quick links instead of the plain default.\n- New /sitemap site index listing every live page.\n- Retired duplicate and empty filler pages; their old URLs now redirect to the real equivalents (for example /servers-status now goes to /status), so no links break.\n- Cleaned dead links out of the sidebar.\n- Mobile and tablet fixes: the Twitch live badge no longer slides under the floating navbar, and the homepage hero no longer has a duplicate gap. No horizontal overflow at phone or tablet widths.",
+          "category": "update"
+        }
+      ],
+      "breaking": [
+        {
+          "title": "Site polish: navigation, footer, 404 and page cleanup",
+          "content": "A cleanup and polish pass across the whole site:\n\n- Rebuilt the footer as one cohesive block — matching headings, consistent link hover states, an even grid that collapses cleanly on mobile, real Java/Bedrock connection details, and a legal bar. It now uses the correct CarnageMC logo.\n- Branded 404 page with navigation and quick links instead of the plain default.\n- New /sitemap site index listing every live page.\n- Retired duplicate and empty filler pages; their old URLs now redirect to the real equivalents (for example /servers-status now goes to /status), so no links break.\n- Cleaned dead links out of the sidebar.\n- Mobile and tablet fixes: the Twitch live badge no longer slides under the floating navbar, and the homepage hero no longer has a duplicate gap. No horizontal overflow at phone or tablet widths."
+        }
+      ]
+    },
+    {
+      "version": null,
+      "date": "2026-08-15",
+      "entries": [
+        {
+          "title": "Gameplay leaderboards, player stats & gallery videos",
+          "content": "## Gameplay Leaderboards\nThe /leaderboard page now has 8 new gameplay stat tabs alongside the existing streak tabs: Kills, Deaths, KDR, Killstreak, Best Streak, Playtime, Balance, and Mob Kills. Each tab shows a podium for the top 3 and a ranked list below.\n\n## Player Stats on Profiles\nPublic player profiles (/user/:name) now display an in-game stats card showing kills, deaths, KDR, current and best killstreak, playtime, balance, and mob kills — matched by Minecraft username. Stats appear automatically once the server bridge starts reporting.\n\n## Gallery Video Support\nThe /gallery page now supports video clips (YouTube and Twitch) alongside images. Videos show a play-button thumbnail in the masonry grid and open as an embedded player in the lightbox. Admins can add videos from Admin → Gallery by pasting a URL.\n\n## Server Bridge Stats Pipeline\nThe CarnageConsoleBridge Minecraft plugin now periodically reports per-player gameplay stats (kills, deaths, killstreak, playtime, balance, mob kills) to the website. The mc-bridge-poll edge function ingests and upserts them. **Action required:** rebuild and redeploy the ConsoleBridge plugin to start sending stats — the leaderboard and profile stats will populate automatically.",
+          "category": "feature"
+        },
+        {
+          "title": "Store comparison expanded + Gems & Shards",
+          "content": "The store comparison table now covers Ranks, Rank Upgrades, Keys, Kits, Coins and the brand-new Gems and Shards categories. Switch categories with the tabs above the table to see exactly what each package includes before you buy.",
+          "category": "update"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-07-31",
+      "entries": [
+        {
+          "title": "CarnageMC — Website Update",
+          "content": "**Version:** `1.0.0`\n**Date:** July 31, 2026\n**Type:** 🔧 Website / Applications Update\n\n## ✨ Added\n\n* Added an official announcement regarding application availability.\n* Added updated application status information to the website.\n\n## 🔄 Changed\n\n* Updated the status of **Staff Applications** to `Closed`.\n* Updated the status of **Admin Applications** to `Closed`.\n* Updated the status of **Developer Applications** to `Closed`.\n\n## 🗑️ Removed\n\n* Removed the ability to submit new Staff applications.\n* Removed the ability to submit new Admin applications.\n* Removed the ability to submit new Developer applications.\n\n## 🐛 Fixed\n\n* Fixed application availability being unclear to members of the community.\n* Fixed outdated application information across the website.\n\n## 📢 Notes\n\nApplications may reopen in the future when CarnageMC is looking to expand the team.\n\nKeep an eye on our **website and Discord** for future application openings and announcements.\n\n**Thanks for being part of CarnageMC! ❤️**\n\n— **CarnageMC Team**",
+          "category": "update"
+        }
+      ],
+      "breaking": [
+        {
+          "title": "CarnageMC — Website Update",
+          "content": "**Version:** `1.0.0`\n**Date:** July 31, 2026\n**Type:** 🔧 Website / Applications Update\n\n## ✨ Added\n\n* Added an official announcement regarding application availability.\n* Added updated application status information to the website.\n\n## 🔄 Changed\n\n* Updated the status of **Staff Applications** to `Closed`.\n* Updated the status of **Admin Applications** to `Closed`.\n* Updated the status of **Developer Applications** to `Closed`.\n\n## 🗑️ Removed\n\n* Removed the ability to submit new Staff applications.\n* Removed the ability to submit new Admin applications.\n* Removed the ability to submit new Developer applications.\n\n## 🐛 Fixed\n\n* Fixed application availability being unclear to members of the community.\n* Fixed outdated application information across the website.\n\n## 📢 Notes\n\nApplications may reopen in the future when CarnageMC is looking to expand the team.\n\nKeep an eye on our **website and Discord** for future application openings and announcements.\n\n**Thanks for being part of CarnageMC! ❤️**\n\n— **CarnageMC Team**"
+        }
+      ]
+    },
+    {
+      "version": null,
+      "date": "2026-07-24",
+      "entries": [
+        {
+          "title": "Community Skripts library",
+          "content": "We just shipped a full community Skripts system.\n\n**What's new**\n- Browse and download community `.sk` files at `/skripts` with search, tag filters, and sort options.\n- Upload your own Skripts straight from `/dashboard` under **My Skripts** — publish or hide anytime.\n- Attach a custom icon to each Skript, shown on the library grid and your dashboard.\n- Click any Skript card to open a full detail page (`/skripts/:id`) styled to match plugin detail pages — download button, author, size, version, tags, and download counts.\n- Downloads now save with the correct `.sk` filename via blob-fetch (no more messy storage-path names).\n- Command-center style header on `/skripts` with live stats: total skripts, downloads, tags, and latest upload.\n\nHead over to `/skripts` to see what the community has built, or `/dashboard` to share your own.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-07-14",
+      "entries": [
+        {
+          "title": "Status page layout refresh",
+          "content": "Cleaned up the Status page with a more natural service-history layout, tighter mobile spacing, and a bottom-sheet style service detail panel that prevents horizontal overflow.",
+          "category": "update"
+        },
+        {
+          "title": "Discord auto-posting disabled for changelog updates",
+          "content": "<p>Automatic Discord notifications for new changelog entries have been turned off. Updates are now sent to Discord manually by staff.</p><ul><li>Removed the database trigger and edge-function call that posted new entries to Discord.</li><li>The <a href=\"/changelog\">changelog page</a> now shows which broadcast channels are active (Website + Email) and clearly marks Discord as manual-only.</li><li>Email subscribers are unaffected — publishing an entry still queues the newsletter.</li></ul>",
+          "category": "update"
+        }
+      ],
+      "breaking": [
+        {
+          "title": "Discord auto-posting disabled for changelog updates",
+          "content": "<p>Automatic Discord notifications for new changelog entries have been turned off. Updates are now sent to Discord manually by staff.</p><ul><li>Removed the database trigger and edge-function call that posted new entries to Discord.</li><li>The <a href=\"/changelog\">changelog page</a> now shows which broadcast channels are active (Website + Email) and clearly marks Discord as manual-only.</li><li>Email subscribers are unaffected — publishing an entry still queues the newsletter.</li></ul>"
+        }
+      ]
+    },
+    {
+      "version": null,
+      "date": "2026-07-13",
+      "entries": [
+        {
+          "title": "Features page updated with current servers",
+          "content": "The <a href=\"/features\">/features</a> page has been refreshed to highlight the servers you can play right now:\n\n<ul>\n  <li><strong>Survival (S1)</strong> — our live flagship Season 1 world with land claims, a player-driven economy, community events, and classic multiplayer survival.</li>\n  <li><strong>Lifesteal (Development)</strong> — heart-stealing PvP currently in active development. Steal hearts from kills, face permadeath at zero hearts, and help shape the mode before it launches.</li>\n</ul>\n\nEach server gets its own feature card with details on what to expect. More modes and updates will be added as they roll out.",
+          "category": "update"
+        },
+        {
+          "title": "Security hardening, MySQL settings editor, and admin fixes",
+          "content": "Recent improvements:\n\n**Security**\n- Locked down plugin download tracking: anonymous inserts are no longer accepted directly; all downloads are recorded through the audited `record_plugin_download` server function.\n- Hid user notification preferences on the public profile table so they can no longer be pulled in bulk — owners still read their own preferences via a secure server function.\n\n**Admin panel**\n- New MySQL connection editor at `/admin?tab=mysql` for updating the LiteBans database host, port, database, username, and password without redeploying.\n- Fixed News admin: creating a new post no longer silently emails every subscriber — use the explicit Send button when you're ready.\n- Fixed the FAQs and Events admin tabs so they render inside the admin layout and remain accessible to permission-based admins.\n\n**Community**\n- Added a `/discord` shortcut that redirects to https://discord.carnagemc.net.\n",
+          "category": "update"
+        }
+      ],
+      "breaking": [
+        {
+          "title": "Security hardening, MySQL settings editor, and admin fixes",
+          "content": "Recent improvements:\n\n**Security**\n- Locked down plugin download tracking: anonymous inserts are no longer accepted directly; all downloads are recorded through the audited `record_plugin_download` server function.\n- Hid user notification preferences on the public profile table so they can no longer be pulled in bulk — owners still read their own preferences via a secure server function.\n\n**Admin panel**\n- New MySQL connection editor at `/admin?tab=mysql` for updating the LiteBans database host, port, database, username, and password without redeploying.\n- Fixed News admin: creating a new post no longer silently emails every subscriber — use the explicit Send button when you're ready.\n- Fixed the FAQs and Events admin tabs so they render inside the admin layout and remain accessible to permission-based admins.\n\n**Community**\n- Added a `/discord` shortcut that redirects to https://discord.carnagemc.net.\n"
+        }
+      ]
+    },
+    {
+      "version": null,
+      "date": "2026-07-09",
+      "entries": [
+        {
+          "title": "Fire Market embed, LiteBans MySQL admin, and auto Discord changelog posts",
+          "content": "<ul>\n    <li><strong>/fire-market</strong> — new staff-only page embedding <a href=\"https://fire-market.dev\" target=\"_blank\" rel=\"noopener noreferrer\">fire-market.dev</a>, mirroring the /staffchat setup with an \"Open in new tab\" shortcut.</li>\n    <li><strong>Admin → LiteBans MySQL</strong> (<code>/admin?tab=mysql</code>) — owner-only tab with connection details, recommended GUI/CLI clients, ready-to-copy SQL snippets (lookup, soft-unban, unmute, recent punishments, delete warning), and safety notes. Direct-edit alternative to Admin → Punishments.</li>\n    <li><strong>Changelog auto-posts to Discord</strong> — publishing any changelog entry now automatically posts a rich embed to the staff Discord channel via the bot. A per-entry flag prevents double posts, and the manual \"Notify\" button also fires the Discord post alongside subscriber emails.</li>\n  </ul>",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-07-08",
+      "entries": [
+        {
+          "title": "Plugins hub upgrades, dashboard favorites, and embedded Staff Chat",
+          "content": "## What's new\n\n### Plugins & Dashboard\n- **Real download counts** now show on plugin cards across `/plugins` and `/plugin/:slug`, tracked for every visitor (anonymous + signed-in).\n- **Trending / Most Downloaded** section added to the top of `/plugins`, ranked by downloads over the last 7 days.\n- **Favorite / bookmark buttons** on plugin cards and detail pages, persisted per user with live counts.\n- **New \"Most downloaded\" sort** on the plugins filter bar.\n- **Dashboard: My Favorites & Recently Downloaded** — new panel on `/dashboard` listing plugins you've favorited and your recent downloads, with inline unfavorite.\n- Download and version dropdown menus on plugin pages now use a smooth expand/collapse animation.\n\n### Staff Chat\n- Staff Chat is now embedded directly at `/staffchat` (staff-only), with an \"Open in new tab\" fallback. Sidebar link updated to open it in-app.\n\n### Site-wide\n- **Update prompt**: a small GUI now pops up whenever the site has a new version, prompting you to reload.\n\n### Security\n- Quiz results can no longer be forged — all attempt submissions go through a server-side scoring function.\n- Quiz answer explanations are no longer readable before/during an attempt.",
+          "category": "update"
+        }
+      ],
+      "breaking": [
+        {
+          "title": "Plugins hub upgrades, dashboard favorites, and embedded Staff Chat",
+          "content": "## What's new\n\n### Plugins & Dashboard\n- **Real download counts** now show on plugin cards across `/plugins` and `/plugin/:slug`, tracked for every visitor (anonymous + signed-in).\n- **Trending / Most Downloaded** section added to the top of `/plugins`, ranked by downloads over the last 7 days.\n- **Favorite / bookmark buttons** on plugin cards and detail pages, persisted per user with live counts.\n- **New \"Most downloaded\" sort** on the plugins filter bar.\n- **Dashboard: My Favorites & Recently Downloaded** — new panel on `/dashboard` listing plugins you've favorited and your recent downloads, with inline unfavorite.\n- Download and version dropdown menus on plugin pages now use a smooth expand/collapse animation.\n\n### Staff Chat\n- Staff Chat is now embedded directly at `/staffchat` (staff-only), with an \"Open in new tab\" fallback. Sidebar link updated to open it in-app.\n\n### Site-wide\n- **Update prompt**: a small GUI now pops up whenever the site has a new version, prompting you to reload.\n\n### Security\n- Quiz results can no longer be forged — all attempt submissions go through a server-side scoring function.\n- Quiz answer explanations are no longer readable before/during an attempt."
+        }
+      ]
+    },
+    {
+      "version": null,
+      "date": "2026-07-04",
+      "entries": [
+        {
+          "title": "Molten Forge polish, /status fix & tighter storage security",
+          "content": "## Plugins\n- Redesigned the plugin download dialog with the **Molten Forge** treatment — glowing header slab, ember-lit game/platform selectors, and a fiery gradient download CTA.\n- Applied the Molten Forge theme across `/plugins` and `/plugin/:slug` (forge hero band, radial glow slabs, gradient-underline tabs, glowing download buttons).\n- Exported a public `data/plugins.json` snapshot of published plugins and documented it in the README.\n\n## Status page\n- Fixed a crash on `/status` caused by a range-selector type mismatch (default range now defaults to 90 days as intended).\n\n## Security\n- **mc-bridge-jars** bucket: read access is now restricted to owners only (previously any signed-in user could download bridge jars).\n- **skripts** bucket: users can only read their own files; admins can read any.\n- **resource-packs** bucket: users can only read their own uploads; admins can read any (the bucket was effectively public despite being marked private).\n\n## Wiki\n- Seeded `/wiki` with 8 starter articles (Getting Started, Server Rules Summary, Common Commands, Ranks & Perks, Voting & Rewards, Applying for Staff, Ban Appeals, Getting Support), all editable at `/admin?tab=wiki`.\n\n## Site chrome\n- Added a visible app version indicator in the footer, sourced from `package.json`.",
+          "category": "update"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-06-30",
+      "entries": [
+        {
+          "title": "Owner Console: live Minecraft server bridge",
+          "content": "The owner-only Console now connects to your real Minecraft servers via a small bridge plugin.\n\n- Multi-server picker with online/offline indicator\n- Live tail of all server console output (chat, joins, errors, command results)\n- Run real console commands from the browser; response streams back\n- Add/manage servers from Admin → Console → Servers, with per-server ingest secret and one-click install instructions\n- Outbound HTTPS only — no firewall changes needed on the MC host\n\nPlugin source: mc-bridge-plugin/ in the repo.",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-06-29",
+      "entries": [
+        {
+          "title": "News email opt-out and delivery log",
+          "content": "## What's new\n\n- **News-only unsubscribe** — every news email now includes a one-click \"Unsubscribe from news updates\" link. Account and transactional emails keep flowing.\n- **Per-news delivery log** — open any announcement in Admin → Announcements and click the new log icon to see who the email was queued to, whether it sent, was suppressed, or failed (with the error message).\n- **Smarter broadcasts** — opt-outs and previously suppressed addresses are skipped automatically and counted in the broadcast result.",
+          "category": "feature"
+        },
+        {
+          "title": "Admin Punishments page with silent unban",
+          "content": "Added a Punishments tab in the admin panel. Filter bans, mutes, kicks, and warnings by player, type, and date range. Owners and admins can unban or unmute players directly from the web — silent by default (mirrors the in-game -s flag).",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-06-28",
+      "entries": [
+        {
+          "title": "Resetted everyones money",
+          "content": "The economy has been reset on **SMP**\n\nWhat has been reset:\n- **Balance**\n- **Teams**\n- **Shards**\n- **Bounties**",
+          "category": "balance"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-06-26",
+      "entries": [
+        {
+          "title": "Interactive U.S. Tornado Deaths Map",
+          "content": "The /weather/tornado-deaths page now shows a real interactive choropleth map of the United States, color-coded green→red by tornado fatalities. Toggle between per-million-residents and total-deaths views, and hover any state for exact numbers.",
+          "category": "feature"
+        },
+        {
+          "title": "Editable application status emails + admin live clock",
+          "content": "- **Editable application emails** — From Admin → Applications, edit the subject and Markdown body sent for **approved**, **rejected**, and **pending** application status changes. Toggle each variant on/off and use variables like `{{mcUsername}}`, `{{applicationType}}`, `{{reviewerNotes}}`, and `{{dashboardUrl}}`.\n- **Live clock in admin** — Your current local time and date now show in the admin top bar (mobile and desktop).",
+          "category": "feature"
+        }
+      ],
+      "breaking": []
+    },
+    {
+      "version": null,
+      "date": "2026-06-25",
+      "entries": [
+        {
+          "title": "Cart & Wishlist",
+          "content": "Added a local cart and wishlist for Discover listings. Save items, move between cart and wishlist, and sort your wishlist by newest, price, or name.",
+          "category": "feature"
+        },
+        {
+          "title": "Mock Checkout & Order History",
+          "content": "Cart checkout now generates a mock order and clears your cart. Purchase history is recorded locally and downloadable items unlock from the Orders page.",
+          "category": "feature"
+        },
+        {
+          "title": "Free / Paid Filters",
+          "content": "Mods, Plugins, Modpacks, Data Packs, Resource Packs, Shaders, and Skripts now display a Free/Paid badge and support filtering by pricing.",
+          "category": "feature"
+        },
+        {
+          "title": "Dashboard: Shopping Panel",
+          "content": "Dashboard now shows your cart, wishlist, and order history at a glance with quick links to each page.",
+          "category": "update"
+        },
+        {
+          "title": "Dependency Security Updates",
+          "content": "Upgraded @supabase/supabase-js, react-router-dom, and recharts to patch high-severity advisories in transitive dependencies.",
+          "category": "security"
+        },
+        {
+          "title": "Create from Dashboard",
+          "content": "Dashboard now has a Create section with a one-click shortcut to upload a Skript (.sk) and manage your plugins and Discover listings.",
+          "category": "feature"
+        },
+        {
+          "title": "Changelog Email Notifications",
+          "content": "New published changelog entries now email every confirmed user (excluding unsubscribed addresses) with a branded update from notify.carnagemc.net.",
+          "category": "feature"
+        },
+        {
+          "title": "Clickable changelog entries with detail pages",
+          "content": "Each changelog entry on /changelog is now clickable and opens a dedicated detail page at /changelog/<slug>.\n\n**What's new:**\n- Entries on the timeline are clickable cards with a hover affordance\n- New detail route renders the full entry content as Markdown (headings, lists, links, code)\n- Slugs are generated from the entry title (e.g. /changelog/dependency-security-updates)\n- Back-to-changelog navigation and proper document title per entry",
+          "category": "feature"
+        },
+        {
+          "title": "Create Skripts from the dashboard + updates@ sender",
+          "content": "Two small improvements:\n\n- **Upload Skripts without leaving /dashboard.** The Create panel now embeds the full skript upload form (file picker + metadata + publish toggle). The standalone /discover/skripts/new page still works and shares the same form.\n- **Changelog notification emails now come from `updates@carnagemc.net`** instead of `noreply@`, with the friendly name \"CarnageMC Updates\".",
+          "category": "feature"
+        },
+        {
+          "title": "Practice Server",
+          "content": "We have a new **Practice** server\n\n**Commands**:\n- /p announce\n- /p invite <player>\n- /duel <player>",
+          "category": "server"
+        }
+      ],
+      "breaking": [
+        {
+          "title": "Dependency Security Updates",
+          "content": "Upgraded @supabase/supabase-js, react-router-dom, and recharts to patch high-severity advisories in transitive dependencies."
+        }
+      ]
+    },
     {
       "version": null,
       "date": "2026-06-18",
