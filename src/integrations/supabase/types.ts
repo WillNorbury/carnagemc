@@ -3204,16 +3204,7 @@ export type Database = {
         Args: { _context?: string; _user_agent?: string }
         Returns: boolean
       }
-      delete_email: {
-        Args: { message_id: number; queue_name: string }
-        Returns: boolean
-      }
       discover_items_slugify: { Args: { _name: string }; Returns: string }
-      email_queue_dispatch: { Args: never; Returns: undefined }
-      enqueue_email: {
-        Args: { payload: Json; queue_name: string }
-        Returns: number
-      }
       gen_plugin_short_id: { Args: never; Returns: string }
       get_anon_faq_votes: {
         Args: { _voter_key: string }
@@ -3400,6 +3391,7 @@ export type Database = {
         Returns: {
           explanation: string
           id: string
+          prompt: string
         }[]
       }
       get_quiz_leaderboard: {
@@ -3414,6 +3406,13 @@ export type Database = {
           rank: number
           score: number
           user_id: string
+        }[]
+      }
+      get_quiz_question_counts: {
+        Args: { _quiz_ids: string[] }
+        Returns: {
+          quiz_id: string
+          total: number
         }[]
       }
       get_quiz_with_questions: { Args: { _slug: string }; Returns: Json }
@@ -3475,23 +3474,6 @@ export type Database = {
         Returns: string
       }
       mc_server_rotate_secret: { Args: { _server_id: string }; Returns: string }
-      move_to_dlq: {
-        Args: {
-          dlq_name: string
-          message_id: number
-          payload: Json
-          source_queue: string
-        }
-        Returns: number
-      }
-      read_email_batch: {
-        Args: { batch_size: number; queue_name: string; vt: number }
-        Returns: {
-          message: Json
-          msg_id: number
-          read_ct: number
-        }[]
-      }
       record_login_streak: {
         Args: never
         Returns: {
