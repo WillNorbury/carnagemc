@@ -1177,6 +1177,45 @@ export type Database = {
         }
         Relationships: []
       }
+      login_verifications: {
+        Row: {
+          attempts: number
+          code_hash: string
+          consumed_at: string | null
+          created_at: string
+          device_id: string
+          expires_at: string
+          id: string
+          ip: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          code_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          device_id: string
+          expires_at: string
+          id?: string
+          ip?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          code_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          device_id?: string
+          expires_at?: string
+          id?: string
+          ip?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       mc_console_commands: {
         Row: {
           command: string
@@ -2808,6 +2847,39 @@ export type Database = {
           id?: string
           metadata?: Json | null
           reason?: string
+        }
+        Relationships: []
+      }
+      trusted_devices: {
+        Row: {
+          created_at: string
+          device_id: string
+          id: string
+          ip: string | null
+          last_seen_at: string
+          trusted_until: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          id?: string
+          ip?: string | null
+          last_seen_at?: string
+          trusted_until: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          id?: string
+          ip?: string | null
+          last_seen_at?: string
+          trusted_until?: string
+          user_agent?: string | null
+          user_id?: string
         }
         Relationships: []
       }

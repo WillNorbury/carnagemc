@@ -11,6 +11,7 @@ import { UpdatePrompt } from "@/components/site/UpdatePrompt";
 import { AuthProvider } from "@/lib/auth";
 import { CartProvider } from "@/lib/cart";
 import { CartDrawer } from "@/components/site/CartDrawer";
+import { DeviceVerificationGate } from "@/components/site/DeviceVerificationGate";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
@@ -326,10 +327,12 @@ const App = () => (
 
       <BrowserRouter>
         <AuthProvider>
-          <CartProvider>
-            <Shell />
-            <CartDrawer />
-          </CartProvider>
+          <DeviceVerificationGate>
+            <CartProvider>
+              <Shell />
+              <CartDrawer />
+            </CartProvider>
+          </DeviceVerificationGate>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
