@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_removal_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_name: string | null
+          created_at: string
+          email: string | null
+          id: string
+          notes: string | null
+          occurred_at: string
+          reason: string | null
+          updated_at: string
+          user_id: string | null
+          username: string
+        }
+        Insert: {
+          action?: string
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          notes?: string | null
+          occurred_at?: string
+          reason?: string | null
+          updated_at?: string
+          user_id?: string | null
+          username: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          notes?: string | null
+          occurred_at?: string
+          reason?: string | null
+          updated_at?: string
+          user_id?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
       admin_broadcast_logs: {
         Row: {
           category: string
