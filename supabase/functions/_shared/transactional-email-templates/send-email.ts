@@ -84,18 +84,20 @@ export async function sendTemplateEmail(
 
   const templateData = options.templateData ?? {}
   const element = React.createElement(template.component, templateData)
-  const html = await renderAsync(element)
-  const text = await renderAsync(element, { plainText: true })
+  const html = options.htmlOverride ?? (await renderAsync(element))
+  const text = options.textOverride ?? (await renderAsync(element, { plainText: true }))
   const subject =
-    typeof template.subject === 'function'
+    options.subjectOverride ??
+    (typeof template.subject === 'function'
       ? template.subject(templateData)
-      : template.subject
+      : template.subject)
 
   try {
     await sendLovableEmail(
       {
         to: recipient,
-        from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+        from: resolveFrom(options.from),
+
         sender_domain: SENDER_DOMAIN,
         subject,
         html,
