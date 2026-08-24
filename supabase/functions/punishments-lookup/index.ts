@@ -337,9 +337,23 @@ Deno.serve(async (req) => {
       ...result,
     })
   } catch (e) {
+    const msg = (e as Error).message ?? 'lookup failed'
     console.error('punishments-lookup error', e)
-    return json({ error: (e as Error).message ?? 'lookup failed' }, 500)
+    // Punishment DB unreachable (server offline / firewall): degrade gracefully
+    // instead of a 500 so the page can render a friendly notice.
+    const offline = /ECONNREFUSED|ETIMEDOUT|EHOSTUNREACH|ENOTFOUND|connect|timeout/i.test(msg)
+    if (offline) {
+      return json({
+        unavailable: true,
+        error: 'Punishment database is currently unreachable. Please try again later.',
+        player: { uuid: null, username: null },
+        counts: { bans: 0, mutes: 0, kicks: 0, warnings: 0 },
+        bans: [], mutes: [], kicks: [], warnings: [],
+      })
+    }
+    return json({ error: msg }, 500)
   }
+
 })
 
 function normalize(r: any) {
