@@ -24,7 +24,32 @@ export interface SendTemplateEmailOptions {
   /** Dedupes retries of the same logical send; defaults to a random UUID (no dedupe). */
   idempotencyKey?: string
   replyTo?: string
+  /**
+   * Optional From override for features that send from a dedicated address
+   * (status@, applications@, ...). Ignored unless the address is on a domain
+   * this project controls.
+   */
+  from?: string
+  /** Optional per-send overrides for admin-editable templates. */
+  subjectOverride?: string
+  htmlOverride?: string
+  textOverride?: string
 }
+
+/** Only allow From overrides on domains we control, to avoid spoofing. */
+function resolveFrom(fromOverride?: string): string {
+  const defaultFrom = `${SITE_NAME} <noreply@${FROM_DOMAIN}>`
+  if (!fromOverride) return defaultFrom
+  const match = fromOverride.match(/<([^>]+)>|([^\s<>]+@[^\s<>]+)/)
+  const addr = (match?.[1] ?? match?.[2] ?? '').toLowerCase()
+  const domain = addr.split('@')[1] ?? ''
+  if (domain === FROM_DOMAIN || domain === SENDER_DOMAIN || domain.endsWith('.' + FROM_DOMAIN)) {
+    return fromOverride
+  }
+  console.warn('Ignoring from override for unverified domain', { domain })
+  return defaultFrom
+}
+
 
 /**
  * Renders a registered template and sends it through Lovable's managed email
