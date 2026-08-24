@@ -20,7 +20,10 @@ export type PlayerTier = {
   sort_order: number;
 };
 
-export const TIERS = ["S", "A", "B", "C", "D"];
+export const TIERS = [
+  "HT5", "HT4", "HT3", "HT2", "HT1",
+  "LT5", "LT4", "LT3", "LT2", "LT1",
+];
 
 export const PlayerTiersAdminSection = () => {
   const [rows, setRows] = useState<PlayerTier[]>([]);
