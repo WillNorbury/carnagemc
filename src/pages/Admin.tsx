@@ -90,6 +90,7 @@ import { VoteLinksAdminSection } from "@/components/admin/VoteLinksAdminSection"
 import { GameModesAdminSection } from "@/components/admin/GameModesAdminSection";
 import { PartnersAdminSection } from "@/components/admin/PartnersAdminSection";
 import { PlayerTiersAdminSection } from "@/components/admin/PlayerTiersAdminSection";
+import { SeasonsAdminSection } from "@/components/admin/SeasonsAdminSection";
 import { SitePagesAdminSection } from "@/components/admin/SitePagesAdminSection";
 import {
   SkriptsModerationSection,
@@ -321,6 +322,7 @@ const Admin = () => {
           {section === "vote-links" && <VoteLinksAdminSection />}
           {section === "partners" && <PartnersAdminSection />}
           {section === "tiers" && <PlayerTiersAdminSection />}
+          {section === "seasons" && <SeasonsAdminSection />}
           {section === "skripts" && <AdminSkriptsSection />}
           {section === "game-modes" && <GameModesAdminSection />}
           {section === "site-pages" && <SitePagesAdminSection />}

@@ -91,6 +91,7 @@ export type AdminSection =
   | "vote-links"
   | "partners"
   | "tiers"
+  | "seasons"
   | "skripts"
   | "game-modes"
   | "site-pages"
@@ -107,7 +108,7 @@ export const ADMIN_SECTIONS: AdminSection[] = [
   "ban-appeals", "wiki", "gallery", "contact", "email-test", "send-email",
   "email-diagnostics", "quizzes", "reports", "bot-dashboard", "bot-management",
   "bot-config", "punishments", "console", "mysql", "servers-status", "store",
-  "vote-links", "partners", "tiers", "skripts", "game-modes", "site-pages",
+  "vote-links", "partners", "tiers", "seasons", "skripts", "game-modes", "site-pages",
   "mod-skripts", "mod-servers", "mod-mods", "mod-reviews",
 ];
 
@@ -196,6 +197,7 @@ const items: NavItem[] = [
   { kind: "link", id: "vote-links", icon: ExternalLink, label: "Vote Links" },
   { kind: "link", id: "partners", icon: Users, label: "Partners" },
   { kind: "link", id: "tiers", icon: Trophy, label: "Player Tiers" },
+  { kind: "link", id: "seasons", icon: Trophy, label: "Seasons" },
   { kind: "link", id: "skripts", icon: FileText, label: "Skripts" },
   { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
   { kind: "link", id: "apply", icon: ClipboardList, label: "Apply (types)" },

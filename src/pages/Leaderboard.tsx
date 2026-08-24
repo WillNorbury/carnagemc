@@ -14,6 +14,7 @@ import {
 
 import { GlassCard, PageHero, Reveal, AnimatedCounter } from "@/components/site/ui-kit";
 import { cn } from "@/lib/utils";
+import { toUserSlug, userProfilePath } from "@/lib/userSlug";
 
 type Row = {
   user_id: string;
@@ -307,7 +308,7 @@ const Leaderboard = () => {
                       const name = r.profile?.display_name || r.profile?.mc_username || "Player";
                       const rank = i + 4;
                       return (
-                        <Link key={r.user_id} to="/users" className="flex items-center gap-4 p-4 transition-colors hover:bg-primary/5">
+                        <Link key={r.user_id} to={userProfilePath({ id: r.user_id, display_name: r.profile?.display_name ?? null, mc_username: r.profile?.mc_username ?? null })} className="flex items-center gap-4 p-4 transition-colors hover:bg-primary/5">
                           <div className="h-9 w-9 rounded-full border border-border flex items-center justify-center font-display text-sm font-bold text-muted-foreground">
                             {rank}
                           </div>
@@ -376,7 +377,11 @@ const Leaderboard = () => {
                     const name = r.player_name || "Player";
                     const rank = i + 4;
                     return (
-                      <div key={r.player_name + i} className="flex items-center gap-4 p-4 transition-colors hover:bg-primary/5">
+                      <Link
+                        key={r.player_name + i}
+                        to={`/user/${toUserSlug(r.player_name) ?? encodeURIComponent(r.player_name)}`}
+                        className="flex items-center gap-4 p-4 transition-colors hover:bg-primary/5"
+                      >
                         <div className="h-9 w-9 rounded-full border border-border flex items-center justify-center font-display text-sm font-bold text-muted-foreground">
                           {rank}
                         </div>
