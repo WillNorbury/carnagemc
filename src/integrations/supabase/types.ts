@@ -3391,6 +3391,7 @@ export type Database = {
         Returns: {
           explanation: string
           id: string
+          prompt: string
         }[]
       }
       get_quiz_leaderboard: {
@@ -3405,6 +3406,13 @@ export type Database = {
           rank: number
           score: number
           user_id: string
+        }[]
+      }
+      get_quiz_question_counts: {
+        Args: { _quiz_ids: string[] }
+        Returns: {
+          quiz_id: string
+          total: number
         }[]
       }
       get_quiz_with_questions: { Args: { _slug: string }; Returns: Json }
