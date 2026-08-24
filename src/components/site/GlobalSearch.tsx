@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { userProfilePath } from "@/lib/userSlug";
 import {
   Search,
   Newspaper,
@@ -93,7 +94,7 @@ export function GlobalSearch() {
         results.push({ id: `f-${f.id}`, type: "Feature", title: f.title, subtitle: f.description ?? undefined, to: `/features/${f.slug}`, icon: Sparkles })
       );
       (profiles.data ?? []).forEach((u: any) =>
-        results.push({ id: `u-${u.id}`, type: "Player", title: u.display_name || u.mc_username || "Player", subtitle: u.mc_username ?? undefined, to: `/users`, icon: UsersIcon })
+        results.push({ id: `u-${u.id}`, type: "Player", title: u.display_name || u.mc_username || "Player", subtitle: u.mc_username ?? undefined, to: userProfilePath(u), icon: UsersIcon })
       );
       (faqs.data ?? []).forEach((f: any) =>
         results.push({ id: `q-${f.id}`, type: "FAQ", title: f.question, to: `/faq`, icon: HelpCircle })
@@ -115,6 +116,13 @@ export function GlobalSearch() {
     nav(to);
   };
 
+  const viewAll = () => {
+    const term = q.trim();
+    setOpen(false);
+    setQ("");
+    nav(term ? `/search?q=${encodeURIComponent(term)}` : "/search");
+  };
+
   const filteredPages = PAGES.filter((p) => p.title.toLowerCase().includes(q.trim().toLowerCase()));
 
   return (
@@ -134,7 +142,20 @@ export function GlobalSearch() {
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Search news, plugins, players, FAQs…" value={q} onValueChange={setQ} />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandEmpty>
+            <div className="py-4 text-sm text-muted-foreground">
+              No quick results.{" "}
+              <button type="button" className="text-primary underline" onClick={viewAll}>
+                Open full search
+              </button>
+            </div>
+          </CommandEmpty>
+          <CommandGroup>
+            <CommandItem value="__view-all-results" onSelect={viewAll}>
+              <Search className="h-4 w-4 mr-2" />
+              {q.trim() ? `See all results for “${q.trim()}”` : "Open full search page"}
+            </CommandItem>
+          </CommandGroup>
           {filteredPages.length > 0 && (
             <CommandGroup heading="Pages">
               {filteredPages.slice(0, 8).map((p) => {
