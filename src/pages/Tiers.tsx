@@ -22,10 +22,14 @@ type Row = {
 const TIER_ORDER = [
   "HT5", "HT4", "HT3", "HT2", "HT1",
   "LT5", "LT4", "LT3", "LT2", "LT1",
+  "X",
 ];
 
 const tierStyle = (tier: string) => {
   const t = tier.toUpperCase();
+  if (t === "X" || !t) {
+    return "from-muted/40 to-muted/5 border-border text-muted-foreground";
+  }
   if (t.startsWith("HT")) {
     const n = parseInt(t.slice(2), 10);
     // HT5 = best (primary/crimson), fading toward amber
@@ -77,9 +81,13 @@ const Tiers = () => {
   }, [rows, query, category]);
 
   const grouped = useMemo(() => {
-    const tiers = Array.from(new Set([...TIER_ORDER, ...filtered.map((r) => r.tier.toUpperCase())]));
+    const norm = (t: string) => {
+      const u = t.toUpperCase();
+      return u ? u : "X";
+    };
+    const tiers = Array.from(new Set([...TIER_ORDER, ...filtered.map((r) => norm(r.tier))]));
     return tiers
-      .map((t) => ({ tier: t, players: filtered.filter((r) => r.tier.toUpperCase() === t) }))
+      .map((t) => ({ tier: t, players: filtered.filter((r) => norm(r.tier) === t) }))
       .filter((g) => g.players.length > 0);
   }, [filtered]);
 
