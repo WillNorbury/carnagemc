@@ -22,10 +22,14 @@ type Row = {
 const TIER_ORDER = [
   "HT5", "HT4", "HT3", "HT2", "HT1",
   "LT5", "LT4", "LT3", "LT2", "LT1",
+  "X",
 ];
 
 const tierStyle = (tier: string) => {
   const t = tier.toUpperCase();
+  if (t === "X" || !t) {
+    return "from-muted/40 to-muted/5 border-border text-muted-foreground";
+  }
   if (t.startsWith("HT")) {
     const n = parseInt(t.slice(2), 10);
     // HT5 = best (primary/crimson), fading toward amber
