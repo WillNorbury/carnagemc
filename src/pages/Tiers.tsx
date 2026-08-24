@@ -19,21 +19,29 @@ type Row = {
   sort_order: number;
 };
 
-const TIER_ORDER = ["S", "A", "B", "C", "D"];
+const TIER_ORDER = [
+  "HT5", "HT4", "HT3", "HT2", "HT1",
+  "LT5", "LT4", "LT3", "LT2", "LT1",
+];
 
 const tierStyle = (tier: string) => {
-  switch (tier.toUpperCase()) {
-    case "S":
-      return "from-primary/30 to-primary/5 border-primary/40 text-primary";
-    case "A":
-      return "from-orange-500/25 to-orange-500/5 border-orange-500/30 text-orange-400";
-    case "B":
-      return "from-amber-400/20 to-amber-400/5 border-amber-400/30 text-amber-300";
-    case "C":
-      return "from-sky-400/20 to-sky-400/5 border-sky-400/30 text-sky-300";
-    default:
-      return "from-muted/40 to-muted/5 border-border text-muted-foreground";
+  const t = tier.toUpperCase();
+  if (t.startsWith("HT")) {
+    const n = parseInt(t.slice(2), 10);
+    // HT5 = best (primary/crimson), fading toward amber
+    if (n >= 5) return "from-primary/30 to-primary/5 border-primary/40 text-primary";
+    if (n === 4) return "from-orange-500/25 to-orange-500/5 border-orange-500/30 text-orange-400";
+    if (n === 3) return "from-amber-400/20 to-amber-400/5 border-amber-400/30 text-amber-300";
+    if (n === 2) return "from-sky-400/20 to-sky-400/5 border-sky-400/30 text-sky-300";
+    return "from-sky-400/15 to-sky-400/5 border-sky-400/25 text-sky-300";
   }
+  if (t.startsWith("LT")) {
+    const n = parseInt(t.slice(2), 10);
+    if (n >= 4) return "from-muted/40 to-muted/5 border-border text-muted-foreground";
+    if (n === 3) return "from-muted/30 to-muted/5 border-border text-muted-foreground";
+    return "from-muted/20 to-muted/5 border-border text-muted-foreground";
+  }
+  return "from-muted/40 to-muted/5 border-border text-muted-foreground";
 };
 
 const Tiers = () => {

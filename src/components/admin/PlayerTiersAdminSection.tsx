@@ -20,7 +20,10 @@ export type PlayerTier = {
   sort_order: number;
 };
 
-export const TIERS = ["S", "A", "B", "C", "D"];
+export const TIERS = [
+  "HT5", "HT4", "HT3", "HT2", "HT1",
+  "LT5", "LT4", "LT3", "LT2", "LT1",
+];
 
 export const PlayerTiersAdminSection = () => {
   const [rows, setRows] = useState<PlayerTier[]>([]);
@@ -86,7 +89,7 @@ export const PlayerTiersAdminSection = () => {
     const maxOrder = rows.reduce((m, r) => Math.max(m, r.sort_order), 0);
     const { data, error } = await supabase
       .from("player_tiers")
-      .insert({ player_name: "New player", tier: "B", category: "Overall", sort_order: maxOrder + 10 })
+      .insert({ player_name: "New player", tier: "LT1", category: "Overall", sort_order: maxOrder + 10 })
       .select()
       .single();
     if (error) return toast.error(error.message);
