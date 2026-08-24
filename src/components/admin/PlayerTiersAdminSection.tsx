@@ -23,6 +23,7 @@ export type PlayerTier = {
 export const TIERS = [
   "HT5", "HT4", "HT3", "HT2", "HT1",
   "LT5", "LT4", "LT3", "LT2", "LT1",
+  "X",
 ];
 
 export const PlayerTiersAdminSection = () => {
