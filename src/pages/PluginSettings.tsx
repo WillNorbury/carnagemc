@@ -4,6 +4,7 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import PageLoader from "@/components/site/PageLoader";
 import { supabase } from "@/integrations/supabase/client";
+import { getJarDownloadUrl } from "@/lib/plugin-files";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -837,11 +838,18 @@ const PluginSettings = () => {
                             )}
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
-                            {v.download_url && (
-                              <Button asChild variant="ghost" size="icon" title="Download">
-                                <a href={v.download_url} target="_blank" rel="noreferrer">
-                                  <Download className="h-4 w-4" />
-                                </a>
+                            {(v.jar_path || v.download_url) && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Download"
+                                onClick={async () => {
+                                  const url = await getJarDownloadUrl(v.jar_path || v.download_url);
+                                  if (!url) return toast.error("Could not create a download link");
+                                  window.open(url, "_blank", "noopener");
+                                }}
+                              >
+                                <Download className="h-4 w-4" />
                               </Button>
                             )}
                             <Button

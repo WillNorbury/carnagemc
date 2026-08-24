@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getJarDownloadUrl } from "@/lib/plugin-files";
 import {
   Dialog,
   DialogContent,
@@ -312,10 +313,13 @@ export default function PluginVersionsDialog({
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
                         {url && (
-                          <Button size="icon" variant="ghost" asChild aria-label="Download">
-                            <a href={url} target="_blank" rel="noopener noreferrer" download>
-                              <Download className="h-4 w-4" />
-                            </a>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            aria-label="Download"
+                            onClick={() => openDownload(v)}
+                          >
+                            <Download className="h-4 w-4" />
                           </Button>
                         )}
                         <Button
