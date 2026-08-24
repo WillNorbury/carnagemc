@@ -132,6 +132,7 @@ const UserProfile = () => {
   const [reportOpen, setReportOpen] = useState(false);
 
   const [stats, setStats] = useState<PlayerStats | null>(null);
+  const [ignStats, setIgnStats] = useState<PlayerStats | null>(null);
 
   const isOwn = !!user && !!profile && user.id === profile.id;
 
@@ -149,11 +150,36 @@ const UserProfile = () => {
           ? (profiles ?? []).find((p) => p.id === user.id)
           : null);
       if (!match) {
-        setNotFound(true);
-        setProfile(null);
-        setLoading(false);
+        // No website account matches — fall back to an in-game name (IGN) view
+        // so leaderboard rows for unlinked players still resolve to a page.
+        const ign = (slug ?? "").trim();
+        const { data: sdata } = await (supabase as any).rpc("get_player_stats_by_name", { _player_name: ign });
+        const s = (sdata as any[])?.[0];
+        if (!cancelled) {
+          setIgnStats(
+            s
+              ? {
+                  player_name: s.player_name,
+                  kills: s.kills ?? 0,
+                  deaths: s.deaths ?? 0,
+                  killstreak: s.killstreak ?? 0,
+                  best_killstreak: s.best_killstreak ?? 0,
+                  playtime_seconds: s.playtime_seconds ?? 0,
+                  balance: s.balance ?? 0,
+                  mob_kills: s.mob_kills ?? 0,
+                  kdr: Number(s.kdr) || 0,
+                  last_seen_at: s.last_seen_at ?? null,
+                  updated_at: s.updated_at ?? null,
+                }
+              : null,
+          );
+          setNotFound(true);
+          setProfile(null);
+          setLoading(false);
+        }
         return;
       }
+      setIgnStats(null);
       const p = match as Profile;
       setProfile(p);
       const canonicalSlug = userProfileSlug(p);
@@ -331,13 +357,72 @@ const UserProfile = () => {
   }
 
   if (notFound || !profile) {
+    const ign = ignStats?.player_name ?? (slug ?? "");
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        <main className="flex-1 container mx-auto px-4 py-20 text-center">
-          <h1 className="text-3xl font-display font-bold mb-2">Player not found</h1>
-          <p className="text-muted-foreground mb-6">No user matches that ID.</p>
-          <Button asChild><Link to="/users">Browse all members</Link></Button>
+        <main className="flex-1 container mx-auto px-4 pt-24 pb-16 max-w-3xl">
+          {ignStats ? (
+            <>
+              <div className="flex items-center gap-5 pb-6 border-b border-border">
+                <Avatar className="h-20 w-20 rounded-md border border-border shrink-0">
+                  <AvatarImage src={`https://mc-heads.net/avatar/${encodeURIComponent(ign)}/256`} />
+                  <AvatarFallback>{ign.slice(0, 2).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <h1 className="text-2xl md:text-3xl font-display font-bold leading-tight truncate">{ign}</h1>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    In-game player · no linked website account
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+                {[
+                  { label: "Kills", value: ignStats.kills, icon: Swords },
+                  { label: "Deaths", value: ignStats.deaths, icon: Skull },
+                  { label: "K/D", value: ignStats.kdr.toFixed(2), icon: Target },
+                  { label: "Best streak", value: ignStats.best_killstreak, icon: Crosshair },
+                  { label: "Killstreak", value: ignStats.killstreak, icon: Trophy },
+                  { label: "Playtime", value: `${Math.floor(ignStats.playtime_seconds / 3600)}h`, icon: Clock },
+                  { label: "Balance", value: `$${Math.round(ignStats.balance).toLocaleString()}`, icon: Coins },
+                  { label: "Mob kills", value: ignStats.mob_kills, icon: Bug },
+                ].map((s) => {
+                  const Icon = s.icon;
+                  return (
+                    <Card key={s.label} className="p-4">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                        <Icon className="h-3.5 w-3.5" /> {s.label}
+                      </div>
+                      <div className="font-display text-xl font-bold">{s.value}</div>
+                    </Card>
+                  );
+                })}
+              </div>
+
+              <div className="flex flex-wrap gap-2 mt-6">
+                <Button asChild variant="outline">
+                  <Link to={`/punishments/${encodeURIComponent(ign)}`}>View punishment history</Link>
+                </Button>
+                <Button asChild variant="ghost">
+                  <Link to="/leaderboard">Back to leaderboard</Link>
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-16">
+              <h1 className="text-3xl font-display font-bold mb-2">Player not found</h1>
+              <p className="text-muted-foreground mb-6">
+                No member or in-game player matches “{slug}”.
+              </p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                <Button asChild><Link to="/users">Browse all members</Link></Button>
+                <Button asChild variant="outline">
+                  <Link to={`/punishments/${encodeURIComponent(slug ?? "")}`}>Check punishments</Link>
+                </Button>
+              </div>
+            </div>
+          )}
         </main>
         <Footer />
       </div>
@@ -410,6 +495,12 @@ const UserProfile = () => {
                 )}
               </Button>
             ) : null}
+
+            {profile.mc_username && (
+              <Button asChild variant="outline" size="sm" className="rounded-md">
+                <Link to={`/punishments/${encodeURIComponent(profile.mc_username)}`}>Punishments</Link>
+              </Button>
+            )}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
