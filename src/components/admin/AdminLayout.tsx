@@ -48,7 +48,7 @@ import {
   ShieldCheck,
   ExternalLink,
   Terminal,
-  Trophy,,
+  Trophy,
   UserX,
 } from "lucide-react";
 
