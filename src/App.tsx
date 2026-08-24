@@ -326,10 +326,12 @@ const App = () => (
 
       <BrowserRouter>
         <AuthProvider>
-          <CartProvider>
-            <Shell />
-            <CartDrawer />
-          </CartProvider>
+          <DeviceVerificationGate>
+            <CartProvider>
+              <Shell />
+              <CartDrawer />
+            </CartProvider>
+          </DeviceVerificationGate>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
