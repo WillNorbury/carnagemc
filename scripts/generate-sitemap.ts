@@ -66,7 +66,6 @@ const entries: SitemapEntry[] = [
   { path: "/credits", changefreq: "monthly", priority: "0.6" },
   { path: "/sitemap", changefreq: "monthly", priority: "0.6" },
   { path: "/anti-cheat", changefreq: "monthly", priority: "0.6" },
-  { path: "/seasons", changefreq: "monthly", priority: "0.6" },
   { path: "/staff-handbook", changefreq: "monthly", priority: "0.5" },
   { path: "/bug-bounty", changefreq: "monthly", priority: "0.6" },
   { path: "/discord-rules", changefreq: "monthly", priority: "0.5" },
@@ -80,7 +79,17 @@ const entries: SitemapEntry[] = [
   { path: "/safety", changefreq: "monthly", priority: "0.6" },
   { path: "/brand-guidelines", changefreq: "monthly", priority: "0.5" },
   { path: "/support-guide", changefreq: "monthly", priority: "0.6" },
-
+  { path: "/tiers", changefreq: "weekly", priority: "0.7" },
+  { path: "/seasons", changefreq: "monthly", priority: "0.7" },
+  { path: "/search", changefreq: "monthly", priority: "0.4" },
+  { path: "/skripts", changefreq: "daily", priority: "0.7" },
+  { path: "/partners", changefreq: "monthly", priority: "0.6" },
+  { path: "/live", changefreq: "daily", priority: "0.6" },
+  { path: "/store", changefreq: "weekly", priority: "0.8" },
+  { path: "/gamemodes", changefreq: "weekly", priority: "0.7" },
+  { path: "/punishments", changefreq: "daily", priority: "0.5" },
+  { path: "/quiz", changefreq: "weekly", priority: "0.5" },
+  { path: "/discord", changefreq: "monthly", priority: "0.6" },
 ]
 
 function generateSitemap(entries: SitemapEntry[]) {
