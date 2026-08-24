@@ -3250,13 +3250,12 @@ const PluginsTab = () => {
         .from("plugin-jars")
         .upload(path, file, { contentType: "application/java-archive", upsert: false });
       if (error) throw error;
-      const { data: pub } = supabase.storage.from("plugin-jars").getPublicUrl(path);
       setForm((f) => ({
         ...f,
         jar_path: path,
         jar_filename: file.name,
         jar_size: file.size,
-        download_url: pub.publicUrl,
+        download_url: "",
       }));
       toast.success("JAR uploaded");
     } catch (e: any) {

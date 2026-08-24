@@ -9,6 +9,7 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import PageLoader from "@/components/site/PageLoader";
 import { supabase } from "@/integrations/supabase/client";
+import { getJarDownloadUrl } from "@/lib/plugin-files";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -63,6 +64,7 @@ type Plugin = {
   updated_at: string | null;
   jar_filename: string | null;
   jar_size: number | null;
+  jar_path?: string | null;
   screenshots: string[];
   website_url?: string | null;
   source_url?: string | null;
@@ -161,9 +163,9 @@ const PluginDetail = () => {
     if (!key) return;
     (async () => {
       setLoading(true);
-      let { data } = await supabase.from("plugins").select("id, short_id, slug, name, description, long_description, version, author, download_url, icon_url, category, platform, platforms, mc_versions, tags, featured, created_at, updated_at, jar_filename, jar_size, screenshots, website_url, source_url, issues_url, discord_url").eq("published", true).eq("slug", key).maybeSingle();
+      let { data } = await supabase.from("plugins").select("id, short_id, slug, name, description, long_description, version, author, download_url, icon_url, category, platform, platforms, mc_versions, tags, featured, created_at, updated_at, jar_filename, jar_size, jar_path, screenshots, website_url, source_url, issues_url, discord_url").eq("published", true).eq("slug", key).maybeSingle();
       if (!data) {
-        const fb = await supabase.from("plugins").select("id, short_id, slug, name, description, long_description, version, author, download_url, icon_url, category, platform, platforms, mc_versions, tags, featured, created_at, updated_at, jar_filename, jar_size, screenshots, website_url, source_url, issues_url, discord_url").eq("published", true).eq("short_id", key).maybeSingle();
+        const fb = await supabase.from("plugins").select("id, short_id, slug, name, description, long_description, version, author, download_url, icon_url, category, platform, platforms, mc_versions, tags, featured, created_at, updated_at, jar_filename, jar_size, jar_path, screenshots, website_url, source_url, issues_url, discord_url").eq("published", true).eq("short_id", key).maybeSingle();
         data = fb.data;
       }
       if (!data) setNotFound(true);
@@ -234,16 +236,11 @@ const PluginDetail = () => {
     });
   };
 
-  const resolveVersionUrl = (v: PluginVersion) => {
-    if (v.download_url) return v.download_url;
-    if (v.jar_path) {
-      const { data } = supabase.storage.from("plugin-jars").getPublicUrl(v.jar_path);
-      return data.publicUrl;
-    }
-    return null;
-  };
+  // Jar files live in a private bucket; resolve a short-lived signed link on demand.
+  const resolveVersionUrl = (v: PluginVersion) => v.jar_path || v.download_url || null;
 
-  const latestDownloadUrl =
+  const latestDownloadSource =
+    plugin?.jar_path ||
     plugin?.download_url ||
     (versions.length > 0 ? resolveVersionUrl(versions[0]) : null);
 
@@ -271,8 +268,11 @@ const PluginDetail = () => {
 
   const downloadVersion = async (v: PluginVersion) => {
     if (!plugin) return;
-    const url = resolveVersionUrl(v);
-    if (!url) return;
+    const url = await getJarDownloadUrl(resolveVersionUrl(v));
+    if (!url) {
+      toast.error("Could not create a download link");
+      return;
+    }
     const sanitize = (s: string | null) => (s ? s.replace(/\s+/g, "-") : "");
     const filename =
       v.jar_filename ||
@@ -298,7 +298,12 @@ const PluginDetail = () => {
   };
 
   const doDownload = async () => {
-    if (!plugin || !latestDownloadUrl) return;
+    if (!plugin || !latestDownloadSource) return;
+    const latestDownloadUrl = await getJarDownloadUrl(latestDownloadSource);
+    if (!latestDownloadUrl) {
+      toast.error("Could not create a download link");
+      return;
+    }
     const filename = buildJarName(plugin, selectedPlatform);
     try {
       const res = await fetch(latestDownloadUrl);
@@ -319,7 +324,7 @@ const PluginDetail = () => {
   };
 
   const handleDownload = () => {
-    if (!latestDownloadUrl) return;
+    if (!latestDownloadSource) return;
     if (platforms.length === 1) setSelectedPlatform((p) => p ?? platforms[0]);
     if (mcVersions.length === 1) setSelectedVersion((v) => v ?? mcVersions[0]);
     setDownloadOpen(true);
@@ -413,7 +418,7 @@ const PluginDetail = () => {
                       </Link>
                     </Button>
                   )}
-                  {latestDownloadUrl ? (
+                  {latestDownloadSource ? (
                     <Button
                       onClick={handleDownload}
                       className="rounded-full px-6 bg-gradient-to-br from-orange-500 to-rose-600 hover:from-orange-400 hover:to-rose-500 text-white shadow-[0_0_20px_-4px_hsl(24_95%_53%/0.6)] border-0"
@@ -452,7 +457,7 @@ const PluginDetail = () => {
                       <DropdownMenuItem onClick={copyLink}>
                         <LinkIcon className="h-4 w-4 mr-2" /> Copy link
                       </DropdownMenuItem>
-                      {latestDownloadUrl && (
+                      {latestDownloadSource && (
                         <DropdownMenuItem onClick={handleDownload}>
                           <Download className="h-4 w-4 mr-2" /> Download jar
                         </DropdownMenuItem>
@@ -593,7 +598,7 @@ const PluginDetail = () => {
                             </div>
                           );
                         })
-                      ) : latestDownloadUrl && plugin ? (
+                      ) : latestDownloadSource && plugin ? (
                         <div className="flex items-center justify-between p-3 rounded-md border border-border gap-3">
                           <div className="min-w-0">
                             <div className="font-medium text-sm truncate">
@@ -921,7 +926,7 @@ const PluginDetail = () => {
                   doDownload();
                   setDownloadOpen(false);
                 }}
-                disabled={!latestDownloadUrl}
+                disabled={!latestDownloadSource}
                 className="relative w-full font-display font-bold tracking-wide bg-primary hover:bg-primary/90 shadow-[0_8px_30px_-8px_rgba(249,115,22,0.6)]"
               >
                 <Download className="h-4 w-4 mr-2" />

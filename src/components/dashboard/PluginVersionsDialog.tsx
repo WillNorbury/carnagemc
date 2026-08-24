@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getJarDownloadUrl } from "@/lib/plugin-files";
 import {
   Dialog,
   DialogContent,
@@ -97,11 +98,9 @@ export default function PluginVersionsDialog({
       setUploading(false);
       return;
     }
-    const { data: pub } = supabase.storage.from("plugin-jars").getPublicUrl(path);
     setJarPath(path);
     setJarFilename(file.name);
     setJarSize(file.size);
-    setDownloadUrl(pub.publicUrl);
     setUploading(false);
     toast.success("Jar uploaded");
   };
@@ -175,13 +174,17 @@ export default function PluginVersionsDialog({
     onChanged?.();
   };
 
-  const getUrl = (v: PluginVersion) => {
-    if (v.download_url) return v.download_url;
-    if (v.jar_path) {
-      const { data } = supabase.storage.from("plugin-jars").getPublicUrl(v.jar_path);
-      return data.publicUrl;
+  const getUrl = (v: PluginVersion) => v.jar_path || v.download_url || null;
+
+  const openDownload = async (v: PluginVersion) => {
+    const src = getUrl(v);
+    if (!src) return;
+    const url = await getJarDownloadUrl(src);
+    if (!url) {
+      toast.error("Could not create a download link");
+      return;
     }
-    return null;
+    window.open(url, "_blank", "noopener");
   };
 
   return (
@@ -310,10 +313,13 @@ export default function PluginVersionsDialog({
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
                         {url && (
-                          <Button size="icon" variant="ghost" asChild aria-label="Download">
-                            <a href={url} target="_blank" rel="noopener noreferrer" download>
-                              <Download className="h-4 w-4" />
-                            </a>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            aria-label="Download"
+                            onClick={() => openDownload(v)}
+                          >
+                            <Download className="h-4 w-4" />
                           </Button>
                         )}
                         <Button
