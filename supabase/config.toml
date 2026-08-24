@@ -11,17 +11,13 @@ project_id = "xedqdxjorneezfnpyogg"
     verify_jwt = false
   [functions.og-image]
     verify_jwt = false
-  [functions.process-email-queue]
-    verify_jwt = true
-  [functions.send-transactional-email]
-    verify_jwt = true
   [functions.send-application-status-email]
     verify_jwt = true
+  [functions.send-app-email]
+    verify_jwt = true
+  [functions.handle-email-events]
+    verify_jwt = false
   [functions.preview-transactional-email]
-    verify_jwt = false
-  [functions.handle-email-unsubscribe]
-    verify_jwt = false
-  [functions.handle-email-suppression]
     verify_jwt = false
   [functions.unsubscribe-news]
     verify_jwt = false
