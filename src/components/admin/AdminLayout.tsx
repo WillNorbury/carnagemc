@@ -48,6 +48,7 @@ import {
   ShieldCheck,
   ExternalLink,
   Terminal,
+  Trophy,
 } from "lucide-react";
 
 export type AdminSection =
