@@ -1771,6 +1771,45 @@ export type Database = {
           },
         ]
       }
+      player_tiers: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          notes: string | null
+          player_name: string
+          points: number
+          region: string | null
+          sort_order: number
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          player_name: string
+          points?: number
+          region?: string | null
+          sort_order?: number
+          tier?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          player_name?: string
+          points?: number
+          region?: string | null
+          sort_order?: number
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       plugin_downloads: {
         Row: {
           created_at: string

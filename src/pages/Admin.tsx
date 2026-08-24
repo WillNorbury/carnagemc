@@ -89,6 +89,7 @@ import { CreatorCodesAdminSection } from "@/components/admin/CreatorCodesAdminSe
 import { VoteLinksAdminSection } from "@/components/admin/VoteLinksAdminSection";
 import { GameModesAdminSection } from "@/components/admin/GameModesAdminSection";
 import { PartnersAdminSection } from "@/components/admin/PartnersAdminSection";
+import { PlayerTiersAdminSection } from "@/components/admin/PlayerTiersAdminSection";
 import { SitePagesAdminSection } from "@/components/admin/SitePagesAdminSection";
 import {
   SkriptsModerationSection,
@@ -154,6 +155,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   store: { title: "Store", description: "Manage the categories and items shown on /store." },
   "vote-links": { title: "Vote Links", description: "Manage the vote sites shown on /vote." },
   partners: { title: "Partners", description: "Manage the partners shown in the sidebar Partners dropdown." },
+  tiers: { title: "Player Tiers", description: "Add players to the public tier list at /tiers." },
   skripts: { title: "Skripts", description: "Upload and download Skript (.sk) files staff can add to the server." },
   "site-pages": { title: "Site Pages", description: "Create and edit standalone content pages such as /guides, /about, /roadmap and /credits." },
   "mod-skripts": { title: "Community Skripts", description: "Moderate member-uploaded Skripts." },
@@ -318,6 +320,7 @@ const Admin = () => {
           )}
           {section === "vote-links" && <VoteLinksAdminSection />}
           {section === "partners" && <PartnersAdminSection />}
+          {section === "tiers" && <PlayerTiersAdminSection />}
           {section === "skripts" && <AdminSkriptsSection />}
           {section === "game-modes" && <GameModesAdminSection />}
           {section === "site-pages" && <SitePagesAdminSection />}
