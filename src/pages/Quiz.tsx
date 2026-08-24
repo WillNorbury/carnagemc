@@ -38,15 +38,14 @@ const QuizListPage = () => {
         .order("created_at", { ascending: false });
       const list = (quizzes as Quiz[]) ?? [];
 
-      // counts
-      const counts = await Promise.all(
-        list.map(async (q) => {
-          const { count } = await (supabase.from("quiz_questions" as any) as any)
-            .select("id", { count: "exact", head: true })
-            .eq("quiz_id", q.id);
-          return count ?? 0;
-        }),
+      // counts (via secure RPC — question rows are not publicly readable)
+      const { data: countRows } = await (supabase.rpc as any)("get_quiz_question_counts", {
+        _quiz_ids: list.map((q) => q.id),
+      });
+      const countMap = new Map<string, number>(
+        ((countRows as any[]) ?? []).map((r) => [r.quiz_id, Number(r.total) || 0]),
       );
+      const counts = list.map((q) => countMap.get(q.id) ?? 0);
 
       // best score per quiz for current user
       let bestMap: Record<string, number> = {};
