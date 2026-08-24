@@ -47,6 +47,7 @@ import LinkAccount from "./pages/LinkAccount.tsx";
 import Apply from "./pages/Apply.tsx";
 import Features from "./pages/Features.tsx";
 import FeatureDetail from "./pages/FeatureDetail.tsx";
+import Tiers from "./pages/Tiers";
 import Leaderboard from "./pages/Leaderboard.tsx";
 import Faq from "./pages/Faq.tsx";
 import Events from "./pages/Events.tsx";
@@ -245,6 +246,7 @@ const Shell = () => {
                   <Route path="/features" element={<Features />} />
                   <Route path="/features/:slug" element={<FeatureDetail />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
+                  <Route path="/tiers" element={<Tiers />} />
                   <Route path="/faq" element={<Faq />} />
                   <Route path="/events" element={<Events />} />
                   <Route path="/install" element={<Install />} />
