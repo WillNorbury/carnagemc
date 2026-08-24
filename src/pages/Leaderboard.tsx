@@ -395,7 +395,7 @@ const Leaderboard = () => {
                         <div className="font-display font-bold text-xl text-primary">
                           {formatStatLabel(tab as StatTab, value)}
                         </div>
-                      </div>
+                      </Link>
                     );
                   })}
                 </GlassCard>
