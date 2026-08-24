@@ -17,6 +17,10 @@ CarnageMC runs on Paper 1.21.x with heart-stealing PvP, custom enchantments, a f
 - [Events](/events): Upcoming and past server events.
 - [Gallery](/gallery): Screenshots and player builds.
 - [Leaderboard](/leaderboard): Top players by stats and progression.
+- [Player Tiers](/tiers): Community PvP tier list from LT1 to HT5.
+- [Seasons](/seasons): Season dates, themes, highlights, and winners.
+- [Servers](/servers): Community server directory.
+- [Search](/search): Search news, plugins, players, guides, and pages.
 - [Punishments](/punishments): Public ban, mute, and warning history.
 - [Ban Appeals](/appeals): Appeal a punishment.
 - [Apply](/apply): Staff applications.

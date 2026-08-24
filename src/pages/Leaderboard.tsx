@@ -14,6 +14,7 @@ import {
 
 import { GlassCard, PageHero, Reveal, AnimatedCounter } from "@/components/site/ui-kit";
 import { cn } from "@/lib/utils";
+import { toUserSlug, userProfilePath } from "@/lib/userSlug";
 
 type Row = {
   user_id: string;
@@ -277,6 +278,7 @@ const Leaderboard = () => {
                     const heights = ["h-36 sm:h-44", "h-28 sm:h-32", "h-24 sm:h-28"];
                     return (
                       <Reveal key={r.user_id} delay={idx * 90}>
+                        <Link to={userProfilePath({ id: r.user_id, display_name: r.profile?.display_name ?? null, mc_username: r.profile?.mc_username ?? null })} className="block">
                         <GlassCard
                           glow={idx === 0}
                           className={cn("flex flex-col items-center justify-end p-4 text-center", heights[idx])}
@@ -295,6 +297,7 @@ const Leaderboard = () => {
                             <AnimatedCounter to={value ?? 0} />
                           </div>
                         </GlassCard>
+                        </Link>
                       </Reveal>
                     );
                   })}
@@ -307,7 +310,7 @@ const Leaderboard = () => {
                       const name = r.profile?.display_name || r.profile?.mc_username || "Player";
                       const rank = i + 4;
                       return (
-                        <Link key={r.user_id} to="/users" className="flex items-center gap-4 p-4 transition-colors hover:bg-primary/5">
+                        <Link key={r.user_id} to={userProfilePath({ id: r.user_id, display_name: r.profile?.display_name ?? null, mc_username: r.profile?.mc_username ?? null })} className="flex items-center gap-4 p-4 transition-colors hover:bg-primary/5">
                           <div className="h-9 w-9 rounded-full border border-border flex items-center justify-center font-display text-sm font-bold text-muted-foreground">
                             {rank}
                           </div>
@@ -346,6 +349,7 @@ const Leaderboard = () => {
                   const heights = ["h-36 sm:h-44", "h-28 sm:h-32", "h-24 sm:h-28"];
                   return (
                     <Reveal key={r.player_name + idx} delay={idx * 90}>
+                      <Link to={`/user/${toUserSlug(r.player_name) ?? encodeURIComponent(r.player_name)}`} className="block">
                       <GlassCard
                         glow={idx === 0}
                         className={cn("flex flex-col items-center justify-end p-4 text-center", heights[idx])}
@@ -364,6 +368,7 @@ const Leaderboard = () => {
                           {formatStatLabel(tab as StatTab, value)}
                         </div>
                       </GlassCard>
+                      </Link>
                     </Reveal>
                   );
                 })}
@@ -376,7 +381,11 @@ const Leaderboard = () => {
                     const name = r.player_name || "Player";
                     const rank = i + 4;
                     return (
-                      <div key={r.player_name + i} className="flex items-center gap-4 p-4 transition-colors hover:bg-primary/5">
+                      <Link
+                        key={r.player_name + i}
+                        to={`/user/${toUserSlug(r.player_name) ?? encodeURIComponent(r.player_name)}`}
+                        className="flex items-center gap-4 p-4 transition-colors hover:bg-primary/5"
+                      >
                         <div className="h-9 w-9 rounded-full border border-border flex items-center justify-center font-display text-sm font-bold text-muted-foreground">
                           {rank}
                         </div>
@@ -390,7 +399,7 @@ const Leaderboard = () => {
                         <div className="font-display font-bold text-xl text-primary">
                           {formatStatLabel(tab as StatTab, value)}
                         </div>
-                      </div>
+                      </Link>
                     );
                   })}
                 </GlassCard>

@@ -48,6 +48,8 @@ import Apply from "./pages/Apply.tsx";
 import Features from "./pages/Features.tsx";
 import FeatureDetail from "./pages/FeatureDetail.tsx";
 import Tiers from "./pages/Tiers";
+import Seasons from "./pages/Seasons";
+import SearchPage from "./pages/Search";
 import Leaderboard from "./pages/Leaderboard.tsx";
 import Faq from "./pages/Faq.tsx";
 import Events from "./pages/Events.tsx";
@@ -106,7 +108,6 @@ const CONTENT_PAGES = [
   "roadmap",
   "press-kit",
   "anti-cheat",
-  "seasons",
   "staff-handbook",
   "pvp-guide",
   "economy-guide",
@@ -247,6 +248,8 @@ const Shell = () => {
                   <Route path="/features/:slug" element={<FeatureDetail />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
                   <Route path="/tiers" element={<Tiers />} />
+                  <Route path="/seasons" element={<Seasons />} />
+                  <Route path="/search" element={<SearchPage />} />
                   <Route path="/faq" element={<Faq />} />
                   <Route path="/events" element={<Events />} />
                   <Route path="/install" element={<Install />} />

@@ -2307,6 +2307,66 @@ export type Database = {
         }
         Relationships: []
       }
+      seasons: {
+        Row: {
+          banner_url: string | null
+          created_at: string
+          description: string | null
+          ends_at: string | null
+          highlights: Json
+          id: string
+          name: string
+          number: number | null
+          published: boolean
+          slug: string
+          sort_order: number
+          starts_at: string | null
+          status: string
+          summary: string | null
+          theme: string | null
+          updated_at: string
+          winners: Json
+        }
+        Insert: {
+          banner_url?: string | null
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          highlights?: Json
+          id?: string
+          name: string
+          number?: number | null
+          published?: boolean
+          slug: string
+          sort_order?: number
+          starts_at?: string | null
+          status?: string
+          summary?: string | null
+          theme?: string | null
+          updated_at?: string
+          winners?: Json
+        }
+        Update: {
+          banner_url?: string | null
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          highlights?: Json
+          id?: string
+          name?: string
+          number?: number | null
+          published?: boolean
+          slug?: string
+          sort_order?: number
+          starts_at?: string | null
+          status?: string
+          summary?: string | null
+          theme?: string | null
+          updated_at?: string
+          winners?: Json
+        }
+        Relationships: []
+      }
       server_status: {
         Row: {
           id: number
