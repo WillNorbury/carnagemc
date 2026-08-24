@@ -145,7 +145,7 @@ Deno.serve(async (req) => {
           newsUnsubscribeUrl,
         }
 
-        const { error } = await admin.functions.invoke('send-transactional-email', {
+        const { error } = await admin.functions.invoke('send-app-email', {
           body: {
             templateName: 'news-update',
             recipientEmail: email,

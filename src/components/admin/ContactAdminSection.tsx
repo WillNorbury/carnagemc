@@ -87,7 +87,7 @@ export function ContactAdminSection() {
     try {
       const { data: userData } = await supabase.auth.getUser();
       const staffName = userData.user?.user_metadata?.display_name || userData.user?.user_metadata?.full_name || "CarnageMC Team";
-      const { error: emailErr } = await supabase.functions.invoke("send-transactional-email", {
+      const { error: emailErr } = await supabase.functions.invoke("send-app-email", {
         body: {
           templateName: "contact-reply",
           recipientEmail: msg.email,

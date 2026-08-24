@@ -54,7 +54,7 @@ Deno.serve(async (req) => {
       reporterName = profile?.display_name ?? report.reporter_id.slice(0, 8);
     }
 
-    const { error: sendErr } = await admin.functions.invoke("send-transactional-email", {
+    const { error: sendErr } = await admin.functions.invoke("send-app-email", {
       body: {
         templateName: "report-admin",
         recipientEmail: ALERT_EMAIL,

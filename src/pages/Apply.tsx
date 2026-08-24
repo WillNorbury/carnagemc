@@ -309,7 +309,7 @@ const ApplyForm = ({
     };
     const applicationsFrom = "CarnageMC Applications <applications@carnagemc.net>";
     if (user.email) {
-      supabase.functions.invoke("send-transactional-email", {
+      supabase.functions.invoke("send-app-email", {
         body: {
           templateName: "application-received",
           recipientEmail: user.email,
@@ -319,7 +319,7 @@ const ApplyForm = ({
         },
       }).catch(() => {});
     }
-    supabase.functions.invoke("send-transactional-email", {
+    supabase.functions.invoke("send-app-email", {
       body: {
         templateName: "application-admin",
         idempotencyKey: `application-admin-${appId}`,
@@ -690,7 +690,7 @@ const PartnerApplyForm = ({
       serverName: r.data.server_name,
     };
     if (user.email) {
-      supabase.functions.invoke("send-transactional-email", {
+      supabase.functions.invoke("send-app-email", {
         body: {
           templateName: "application-received",
           recipientEmail: user.email,
@@ -700,7 +700,7 @@ const PartnerApplyForm = ({
         },
       }).catch(() => {});
     }
-    supabase.functions.invoke("send-transactional-email", {
+    supabase.functions.invoke("send-app-email", {
       body: {
         templateName: "application-admin",
         idempotencyKey: `application-admin-${appId}`,

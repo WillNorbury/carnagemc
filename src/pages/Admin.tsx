@@ -2931,7 +2931,7 @@ const TicketsAdminSection = () => {
         if (recipientEmail) {
           const recipientName = profilesById[selected.user_id]?.display_name ?? "there";
           const staffName = user.user_metadata?.display_name || user.email?.split("@")[0] || "Support";
-          await supabase.functions.invoke("send-transactional-email", {
+          await supabase.functions.invoke("send-app-email", {
             body: {
               templateName: "ticket-reply",
               recipientEmail,
@@ -4169,7 +4169,7 @@ const ApplicationsTab = () => {
         adminUrl: `${window.location.origin}/admin?tab=applications`,
       };
     }
-    const { error } = await supabase.functions.invoke("send-transactional-email", {
+    const { error } = await supabase.functions.invoke("send-app-email", {
       body: {
         templateName,
         recipientEmail: recipient,

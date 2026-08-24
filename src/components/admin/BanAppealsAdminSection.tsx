@@ -70,7 +70,7 @@ export function BanAppealsAdminSection() {
         adminUrl: `${window.location.origin}/admin?tab=ban-appeals`,
       };
     }
-    const { error } = await supabase.functions.invoke("send-transactional-email", {
+    const { error } = await supabase.functions.invoke("send-app-email", {
       body: {
         templateName,
         recipientEmail: recipient,
@@ -118,7 +118,7 @@ export function BanAppealsAdminSection() {
     });
     const notifyEmail = a.email || a.account_email;
     if (notifyEmail) {
-      supabase.functions.invoke("send-transactional-email", {
+      supabase.functions.invoke("send-app-email", {
         body: {
           templateName: "ban-appeal-status",
           recipientEmail: notifyEmail,
