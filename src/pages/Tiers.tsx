@@ -81,9 +81,13 @@ const Tiers = () => {
   }, [rows, query, category]);
 
   const grouped = useMemo(() => {
-    const tiers = Array.from(new Set([...TIER_ORDER, ...filtered.map((r) => r.tier.toUpperCase())]));
+    const norm = (t: string) => {
+      const u = t.toUpperCase();
+      return u ? u : "X";
+    };
+    const tiers = Array.from(new Set([...TIER_ORDER, ...filtered.map((r) => norm(r.tier))]));
     return tiers
-      .map((t) => ({ tier: t, players: filtered.filter((r) => r.tier.toUpperCase() === t) }))
+      .map((t) => ({ tier: t, players: filtered.filter((r) => norm(r.tier) === t) }))
       .filter((g) => g.players.length > 0);
   }, [filtered]);
 
