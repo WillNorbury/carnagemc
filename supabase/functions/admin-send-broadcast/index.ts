@@ -178,7 +178,7 @@ Deno.serve(async (req) => {
     const errors: string[] = []
     for (const email of list) {
       try {
-        const { error } = await admin.functions.invoke('send-transactional-email', {
+        const { error } = await admin.functions.invoke('send-app-email', {
           body: {
             templateName: 'admin-broadcast',
             recipientEmail: email,

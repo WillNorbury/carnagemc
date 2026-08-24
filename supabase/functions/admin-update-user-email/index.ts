@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
     // so the account owner can see the change land in their inbox.
     const notify = async (recipient: string) => {
       try {
-        await admin.functions.invoke("send-transactional-email", {
+        await admin.functions.invoke("send-app-email", {
           body: {
             templateName: "email-changed",
             recipientEmail: recipient,

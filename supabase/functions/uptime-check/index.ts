@@ -216,7 +216,7 @@ async function emailAdmins(
     for (const e of envFallback) emails.add(e);
     await Promise.all(
       [...emails].map((to) =>
-        supabase.functions.invoke('send-transactional-email', {
+        supabase.functions.invoke('send-app-email', {
           body: {
             templateName: 'admin-alert',
             recipientEmail: to,

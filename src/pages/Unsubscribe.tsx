@@ -1,81 +1,43 @@
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, CheckCircle2, XCircle } from "lucide-react";
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_ANON = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
-
-type State = "validating" | "ready" | "already" | "invalid" | "submitting" | "done" | "error";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Mail } from "lucide-react";
 
 export default function Unsubscribe() {
-  const [params] = useSearchParams();
-  const token = params.get("token") ?? "";
-  const [state, setState] = useState<State>("validating");
-  const [email, setEmail] = useState<string | null>(null);
-  const [message, setMessage] = useState<string>("");
-
-  useEffect(() => {
-    if (!token) { setState("invalid"); return; }
-    fetch(`${SUPABASE_URL}/functions/v1/handle-email-unsubscribe?token=${encodeURIComponent(token)}`, {
-      headers: { apikey: SUPABASE_ANON },
-    })
-      .then(async (r) => {
-        const data = await r.json().catch(() => ({}));
-        if (!r.ok) { setState("invalid"); setMessage(data.error ?? "Invalid link"); return; }
-        if (data.alreadyUnsubscribed) { setState("already"); setEmail(data.email ?? null); return; }
-        setEmail(data.email ?? null);
-        setState("ready");
-      })
-      .catch(() => setState("invalid"));
-  }, [token]);
-
-  async function confirm() {
-    setState("submitting");
-    try {
-      const r = await fetch(`${SUPABASE_URL}/functions/v1/handle-email-unsubscribe`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON },
-        body: JSON.stringify({ token }),
-      });
-      const data = await r.json().catch(() => ({}));
-      if (!r.ok) { setState("error"); setMessage(data.error ?? "Could not unsubscribe"); return; }
-      setState("done");
-    } catch {
-      setState("error");
-      setMessage("Network error");
-    }
-  }
-
   return (
     <main className="container mx-auto p-6 max-w-md">
-      <Helmet><title>Unsubscribe — CarnageMC</title></Helmet>
+      <Helmet>
+        <title>Email preferences — CarnageMC</title>
+        <meta
+          name="description"
+          content="Manage your CarnageMC email preferences and unsubscribe options."
+        />
+      </Helmet>
       <Card>
-        <CardHeader><CardTitle>Email preferences</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle>Email preferences</CardTitle>
+        </CardHeader>
         <CardContent className="space-y-4">
-          {state === "validating" && (
-            <p className="text-muted-foreground flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Checking link…</p>
-          )}
-          {state === "ready" && (
-            <>
-              <p>Unsubscribe <strong>{email}</strong> from CarnageMC emails?</p>
-              <Button onClick={confirm}>Confirm unsubscribe</Button>
-            </>
-          )}
-          {state === "submitting" && (
-            <p className="text-muted-foreground flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Working…</p>
-          )}
-          {state === "done" && (
-            <p className="flex items-center gap-2 text-emerald-500"><CheckCircle2 className="h-5 w-5" /> You've been unsubscribed.</p>
-          )}
-          {state === "already" && (
-            <p className="flex items-center gap-2 text-muted-foreground"><CheckCircle2 className="h-5 w-5" /> {email ?? "This address"} is already unsubscribed.</p>
-          )}
-          {(state === "invalid" || state === "error") && (
-            <p className="flex items-center gap-2 text-destructive"><XCircle className="h-5 w-5" /> {message || "This unsubscribe link is invalid or has expired."}</p>
-          )}
+          <p className="text-muted-foreground flex items-start gap-2">
+            <Mail className="h-5 w-5 shrink-0 mt-0.5" />
+            <span>
+              Unsubscribing is now handled directly from the unsubscribe link at the
+              bottom of any CarnageMC email — one click and you're opted out, no
+              account needed.
+            </span>
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Can't find an email? Contact us and we'll remove your address for you.
+          </p>
+          <div className="flex gap-2">
+            <Button asChild>
+              <Link to="/contact">Contact support</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/">Back home</Link>
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </main>

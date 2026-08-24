@@ -16,7 +16,7 @@ function wrapHtml(inner: string, accent: string) {
 
 // Admin-only edge function: looks up an applicant's email from auth.users using
 // the service role, then enqueues the `application-status` email via the
-// shared send-transactional-email function.
+// shared send-app-email function.
 
 interface RequestBody {
   applicationId: string
@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
   }
 
   const { data: invokeData, error: invokeErr } = await admin.functions.invoke(
-    'send-transactional-email',
+    'send-app-email',
     {
       body: {
         templateName: 'application-status',

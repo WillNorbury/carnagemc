@@ -126,7 +126,7 @@ Deno.serve(async (req) => {
         const idempotencyKey = testEmail
           ? `changelog-${entry.id}-test-${email}-${Date.now()}`
           : `changelog-${entry.id}-${email}`
-        const { error } = await admin.functions.invoke('send-transactional-email', {
+        const { error } = await admin.functions.invoke('send-app-email', {
           body: {
             templateName: 'changelog-update',
             recipientEmail: email,

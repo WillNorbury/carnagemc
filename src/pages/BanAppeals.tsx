@@ -96,7 +96,7 @@ export default function BanAppeals() {
       color: 0xf59e0b,
     });
     // Notify admins via email
-    supabase.functions.invoke("send-transactional-email", {
+    supabase.functions.invoke("send-app-email", {
       body: {
         templateName: "ban-appeal-admin",
         templateData: {
@@ -110,7 +110,7 @@ export default function BanAppeals() {
     }).catch(() => {});
     // Confirmation email to the appellant (if provided)
     if (d.email) {
-      supabase.functions.invoke("send-transactional-email", {
+      supabase.functions.invoke("send-app-email", {
         body: {
           templateName: "ban-appeal-received",
           recipientEmail: d.email,

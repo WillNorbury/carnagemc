@@ -144,7 +144,7 @@ export default function Checkout() {
           ? `Bundle discount: ${cart.bundlePercent}% off (−${formatMoney(cart.bundleDiscount, currency)})`
           : null;
       supabase.functions
-        .invoke("send-transactional-email", {
+        .invoke("send-app-email", {
           body: {
             templateName: "order-confirmation",
             recipientEmail: user.email,
