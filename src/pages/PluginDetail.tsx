@@ -9,6 +9,7 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import PageLoader from "@/components/site/PageLoader";
 import { supabase } from "@/integrations/supabase/client";
+import { getJarDownloadUrl } from "@/lib/plugin-files";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -234,16 +235,11 @@ const PluginDetail = () => {
     });
   };
 
-  const resolveVersionUrl = (v: PluginVersion) => {
-    if (v.download_url) return v.download_url;
-    if (v.jar_path) {
-      const { data } = supabase.storage.from("plugin-jars").getPublicUrl(v.jar_path);
-      return data.publicUrl;
-    }
-    return null;
-  };
+  // Jar files live in a private bucket; resolve a short-lived signed link on demand.
+  const resolveVersionUrl = (v: PluginVersion) => v.jar_path || v.download_url || null;
 
-  const latestDownloadUrl =
+  const latestDownloadSource =
+    plugin?.jar_path ||
     plugin?.download_url ||
     (versions.length > 0 ? resolveVersionUrl(versions[0]) : null);
 
@@ -271,8 +267,11 @@ const PluginDetail = () => {
 
   const downloadVersion = async (v: PluginVersion) => {
     if (!plugin) return;
-    const url = resolveVersionUrl(v);
-    if (!url) return;
+    const url = await getJarDownloadUrl(resolveVersionUrl(v));
+    if (!url) {
+      toast.error("Could not create a download link");
+      return;
+    }
     const sanitize = (s: string | null) => (s ? s.replace(/\s+/g, "-") : "");
     const filename =
       v.jar_filename ||
@@ -298,7 +297,12 @@ const PluginDetail = () => {
   };
 
   const doDownload = async () => {
-    if (!plugin || !latestDownloadUrl) return;
+    if (!plugin || !latestDownloadSource) return;
+    const latestDownloadUrl = await getJarDownloadUrl(latestDownloadSource);
+    if (!latestDownloadUrl) {
+      toast.error("Could not create a download link");
+      return;
+    }
     const filename = buildJarName(plugin, selectedPlatform);
     try {
       const res = await fetch(latestDownloadUrl);
@@ -319,7 +323,7 @@ const PluginDetail = () => {
   };
 
   const handleDownload = () => {
-    if (!latestDownloadUrl) return;
+    if (!latestDownloadSource) return;
     if (platforms.length === 1) setSelectedPlatform((p) => p ?? platforms[0]);
     if (mcVersions.length === 1) setSelectedVersion((v) => v ?? mcVersions[0]);
     setDownloadOpen(true);
