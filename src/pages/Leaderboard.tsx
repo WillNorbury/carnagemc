@@ -278,6 +278,7 @@ const Leaderboard = () => {
                     const heights = ["h-36 sm:h-44", "h-28 sm:h-32", "h-24 sm:h-28"];
                     return (
                       <Reveal key={r.user_id} delay={idx * 90}>
+                        <Link to={userProfilePath({ id: r.user_id, display_name: r.profile?.display_name ?? null, mc_username: r.profile?.mc_username ?? null })} className="block">
                         <GlassCard
                           glow={idx === 0}
                           className={cn("flex flex-col items-center justify-end p-4 text-center", heights[idx])}
@@ -296,6 +297,7 @@ const Leaderboard = () => {
                             <AnimatedCounter to={value ?? 0} />
                           </div>
                         </GlassCard>
+                        </Link>
                       </Reveal>
                     );
                   })}
@@ -347,6 +349,7 @@ const Leaderboard = () => {
                   const heights = ["h-36 sm:h-44", "h-28 sm:h-32", "h-24 sm:h-28"];
                   return (
                     <Reveal key={r.player_name + idx} delay={idx * 90}>
+                      <Link to={`/user/${toUserSlug(r.player_name) ?? encodeURIComponent(r.player_name)}`} className="block">
                       <GlassCard
                         glow={idx === 0}
                         className={cn("flex flex-col items-center justify-end p-4 text-center", heights[idx])}
@@ -365,6 +368,7 @@ const Leaderboard = () => {
                           {formatStatLabel(tab as StatTab, value)}
                         </div>
                       </GlassCard>
+                      </Link>
                     </Reveal>
                   );
                 })}
