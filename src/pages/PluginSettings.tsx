@@ -426,8 +426,7 @@ const PluginSettings = () => {
       jar_path = path;
       jar_filename = newJar.name;
       jar_size = newJar.size;
-      const { data: pub } = supabase.storage.from("plugin-jars").getPublicUrl(path);
-      download_url = pub.publicUrl;
+      download_url = null;
     }
     const { data, error } = await supabase
       .from("plugin_versions")

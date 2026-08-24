@@ -219,13 +219,12 @@ export default function MyPluginsPanel({ userId }: { userId: string }) {
       setUploadingJar(false);
       return;
     }
-    const { data: pub } = supabase.storage.from("plugin-jars").getPublicUrl(path);
     setForm((f) => ({
       ...f,
       jar_path: path,
       jar_filename: file.name,
       jar_size: file.size,
-      download_url: pub.publicUrl,
+      download_url: "",
     }));
     setUploadingJar(false);
     toast.success("Jar uploaded");

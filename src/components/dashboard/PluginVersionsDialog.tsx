@@ -97,11 +97,9 @@ export default function PluginVersionsDialog({
       setUploading(false);
       return;
     }
-    const { data: pub } = supabase.storage.from("plugin-jars").getPublicUrl(path);
     setJarPath(path);
     setJarFilename(file.name);
     setJarSize(file.size);
-    setDownloadUrl(pub.publicUrl);
     setUploading(false);
     toast.success("Jar uploaded");
   };
@@ -175,13 +173,17 @@ export default function PluginVersionsDialog({
     onChanged?.();
   };
 
-  const getUrl = (v: PluginVersion) => {
-    if (v.download_url) return v.download_url;
-    if (v.jar_path) {
-      const { data } = supabase.storage.from("plugin-jars").getPublicUrl(v.jar_path);
-      return data.publicUrl;
+  const getUrl = (v: PluginVersion) => v.jar_path || v.download_url || null;
+
+  const openDownload = async (v: PluginVersion) => {
+    const src = getUrl(v);
+    if (!src) return;
+    const url = await getJarDownloadUrl(src);
+    if (!url) {
+      toast.error("Could not create a download link");
+      return;
     }
-    return null;
+    window.open(url, "_blank", "noopener");
   };
 
   return (
