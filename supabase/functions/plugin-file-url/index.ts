@@ -86,11 +86,13 @@ Deno.serve(async (req) => {
       if (plugin.user_id === userId) {
         allowed = true;
       } else {
-        const [{ data: isAdmin }, { data: member }] = await Promise.all([
-          admin.rpc("has_role", { _user_id: userId, _role: "admin" }).then(
-            (r) => r,
-            () => ({ data: null }),
-          ),
+        const [{ data: adminRole }, { data: member }] = await Promise.all([
+          admin
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", userId)
+            .in("role", ["admin", "owner"])
+            .maybeSingle(),
           plugin.org_id
             ? admin
                 .from("organization_members")
@@ -100,7 +102,7 @@ Deno.serve(async (req) => {
                 .maybeSingle()
             : Promise.resolve({ data: null }),
         ]);
-        allowed = isAdmin === true || !!member;
+        allowed = !!adminRole || !!member;
       }
     }
 
