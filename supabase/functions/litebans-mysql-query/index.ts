@@ -117,10 +117,17 @@ Deno.serve(async (req) => {
       durationMs,
     });
   } catch (e: any) {
-    return json(400, {
+    const code = e?.code ?? null;
+    const unreachable =
+      code === "ECONNREFUSED" || code === "ETIMEDOUT" || code === "ENOTFOUND" || code === "EHOSTUNREACH";
+    // Return 200 so the client can render a friendly state instead of a thrown 400.
+    return json(200, {
       ok: false,
-      error: String(e?.message ?? e),
-      code: e?.code ?? null,
+      unavailable: unreachable,
+      error: unreachable
+        ? `Cannot reach the LiteBans MySQL server (${host}:${port}). Check that the database is online and allows external connections.`
+        : String(e?.message ?? e),
+      code,
       sqlState: e?.sqlState ?? null,
     });
   } finally {
