@@ -110,6 +110,7 @@ const communityGroup: NavGroup = {
     { to: "/community", label: "Community", icon: UsersIcon },
     { to: "/staff", label: "Staff", icon: ShieldCheck },
     { to: "/mod-tiers", label: "Mod Tiers", icon: Star },
+    { to: "/tiers", label: "Player Tiers", icon: Trophy },
     { to: "/gallery", label: "Gallery", icon: ImageIcon },
     { to: "/quiz", label: "Quizzes", icon: Brain },
   ],
