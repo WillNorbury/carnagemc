@@ -48,7 +48,8 @@ import {
   ShieldCheck,
   ExternalLink,
   Terminal,
-  Trophy,
+  Trophy,,
+  UserX,
 } from "lucide-react";
 
 export type AdminSection =
@@ -91,6 +92,7 @@ export type AdminSection =
   | "vote-links"
   | "partners"
   | "tiers"
+  | "account-removals"
   | "seasons"
   | "skripts"
   | "game-modes"
@@ -108,7 +110,7 @@ export const ADMIN_SECTIONS: AdminSection[] = [
   "ban-appeals", "wiki", "gallery", "contact", "email-test", "send-email",
   "email-diagnostics", "quizzes", "reports", "bot-dashboard", "bot-management",
   "bot-config", "punishments", "console", "mysql", "servers-status", "store",
-  "vote-links", "partners", "tiers", "seasons", "skripts", "game-modes", "site-pages",
+  "vote-links", "partners", "tiers", "account-removals", "seasons", "skripts", "game-modes", "site-pages",
   "mod-skripts", "mod-servers", "mod-mods", "mod-reviews",
 ];
 
@@ -117,6 +119,8 @@ export const ADMIN_SECTION_ALIASES: Record<string, AdminSection> = {
   pages: "site-pages",
   "site-page": "site-pages",
   page: "site-pages",
+  removals: "account-removals",
+  "deleted-accounts": "account-removals",
   gamemodes: "game-modes",
   "game-mode": "game-modes",
   votes: "vote-links",
@@ -213,6 +217,7 @@ const items: NavItem[] = [
   { kind: "link", id: "maintenance", icon: Wrench, label: "Maintenance" },
   { kind: "link", id: "ban-appeals", icon: Gavel, label: "Ban Appeals" },
   { kind: "link", id: "punishments", icon: ShieldCheck, label: "Punishments" },
+  { kind: "link", id: "account-removals", icon: UserX, label: "Deleted / Banned Accounts" },
   { kind: "link", id: "mysql", icon: Database, label: "LiteBans MySQL" },
   { kind: "link", id: "wiki", icon: FileText, label: "Wiki" },
   { kind: "link", id: "gallery", icon: Package, label: "Gallery" },

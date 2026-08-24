@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.log_profile_deletion() FROM anon, authenticated, public;
