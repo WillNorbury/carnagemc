@@ -150,6 +150,7 @@ const Punishments = () => {
         const j = await r.json();
         if (cancelled) return;
         if (!r.ok) { setError(j?.error ?? "Lookup failed"); if (isInitial) setData(null); }
+        else if (j?.unavailable) { setError(j.error ?? "Punishment database is currently unreachable."); setData(null); }
         else { setData(j as LookupResponse); setError(null); }
       } catch (e: any) {
         if (!cancelled && isInitial) setError(e?.message ?? "Network error");
@@ -159,7 +160,8 @@ const Punishments = () => {
     };
 
     fetchOnce(true);
-    timer = setInterval(() => fetchOnce(false), 1000);
+    timer = setInterval(() => fetchOnce(false), 15000);
+
     return () => { cancelled = true; if (timer) clearInterval(timer); };
   }, [player, reloadKey]);
 
