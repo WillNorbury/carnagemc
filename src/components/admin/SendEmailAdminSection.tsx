@@ -38,6 +38,7 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
   const [from, setFrom] = useState<string>("");
   const [fromOptions, setFromOptions] = useState<{ label: string; value: string }[]>([]);
   const [testEmail, setTestEmail] = useState("");
+  const [bcc, setBcc] = useState("");
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
   const [logs, setLogs] = useState<AuditRow[]>([]);
@@ -91,6 +92,17 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
       return;
     }
 
+    const bccList = bcc
+      .split(/[,\s;]+/)
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const badBcc = bccList.find((e) => !emailRe.test(e));
+    if (badBcc) {
+      toast.error(`Invalid BCC address: ${badBcc}`);
+      return;
+    }
+
     setSending(true);
     setResult(null);
     const { data, error } = await supabase.functions.invoke("admin-send-broadcast", {
@@ -99,6 +111,7 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
         message: message.trim(),
         category,
         from,
+        bcc: bccList,
         testEmail: category === "test" ? testEmail.trim() : undefined,
       },
     });
@@ -182,6 +195,18 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
             <p className="text-xs text-muted-foreground">Sends a normal email to this one address — not flagged as a test.</p>
           </div>
         )}
+
+        <div className="space-y-2">
+          <Label>BCC (optional)</Label>
+          <Input
+            value={bcc}
+            onChange={(e) => setBcc(e.target.value)}
+            placeholder="me@example.com, archive@example.com"
+          />
+          <p className="text-xs text-muted-foreground">
+            Comma-separated. Each address receives its own hidden copy — other recipients never see them.
+          </p>
+        </div>
 
         <div className="space-y-2">
           <Label>Subject</Label>
