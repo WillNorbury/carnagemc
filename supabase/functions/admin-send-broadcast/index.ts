@@ -168,6 +168,9 @@ Deno.serve(async (req) => {
       list = [...emails]
     }
 
+    // BCC recipients get their own hidden copy
+    if (bccList.length > 0) list = [...new Set([...list, ...bccList])]
+
     // Drop suppressed
     if (list.length > 0) {
       const { data: suppressed } = await admin.from('suppressed_emails').select('email')
