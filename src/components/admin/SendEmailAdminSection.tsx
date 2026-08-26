@@ -92,6 +92,17 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
       return;
     }
 
+    const bccList = bcc
+      .split(/[,\s;]+/)
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const badBcc = bccList.find((e) => !emailRe.test(e));
+    if (badBcc) {
+      toast.error(`Invalid BCC address: ${badBcc}`);
+      return;
+    }
+
     setSending(true);
     setResult(null);
     const { data, error } = await supabase.functions.invoke("admin-send-broadcast", {
@@ -100,6 +111,7 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
         message: message.trim(),
         category,
         from,
+        bcc: bccList,
         testEmail: category === "test" ? testEmail.trim() : undefined,
       },
     });
