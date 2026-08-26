@@ -58,6 +58,22 @@ Deno.serve(async (req) => {
       typeof body?.testEmail === 'string' && body.testEmail.trim()
         ? body.testEmail.trim().toLowerCase()
         : undefined
+    const emailRe0 = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const bccRaw = Array.isArray(body?.bcc)
+      ? body.bcc
+      : typeof body?.bcc === 'string'
+        ? String(body.bcc).split(/[,\s;]+/)
+        : []
+    const bccList = [
+      ...new Set(
+        bccRaw
+          .map((e: unknown) => String(e ?? '').trim().toLowerCase())
+          .filter((e: string) => e.length > 0)
+      ),
+    ] as string[]
+    if (bccList.length > 20) return json({ ok: false, error: 'too many BCC addresses (max 20)' }, 400)
+    const badBcc = bccList.find((e) => !emailRe0.test(e))
+    if (badBcc) return json({ ok: false, error: `invalid BCC address: ${badBcc}` }, 400)
 
     if (!subject || subject.length > 200) return json({ ok: false, error: 'subject required (<=200 chars)' }, 400)
     if (!message || message.length > 10000) return json({ ok: false, error: 'message required (<=10000 chars)' }, 400)
