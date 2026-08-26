@@ -38,6 +38,7 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
   const [from, setFrom] = useState<string>("");
   const [fromOptions, setFromOptions] = useState<{ label: string; value: string }[]>([]);
   const [testEmail, setTestEmail] = useState("");
+  const [bcc, setBcc] = useState("");
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
   const [logs, setLogs] = useState<AuditRow[]>([]);
