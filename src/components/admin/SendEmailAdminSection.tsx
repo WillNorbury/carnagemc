@@ -197,6 +197,18 @@ export const SendEmailAdminSection = ({ isOwner }: { isOwner: boolean }) => {
         )}
 
         <div className="space-y-2">
+          <Label>BCC (optional)</Label>
+          <Input
+            value={bcc}
+            onChange={(e) => setBcc(e.target.value)}
+            placeholder="me@example.com, archive@example.com"
+          />
+          <p className="text-xs text-muted-foreground">
+            Comma-separated. Each address receives its own hidden copy — other recipients never see them.
+          </p>
+        </div>
+
+        <div className="space-y-2">
           <Label>Subject</Label>
           <Input value={subject} onChange={(e) => setSubject(e.target.value)} maxLength={200} placeholder="Email subject" />
         </div>
