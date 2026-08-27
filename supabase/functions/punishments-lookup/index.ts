@@ -105,11 +105,9 @@ Deno.serve(async (req) => {
     if (action === 'list' || action === 'unban' || action === 'unmute') {
       const gate = await requireAdmin(req)
       if (!gate.ok) return gate.resp
-      if (!HOST || !USER || !DB) return json({ error: 'MySQL not configured' }, 500)
+      if (!(await loadMysqlConfig())) return json({ error: 'MySQL not configured' }, 500)
 
-      const conn = await mysql.createConnection({
-        host: HOST, port: PORT, user: USER, password: PASS, database: DB, connectTimeout: 8000,
-      })
+      const conn = await connect()
       try {
         if (action === 'list') {
           const type = ['bans','mutes','warnings','kicks'].includes(body?.type) ? body.type : 'bans'
