@@ -230,11 +230,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setApplyingCoupon(true);
     try {
       const { data, error } = await supabase
-        .from("store_coupons")
-        .select(
-          "id, code, description, discount_type, discount_value, currency, min_subtotal, max_uses, uses_count, starts_at, expires_at, active",
-        )
-        .ilike("code", code)
+        .rpc("validate_store_coupon", { _code: code })
         .maybeSingle();
       if (error) {
         setCouponError(error.message);
@@ -242,10 +238,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       }
       if (!data) {
         setCouponError("Invalid code — check the spelling and try again.");
-        return false;
-      }
-      if (!data.active) {
-        setCouponError("This code is no longer active.");
         return false;
       }
       const now = new Date();
@@ -261,7 +253,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         );
         return false;
       }
-      if (data.max_uses != null && (data.uses_count ?? 0) >= data.max_uses) {
+      if (data.limit_reached) {
         setCouponError("This code has reached its usage limit.");
         return false;
       }

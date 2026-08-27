@@ -84,6 +84,7 @@ type Coupon = {
   starts_at: string | null;
   expires_at: string | null;
   active: boolean;
+  public_listed: boolean;
 };
 
 const emptyCoupon: Omit<Coupon, "id" | "uses_count"> = {
@@ -97,6 +98,7 @@ const emptyCoupon: Omit<Coupon, "id" | "uses_count"> = {
   starts_at: null,
   expires_at: null,
   active: true,
+  public_listed: false,
 };
 
 const ICON_OPTIONS = ["Package", "Sparkles", "Zap", "Coins", "Award", "Flame", "Star", "ShoppingBag"];
@@ -150,6 +152,7 @@ export function StoreAdminSection() {
       starts_at: cp.starts_at || null,
       expires_at: cp.expires_at || null,
       active: !!cp.active,
+      public_listed: !!cp.public_listed,
     };
     if ("id" in cp && cp.id) {
       const { error } = await supabase.from("store_coupons").update(payload).eq("id", cp.id);
@@ -729,6 +732,15 @@ export function StoreAdminSection() {
                     onCheckedChange={(v) => setEditingCoupon({ ...editingCoupon, active: v })}
                   />
                   <span>Active</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={!!editingCoupon.public_listed}
+                    onCheckedChange={(v) =>
+                      setEditingCoupon({ ...editingCoupon, public_listed: v })
+                    }
+                  />
+                  <span>Advertise publicly (shown in sale banner &amp; coupon list)</span>
                 </div>
                 <div className="flex gap-2">
                   <Button onClick={saveCoupon}>Save</Button>
