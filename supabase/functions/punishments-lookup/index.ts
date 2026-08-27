@@ -3,13 +3,54 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors'
 import mysql from 'npm:mysql2@3.11.5/promise'
 
-const HOST = Deno.env.get('LITEBANS_MYSQL_HOST') ?? ''
-const PORT = Number(Deno.env.get('LITEBANS_MYSQL_PORT') ?? '3306')
-const USER = Deno.env.get('LITEBANS_MYSQL_USER') ?? ''
-const PASS = Deno.env.get('LITEBANS_MYSQL_PASSWORD') ?? ''
-const DB = Deno.env.get('LITEBANS_MYSQL_DATABASE') ?? ''
 const RAW_PREFIX = (Deno.env.get('LITEBANS_TABLE_PREFIX') ?? 'litebans_').replace(/[^a-zA-Z0-9_]/g, '')
 const PREFIX = RAW_PREFIX.endsWith('_') || RAW_PREFIX === '' ? RAW_PREFIX : RAW_PREFIX + '_'
+
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
+const SUPABASE_ANON = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+const SUPABASE_SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+
+// Connection settings come from the litebans_mysql_config table (owner-editable
+// in the admin panel) with env secrets as fallback. Cached per isolate.
+type MysqlCfg = { host: string; port: number; user: string; password: string; database: string }
+let cfgCache: MysqlCfg | null = null
+async function loadMysqlConfig(): Promise<MysqlCfg | null> {
+  if (cfgCache) return cfgCache
+  let row: any = null
+  try {
+    if (SUPABASE_URL && SUPABASE_SERVICE) {
+      const { createClient } = await import('npm:@supabase/supabase-js@2')
+      const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE)
+      const { data } = await admin
+        .from('litebans_mysql_config')
+        .select('host, port, database, username, password')
+        .eq('id', true)
+        .maybeSingle()
+      row = data
+    }
+  } catch (e) { console.error('config load failed', e) }
+  const host = row?.host ?? Deno.env.get('LITEBANS_MYSQL_HOST') ?? ''
+  const user = row?.username ?? Deno.env.get('LITEBANS_MYSQL_USER') ?? ''
+  const database = row?.database ?? Deno.env.get('LITEBANS_MYSQL_DATABASE') ?? ''
+  if (!host || !user || !database) return null
+  cfgCache = {
+    host,
+    port: Number(row?.port ?? Deno.env.get('LITEBANS_MYSQL_PORT') ?? '3306'),
+    user,
+    password: row?.password ?? Deno.env.get('LITEBANS_MYSQL_PASSWORD') ?? '',
+    database,
+  }
+  return cfgCache
+}
+
+async function connect(): Promise<mysql.Connection> {
+  const cfg = await loadMysqlConfig()
+  if (!cfg) throw new Error('MySQL not configured')
+  return mysql.createConnection({
+    host: cfg.host, port: cfg.port, user: cfg.user, password: cfg.password,
+    database: cfg.database, connectTimeout: 8000,
+  })
+}
 
 const UUID_RE = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$/i
 const NAME_RE = /^[a-zA-Z0-9_]{2,16}$/
