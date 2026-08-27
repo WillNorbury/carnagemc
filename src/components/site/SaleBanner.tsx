@@ -18,25 +18,9 @@ export default function SaleBanner() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const nowIso = new Date().toISOString();
-      const { data } = await supabase
-        .from("store_coupons")
-        .select("code, description, discount_type, discount_value, currency, expires_at, starts_at, active, max_uses, uses_count")
-        .eq("active", true)
-        .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
-        .or(`starts_at.is.null,starts_at.lte.${nowIso}`)
-        .limit(20);
+      const { data } = await supabase.rpc("list_public_coupons", { _limit: 1 });
       if (cancelled || !data) return;
-      const valid = data.filter((c: any) =>
-        c.max_uses == null || (c.uses_count ?? 0) < c.max_uses,
-      );
-      // Pick largest discount (rough compare, treats % as % and fixed as $)
-      valid.sort((a: any, b: any) => {
-        const av = a.discount_type === "percent" ? a.discount_value : a.discount_value * 2;
-        const bv = b.discount_type === "percent" ? b.discount_value : b.discount_value * 2;
-        return bv - av;
-      });
-      setCoupon((valid[0] as Coupon) ?? null);
+      setCoupon(((data as any[])[0] as Coupon) ?? null);
     })();
     return () => { cancelled = true; };
   }, []);

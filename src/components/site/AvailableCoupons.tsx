@@ -11,9 +11,6 @@ type PublicCoupon = {
   discount_value: number;
   currency: string | null;
   min_subtotal: number;
-  max_uses: number | null;
-  uses_count: number;
-  starts_at: string | null;
   expires_at: string | null;
 };
 
@@ -28,22 +25,9 @@ export function AvailableCoupons({ variant = "light" }: { variant?: Variant }) {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase
-        .from("store_coupons")
-        .select(
-          "id, code, description, discount_type, discount_value, currency, min_subtotal, max_uses, uses_count, starts_at, expires_at",
-        )
-        .eq("active", true)
-        .order("discount_value", { ascending: false })
-        .limit(20);
+      const { data } = await supabase.rpc("list_public_coupons", { _limit: 4 });
       if (cancelled) return;
-      const now = Date.now();
-      const eligible = ((data ?? []) as PublicCoupon[]).filter((c) => {
-        if (c.starts_at && new Date(c.starts_at).getTime() > now) return false;
-        if (c.expires_at && new Date(c.expires_at).getTime() < now) return false;
-        if (c.max_uses != null && c.uses_count >= c.max_uses) return false;
-        return true;
-      });
+      const eligible = (data ?? []) as PublicCoupon[];
       setCoupons(eligible.slice(0, 4));
       setLoading(false);
     })();
