@@ -212,35 +212,25 @@ Deno.serve(async (req) => {
     const recentDays = Number(url.searchParams.get('recent_days') ?? '0')
     const debug = url.searchParams.get('debug') === '1'
 
-    if (!HOST || !USER || !DB) {
+    const cfg0 = await loadMysqlConfig()
+    if (!cfg0) {
       return json({ error: 'MySQL not configured' }, 500)
     }
 
     // Debug mode: list every table in the connected DB with row counts
     if (debug) {
-      const conn = await mysql.createConnection({
-        host: HOST, port: PORT, user: USER, password: PASS, database: DB, connectTimeout: 8000,
-      })
+      const conn = await connect()
       const [tbls] = await conn.query(
         `SELECT table_name AS name FROM information_schema.tables WHERE table_schema = ?`,
-        [DB],
+        [cfg0.database],
       )
-      const tables: Array<{ name: string; rows: number | string }> = []
-      for (const t of tbls as any[]) {
-        const name = t.name ?? t.NAME ?? t.TABLE_NAME
-        try {
-          const [c] = await conn.query(`SELECT COUNT(*) AS n FROM \`${name}\``)
-          tables.push({ name, rows: Number((c as any[])[0].n) })
-        } catch (e) {
-          tables.push({ name, rows: `error: ${(e as Error).message}` })
-        }
-      }
+...
       await conn.end()
       return json({
-        database: DB,
+        database: cfg0.database,
         configured_prefix: PREFIX,
-        host: HOST,
-        port: PORT,
+        host: cfg0.host,
+        port: cfg0.port,
         tables,
       })
     }
@@ -248,9 +238,7 @@ Deno.serve(async (req) => {
 
     // Recent mode: return latest punishments across all players within N days
     if (recentDays > 0) {
-      const conn = await mysql.createConnection({
-        host: HOST, port: PORT, user: USER, password: PASS, database: DB, connectTimeout: 8000,
-      })
+      const conn = await connect()
       const sinceMs = Date.now() - recentDays * 86400_000
       const kinds: Array<'bans'|'mutes'|'warnings'|'kicks'> = ['bans','mutes','warnings','kicks']
       const out: Record<string, any[]> = {}
@@ -299,10 +287,7 @@ Deno.serve(async (req) => {
       return json({ error: 'Invalid player identifier' }, 400)
     }
 
-    const conn = await mysql.createConnection({
-      host: HOST, port: PORT, user: USER, password: PASS, database: DB,
-      connectTimeout: 8000,
-    })
+    const conn = await connect()
 
     // Fallback: resolve name -> UUID via LiteBans history if Mojang failed
     if (!uuidDashed && NAME_RE.test(player)) {
