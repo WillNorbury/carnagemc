@@ -72,9 +72,6 @@ async function resolveUsername(name: string): Promise<{ uuid: string; name: stri
   } catch { return null }
 }
 
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
-const SUPABASE_ANON = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
-
 async function requireAdmin(req: Request): Promise<{ ok: true; userId: string; userName: string } | { ok: false; resp: Response }> {
   const auth = req.headers.get('Authorization') ?? ''
   if (!auth.startsWith('Bearer ')) return { ok: false, resp: json({ error: 'unauthorized' }, 401) }
