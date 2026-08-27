@@ -146,6 +146,7 @@ export const PunishmentsAdminSection = () => {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>ID</TableHead>
               <TableHead>Player</TableHead>
               <TableHead>Reason</TableHead>
               <TableHead>Issued by</TableHead>
@@ -158,13 +159,14 @@ export const PunishmentsAdminSection = () => {
           <TableBody>
             {items.length === 0 && !loading && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
                   No punishments match the filters.
                 </TableCell>
               </TableRow>
             )}
             {items.map((it) => (
               <TableRow key={it.id}>
+                <TableCell className="font-mono text-xs text-muted-foreground">#{it.id}</TableCell>
                 <TableCell>
                   <div className="text-sm">{it.username ?? "—"}</div>
                 </TableCell>
