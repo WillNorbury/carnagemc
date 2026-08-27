@@ -2623,6 +2623,7 @@ export type Database = {
           id: string
           max_uses: number | null
           min_subtotal: number
+          public_listed: boolean
           starts_at: string | null
           updated_at: string
           uses_count: number
@@ -2639,6 +2640,7 @@ export type Database = {
           id?: string
           max_uses?: number | null
           min_subtotal?: number
+          public_listed?: boolean
           starts_at?: string | null
           updated_at?: string
           uses_count?: number
@@ -2655,6 +2657,7 @@ export type Database = {
           id?: string
           max_uses?: number | null
           min_subtotal?: number
+          public_listed?: boolean
           starts_at?: string | null
           updated_at?: string
           uses_count?: number
@@ -3646,6 +3649,19 @@ export type Database = {
       }
       is_org_owner: { Args: { _org_id: string }; Returns: boolean }
       is_staff_user: { Args: { _uid: string }; Returns: boolean }
+      list_public_coupons: {
+        Args: { _limit?: number }
+        Returns: {
+          code: string
+          currency: string
+          description: string
+          discount_type: string
+          discount_value: number
+          expires_at: string
+          id: string
+          min_subtotal: number
+        }[]
+      }
       mc_server_get_ingest_secret: {
         Args: { _server_id: string }
         Returns: string
@@ -3718,6 +3734,21 @@ export type Database = {
           discount_percent: number
           id: string
           limit_reached: boolean
+        }[]
+      }
+      validate_store_coupon: {
+        Args: { _code: string }
+        Returns: {
+          code: string
+          currency: string
+          description: string
+          discount_type: string
+          discount_value: number
+          expires_at: string
+          id: string
+          limit_reached: boolean
+          min_subtotal: number
+          starts_at: string
         }[]
       }
     }
