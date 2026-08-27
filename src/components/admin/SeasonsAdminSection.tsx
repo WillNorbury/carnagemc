@@ -76,7 +76,7 @@ export const SeasonsAdminSection = () => {
       slug: `${slugify(name)}-${Date.now().toString(36).slice(-4)}`,
       number: rows.length + 1,
       status: "upcoming",
-      published: false,
+      published: true,
     });
     if (error) toast.error(error.message);
     else {
