@@ -221,7 +221,16 @@ Deno.serve(async (req) => {
         `SELECT table_name AS name FROM information_schema.tables WHERE table_schema = ?`,
         [cfg0.database],
       )
-...
+      const tables: Array<{ name: string; rows: number | string }> = []
+      for (const t of tbls as any[]) {
+        const name = t.name ?? t.NAME ?? t.TABLE_NAME
+        try {
+          const [c] = await conn.query(`SELECT COUNT(*) AS n FROM \`${name}\``)
+          tables.push({ name, rows: Number((c as any[])[0].n) })
+        } catch (e) {
+          tables.push({ name, rows: `error: ${(e as Error).message}` })
+        }
+      }
       await conn.end()
       return json({
         database: cfg0.database,
