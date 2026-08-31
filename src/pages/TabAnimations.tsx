@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
-import { Navbar } from "@/components/site/Navbar";
-import { Footer } from "@/components/site/Footer";
+import Navbar from "@/components/site/Navbar";
+import Footer from "@/components/site/Footer";
 import { parseMcText } from "@/lib/mcColors";
 import { Loader2 } from "lucide-react";
 
