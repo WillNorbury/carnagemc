@@ -92,6 +92,7 @@ import { PartnersAdminSection } from "@/components/admin/PartnersAdminSection";
 import { PlayerTiersAdminSection } from "@/components/admin/PlayerTiersAdminSection";
 import { AccountRemovalsAdminSection } from "@/components/admin/AccountRemovalsAdminSection";
 import { SeasonsAdminSection } from "@/components/admin/SeasonsAdminSection";
+import { TabAnimationsAdminSection } from "@/components/admin/TabAnimationsAdminSection";
 import { SitePagesAdminSection } from "@/components/admin/SitePagesAdminSection";
 import {
   SkriptsModerationSection,
