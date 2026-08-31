@@ -50,6 +50,7 @@ import Features from "./pages/Features.tsx";
 import FeatureDetail from "./pages/FeatureDetail.tsx";
 import Tiers from "./pages/Tiers";
 import Seasons from "./pages/Seasons";
+import TabAnimations from "./pages/TabAnimations";
 import SearchPage from "./pages/Search";
 import Leaderboard from "./pages/Leaderboard.tsx";
 import Faq from "./pages/Faq.tsx";
@@ -249,6 +250,7 @@ const Shell = () => {
                   <Route path="/features/:slug" element={<FeatureDetail />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
                   <Route path="/tiers" element={<Tiers />} />
+                  <Route path="/tab" element={<TabAnimations />} />
                   <Route path="/seasons" element={<Seasons />} />
                   <Route path="/search" element={<SearchPage />} />
                   <Route path="/faq" element={<Faq />} />
