@@ -192,6 +192,11 @@ const MyLinksEditor = ({ user }: { user: User }) => {
         <>
           {mine.length > 0 && (
             <div className="space-y-4 mb-6">
+              <div className="flex items-center justify-end">
+                <Button variant="outline" size="sm" className="gap-2" onClick={() => downloadYaml(mine, "my-animations.yml")}>
+                  <Download className="h-4 w-4" /> Download animations.yml
+                </Button>
+              </div>
               <McPreview groups={mine} />
               {mine.map((g) => (
                 <div key={g.id} className="rounded-lg border border-border bg-card p-4 flex items-center justify-between">
