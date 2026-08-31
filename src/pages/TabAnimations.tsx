@@ -348,6 +348,11 @@ const TabAnimations = () => {
           <p className="text-muted-foreground">No animations published yet.</p>
         ) : (
           <div className="space-y-8">
+            <div className="flex items-center justify-end">
+              <Button variant="outline" className="gap-2" onClick={() => downloadYaml(groups)}>
+                <Download className="h-4 w-4" /> Download animations.yml
+              </Button>
+            </div>
             <McPreview groups={groups} />
 
             {groups.map((g) => (
