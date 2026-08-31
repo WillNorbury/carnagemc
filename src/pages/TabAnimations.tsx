@@ -350,7 +350,7 @@ ${g.lines.map((l) => `  - "${l}"`).join("\n")}`}
               Sign in to build your own animated TAB link groups with a live preview.
             </p>
             <Button asChild>
-              <Link to="/login">Sign in</Link>
+              <Link to="/auth">Sign in</Link>
             </Button>
           </section>
         )}
