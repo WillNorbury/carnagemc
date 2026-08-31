@@ -2853,6 +2853,39 @@ export type Database = {
         }
         Relationships: []
       }
+      tab_animations: {
+        Row: {
+          change_interval: number
+          created_at: string
+          id: string
+          lines: Json
+          name: string
+          published: boolean
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          change_interval?: number
+          created_at?: string
+          id?: string
+          lines?: Json
+          name: string
+          published?: boolean
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          change_interval?: number
+          created_at?: string
+          id?: string
+          lines?: Json
+          name?: string
+          published?: boolean
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       trusted_devices: {
         Row: {
           created_at: string
