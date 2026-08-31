@@ -8,8 +8,36 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Plus, Save, Trash2 } from "lucide-react";
+import { Loader2, Plus, Save, Trash2, Download } from "lucide-react";
 import { toast } from "sonner";
+
+const buildYaml = (groups: TabAnimation[]): string =>
+  groups
+    .map(
+      (g) =>
+        `${g.name}:\n  change-interval: ${g.change_interval}\n  texts:\n${g.lines
+          .map((l) => `  - "${l}"`)
+          .join("\n")}`,
+    )
+    .join("\n\n");
+
+const downloadYaml = (groups: TabAnimation[], filename = "animations.yml") => {
+  if (groups.length === 0) {
+    toast.error("No animation groups to export");
+    return;
+  }
+  const yaml = buildYaml(groups) + "\n";
+  const blob = new Blob([yaml], { type: "text/yaml;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast.success("Downloaded animations.yml");
+};
 import { confirm } from "@/lib/confirm";
 import { Link } from "react-router-dom";
 import type { User } from "@supabase/supabase-js";
