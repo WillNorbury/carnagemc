@@ -161,6 +161,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   "account-removals": { title: "Deleted / Banned Accounts", description: "Historical log of removed and suspended accounts." },
   tiers: { title: "Player Tiers", description: "Add players to the public tier list at /tiers." },
   seasons: { title: "Seasons", description: "Manage seasons, dates, highlights and winners shown on /seasons." },
+  "tab-animations": { title: "Tab Animations", description: "Manage animated TAB list lines shown on /tab." },
   skripts: { title: "Skripts", description: "Upload and download Skript (.sk) files staff can add to the server." },
   "site-pages": { title: "Site Pages", description: "Create and edit standalone content pages such as /guides, /about, /roadmap and /credits." },
   "mod-skripts": { title: "Community Skripts", description: "Moderate member-uploaded Skripts." },
@@ -328,6 +329,7 @@ const Admin = () => {
           {section === "tiers" && <PlayerTiersAdminSection />}
           {section === "account-removals" && <AccountRemovalsAdminSection />}
           {section === "seasons" && <SeasonsAdminSection />}
+          {section === "tab-animations" && <TabAnimationsAdminSection />}
           {section === "skripts" && <AdminSkriptsSection />}
           {section === "game-modes" && <GameModesAdminSection />}
           {section === "site-pages" && <SitePagesAdminSection />}
