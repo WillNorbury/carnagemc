@@ -2863,6 +2863,7 @@ export type Database = {
           published: boolean
           sort_order: number
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           change_interval?: number
@@ -2873,6 +2874,7 @@ export type Database = {
           published?: boolean
           sort_order?: number
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           change_interval?: number
@@ -2883,6 +2885,7 @@ export type Database = {
           published?: boolean
           sort_order?: number
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
