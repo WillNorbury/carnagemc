@@ -53,7 +53,8 @@ type TabAnimation = {
 
 export const AnimatedLine = ({ anim }: { anim: TabAnimation }) => {
   const frames = anim.lines.length ? anim.lines : [""];
-  const [idx, setIdx] = useState(0);
+  const [rawIdx, setIdx] = useState(0);
+  const idx = rawIdx % frames.length;
 
   useEffect(() => {
     if (frames.length <= 1) return;
