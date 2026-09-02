@@ -35,7 +35,8 @@ type McStyle = {
  *  - Legacy codes: &0-9a-f (colors), &l &o &n &m &k &r (formats)
  *  - Hex colors: <#RRGGBB> and &#RRGGBB
  */
-export function parseMcText(input: string, keyPrefix = ""): ReactNode[] {
+export function parseMcText(input: string | null | undefined, keyPrefix = ""): ReactNode[] {
+  if (typeof input !== "string" || !input) return [];
   const out: ReactNode[] = [];
   let style: McStyle = {};
   let buf = "";
