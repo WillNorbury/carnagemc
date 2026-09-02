@@ -82,7 +82,8 @@ Deno.serve(async (req) => {
   const ua = req.headers.get('user-agent')
   const admin = createClient(supabaseUrl, serviceKey)
 
-  const issueCode = async () => {
+  /** Returns true only when a code was actually emailed to the user. */
+  const issueCode = async (): Promise<boolean> => {
     const code = String(Math.floor(100000 + Math.random() * 900000))
     await admin.from('login_verifications').insert({
       user_id: user.id,
@@ -92,14 +93,15 @@ Deno.serve(async (req) => {
       user_agent: ua,
       expires_at: new Date(Date.now() + CODE_TTL_MS).toISOString(),
     })
-    if (user.email) {
-      try {
-        await sendTemplateEmail('login-verification', user.email, {
-          templateData: { code, ip: ip ?? undefined, device: describeDevice(ua) },
-        })
-      } catch (e) {
-        console.error('failed to send verification email', e)
-      }
+    if (!user.email) return false
+    try {
+      const res = await sendTemplateEmail('login-verification', user.email, {
+        templateData: { code, ip: ip ?? undefined, device: describeDevice(ua) },
+      })
+      return res.sent === true
+    } catch (e) {
+      console.error('failed to send verification email', e)
+      return false
     }
   }
 
