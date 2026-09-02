@@ -57,6 +57,7 @@ export const AnimatedLine = ({ anim }: { anim: TabAnimation }) => {
   const idx = rawIdx % frames.length;
 
   useEffect(() => {
+    setIdx(0);
     if (frames.length <= 1) return;
     const t = setInterval(
       () => setIdx((v) => (v + 1) % frames.length),
