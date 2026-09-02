@@ -127,7 +127,25 @@ Deno.serve(async (req) => {
         return json(200, { required: false })
       }
 
-      await issueCode()
+      const emailed = await issueCode()
+      if (!emailed) {
+        // Email delivery is unavailable (unverified sender domain, suppressed
+        // recipient, ...). Never lock the member out over a mail failure —
+        // trust the device for the session length instead.
+        console.error('device-verify: verification email not delivered, failing open')
+        await admin.from('trusted_devices').upsert(
+          {
+            user_id: user.id,
+            device_id: deviceId,
+            ip,
+            user_agent: ua,
+            trusted_until: new Date(Date.now() + SESSION_MS).toISOString(),
+            last_seen_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id,device_id' },
+        )
+        return json(200, { required: false, email_unavailable: true })
+      }
       return json(200, {
         required: true,
         reason: device ? 'new_network' : 'new_device',
