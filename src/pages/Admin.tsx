@@ -204,6 +204,9 @@ const Admin = () => {
     }
   }, [location.pathname, location.search, unknownTab]);
 
+  useEffect(() => {
+    document.title = `Warden Network Admin — ${sectionMeta[section]?.title ?? "Dashboard"}`;
+  }, [section]);
 
   const onNavigate = (s: AdminSection) => {
     setSection(s);
