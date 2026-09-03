@@ -50,7 +50,7 @@ export function ServerDashboardAdminSection() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [status]);
+  }, []);
 
 
   useEffect(() => { void load(true); }, [load]);
