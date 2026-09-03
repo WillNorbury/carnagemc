@@ -10,8 +10,8 @@ import listMyTickets from "./tools/list-my-tickets";
 const projectRef = import.meta.env.VITE_SUPABASE_PROJECT_ID ?? "project-ref-unset";
 
 export default defineMcp({
-  name: "havocsmp-mcp",
-  title: "HavocSMP MCP",
+  name: "warden-network-mcp",
+  title: "Warden Network MCP",
   version: "0.1.0",
   instructions:
     "Tools for the Warden Network community website. Use get_server_status and list_active_incidents for public read-only checks; use get_my_profile and list_my_tickets to act on the signed-in user's own data (RLS-scoped).",

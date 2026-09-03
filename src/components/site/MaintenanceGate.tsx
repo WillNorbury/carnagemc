@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Wrench, Shield } from "lucide-react";
-import logo from "@/assets/xylo-logo.png";
+import logo from "@/assets/warden-network-icon.png";
 
 type Config = {
   enabled: boolean;
