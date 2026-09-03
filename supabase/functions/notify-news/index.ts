@@ -6,7 +6,7 @@ const corsHeaders = {
 }
 
 const SITE_BASE = 'https://www.carnagemc.net'
-const FROM = 'Warden Network News <news@carnagemc.net>'
+const FROM = 'Warden Network News <news@warden.rip>'
 
 const enc = new TextEncoder()
 const b64url = (buf: ArrayBuffer) => {

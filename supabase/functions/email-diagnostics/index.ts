@@ -11,15 +11,15 @@ const json = (body: unknown, status = 200) =>
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   })
 
-const SENDER_DOMAIN = 'notify.carnagemc.net'
-const FROM_DOMAIN = 'carnagemc.net'
+const SENDER_DOMAIN = 'notify.warden.rip'
+const FROM_DOMAIN = 'warden.rip'
 
 const ALLOWED_FROM = [
-  'Warden Network <noreply@carnagemc.net>',
-  'Warden Network Updates <updates@notify.carnagemc.net>',
-  '"William @ Warden Network" <william@notify.carnagemc.net>',
-  '"William @ Warden Network" <william@carnagemc.net>',
-  'Warden Network Status <status@carnagemc.net>',
+  'Warden Network <noreply@warden.rip>',
+  'Warden Network Updates <updates@notify.warden.rip>',
+  '"William @ Warden Network" <william@notify.warden.rip>',
+  '"William @ Warden Network" <william@warden.rip>',
+  'Warden Network Status <status@warden.rip>',
 ]
 
 const extractEmail = (s: string): string | null => {

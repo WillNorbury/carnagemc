@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
             templateName: 'changelog-update',
             recipientEmail: email,
             idempotencyKey,
-            from: 'Warden Network Updates <updates@carnagemc.net>',
+            from: 'Warden Network Updates <updates@warden.rip>',
             templateData: testEmail
               ? { ...templateData, title: `[TEST] ${templateData.title}` }
               : templateData,
