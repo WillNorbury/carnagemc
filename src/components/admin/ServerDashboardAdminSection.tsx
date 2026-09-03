@@ -10,7 +10,7 @@ import { toast } from "@/hooks/use-toast";
 import { Activity, Ban, Gauge, Map, MapPin, RefreshCw, Server, ShieldBan, UserRound, Users, Wifi } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-type Status = { ok: boolean; ip?: string; online?: boolean; players?: number; max?: number; version?: string | null; latency_ms?: number | null; uptime_pct?: number | null; checked_at?: string; error?: string };
+type Status = { ok: boolean; ip?: string; online?: boolean; players?: number; max?: number; player_list?: string[]; version?: string | null; latency_ms?: number | null; uptime_pct?: number | null; checked_at?: string; error?: string };
 type Player = { name: string; uuid?: string; online?: boolean };
 type MapRow = { id: string; name: string; url: string; description: string | null; sort_order: number; enabled: boolean };
 type Check = { checked_at: string; is_up: boolean; latency_ms: number | null };
@@ -42,8 +42,7 @@ export function ServerDashboardAdminSection() {
         if (error) throw error;
         const next = data as Status;
         setStatus(next);
-        const detected = await loadPlayers(next.ip);
-        setPlayers(detected);
+        setPlayers((next.player_list ?? []).map((name) => ({ name, online: true })));
       }
     } catch (error) {
       toast({ title: "Server dashboard unavailable", description: error instanceof Error ? error.message : "Could not load server data", variant: "destructive" });
@@ -53,15 +52,6 @@ export function ServerDashboardAdminSection() {
     }
   }, [status]);
 
-  const loadPlayers = async (ip?: string) => {
-    if (!ip) return [];
-    try {
-      const response = await fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(ip)}`);
-      if (!response.ok) return [];
-      const data = await response.json() as { players?: { list?: string[] } };
-      return (data.players?.list ?? []).map((name) => ({ name, online: true }));
-    } catch { return []; }
-  };
 
   useEffect(() => { void load(true); }, [load]);
   useEffect(() => {

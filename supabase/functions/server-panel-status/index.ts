@@ -17,7 +17,7 @@ const json = (body: unknown, status = 200) =>
 
 type McsrvResp = {
   online?: boolean;
-  players?: { online?: number; max?: number };
+  players?: { online?: number; max?: number; list?: string[] };
   version?: string;
   motd?: { clean?: string[] };
 };
@@ -69,6 +69,7 @@ Deno.serve(async (req) => {
   let max = 0;
   let version: string | null = null;
   let liveMotd: string | null = null;
+  let playerList: string[] = [];
   let latencyMs: number | null = null;
 
   const started = Date.now();
@@ -82,6 +83,7 @@ Deno.serve(async (req) => {
       online = !!s.online;
       players = s.players?.online ?? 0;
       max = s.players?.max ?? 0;
+      playerList = Array.isArray(s.players?.list) ? s.players.list.filter((name): name is string => typeof name === "string").slice(0, 200) : [];
       version = s.version ?? null;
       const clean = s.motd?.clean;
       liveMotd = Array.isArray(clean) && clean.length ? clean.join(" ").trim() : null;
@@ -145,6 +147,7 @@ Deno.serve(async (req) => {
     online,
     players,
     max,
+    player_list: playerList,
     version,
     motd,
     latency_ms: latencyMs,
