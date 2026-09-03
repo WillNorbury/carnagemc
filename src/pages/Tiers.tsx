@@ -32,7 +32,7 @@ const tierStyle = (tier: string) => {
   }
   if (t.startsWith("HT")) {
     const n = parseInt(t.slice(2), 10);
-    // HT5 = best (primary/crimson), fading toward amber
+    // HT5 = best (primary/teal), fading toward cyan
     if (n >= 5) return "from-primary/30 to-primary/5 border-primary/40 text-primary";
     if (n === 4) return "from-orange-500/25 to-orange-500/5 border-orange-500/30 text-orange-400";
     if (n === 3) return "from-amber-400/20 to-amber-400/5 border-amber-400/30 text-amber-300";

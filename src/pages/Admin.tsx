@@ -394,7 +394,7 @@ const DashboardSection = ({ onNavigate }: { onNavigate: (s: AdminSection) => voi
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard title="Total Users" value={stats.users} icon={UsersIcon} color="bg-sky-500" />
         <StatCard title="Admins" value={stats.admins} icon={ShieldCheck} color="bg-primary" />
-        <StatCard title="News Posts" value={stats.news} icon={Newspaper} color="bg-orange-500" />
+        <StatCard title="News Posts" value={stats.news} icon={Newspaper} color="bg-teal-500" />
         <StatCard
           title="Server"
           value={stats.online ? "Online" : "Offline"}
@@ -2250,7 +2250,7 @@ const BotDashboardSection = () => {
           title="Bot Status"
           value={online ? "Online" : cfg.enabled ? "Connecting" : "Disabled"}
           icon={Activity}
-          color={online ? "bg-emerald-500" : cfg.enabled ? "bg-orange-500" : "bg-muted"}
+          color={online ? "bg-emerald-500" : cfg.enabled ? "bg-teal-500" : "bg-muted"}
         />
         <StatCard title="Guild ID" value={cfg.guildId || "—"} icon={ShieldCheck} color="bg-primary" />
         <StatCard
