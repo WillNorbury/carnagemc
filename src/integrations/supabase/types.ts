@@ -2451,6 +2451,39 @@ export type Database = {
         }
         Relationships: []
       }
+      server_maps: {
+        Row: {
+          created_at: string
+          description: string | null
+          enabled: boolean
+          id: string
+          name: string
+          sort_order: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          name: string
+          sort_order?: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          name?: string
+          sort_order?: number
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       server_panel_settings: {
         Row: {
           created_at: string
