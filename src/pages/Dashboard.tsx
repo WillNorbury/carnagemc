@@ -49,7 +49,7 @@ const Dashboard = () => {
   const [streaks, setStreaks] = useState<Streaks | null>(null);
 
   useEffect(() => {
-    document.title = "Dashboard — Warden Network";
+    document.title = "Warden Network Dashboard";
   }, []);
 
   useEffect(() => {
@@ -104,8 +104,9 @@ const Dashboard = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center gap-2 text-muted-foreground">
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <span>Loading your Warden Network dashboard...</span>
         </div>
         <Footer />
       </div>
@@ -126,9 +127,9 @@ const Dashboard = () => {
       <main className="flex-1 container pt-28 pb-16 max-w-5xl">
         <header className="mb-8">
           <h1 className="font-display text-4xl md:text-5xl font-black">
-            Welcome back<span className="text-gradient">.</span>
+            Warden Network<span className="text-gradient">.</span>
           </h1>
-          <p className="text-muted-foreground mt-1">Your Warden Network hub</p>
+          <p className="text-muted-foreground mt-1">Your member dashboard and network activity hub</p>
         </header>
 
         {/* Top: profile summary */}
@@ -160,17 +161,17 @@ const Dashboard = () => {
         {streaks && (
           <Card className="p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <Flame className="h-5 w-5 text-orange-400" />
+              <Flame className="h-5 w-5 text-teal-300" />
               <h2 className="font-display font-bold text-lg">Streaks</h2>
               <p className="text-xs text-muted-foreground ml-2">Visit daily and vote daily to keep your streaks alive.</p>
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
-              <div className="p-4 rounded-lg border border-border/60 bg-gradient-to-br from-orange-500/10 to-transparent">
+              <div className="p-4 rounded-lg border border-border/60 bg-gradient-to-br from-teal-500/10 to-transparent">
                 <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                  <Flame className="h-3.5 w-3.5 text-orange-400" /> Login streak
+                  <Flame className="h-3.5 w-3.5 text-teal-300" /> Login streak
                 </div>
                 <div className="flex items-baseline gap-3">
-                  <span className="font-display text-4xl font-black text-orange-300">{streaks.login_streak}</span>
+                  <span className="font-display text-4xl font-black text-teal-200">{streaks.login_streak}</span>
                   <span className="text-sm text-muted-foreground">day{streaks.login_streak === 1 ? "" : "s"}</span>
                 </div>
                 <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">

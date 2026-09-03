@@ -190,8 +190,8 @@ export const SECTION_PERMISSIONS: Partial<Record<AdminSection, string>> = {
 
 
 const items: NavItem[] = [
-  { kind: "link", id: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { kind: "link", id: "users", icon: Users, label: "Users" },
+  { kind: "link", id: "dashboard", icon: LayoutDashboard, label: "Network Overview" },
+  { kind: "link", id: "users", icon: Users, label: "Network Members" },
   { kind: "link", id: "roles", icon: Shield, label: "Roles" },
   { kind: "link", id: "permissions", icon: KeyRound, label: "Permissions" },
   { kind: "link", id: "news", icon: Newspaper, label: "News" },

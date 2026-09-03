@@ -119,7 +119,7 @@ type News = {
 };
 
 const sectionMeta: Record<AdminSection, { title: string; description: string }> = {
-  dashboard: { title: "Dashboard", description: "Overview of Warden Network activity." },
+  dashboard: { title: "Warden Network Dashboard", description: "Live control center for Warden Network operations and activity." },
   users: { title: "Users", description: "Promote or demote admin access." },
   roles: { title: "Roles", description: "Assign and manage roles for members." },
   permissions: { title: "Permissions", description: "Define what each role can do." },
@@ -204,6 +204,9 @@ const Admin = () => {
     }
   }, [location.pathname, location.search, unknownTab]);
 
+  useEffect(() => {
+    document.title = `Warden Network Admin — ${sectionMeta[section]?.title ?? "Dashboard"}`;
+  }, [section]);
 
   const onNavigate = (s: AdminSection) => {
     setSection(s);
@@ -225,14 +228,14 @@ const Admin = () => {
   const hasAdminAccess = isOwner || isAdmin || can("admin.access");
 
   if (loading || permsLoading)
-    return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Warden Network admin...</div>;
   if (!user) return <Navigate to="/auth" replace />;
   if (!hasAdminAccess)
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <ShieldOff className="h-12 w-12 text-destructive" />
-        <h1 className="text-2xl font-bold">Access denied</h1>
-        <p className="text-muted-foreground">You don't have admin permissions.</p>
+        <h1 className="text-2xl font-bold">Warden Network admin access required</h1>
+        <p className="text-muted-foreground">You don't have permission to manage the network.</p>
       </div>
     );
 
@@ -392,9 +395,9 @@ const DashboardSection = ({ onNavigate }: { onNavigate: (s: AdminSection) => voi
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total Users" value={stats.users} icon={UsersIcon} color="bg-sky-500" />
-        <StatCard title="Admins" value={stats.admins} icon={ShieldCheck} color="bg-primary" />
-        <StatCard title="News Posts" value={stats.news} icon={Newspaper} color="bg-orange-500" />
+        <StatCard title="Network Members" value={stats.users} icon={UsersIcon} color="bg-primary" />
+        <StatCard title="Staff Members" value={stats.admins} icon={ShieldCheck} color="bg-accent" />
+        <StatCard title="News Updates" value={stats.news} icon={Newspaper} color="bg-primary" />
         <StatCard
           title="Server"
           value={stats.online ? "Online" : "Offline"}
@@ -2250,14 +2253,14 @@ const BotDashboardSection = () => {
           title="Bot Status"
           value={online ? "Online" : cfg.enabled ? "Connecting" : "Disabled"}
           icon={Activity}
-          color={online ? "bg-emerald-500" : cfg.enabled ? "bg-orange-500" : "bg-muted"}
+          color={online ? "bg-emerald-500" : cfg.enabled ? "bg-teal-500" : "bg-muted"}
         />
         <StatCard title="Guild ID" value={cfg.guildId || "—"} icon={ShieldCheck} color="bg-primary" />
         <StatCard
           title="Enabled"
           value={cfg.enabled ? "Yes" : "No"}
           icon={ShieldCheck}
-          color={cfg.enabled ? "bg-sky-500" : "bg-muted"}
+          color={cfg.enabled ? "bg-primary" : "bg-muted"}
         />
       </div>
 
@@ -2291,7 +2294,7 @@ const BotDashboardSection = () => {
                 {typeof result.guild.memberCount === "number" && <> · ~{result.guild.memberCount} members</>}
               </div>
             )}
-            {result.ok && result.guildError && <div className="text-orange-400">Warning: {result.guildError}</div>}
+            {result.ok && result.guildError && <div className="text-amber-400">Warning: {result.guildError}</div>}
           </div>
         )}
       </Card>

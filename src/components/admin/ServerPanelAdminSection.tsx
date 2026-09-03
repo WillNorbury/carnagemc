@@ -33,11 +33,11 @@ type LiveStatus = {
 };
 
 const buildLines = (s: Pick<Settings, "server_ip" | "motd" | "motd_color">) => {
-  const color = s.motd_color?.trim() || "#ff3b30";
+  const color = s.motd_color?.trim() || "#0082A2";
   const lines: string[] = [];
   if (s.motd.trim()) lines.push(`<${color}>&l${s.motd.trim()}`);
   if (s.server_ip.trim()) lines.push(`<${color}>&lIP &8• &f${s.server_ip.trim()}`);
-  return lines.length ? lines : ["<#ff3b30>&lWelcome"];
+  return lines.length ? lines : ["<#0082A2>&lWelcome"];
 };
 
 export function ServerPanelAdminSection() {
@@ -46,7 +46,7 @@ export function ServerPanelAdminSection() {
   const [row, setRow] = useState<Settings | null>(null);
   const [serverIp, setServerIp] = useState("");
   const [motd, setMotd] = useState("");
-  const [motdColor, setMotdColor] = useState("#ff3b30");
+  const [motdColor, setMotdColor] = useState("#0082A2");
   const [status, setStatus] = useState<LiveStatus | null>(null);
   const [checking, setChecking] = useState(false);
 
@@ -77,7 +77,7 @@ export function ServerPanelAdminSection() {
         setRow(data as Settings);
         setServerIp(data.server_ip ?? "");
         setMotd(data.motd ?? "");
-        setMotdColor(data.motd_color ?? "#ff3b30");
+        setMotdColor(data.motd_color ?? "#0082A2");
       }
       setLoading(false);
       void refreshStatus();
@@ -218,11 +218,11 @@ export function ServerPanelAdminSection() {
               <input
                 id="server-motd-color"
                 type="color"
-                value={/^#[0-9a-fA-F]{6}$/.test(motdColor) ? motdColor : "#ff3b30"}
+                value={/^#[0-9a-fA-F]{6}$/.test(motdColor) ? motdColor : "#0082A2"}
                 onChange={(e) => setMotdColor(e.target.value)}
                 className="h-10 w-14 cursor-pointer rounded border border-border bg-background"
               />
-              <Input value={motdColor} onChange={(e) => setMotdColor(e.target.value)} placeholder="#ff3b30" className="max-w-[160px]" />
+              <Input value={motdColor} onChange={(e) => setMotdColor(e.target.value)} placeholder="#0082A2" className="max-w-[160px]" />
             </div>
           </div>
           <Button onClick={save} disabled={saving}>
