@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Smartphone, Apple, Share, Plus, CheckCircle2, Chrome, Globe, MonitorSmartphone } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import logo from "@/assets/xylo-logo.png";
+import logo from "@/assets/warden-network-icon.png";
 
 type BIPEvent = Event & {
   prompt: () => Promise<void>;

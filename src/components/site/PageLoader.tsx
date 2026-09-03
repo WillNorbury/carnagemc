@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import logo from "@/assets/xylo-logo.png";
+import logo from "@/assets/warden-network-icon.png";
 import { cn } from "@/lib/utils";
 
 /**

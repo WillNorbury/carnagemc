@@ -17,8 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useAuth } from "@/lib/auth";
-import logoAsset from "@/assets/carnagemc-logo.png.asset.json";
-const logo = logoAsset.url;
+import logo from "@/assets/warden-network-icon.png";
 import {
   Home,
   Newspaper,

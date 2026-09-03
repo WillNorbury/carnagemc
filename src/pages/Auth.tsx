@@ -235,7 +235,7 @@ const Auth = () => {
       <div className="absolute inset-0 -z-10" style={{ background: "var(--gradient-hero)" }} />
       <Card className="w-full max-w-md p-8 backdrop-blur-xl bg-card/90 border-primary/20 shadow-elegant">
         <Link to="/" className="flex items-center justify-center gap-2 mb-6">
-          <img src={logoAsset.url} alt="Warden Network" className="h-12 w-12 object-contain" />
+          <img src={logo} alt="Warden Network" className="h-12 w-12 object-contain" />
           <span className="font-bold text-xl">Warden<span className="text-primary"> Network</span></span>
         </Link>
 

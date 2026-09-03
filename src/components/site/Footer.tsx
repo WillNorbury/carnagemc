@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import logoAsset from "@/assets/carnagemc-logo.png.asset.json";
-const logo = logoAsset.url;
+import logo from "@/assets/warden-network-icon.png";
 import { Twitter, Youtube, MessageCircle, Twitch } from "lucide-react";
 
 const SOCIALS = [
