@@ -79,9 +79,9 @@ export const template = {
     content: 'Join us for a server-wide event with prizes and chaos.',
     priority: 'high',
     coverUrl: null,
-    link: 'https://carnagemc.net/news',
+    link: 'https://warden.rip/news',
     siteName: 'Warden Network',
-    newsUnsubscribeUrl: 'https://carnagemc.net/news/unsubscribe?token=demo',
+    newsUnsubscribeUrl: 'https://warden.rip/news/unsubscribe?token=demo',
   },
 } satisfies TemplateEntry
 

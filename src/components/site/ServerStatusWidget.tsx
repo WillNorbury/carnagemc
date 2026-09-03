@@ -20,7 +20,7 @@ interface Props {
 }
 
 const ServerStatusWidget = ({ className = "", compact = false }: Props) => {
-  const [ip, setIp] = useState("carnagemc.net");
+  const [ip, setIp] = useState("warden.rip");
   const [status, setStatus] = useState<Status | null>(null);
   const [loading, setLoading] = useState(true);
 

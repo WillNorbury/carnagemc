@@ -365,7 +365,7 @@ const Auth = () => {
             </DialogTitle>
             <DialogDescription>
               {forgotSent
-                ? "If an account exists for that email, a reset link has been sent from passwords@carnagemc.net. Check your inbox (and spam folder)."
+                ? "If an account exists for that email, a reset link has been sent from passwords@warden.rip. Check your inbox (and spam folder)."
                 : "Enter your account email and we'll send you a password reset link."}
             </DialogDescription>
           </DialogHeader>

@@ -18,7 +18,7 @@ const Email = ({
   applicationType = 'staff',
   status = 'updated',
   reviewerNotes = '',
-  dashboardUrl = 'https://carnagemc.net/dashboard',
+  dashboardUrl = 'https://warden.rip/dashboard',
 }: Props) => {
   const accent =
     status === 'approved' ? 'hsl(160, 84%, 39%)' :

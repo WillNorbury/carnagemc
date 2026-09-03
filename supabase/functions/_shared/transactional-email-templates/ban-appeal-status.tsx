@@ -16,7 +16,7 @@ const Email = ({
   minecraftUsername = 'there',
   status = 'updated',
   adminResponse = '',
-  appealUrl = 'https://carnagemc.net/appeal',
+  appealUrl = 'https://warden.rip/appeal',
 }: Props) => {
   const accent =
     status === 'approved' ? 'hsl(160, 84%, 39%)' :

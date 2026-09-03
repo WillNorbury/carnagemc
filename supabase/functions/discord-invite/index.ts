@@ -43,7 +43,7 @@ async function extractCode(input: string): Promise<string | null> {
       const parsed = new URL(trimmed);
       if (parsed.protocol !== "https:") return null;
       // Follow redirects from arbitrary HTTPS hosts (vanity domains like
-      // discord.carnagemc.net), but only accept the code if the FINAL resolved
+      // discord.warden.rip), but only accept the code if the FINAL resolved
       // URL lands on a Discord-owned host.
       const r = await fetch(parsed.toString(), {
         redirect: "follow",

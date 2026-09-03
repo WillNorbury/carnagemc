@@ -161,7 +161,7 @@ const ServersStatusAdminSection = () => {
             </div>
             <div>
               <Label>IP / connect string</Label>
-              <Input value={creating.ip ?? ""} onChange={(e) => setCreating({ ...creating, ip: e.target.value })} placeholder="creative.carnagemc.net" />
+              <Input value={creating.ip ?? ""} onChange={(e) => setCreating({ ...creating, ip: e.target.value })} placeholder="creative.warden.rip" />
             </div>
             <div>
               <Label>Sort order</Label>

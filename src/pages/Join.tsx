@@ -17,8 +17,8 @@ const TABS: { id: Platform; label: string; Icon: typeof Monitor }[] = [
 ];
 
 export default function Join() {
-  const [ip, setIp] = useState("play.carnagemc.net");
-  const [bedrockIp, setBedrockIp] = useState("play.carnagemc.net");
+  const [ip, setIp] = useState("play.warden.rip");
+  const [bedrockIp, setBedrockIp] = useState("play.warden.rip");
   const [bedrockPort, setBedrockPort] = useState("25577");
   const [tab, setTab] = useState<Platform>("java");
 
@@ -74,7 +74,7 @@ export default function Join() {
           name="description"
           content="Step-by-step guide to joining the Warden Network Minecraft Lifesteal server on Java, Bedrock, mobile, Xbox, Switch and PlayStation."
         />
-        <link rel="canonical" href="https://carnagemc.net/join" />
+        <link rel="canonical" href="https://warden.rip/join" />
       </Helmet>
       <Navbar />
       <main className="flex-1 w-full max-w-4xl mx-auto px-4 md:px-8 py-10 md:py-16">

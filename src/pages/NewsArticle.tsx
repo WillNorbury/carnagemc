@@ -88,11 +88,11 @@ const NewsArticle = () => {
               headline: article.title,
               datePublished: article.created_at,
               image: article.cover_url ? [article.cover_url] : [ogImageFor(article.title)],
-              mainEntityOfPage: `https://www.carnagemc.net/announcements/${slug}`,
+              mainEntityOfPage: `https://www.warden.rip/announcements/${slug}`,
               publisher: {
                 "@type": "Organization",
                 name: "Warden Network",
-                logo: { "@type": "ImageObject", url: "https://www.carnagemc.net/icon-512.png" },
+                logo: { "@type": "ImageObject", url: "https://www.warden.rip/icon-512.png" },
               },
             })}</script>
           </Helmet>

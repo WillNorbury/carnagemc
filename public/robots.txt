@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://carnagemc.net/sitemap.xml
+Sitemap: https://warden.rip/sitemap.xml

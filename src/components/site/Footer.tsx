@@ -112,7 +112,7 @@ const Footer = () => (
           <dl className="space-y-2.5 text-sm">
             <div className="flex flex-wrap items-baseline gap-x-2">
               <dt className="text-muted-foreground">Java IP</dt>
-              <dd className="font-mono text-foreground">play.carnagemc.net</dd>
+              <dd className="font-mono text-foreground">play.warden.rip</dd>
             </div>
             <div className="flex flex-wrap items-baseline gap-x-2">
               <dt className="text-muted-foreground">Bedrock port</dt>

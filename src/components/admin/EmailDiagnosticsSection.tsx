@@ -115,7 +115,7 @@ export const EmailDiagnosticsSection = () => {
               Email diagnostics
             </CardTitle>
             <CardDescription>
-              Verifies the <code>notify.carnagemc.net</code> sender domain configuration and From-address allowlist.
+              Verifies the <code>notify.warden.rip</code> sender domain configuration and From-address allowlist.
             </CardDescription>
           </div>
           <Button variant="outline" size="sm" onClick={() => run(candidate || undefined)} disabled={loading}>
@@ -178,13 +178,13 @@ export const EmailDiagnosticsSection = () => {
         <CardHeader>
           <CardTitle>Check a From address</CardTitle>
           <CardDescription>
-            Paste a full From string (e.g. <code>Name &lt;user@notify.carnagemc.net&gt;</code>) to see whether it will be accepted.
+            Paste a full From string (e.g. <code>Name &lt;user@notify.warden.rip&gt;</code>) to see whether it will be accepted.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-2">
             <Input
-              placeholder="William @ Warden Network <william@notify.carnagemc.net>"
+              placeholder="William @ Warden Network <william@notify.warden.rip>"
               value={candidate}
               onChange={(e) => setCandidate(e.target.value)}
             />

@@ -183,7 +183,7 @@ const MyServersPanel = () => {
             </div>
             <div>
               <Label>Server IP *</Label>
-              <Input value={ip} onChange={(e) => setIp(e.target.value)} placeholder="play.carnagemc.net" />
+              <Input value={ip} onChange={(e) => setIp(e.target.value)} placeholder="play.warden.rip" />
             </div>
             <div>
               <Label>Port (optional)</Label>

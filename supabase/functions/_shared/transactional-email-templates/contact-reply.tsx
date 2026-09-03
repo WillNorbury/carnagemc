@@ -42,7 +42,7 @@ const Email = ({
           </>
         )}
         <Text style={muted}>
-          Reply to this email to continue the conversation — it goes straight to contact@carnagemc.net.
+          Reply to this email to continue the conversation — it goes straight to contact@warden.rip.
         </Text>
       </Container>
     </Body>

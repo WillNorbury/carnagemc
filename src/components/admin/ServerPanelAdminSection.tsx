@@ -206,7 +206,7 @@ export function ServerPanelAdminSection() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="server-ip">Server IP</Label>
-            <Input id="server-ip" value={serverIp} onChange={(e) => setServerIp(e.target.value)} placeholder="play.carnagemc.net" />
+            <Input id="server-ip" value={serverIp} onChange={(e) => setServerIp(e.target.value)} placeholder="play.warden.rip" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="server-motd">MOTD</Label>

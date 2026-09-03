@@ -69,11 +69,11 @@ const RANGES: { label: string; value: Range }[] = [
 
 const DEFAULT_SERVICES: Service[] = [
   { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
-  { key: "minecraft", name: "Minecraft Server", desc: "mc.carnagemc.net", url: "" },
+  { key: "minecraft", name: "Minecraft Server", desc: "mc.warden.rip", url: "" },
   { key: "api", name: "API & Database", desc: "Backend services", url: "" },
   { key: "panel", name: "Panel", desc: "dash.nightly.host", url: "https://dash.nightly.host" },
-  { key: "discord", name: "Discord Server", desc: "https://discord.gg/wD6K3nr2MG", url: "https://discord.carnagemc.net" },
-  { key: "portfolio", name: "Portfolio", desc: "portfolio.carnagemc.net", url: "https://portfolio.carnagemc.net" },
+  { key: "discord", name: "Discord Server", desc: "https://discord.gg/wD6K3nr2MG", url: "https://discord.warden.rip" },
+  { key: "portfolio", name: "Portfolio", desc: "portfolio.warden.rip", url: "https://portfolio.warden.rip" },
 ];
 
 const toDayKey = (d: Date) => d.toISOString().slice(0, 10);

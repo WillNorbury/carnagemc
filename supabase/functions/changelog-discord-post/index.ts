@@ -5,7 +5,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const SITE_BASE = 'https://www.carnagemc.net'
+const SITE_BASE = 'https://www.warden.rip'
 const CHANNEL_ID = '1522474298332287037'
 
 const json = (body: unknown, status = 200) =>

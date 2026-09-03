@@ -18,7 +18,7 @@ const Email = ({
   subject = 'your ticket',
   reply = '',
   staffName = 'Support',
-  ticketUrl = 'https://carnagemc.net/support',
+  ticketUrl = 'https://warden.rip/support',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />

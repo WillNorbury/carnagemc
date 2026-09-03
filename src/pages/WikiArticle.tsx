@@ -43,11 +43,11 @@ export default function WikiArticle() {
             <Helmet>
               <title>{article.title} — Wiki — Warden Network</title>
               {article.excerpt && <meta name="description" content={article.excerpt} />}
-              <link rel="canonical" href={`https://www.carnagemc.net/wiki/${slug}`} />
+              <link rel="canonical" href={`https://www.warden.rip/wiki/${slug}`} />
               <meta property="og:title" content={`${article.title} — Wiki`} />
               {article.excerpt && <meta property="og:description" content={article.excerpt} />}
               <meta property="og:type" content="article" />
-              <meta property="og:url" content={`https://www.carnagemc.net/wiki/${slug}`} />
+              <meta property="og:url" content={`https://www.warden.rip/wiki/${slug}`} />
               <script type="application/ld+json">{JSON.stringify({
                 "@context": "https://schema.org",
                 "@type": "Article",
@@ -56,11 +56,11 @@ export default function WikiArticle() {
                 dateModified: article.updated_at,
                 articleSection: article.category || undefined,
                 description: article.excerpt || undefined,
-                mainEntityOfPage: `https://www.carnagemc.net/wiki/${slug}`,
+                mainEntityOfPage: `https://www.warden.rip/wiki/${slug}`,
                 publisher: {
                   "@type": "Organization",
                   name: "Warden Network",
-                  logo: { "@type": "ImageObject", url: "https://www.carnagemc.net/icon-512.png" },
+                  logo: { "@type": "ImageObject", url: "https://www.warden.rip/icon-512.png" },
                 },
               })}</script>
             </Helmet>

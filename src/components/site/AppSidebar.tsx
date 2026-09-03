@@ -76,10 +76,10 @@ const websiteGroup: NavGroup = {
   label: "Websites",
   icon: Globe,
   items: [
-    { to: "https://portfolio.carnagemc.net", label: "Portfolio", icon: Link2 },
+    { to: "https://portfolio.warden.rip", label: "Portfolio", icon: Link2 },
     { to: "https://dash.nightly.host", label: "Panel", icon: Link2 },
     { to: "/fire-market", label: "Fire Market", icon: Link2 },
-    { to: "https://appeals.carnagemc.net", label: "Appeals", icon: Link2 },
+    { to: "https://appeals.warden.rip", label: "Appeals", icon: Link2 },
   ],
 };
 

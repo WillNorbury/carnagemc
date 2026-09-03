@@ -152,7 +152,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   quizzes: { title: "Quizzes", description: "Create, edit, and publish scored quizzes." },
   reports: { title: "Reports", description: "Review reports submitted by users about accounts, plugins, or other content." },
   "send-email": { title: "Send Email", description: "Broadcast emails to all users, admins, or owners only." },
-  "email-diagnostics": { title: "Email Diagnostics", description: "Verify the notify.carnagemc.net sender domain and From-address allowlist." },
+  "email-diagnostics": { title: "Email Diagnostics", description: "Verify the notify.warden.rip sender domain and From-address allowlist." },
   punishments: { title: "Punishments", description: "Browse bans, mutes, kicks, and warnings from the network database. Unban or unmute players from the web (silent by default)." },
   console: { title: "Owner Console", description: "Terminal-style admin console. Type `help` for available commands." },
   mysql: { title: "LiteBans MySQL", description: "Connect and edit the LiteBans database directly. Use with caution." },
@@ -1662,7 +1662,7 @@ const StatusTab = () => {
            website_webhook_url: v.website_webhook_url ?? "",
           services: Array.isArray(v.services) && v.services.length ? v.services : [
             { key: "website", name: "Website", desc: "Main site & dashboard", url: "" },
-            { key: "minecraft", name: "Minecraft Server", desc: "carnagemc.net", url: "" },
+            { key: "minecraft", name: "Minecraft Server", desc: "warden.rip", url: "" },
             { key: "api", name: "API & Database", desc: "Backend services", url: "" },
             { key: "panel", name: "Panel", desc: "dash.nightly.host", url: "" },
             { key: "discord", name: "Discord Server", desc: "https://discord.gg/wD6K3nr2MG", url: "" },
@@ -2956,7 +2956,7 @@ const TicketsAdminSection = () => {
             body: {
               templateName: "ticket-reply",
               recipientEmail,
-              from: '"Warden Network Support" <tickets@carnagemc.net>',
+              from: '"Warden Network Support" <tickets@warden.rip>',
               idempotencyKey: `ticket-reply-${selected.id}-${Date.now()}`,
               templateData: {
                 recipientName,
@@ -3997,7 +3997,7 @@ const ChangelogTab = () => {
                       }}
                     />
                     <p className="text-[11px] text-muted-foreground mt-1">
-                      Sends a one-off "[TEST]" email from updates@carnagemc.net. Bypasses subscriber list and suppression.
+                      Sends a one-off "[TEST]" email from updates@warden.rip. Bypasses subscriber list and suppression.
                       {!e.published && " Works on drafts too."}
                     </p>
                   </div>
@@ -4194,7 +4194,7 @@ const ApplicationsTab = () => {
         templateName,
         recipientEmail: recipient,
         idempotencyKey: `test-${templateName}-${stamp}`,
-        from: "Warden Network Applications <applications@carnagemc.net>",
+        from: "Warden Network Applications <applications@warden.rip>",
         templateData,
       },
     });
