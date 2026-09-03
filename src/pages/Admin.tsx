@@ -2260,7 +2260,7 @@ const BotDashboardSection = () => {
           title="Enabled"
           value={cfg.enabled ? "Yes" : "No"}
           icon={ShieldCheck}
-          color={cfg.enabled ? "bg-sky-500" : "bg-muted"}
+          color={cfg.enabled ? "bg-primary" : "bg-muted"}
         />
       </div>
 
@@ -2294,7 +2294,7 @@ const BotDashboardSection = () => {
                 {typeof result.guild.memberCount === "number" && <> · ~{result.guild.memberCount} members</>}
               </div>
             )}
-            {result.ok && result.guildError && <div className="text-orange-400">Warning: {result.guildError}</div>}
+            {result.ok && result.guildError && <div className="text-amber-400">Warning: {result.guildError}</div>}
           </div>
         )}
       </Card>
