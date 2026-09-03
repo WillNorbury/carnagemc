@@ -24,7 +24,7 @@ const SERVICE_NAMES: Record<string, string> = {
 };
 
 const SERVICE_ENDPOINTS: Record<string, string> = {
-  website: "https://carnagemc.lovable.app",
+  website: "https://warden.rip",
   minecraft: "",
   api: "",
   panel: "https://dash.nightly.host",
@@ -286,7 +286,7 @@ Deno.serve(async (req) => {
     /* ignore */
   }
 
-  const siteUrl = "https://carnagemc.lovable.app";
+  const siteUrl = "https://warden.rip";
   const apiHealth = `${SUPABASE_URL}/rest/v1/`;
   SERVICE_ENDPOINTS.website = siteUrl;
   SERVICE_ENDPOINTS.minecraft = mcHost;
