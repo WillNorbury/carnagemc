@@ -104,8 +104,9 @@ const Dashboard = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center gap-2 text-muted-foreground">
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <span>Loading your Warden Network dashboard...</span>
         </div>
         <Footer />
       </div>

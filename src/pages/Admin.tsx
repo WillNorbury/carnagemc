@@ -225,14 +225,14 @@ const Admin = () => {
   const hasAdminAccess = isOwner || isAdmin || can("admin.access");
 
   if (loading || permsLoading)
-    return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Warden Network admin...</div>;
   if (!user) return <Navigate to="/auth" replace />;
   if (!hasAdminAccess)
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <ShieldOff className="h-12 w-12 text-destructive" />
-        <h1 className="text-2xl font-bold">Access denied</h1>
-        <p className="text-muted-foreground">You don't have admin permissions.</p>
+        <h1 className="text-2xl font-bold">Warden Network admin access required</h1>
+        <p className="text-muted-foreground">You don't have permission to manage the network.</p>
       </div>
     );
 
