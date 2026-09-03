@@ -29,7 +29,7 @@ const stripPort = (ip: string) => ip.trim();
 async function fetchStatus(ip: string): Promise<McsrvResp | null> {
   try {
     const res = await fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(stripPort(ip))}`, {
-      headers: { "User-Agent": "Warden Network-Status/1.0 (+https://carnagemc.net)" },
+      headers: { "User-Agent": "Warden Network-Status/1.0 (+https://warden.rip)" },
     });
     if (!res.ok) return null;
     return (await res.json()) as McsrvResp;

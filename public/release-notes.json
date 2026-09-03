@@ -121,14 +121,14 @@
         },
         {
           "title": "Security hardening, MySQL settings editor, and admin fixes",
-          "content": "Recent improvements:\n\n**Security**\n- Locked down plugin download tracking: anonymous inserts are no longer accepted directly; all downloads are recorded through the audited `record_plugin_download` server function.\n- Hid user notification preferences on the public profile table so they can no longer be pulled in bulk — owners still read their own preferences via a secure server function.\n\n**Admin panel**\n- New MySQL connection editor at `/admin?tab=mysql` for updating the LiteBans database host, port, database, username, and password without redeploying.\n- Fixed News admin: creating a new post no longer silently emails every subscriber — use the explicit Send button when you're ready.\n- Fixed the FAQs and Events admin tabs so they render inside the admin layout and remain accessible to permission-based admins.\n\n**Community**\n- Added a `/discord` shortcut that redirects to https://discord.carnagemc.net.\n",
+          "content": "Recent improvements:\n\n**Security**\n- Locked down plugin download tracking: anonymous inserts are no longer accepted directly; all downloads are recorded through the audited `record_plugin_download` server function.\n- Hid user notification preferences on the public profile table so they can no longer be pulled in bulk — owners still read their own preferences via a secure server function.\n\n**Admin panel**\n- New MySQL connection editor at `/admin?tab=mysql` for updating the LiteBans database host, port, database, username, and password without redeploying.\n- Fixed News admin: creating a new post no longer silently emails every subscriber — use the explicit Send button when you're ready.\n- Fixed the FAQs and Events admin tabs so they render inside the admin layout and remain accessible to permission-based admins.\n\n**Community**\n- Added a `/discord` shortcut that redirects to https://discord.warden.rip.\n",
           "category": "update"
         }
       ],
       "breaking": [
         {
           "title": "Security hardening, MySQL settings editor, and admin fixes",
-          "content": "Recent improvements:\n\n**Security**\n- Locked down plugin download tracking: anonymous inserts are no longer accepted directly; all downloads are recorded through the audited `record_plugin_download` server function.\n- Hid user notification preferences on the public profile table so they can no longer be pulled in bulk — owners still read their own preferences via a secure server function.\n\n**Admin panel**\n- New MySQL connection editor at `/admin?tab=mysql` for updating the LiteBans database host, port, database, username, and password without redeploying.\n- Fixed News admin: creating a new post no longer silently emails every subscriber — use the explicit Send button when you're ready.\n- Fixed the FAQs and Events admin tabs so they render inside the admin layout and remain accessible to permission-based admins.\n\n**Community**\n- Added a `/discord` shortcut that redirects to https://discord.carnagemc.net.\n"
+          "content": "Recent improvements:\n\n**Security**\n- Locked down plugin download tracking: anonymous inserts are no longer accepted directly; all downloads are recorded through the audited `record_plugin_download` server function.\n- Hid user notification preferences on the public profile table so they can no longer be pulled in bulk — owners still read their own preferences via a secure server function.\n\n**Admin panel**\n- New MySQL connection editor at `/admin?tab=mysql` for updating the LiteBans database host, port, database, username, and password without redeploying.\n- Fixed News admin: creating a new post no longer silently emails every subscriber — use the explicit Send button when you're ready.\n- Fixed the FAQs and Events admin tabs so they render inside the admin layout and remain accessible to permission-based admins.\n\n**Community**\n- Added a `/discord` shortcut that redirects to https://discord.warden.rip.\n"
         }
       ]
     },
@@ -267,7 +267,7 @@
         },
         {
           "title": "Changelog Email Notifications",
-          "content": "New published changelog entries now email every confirmed user (excluding unsubscribed addresses) with a branded update from notify.carnagemc.net.",
+          "content": "New published changelog entries now email every confirmed user (excluding unsubscribed addresses) with a branded update from notify.warden.rip.",
           "category": "feature"
         },
         {
@@ -277,7 +277,7 @@
         },
         {
           "title": "Create Skripts from the dashboard + updates@ sender",
-          "content": "Two small improvements:\n\n- **Upload Skripts without leaving /dashboard.** The Create panel now embeds the full skript upload form (file picker + metadata + publish toggle). The standalone /discover/skripts/new page still works and shares the same form.\n- **Changelog notification emails now come from `updates@carnagemc.net`** instead of `noreply@`, with the friendly name \"CarnageMC Updates\".",
+          "content": "Two small improvements:\n\n- **Upload Skripts without leaving /dashboard.** The Create panel now embeds the full skript upload form (file picker + metadata + publish toggle). The standalone /discover/skripts/new page still works and shares the same form.\n- **Changelog notification emails now come from `updates@warden.rip`** instead of `noreply@`, with the friendly name \"CarnageMC Updates\".",
           "category": "feature"
         },
         {

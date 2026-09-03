@@ -102,7 +102,7 @@ export const template = {
     severity: 'critical',
     summary: 'Service has failed multiple consecutive checks.',
     details: 'Uptime (24h): 98.2%\nError: connection refused',
-    link: 'https://carnagemc.net/status',
+    link: 'https://warden.rip/status',
     linkLabel: 'View Status',
     timestamp: new Date().toISOString(),
   },

@@ -91,7 +91,7 @@ export function ContactAdminSection() {
         body: {
           templateName: "contact-reply",
           recipientEmail: msg.email,
-          from: "Warden Network Contact <contact@carnagemc.net>",
+          from: "Warden Network Contact <contact@warden.rip>",
           idempotencyKey: `contact-reply-${msg.id}-${Date.now()}`,
           templateData: {
             recipientName: msg.name,
@@ -109,7 +109,7 @@ export function ContactAdminSection() {
         .eq("id", msg.id);
       if (updErr) throw updErr;
       logWebsiteEvent({ kind: "contact_reply_sent", title: "Contact reply sent", detail: `${msg.email}: ${msg.subject || "(no subject)"}`, color: 0x10b981 });
-      toast.success(`Reply emailed to ${msg.email} from contact@carnagemc.net`);
+      toast.success(`Reply emailed to ${msg.email} from contact@warden.rip`);
       setReplyDrafts((d) => ({ ...d, [msg.id]: "" }));
       load();
     } catch (e: any) {
@@ -186,14 +186,14 @@ export function ContactAdminSection() {
               {msg.reply_text && (
                 <div className="text-sm bg-primary/5 border border-primary/20 p-3 rounded">
                   <div className="text-xs text-muted-foreground mb-1">
-                    Replied {msg.replied_at ? new Date(msg.replied_at).toLocaleString() : ""} from contact@carnagemc.net
+                    Replied {msg.replied_at ? new Date(msg.replied_at).toLocaleString() : ""} from contact@warden.rip
                   </div>
                   <p className="whitespace-pre-wrap">{msg.reply_text}</p>
                 </div>
               )}
               <div className="space-y-2">
                 <Textarea
-                  placeholder={msg.reply_text ? "Send a follow-up reply…" : "Write a reply (sent from contact@carnagemc.net)…"}
+                  placeholder={msg.reply_text ? "Send a follow-up reply…" : "Write a reply (sent from contact@warden.rip)…"}
                   value={replyDrafts[msg.id] ?? ""}
                   onChange={(e) => setReplyDrafts((d) => ({ ...d, [msg.id]: e.target.value }))}
                   rows={3}

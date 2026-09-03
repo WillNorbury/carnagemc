@@ -26,8 +26,8 @@ export default function Live() {
     const hosts = new Set<string>();
     if (typeof window !== "undefined") hosts.add(window.location.hostname);
     [
-      "carnagemc.net",
-      "www.carnagemc.net",
+      "warden.rip",
+      "www.warden.rip",
       "carnagemc.lovable.app",
       "havocsmp.net",
       "www.havocsmp.net",

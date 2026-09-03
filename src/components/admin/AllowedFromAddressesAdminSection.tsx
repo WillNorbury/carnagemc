@@ -185,7 +185,7 @@ export const AllowedFromAddressesAdminSection = ({
           <Label>Email</Label>
           <Input
             type="email"
-            placeholder="name@notify.carnagemc.net"
+            placeholder="name@notify.warden.rip"
             value={email}
             aria-invalid={!!emailError}
             className={emailError ? "border-destructive focus-visible:ring-destructive" : ""}

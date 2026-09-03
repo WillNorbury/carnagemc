@@ -200,7 +200,7 @@ const Index = () => {
     };
   }, [content.server?.discord]);
 
-  const ip = content.server?.ip ?? "play.carnagemc.net";
+  const ip = content.server?.ip ?? "play.warden.rip";
   const bedrockIp = content.server?.bedrockIp ?? "Soon";
   const bedrockPort = content.server?.bedrockPort ?? "Soon";
   // One canonical version string site-wide (mcsrvstat reports the proxy's protocol range, which confuses players)
@@ -295,18 +295,18 @@ const Index = () => {
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "Warden Network",
-          url: "https://www.carnagemc.net/",
-          logo: "https://www.carnagemc.net/icon-512.png",
-          sameAs: ["https://discord.carnagemc.net"],
+          url: "https://www.warden.rip/",
+          logo: "https://www.warden.rip/icon-512.png",
+          sameAs: ["https://discord.warden.rip"],
         })}</script>
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebSite",
           name: "Warden Network",
-          url: "https://www.carnagemc.net/",
+          url: "https://www.warden.rip/",
           potentialAction: {
             "@type": "SearchAction",
-            target: "https://www.carnagemc.net/wiki?q={search_term_string}",
+            target: "https://www.warden.rip/wiki?q={search_term_string}",
             "query-input": "required name=search_term_string",
           },
         })}</script>

@@ -95,7 +95,7 @@ const Seasons = () => {
       "@type": "ListItem",
       position: i + 1,
       name: s.name,
-      url: `https://www.carnagemc.net/seasons#${s.slug}`,
+      url: `https://www.warden.rip/seasons#${s.slug}`,
     })),
   };
 

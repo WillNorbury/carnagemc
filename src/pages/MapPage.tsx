@@ -35,7 +35,7 @@ export default function MapPage() {
           name="description"
           content="Browse the Warden Network world in real time: player bases, claimed regions, spawn and the wider Lifesteal map."
         />
-        <link rel="canonical" href="https://carnagemc.net/map" />
+        <link rel="canonical" href="https://warden.rip/map" />
       </Helmet>
       <Navbar />
       <main className="flex-1 w-full">
@@ -84,7 +84,7 @@ export default function MapPage() {
                   set a port (e.g. <code className="font-mono">8100</code>).
                 </li>
                 <li>
-                  Point a subdomain such as <code className="font-mono">map.carnagemc.net</code> at that host and put it
+                  Point a subdomain such as <code className="font-mono">map.warden.rip</code> at that host and put it
                   behind HTTPS — browsers block insecure iframes on an HTTPS site.
                 </li>
                 <li>
@@ -92,7 +92,7 @@ export default function MapPage() {
                 </li>
                 <li>
                   In the admin panel, add a <code className="font-mono">map</code> site-content entry with{" "}
-                  <code className="font-mono">{`{ "enabled": true, "url": "https://map.carnagemc.net" }`}</code> and this
+                  <code className="font-mono">{`{ "enabled": true, "url": "https://map.warden.rip" }`}</code> and this
                   page turns into the full-screen map automatically.
                 </li>
               </ol>

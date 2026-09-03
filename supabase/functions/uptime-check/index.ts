@@ -29,7 +29,7 @@ const SERVICE_ENDPOINTS: Record<string, string> = {
   api: "",
   panel: "https://dash.nightly.host",
   discord: "https://discord.gg/V8xYY2DasZ",
-  portfolio: "https://portfolio.carnagemc.net",
+  portfolio: "https://portfolio.warden.rip",
 };
 
 async function checkHttp(
@@ -266,7 +266,7 @@ Deno.serve(async (req) => {
     .filter((s) => /^https?:\/\//i.test(s));
   const allUrls = [...new Set([...webhookUrls, ...envUrls])];
 
-  let mcHost = "carnagemc.net";
+  let mcHost = "warden.rip";
   try {
     const { data } = await supabase.from("site_content").select("value").eq("key", "server").maybeSingle();
     const v = data?.value as { ip?: string } | null;
@@ -294,14 +294,14 @@ Deno.serve(async (req) => {
 
   const checks = await Promise.all([
     // Do NOT follow redirects on the website check — the lovable.app edge sometimes
-    // 3xx-redirects to the custom domain (carnagemc.net) whose cert can flap while
+    // 3xx-redirects to the custom domain (warden.rip) whose cert can flap while
     // being reissued, producing false-positive incidents.
     checkHttp("website", siteUrl, true, {}, false),
     checkMinecraft("minecraft", mcHost),
     checkHttp("api", apiHealth, false),
     checkHttp("panel", "https://dash.nightly.host"),
     checkHttp("discord", "https://discord.gg/V8xYY2DasZ"),
-    checkHttp("portfolio", "https://portfolio.carnagemc.net"),
+    checkHttp("portfolio", "https://portfolio.warden.rip"),
   ]);
 
 

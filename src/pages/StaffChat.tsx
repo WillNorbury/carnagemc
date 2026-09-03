@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ExternalLink, Loader2, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const STAFFCHAT_URL = "https://staffchat.carnagemc.net";
+const STAFFCHAT_URL = "https://staffchat.warden.rip";
 
 export default function StaffChat() {
   const { isAdmin, loading } = useAuth();

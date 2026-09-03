@@ -182,7 +182,7 @@ Head over to `/skripts` to see what the community has built, or `/dashboard` to 
 - Fixed the FAQs and Events admin tabs so they render inside the admin layout and remain accessible to permission-based admins.
 
 **Community**
-- Added a `/discord` shortcut that redirects to https://discord.carnagemc.net.
+- Added a `/discord` shortcut that redirects to https://discord.warden.rip.
 
 
 ### Changes
@@ -207,7 +207,7 @@ Each server gets its own feature card with details on what to expect. More modes
 - Fixed the FAQs and Events admin tabs so they render inside the admin layout and remain accessible to permission-based admins.
 
 **Community**
-- Added a `/discord` shortcut that redirects to https://discord.carnagemc.net.
+- Added a `/discord` shortcut that redirects to https://discord.warden.rip.
 
 
 ## Unreleased — 2026-07-09
@@ -348,7 +348,7 @@ What has been reset:
 - _update_ **Dashboard: Shopping Panel** — Dashboard now shows your cart, wishlist, and order history at a glance with quick links to each page.
 - _security_ **Dependency Security Updates** — Upgraded @supabase/supabase-js, react-router-dom, and recharts to patch high-severity advisories in transitive dependencies.
 - _feature_ **Create from Dashboard** — Dashboard now has a Create section with a one-click shortcut to upload a Skript (.sk) and manage your plugins and Discover listings.
-- _feature_ **Changelog Email Notifications** — New published changelog entries now email every confirmed user (excluding unsubscribed addresses) with a branded update from notify.carnagemc.net.
+- _feature_ **Changelog Email Notifications** — New published changelog entries now email every confirmed user (excluding unsubscribed addresses) with a branded update from notify.warden.rip.
 - _feature_ **Clickable changelog entries with detail pages** — Each changelog entry on /changelog is now clickable and opens a dedicated detail page at /changelog/<slug>.
 
 **What's new:**
@@ -359,7 +359,7 @@ What has been reset:
 - _feature_ **Create Skripts from the dashboard + updates@ sender** — Two small improvements:
 
 - **Upload Skripts without leaving /dashboard.** The Create panel now embeds the full skript upload form (file picker + metadata + publish toggle). The standalone /discover/skripts/new page still works and shares the same form.
-- **Changelog notification emails now come from `updates@carnagemc.net`** instead of `noreply@`, with the friendly name "CarnageMC Updates".
+- **Changelog notification emails now come from `updates@warden.rip`** instead of `noreply@`, with the friendly name "CarnageMC Updates".
 - _server_ **Practice Server** — We have a new **Practice** server
 
 **Commands**:

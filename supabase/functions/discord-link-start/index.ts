@@ -33,8 +33,8 @@ Deno.serve(async (req) => {
     const ALLOWED_ORIGINS = new Set([
       "https://xylomc.net",
       "https://www.xylomc.net",
-      "https://carnagemc.net",
-      "https://www.carnagemc.net",
+      "https://warden.rip",
+      "https://www.warden.rip",
       "https://alsnetwork.fun",
       "https://www.alsnetwork.fun",
       "https://xylomc.lovable.app",

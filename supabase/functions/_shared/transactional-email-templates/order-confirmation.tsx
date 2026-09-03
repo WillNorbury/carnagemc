@@ -37,7 +37,7 @@ const Email = ({
   discountFormatted = null,
   bundleSummary = null,
   totalFormatted = '',
-  ticketUrl = 'https://carnagemc.net/me/orders',
+  ticketUrl = 'https://warden.rip/me/orders',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />

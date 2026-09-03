@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
           reason: report.reason,
           details: report.details ?? "",
           reporterName,
-          adminUrl: "https://carnagemc.net/admin?tab=reports",
+          adminUrl: "https://warden.rip/admin?tab=reports",
         },
       },
     });

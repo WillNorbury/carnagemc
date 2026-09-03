@@ -71,7 +71,7 @@ export const template = {
     category: 'feature',
     version: null,
     entryDate: '2026-06-25',
-    link: 'https://carnagemc.net/changelog',
+    link: 'https://warden.rip/changelog',
     siteName: 'Warden Network',
   },
 } satisfies TemplateEntry
