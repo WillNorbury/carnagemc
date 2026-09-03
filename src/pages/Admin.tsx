@@ -119,7 +119,7 @@ type News = {
 };
 
 const sectionMeta: Record<AdminSection, { title: string; description: string }> = {
-  dashboard: { title: "Dashboard", description: "Overview of Warden Network activity." },
+  dashboard: { title: "Warden Network Dashboard", description: "Live control center for Warden Network operations and activity." },
   users: { title: "Users", description: "Promote or demote admin access." },
   roles: { title: "Roles", description: "Assign and manage roles for members." },
   permissions: { title: "Permissions", description: "Define what each role can do." },
@@ -392,9 +392,9 @@ const DashboardSection = ({ onNavigate }: { onNavigate: (s: AdminSection) => voi
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total Users" value={stats.users} icon={UsersIcon} color="bg-sky-500" />
-        <StatCard title="Admins" value={stats.admins} icon={ShieldCheck} color="bg-primary" />
-        <StatCard title="News Posts" value={stats.news} icon={Newspaper} color="bg-teal-500" />
+        <StatCard title="Network Members" value={stats.users} icon={UsersIcon} color="bg-primary" />
+        <StatCard title="Staff Members" value={stats.admins} icon={ShieldCheck} color="bg-accent" />
+        <StatCard title="News Updates" value={stats.news} icon={Newspaper} color="bg-primary" />
         <StatCard
           title="Server"
           value={stats.online ? "Online" : "Offline"}

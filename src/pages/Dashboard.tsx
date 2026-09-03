@@ -49,7 +49,7 @@ const Dashboard = () => {
   const [streaks, setStreaks] = useState<Streaks | null>(null);
 
   useEffect(() => {
-    document.title = "Dashboard — Warden Network";
+    document.title = "Warden Network Dashboard";
   }, []);
 
   useEffect(() => {
@@ -126,9 +126,9 @@ const Dashboard = () => {
       <main className="flex-1 container pt-28 pb-16 max-w-5xl">
         <header className="mb-8">
           <h1 className="font-display text-4xl md:text-5xl font-black">
-            Welcome back<span className="text-gradient">.</span>
+            Warden Network<span className="text-gradient">.</span>
           </h1>
-          <p className="text-muted-foreground mt-1">Your Warden Network hub</p>
+          <p className="text-muted-foreground mt-1">Your member dashboard and network activity hub</p>
         </header>
 
         {/* Top: profile summary */}
