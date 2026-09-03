@@ -95,6 +95,7 @@ export type AdminSection =
   | "account-removals"
   | "seasons"
   | "tab-animations"
+  | "server-panel"
   | "skripts"
   | "game-modes"
   | "site-pages"
