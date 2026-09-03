@@ -393,13 +393,13 @@ export default function Store() {
             if (e.key === "Enter") apply();
           }}
           placeholder="CREATOR CODE"
-          className="bg-muted border border-white/10 focus:border-fuchsia-400 focus:outline-none px-3 py-2 text-xs font-mono tracking-widest uppercase text-foreground placeholder:text-muted-foreground w-48"
+          className="bg-muted border border-white/10 focus:border-cyan-400 focus:outline-none px-3 py-2 text-xs font-mono tracking-widest uppercase text-foreground placeholder:text-muted-foreground w-48"
         />
         <button
           type="button"
           onClick={apply}
           disabled={cart.applyingCreatorCode || !code.trim()}
-          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-muted-foreground hover:border-fuchsia-400 hover:text-fuchsia-300 transition disabled:opacity-50"
+          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-muted-foreground hover:border-cyan-400 hover:text-cyan-300 transition disabled:opacity-50"
         >
           {cart.applyingCreatorCode ? "…" : "Apply"}
         </button>
@@ -929,8 +929,8 @@ export default function Store() {
                       {/* Creator code row */}
                       <div className="flex flex-col md:flex-row md:items-center gap-3">
                         {cart.creatorCode ? (
-                          <div className="flex items-center gap-3 border border-fuchsia-400/50 bg-fuchsia-500/5 px-3 py-2">
-                            <span className="text-[10px] font-mono uppercase tracking-widest text-fuchsia-300">
+                          <div className="flex items-center gap-3 border border-cyan-400/50 bg-cyan-500/5 px-3 py-2">
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-300">
                               Creator
                             </span>
                             <span className="font-mono font-bold text-sm">{cart.creatorCode.code}</span>
@@ -940,7 +940,7 @@ export default function Store() {
                             <button
                               type="button"
                               onClick={cart.clearCreatorCode}
-                              className="ml-2 text-muted-foreground hover:text-fuchsia-300"
+                              className="ml-2 text-muted-foreground hover:text-cyan-300"
                               aria-label="Remove creator code"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -981,7 +981,7 @@ export default function Store() {
                             </div>
                           )}
                           {cart.creatorDiscount > 0 && cart.creatorCode && (
-                            <div className="flex items-center gap-3 text-fuchsia-300">
+                            <div className="flex items-center gap-3 text-cyan-300">
                               <span className="text-xs font-mono uppercase tracking-widest w-24">
                                 Creator {cart.creatorCode.discount_percent}%
                               </span>

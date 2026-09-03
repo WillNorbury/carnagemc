@@ -24,10 +24,10 @@ type Entry = {
 const CATEGORIES: Record<string, { label: string; icon: any; cls: string }> = {
   feature: { label: "Feature", icon: Sparkles, cls: "text-primary border-primary/40" },
   update: { label: "Update", icon: Zap, cls: "text-accent border-accent/40" },
-  fix: { label: "Bug Fix", icon: Bug, cls: "text-orange-400 border-orange-400/40" },
+  fix: { label: "Bug Fix", icon: Bug, cls: "text-cyan-400 border-cyan-400/40" },
   balance: { label: "Balance", icon: Wrench, cls: "text-blue-400 border-blue-400/40" },
   security: { label: "Security", icon: ShieldCheck, cls: "text-emerald-400 border-emerald-400/40" },
-  addition: { label: "Addition", icon: Plus, cls: "text-purple-400 border-purple-400/40" },
+  addition: { label: "Addition", icon: Plus, cls: "text-teal-400 border-teal-400/40" },
 };
 
 const ChangelogEntry = () => {
