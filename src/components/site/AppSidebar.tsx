@@ -97,6 +97,7 @@ const mainGroup: NavGroup = {
     { to: "/changelog", label: "Changelog", icon: ClipboardList },
     { to: "/features", label: "Features", icon: Sparkles },
     { to: "/status", label: "Status", icon: Activity },
+    { to: "/tab", label: "TAB Animations", icon: Download },
   ],
 };
 
@@ -164,7 +165,6 @@ const aboutGroup: NavGroup = {
   ],
 };
 
-
 const actionsGroup: NavGroup = {
   id: "actions",
   label: "Actions",
@@ -214,7 +214,14 @@ const accountGroup: NavGroup = {
 };
 
 const staticPublicGroupsBefore: NavGroup[] = [websiteGroup, mainGroup, communityGroup];
-const staticPublicGroupsAfter: NavGroup[] = [helpGroup, actionsGroup, discoverGroup, aboutGroup, weatherGroup, soonGroup];
+const staticPublicGroupsAfter: NavGroup[] = [
+  helpGroup,
+  actionsGroup,
+  discoverGroup,
+  aboutGroup,
+  weatherGroup,
+  soonGroup,
+];
 
 export function AppSidebar() {
   const { state, isMobile, setOpenMobile } = useSidebar();
@@ -381,14 +388,8 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="shrink-0 border-t border-sidebar-border bg-sidebar p-2 shadow-[0_-8px_16px_-12px_hsl(var(--background))]">
-
         {user ? (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => nav("/profile")}
-            className="w-full justify-start"
-          >
+          <Button variant="outline" size="sm" onClick={() => nav("/profile")} className="w-full justify-start">
             <UserIcon className="h-4 w-4" />
             {!collapsed && <span className="ml-1">Profile</span>}
           </Button>
