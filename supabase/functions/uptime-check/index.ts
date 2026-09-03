@@ -24,7 +24,7 @@ const SERVICE_NAMES: Record<string, string> = {
 };
 
 const SERVICE_ENDPOINTS: Record<string, string> = {
-  website: "https://carnagemc.lovable.app",
+  website: "https://warden.rip",
   minecraft: "",
   api: "",
   panel: "https://dash.nightly.host",
