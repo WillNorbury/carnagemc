@@ -93,6 +93,7 @@ import { PlayerTiersAdminSection } from "@/components/admin/PlayerTiersAdminSect
 import { AccountRemovalsAdminSection } from "@/components/admin/AccountRemovalsAdminSection";
 import { SeasonsAdminSection } from "@/components/admin/SeasonsAdminSection";
 import { TabAnimationsAdminSection } from "@/components/admin/TabAnimationsAdminSection";
+import { ServerPanelAdminSection } from "@/components/admin/ServerPanelAdminSection";
 import { SitePagesAdminSection } from "@/components/admin/SitePagesAdminSection";
 import {
   SkriptsModerationSection,
@@ -162,6 +163,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   tiers: { title: "Player Tiers", description: "Add players to the public tier list at /tiers." },
   seasons: { title: "Seasons", description: "Manage seasons, dates, highlights and winners shown on /seasons." },
   "tab-animations": { title: "Tab Animations", description: "Manage animated TAB list lines shown on /tab." },
+  "server-panel": { title: "Server Panel", description: "Set the server IP and MOTD shown in the public TAB animation." },
   skripts: { title: "Skripts", description: "Upload and download Skript (.sk) files staff can add to the server." },
   "site-pages": { title: "Site Pages", description: "Create and edit standalone content pages such as /guides, /about, /roadmap and /credits." },
   "mod-skripts": { title: "Community Skripts", description: "Moderate member-uploaded Skripts." },
@@ -328,9 +330,10 @@ const Admin = () => {
           {section === "partners" && <PartnersAdminSection />}
           {section === "tiers" && <PlayerTiersAdminSection />}
           {section === "account-removals" && <AccountRemovalsAdminSection />}
-          {section === "seasons" && <SeasonsAdminSection />}
-          {section === "tab-animations" && <TabAnimationsAdminSection />}
-          {section === "skripts" && <AdminSkriptsSection />}
+           {section === "seasons" && <SeasonsAdminSection />}
+           {section === "tab-animations" && <TabAnimationsAdminSection />}
+           {section === "server-panel" && <ServerPanelAdminSection />}
+           {section === "skripts" && <AdminSkriptsSection />}
           {section === "game-modes" && <GameModesAdminSection />}
           {section === "site-pages" && <SitePagesAdminSection />}
           {section === "mod-skripts" && <SkriptsModerationSection />}
