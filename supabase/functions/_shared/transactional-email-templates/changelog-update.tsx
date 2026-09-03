@@ -29,7 +29,7 @@ const Email = ({
   version,
   entryDate,
   link,
-  siteName = 'CarnageMC',
+  siteName = 'Warden Network',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
@@ -62,7 +62,7 @@ const Email = ({
 export const template = {
   component: Email,
   subject: (d: Record<string, any>) =>
-    `${d.siteName ?? 'CarnageMC'} update: ${d.title ?? 'New changelog'}`,
+    `${d.siteName ?? 'Warden Network'} update: ${d.title ?? 'New changelog'}`,
   displayName: 'Changelog update',
   previewData: {
     title: 'Cart & Wishlist',
@@ -72,7 +72,7 @@ export const template = {
     version: null,
     entryDate: '2026-06-25',
     link: 'https://carnagemc.net/changelog',
-    siteName: 'CarnageMC',
+    siteName: 'Warden Network',
   },
 } satisfies TemplateEntry
 

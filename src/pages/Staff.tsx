@@ -36,7 +36,7 @@ const Staff = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = "Staff — CarnageMC";
+    document.title = "Staff — Warden Network";
     (async () => {
       const { data: roles } = await supabase
         .from("user_roles")
@@ -90,7 +90,7 @@ const Staff = () => {
           eyebrow={<><ShieldCheck className="h-3 w-3 mr-1" /> The Team</>}
           title="Meet the"
           highlight="Staff"
-          description="The people keeping CarnageMC running smoothly — moderation, development, builds and support."
+          description="The people keeping Warden Network running smoothly — moderation, development, builds and support."
         >
           {!loading && members.length > 0 && (
             <div className="flex flex-wrap gap-2">

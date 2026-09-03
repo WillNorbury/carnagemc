@@ -96,8 +96,8 @@ const Support = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEO
-        title="Support & Help Center — CarnageMC"
-        description="Get help with your CarnageMC account, store purchases, bugs, and gameplay. Browse FAQs, check live server status, or open a support ticket."
+        title="Support & Help Center — Warden Network"
+        description="Get help with your Warden Network account, store purchases, bugs, and gameplay. Browse FAQs, check live server status, or open a support ticket."
         path="/support"
       />
       <Navbar />

@@ -41,7 +41,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif;back
 h1{color:#ff7a1a;font-size:22px;margin:0 0 12px}
 p{color:#cfcfd6;line-height:1.55;margin:0 0 18px}
 a{display:inline-block;background:#ff7a1a;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600}
-</style></head><body><div class="card"><h1>${title}</h1>${body}<a href="${SITE_BASE}">Back to CarnageMC</a></div></body></html>`,
+</style></head><body><div class="card"><h1>${title}</h1>${body}<a href="${SITE_BASE}">Back to Warden Network</a></div></body></html>`,
     { status, headers: { ...corsHeaders, 'Content-Type': 'text/html; charset=utf-8' } },
   )
 

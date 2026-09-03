@@ -225,7 +225,7 @@ const PluginSettings = () => {
         setSourceUrl(p.source_url ?? "");
         setIssuesUrl(p.issues_url ?? "");
         setDiscordUrl(p.discord_url ?? "");
-        document.title = `${p.name} — Settings — CarnageMC`;
+        document.title = `${p.name} — Settings — Warden Network`;
 
         // fetch versions
         const { data: vs } = await supabase
@@ -652,7 +652,7 @@ const PluginSettings = () => {
                     <div>
                       <Label className="text-sm font-medium">Monetization</Label>
                       <p className="text-xs text-muted-foreground mt-1 max-w-prose">
-                        When enabled, this project can earn revenue through the CarnageMC Rewards
+                        When enabled, this project can earn revenue through the Warden Network Rewards
                         Program.
                       </p>
                     </div>
@@ -670,7 +670,7 @@ const PluginSettings = () => {
                 <Card className="p-6 border-destructive/40">
                   <h2 className="font-display font-bold text-xl mb-2">Delete project</h2>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Removes your project from CarnageMC's servers and search. This cannot be undone.
+                    Removes your project from Warden Network's servers and search. This cannot be undone.
                   </p>
                   <Button variant="destructive" onClick={deletePlugin} disabled={deleting}>
                     {deleting ? (

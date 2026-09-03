@@ -52,7 +52,7 @@ const StatusIncident = () => {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    document.title = `Incident #${number} — CarnageMC Status`;
+    document.title = `Incident #${number} — Warden Network Status`;
     (async () => {
       setLoading(true);
       const n = Number(number);

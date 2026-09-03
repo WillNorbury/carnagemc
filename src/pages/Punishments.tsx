@@ -170,7 +170,7 @@ const Punishments = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <SEO title={`${headTitle} — CarnageMC`} description="Public ban, mute, kick, and warning history for any player on the network." />
+      <SEO title={`${headTitle} — Warden Network`} description="Public ban, mute, kick, and warning history for any player on the network." />
       <Navbar />
       <main className="container pt-24 pb-16 max-w-4xl">
         <div className="mb-6">

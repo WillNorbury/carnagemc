@@ -201,7 +201,7 @@ const Status = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [autoInterval, setAutoInterval] = useState<number>(0);
   const [isOwner, setIsOwner] = useState(false);
-  const [pageTitle, setPageTitle] = useState("CarnageMC Status");
+  const [pageTitle, setPageTitle] = useState("Warden Network Status");
   const [pageSubtitle, setPageSubtitle] = useState("Live uptime — automated checks every 5 minutes.");
   const [pageFootnote, setPageFootnote] = useState("");
   const [services, setServices] = useState<Service[]>(DEFAULT_SERVICES);
@@ -282,7 +282,7 @@ const Status = () => {
 
 
   useEffect(() => {
-    document.title = "Status — CarnageMC";
+    document.title = "Status — Warden Network";
 
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;

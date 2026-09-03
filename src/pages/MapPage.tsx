@@ -30,10 +30,10 @@ export default function MapPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
-        <title>Live Server Map — CarnageMC</title>
+        <title>Live Server Map — Warden Network</title>
         <meta
           name="description"
-          content="Browse the CarnageMC world in real time: player bases, claimed regions, spawn and the wider Lifesteal map."
+          content="Browse the Warden Network world in real time: player bases, claimed regions, spawn and the wider Lifesteal map."
         />
         <link rel="canonical" href="https://carnagemc.net/map" />
       </Helmet>
@@ -43,7 +43,7 @@ export default function MapPage() {
           <div className="h-[calc(100vh-4rem)] w-full">
             <iframe
               src={cfg!.url}
-              title="CarnageMC live world map"
+              title="Warden Network live world map"
               className="w-full h-full border-0"
               allowFullScreen
             />

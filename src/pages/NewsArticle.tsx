@@ -52,7 +52,7 @@ const NewsArticle = () => {
       .then(({ data }) => {
         setArticle(data as Article | null);
         setLoading(false);
-        if (data) document.title = `${data.title} — CarnageMC`;
+        if (data) document.title = `${data.title} — Warden Network`;
       });
   }, [slug]);
 
@@ -75,8 +75,8 @@ const NewsArticle = () => {
       {article && (
         <>
           <SEO
-            title={`${article.title} — CarnageMC`}
-            description={(article.content || "").slice(0, 155).replace(/\s+/g, " ").trim() || "CarnageMC announcement"}
+            title={`${article.title} — Warden Network`}
+            description={(article.content || "").slice(0, 155).replace(/\s+/g, " ").trim() || "Warden Network announcement"}
             path={`/announcements/${slug}`}
             image={article.cover_url || ogImageFor(article.title)}
             type="article"
@@ -91,7 +91,7 @@ const NewsArticle = () => {
               mainEntityOfPage: `https://www.carnagemc.net/announcements/${slug}`,
               publisher: {
                 "@type": "Organization",
-                name: "CarnageMC",
+                name: "Warden Network",
                 logo: { "@type": "ImageObject", url: "https://www.carnagemc.net/icon-512.png" },
               },
             })}</script>

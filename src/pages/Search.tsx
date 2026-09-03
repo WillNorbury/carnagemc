@@ -156,8 +156,8 @@ const SearchPage = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <SEO
-        title={q ? `Search: ${q} — CarnageMC` : "Search — CarnageMC"}
-        description="Search CarnageMC news, plugins, players, wiki guides, FAQs, events, and pages."
+        title={q ? `Search: ${q} — Warden Network` : "Search — Warden Network"}
+        description="Search Warden Network news, plugins, players, wiki guides, FAQs, events, and pages."
         path="/search"
       />
       <Navbar />

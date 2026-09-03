@@ -104,10 +104,10 @@ const Changelog = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
       <Helmet>
-        <title>Changelog — CarnageMC</title>
+        <title>Changelog — Warden Network</title>
         <meta
           name="description"
-          content="Every patch, fix, and feature shipped to CarnageMC — the running log."
+          content="Every patch, fix, and feature shipped to Warden Network — the running log."
         />
         <link
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap"
@@ -450,7 +450,7 @@ const Changelog = () => {
                   </Link>
                 </div>
                 <div className="text-[10px] text-white/20 font-mono flex items-center gap-2">
-                  <Radio className="w-3 h-3" /> CARNAGEMC BROADCAST
+                  <Radio className="w-3 h-3" /> WARDEN NETWORK BROADCAST
                 </div>
               </div>
             </div>

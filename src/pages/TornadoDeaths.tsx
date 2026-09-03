@@ -148,7 +148,7 @@ const TornadoDeaths = () => {
   return (
     <main className="min-h-screen px-4 md:px-8 py-10 md:py-14 max-w-6xl mx-auto">
       <SEO
-        title="Where Tornadoes Kill (2008–2025) | CarnageMC"
+        title="Where Tornadoes Kill (2008–2025) | Warden Network"
         description="A data look at 1,461 U.S. tornado deaths from 2008–2025: by state, EF strength, and where victims were."
         path="/weather/tornado-deaths"
       />

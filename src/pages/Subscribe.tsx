@@ -65,8 +65,8 @@ export default function Subscribe() {
   return (
     <main className="container mx-auto p-6 max-w-lg">
       <Helmet>
-        <title>Subscribe to emails — CarnageMC</title>
-        <meta name="description" content="Re-subscribe to CarnageMC email notifications for news, updates and applications." />
+        <title>Subscribe to emails — Warden Network</title>
+        <meta name="description" content="Re-subscribe to Warden Network email notifications for news, updates and applications." />
       </Helmet>
       <Card>
         <CardHeader>
@@ -91,7 +91,7 @@ export default function Subscribe() {
           {state === "idle" && user && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Re-subscribe <strong className="text-foreground">{user.email}</strong> to CarnageMC email notifications including news, updates, applications and ticket replies.
+                Re-subscribe <strong className="text-foreground">{user.email}</strong> to Warden Network email notifications including news, updates, applications and ticket replies.
               </p>
               <Button onClick={confirm} className="w-full sm:w-auto">
                 Subscribe to emails
@@ -110,7 +110,7 @@ export default function Subscribe() {
               <CheckCircle2 className="h-5 w-5 text-emerald-500" />
               <AlertTitle className="text-emerald-600 font-semibold">You're subscribed!</AlertTitle>
               <AlertDescription className="text-emerald-700/80 mt-1">
-                <span className="block">{subscribedEmail} is now re-subscribed to CarnageMC emails.</span>
+                <span className="block">{subscribedEmail} is now re-subscribed to Warden Network emails.</span>
                 <span className="block mt-1">You'll receive notifications for news, updates, applications and ticket replies.</span>
                 {reauthSent && (
                   <span className="block mt-2 text-xs">

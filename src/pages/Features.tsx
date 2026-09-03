@@ -23,8 +23,8 @@ const Features = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <SEO
-        title="Features — CarnageMC"
-        description="Explore CarnageMC's servers and systems: Survival (S1), Lifesteal (Development), weekly events, lag-free gameplay, and more."
+        title="Features — Warden Network"
+        description="Explore Warden Network's servers and systems: Survival (S1), Lifesteal (Development), weekly events, lag-free gameplay, and more."
         path="/features"
       />
       <Navbar />

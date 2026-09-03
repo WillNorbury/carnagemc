@@ -8,10 +8,10 @@ export default function Unsubscribe() {
   return (
     <main className="container mx-auto p-6 max-w-md">
       <Helmet>
-        <title>Email preferences — CarnageMC</title>
+        <title>Email preferences — Warden Network</title>
         <meta
           name="description"
-          content="Manage your CarnageMC email preferences and unsubscribe options."
+          content="Manage your Warden Network email preferences and unsubscribe options."
         />
       </Helmet>
       <Card>
@@ -23,7 +23,7 @@ export default function Unsubscribe() {
             <Mail className="h-5 w-5 shrink-0 mt-0.5" />
             <span>
               Unsubscribing is now handled directly from the unsubscribe link at the
-              bottom of any CarnageMC email — one click and you're opted out, no
+              bottom of any Warden Network email — one click and you're opted out, no
               account needed.
             </span>
           </p>

@@ -271,7 +271,7 @@ const Index = () => {
 
   const eventLabel = content.event?.label ?? "Next Event Reset";
 
-  const heroTitle = "Welcome to CarnageMC";
+  const heroTitle = "Welcome to Warden Network";
   const heroSub = "The ultimate Minecraft Lifesteal & Economy experience.";
 
   const copyIp = () => {
@@ -286,15 +286,15 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <SEO
-        title="CarnageMC — Minecraft Lifesteal & Economy Server"
-        description="Join CarnageMC, a premium 1.21.x Paper Minecraft Lifesteal server with custom enchants, a player-driven economy, ranked seasons, and weekly events. Java & Bedrock."
+        title="Warden Network — Minecraft Lifesteal & Economy Server"
+        description="Join Warden Network, a premium 1.21.x Paper Minecraft Lifesteal server with custom enchants, a player-driven economy, ranked seasons, and weekly events. Java & Bedrock."
         path="/"
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "CarnageMC",
+          name: "Warden Network",
           url: "https://www.carnagemc.net/",
           logo: "https://www.carnagemc.net/icon-512.png",
           sameAs: ["https://discord.carnagemc.net"],
@@ -302,7 +302,7 @@ const Index = () => {
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebSite",
-          name: "CarnageMC",
+          name: "Warden Network",
           url: "https://www.carnagemc.net/",
           potentialAction: {
             "@type": "SearchAction",
@@ -429,7 +429,7 @@ const Index = () => {
               Season 3 — Now Live
             </Badge>
             <h1 className="font-display mb-5 text-4xl font-black leading-[1.05] sm:text-5xl md:text-7xl">
-              <span className="text-gradient">CarnageMC</span>
+              <span className="text-gradient">Warden Network</span>
               <span className="mt-4 block text-base font-semibold tracking-normal text-muted-foreground sm:text-lg md:text-2xl">
                 Minecraft Lifesteal &amp; Economy Server
               </span>
@@ -691,7 +691,7 @@ const Index = () => {
         {/* Reviews — hidden until there are enough genuine reviews to be credible */}
         {reviewCount >= 5 && (
           <section>
-            <SectionHead eyebrow="Reviews" title="What Players Say" sub="Real voices from the CarnageMC community." />
+            <SectionHead eyebrow="Reviews" title="What Players Say" sub="Real voices from the Warden Network community." />
             <Reviews />
           </section>
         )}
@@ -705,7 +705,7 @@ const Index = () => {
               <div>
                 <div className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-primary">Community</div>
                 <h2 className="font-display text-3xl font-bold md:text-4xl">
-                  Join the <span className="text-gradient">CarnageMC</span> Discord
+                  Join the <span className="text-gradient">Warden Network</span> Discord
                 </h2>
                 <p className="mt-3 max-w-xl text-muted-foreground">
                   Events, giveaways, patch notes and support — everything happens in Discord first. Link your account to

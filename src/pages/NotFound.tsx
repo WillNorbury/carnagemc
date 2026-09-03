@@ -24,8 +24,8 @@ const NotFound = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEO
-        title="Page Not Found — CarnageMC"
-        description="This CarnageMC page doesn't exist. Jump back to the homepage, game modes, server status, or support."
+        title="Page Not Found — Warden Network"
+        description="This Warden Network page doesn't exist. Jump back to the homepage, game modes, server status, or support."
         path={location.pathname}
       />
       <Navbar />

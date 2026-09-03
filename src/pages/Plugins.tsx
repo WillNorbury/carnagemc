@@ -76,7 +76,7 @@ const Plugins = () => {
   const [sortBy, setSortBy] = useState<"featured" | "updated" | "name" | "downloads">("featured");
 
   useEffect(() => {
-    document.title = "Plugins — CarnageMC";
+    document.title = "Plugins — Warden Network";
     (async () => {
       const { data } = await supabase
         .from("plugins")

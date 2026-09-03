@@ -109,7 +109,7 @@ export default function OAuthConsent() {
       <Card className="max-w-md w-full p-6 space-y-4">
         <div className="flex items-center gap-2">
           <ShieldCheck className="h-5 w-5 text-primary" />
-          <h1 className="text-xl font-semibold">Connect {clientName} to HavocSMP</h1>
+          <h1 className="text-xl font-semibold">Connect {clientName} to Warden Network</h1>
         </div>
         {email && (
           <p className="text-sm text-muted-foreground">

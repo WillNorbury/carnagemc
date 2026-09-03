@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
       : "✅ [Website](https://www.carnagemc.net) back online";
     const desc = isOn
       ? message ||
-        "CarnageMC is entering maintenance mode. The site is temporarily unavailable to visitors. Status page remains accessible at /status."
+        "Warden Network is entering maintenance mode. The site is temporarily unavailable to visitors. Status page remains accessible at /status."
       : "Maintenance mode has been disabled. The site is fully accessible again.";
 
     const payload = {

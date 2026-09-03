@@ -30,7 +30,7 @@ const QuizListPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = "Quizzes — CarnageMC";
+    document.title = "Quizzes — Warden Network";
     (async () => {
       const { data: quizzes } = await (supabase.from("quizzes" as any) as any)
         .select("id,slug,title,description,category,passing_score,time_limit_seconds")

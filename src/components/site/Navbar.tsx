@@ -5,8 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/auth";
-import logoAsset from "@/assets/carnagemc-logo.png.asset.json";
-const logo = logoAsset.url;
+import logo from "@/assets/warden-network-icon.png";
 import { LogIn, LogOut, LayoutDashboard, User as UserIcon, Shield, Download, ShoppingCart, MoreHorizontal } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
 import { ThemeToggle } from "./ThemeToggle";
@@ -56,11 +55,11 @@ const Navbar = () => {
         <Link
           to="/"
           className="flex items-center gap-2 group min-w-0 pr-1"
-          aria-label="CarnageMC home"
+          aria-label="Warden Network home"
         >
           <img src={logo} alt="" aria-hidden className="h-6 w-6 shrink-0 transition-transform duration-200 group-hover:scale-105" />
           <span className="font-display font-bold text-sm tracking-wider truncate hidden sm:inline">
-            CARNAGE<span className="text-gradient">MC</span>
+            WARDEN<span className="text-gradient"> NETWORK</span>
           </span>
         </Link>
       </div>

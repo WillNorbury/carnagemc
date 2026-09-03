@@ -355,7 +355,7 @@ const TabAnimations = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Helmet>
-        <title>Tab Animations | CarnageMC</title>
+        <title>Tab Animations | Warden Network</title>
         <meta name="description" content="Preview animated Minecraft TAB list lines with color codes and configurable change intervals." />
       </Helmet>
       <Navbar />

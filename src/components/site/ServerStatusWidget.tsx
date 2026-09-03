@@ -85,7 +85,7 @@ const ServerStatusWidget = ({ className = "", compact = false }: Props) => {
             )}
             <div>
               <div className="text-[10px] uppercase tracking-[0.25em] text-primary font-semibold">Live Server</div>
-              <div className="font-display font-bold">CarnageMC</div>
+              <div className="font-display font-bold">Warden Network</div>
             </div>
           </div>
           <div

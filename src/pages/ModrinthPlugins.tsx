@@ -51,7 +51,7 @@ export default function ModrinthPlugins() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = "Modrinth Plugins — CarnageMC";
+    document.title = "Modrinth Plugins — Warden Network";
   }, []);
 
   // Load MC game versions (releases only)

@@ -100,7 +100,7 @@ const GROUPS: { title: string; links: { to: string; label: string }[] }[] = [
   {
     title: "About & Legal",
     links: [
-      { to: "/about", label: "About CarnageMC" },
+      { to: "/about", label: "About Warden Network" },
       { to: "/press-kit", label: "Press Kit" },
       { to: "/anti-cheat", label: "Anti-Cheat" },
       { to: "/community-standards", label: "Community Standards" },
@@ -115,8 +115,8 @@ const GROUPS: { title: string; links: { to: string; label: string }[] }[] = [
 const SiteIndex = () => (
   <div className="min-h-screen bg-background flex flex-col">
     <SEO
-      title="Site Index — Every CarnageMC Page"
-      description="A complete index of every page on the CarnageMC website: play guides, leaderboards, store, support, and account pages."
+      title="Site Index — Every Warden Network Page"
+      description="A complete index of every page on the Warden Network website: play guides, leaderboards, store, support, and account pages."
       path="/sitemap"
     />
     <Navbar />
@@ -124,7 +124,7 @@ const SiteIndex = () => (
       <PageHero
         eyebrow="Navigation"
         title="Site Index"
-        description="Every page on CarnageMC, grouped so you can find it fast."
+        description="Every page on Warden Network, grouped so you can find it fast."
       />
       <div className="container pb-20">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

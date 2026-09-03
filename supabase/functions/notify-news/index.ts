@@ -6,7 +6,7 @@ const corsHeaders = {
 }
 
 const SITE_BASE = 'https://www.carnagemc.net'
-const FROM = 'CarnageMC News <news@carnagemc.net>'
+const FROM = 'Warden Network News <news@carnagemc.net>'
 
 const enc = new TextEncoder()
 const b64url = (buf: ArrayBuffer) => {
@@ -141,7 +141,7 @@ Deno.serve(async (req) => {
           priority: entry.priority,
           coverUrl: entry.cover_url,
           link: `${SITE_BASE}/news/${entry.slug}`,
-          siteName: 'CarnageMC',
+          siteName: 'Warden Network',
           newsUnsubscribeUrl,
         }
 

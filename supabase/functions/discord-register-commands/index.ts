@@ -39,13 +39,13 @@ Deno.serve(async (req) => {
       .filter((c) => c && c.enabled !== false && typeof c.name === "string" && c.name.trim())
       .map((c) => ({
         name: String(c.name).toLowerCase().slice(0, 32),
-        description: String(c.description ?? "").slice(0, 100) || "CarnageMC command",
+        description: String(c.description ?? "").slice(0, 100) || "Warden Network command",
         type: 1,
       }));
     const cmds = fromConfig.length > 0 ? fromConfig : [
-      { name: "rules", description: "Show the CarnageMC server rules", type: 1 },
-      { name: "subscribe", description: "Subscribe to email notifications from CarnageMC", type: 1 },
-      { name: "unsubscribe", description: "Unsubscribe from email notifications from CarnageMC", type: 1 },
+      { name: "rules", description: "Show the Warden Network server rules", type: 1 },
+      { name: "subscribe", description: "Subscribe to email notifications from Warden Network", type: 1 },
+      { name: "unsubscribe", description: "Unsubscribe from email notifications from Warden Network", type: 1 },
     ];
     const r = await fetch(`https://discord.com/api/v10/applications/${appId}/commands`, {
       method: "PUT",

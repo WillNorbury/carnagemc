@@ -53,7 +53,7 @@ const PartnerDetail = () => {
   return (
     <>
       <SEO
-        title={`${partner?.label ?? "Partner"} — CarnageMC`}
+        title={`${partner?.label ?? "Partner"} — Warden Network`}
         description={partner?.description ?? "Partner Minecraft server."}
       />
       <Navbar />

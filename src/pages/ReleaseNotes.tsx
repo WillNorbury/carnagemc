@@ -19,7 +19,7 @@ const ReleaseNotes = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = "Release Notes — CarnageMC";
+    document.title = "Release Notes — Warden Network";
     fetch("/release-notes.json", { cache: "no-store" })
       .then(async (r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);

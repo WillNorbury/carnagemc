@@ -69,8 +69,8 @@ export default function WikiMore() {
   return (
     <div className="min-h-screen flex flex-col bg-[#0b0d10] text-neutral-100">
       <Helmet>
-        <title>More Wiki — CarnageMC Archive</title>
-        <meta name="description" content="Full searchable index of every CarnageMC wiki article." />
+        <title>More Wiki — Warden Network Archive</title>
+        <meta name="description" content="Full searchable index of every Warden Network wiki article." />
       </Helmet>
       <Navbar />
 

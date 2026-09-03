@@ -68,7 +68,7 @@ const Servers = () => {
   const [sortBy, setSortBy] = useState<"featured" | "players" | "updated" | "name">("featured");
 
   useEffect(() => {
-    document.title = "Servers — CarnageMC";
+    document.title = "Servers — Warden Network";
     (async () => {
       const { data, error } = await supabase
         .from("user_servers" as any)

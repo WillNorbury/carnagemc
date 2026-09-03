@@ -47,11 +47,11 @@ async function buildRulesEmbed() {
   }));
 
   return {
-    title: "📜 CarnageMC Rules",
+    title: "📜 Warden Network Rules",
     description: "Please read and follow these rules.",
     color: 0xef4444,
     fields: fields.length > 0 ? fields : [{ name: "No rules", value: "No rules configured." }],
-    footer: { text: "CarnageMC · Updated regularly" },
+    footer: { text: "Warden Network · Updated regularly" },
     timestamp: new Date().toISOString(),
   };
 }
@@ -138,7 +138,7 @@ Deno.serve(async (req) => {
         : { data: null as any };
 
       if (!profile) {
-        return reply("⚠️ Your Discord account isn't linked to a CarnageMC account yet. Sign in on the website and link Discord first.");
+        return reply("⚠️ Your Discord account isn't linked to a Warden Network account yet. Sign in on the website and link Discord first.");
       }
 
       const prefs = { ...(profile.preferences ?? {}), email_subscribed: subscribed };
@@ -149,7 +149,7 @@ Deno.serve(async (req) => {
 
       if (error) return reply(`❌ Failed to update: ${error.message}`);
       return reply(subscribed
-        ? "✅ You're subscribed to email notifications from CarnageMC."
+        ? "✅ You're subscribed to email notifications from Warden Network."
         : "✅ You've been unsubscribed from email notifications.");
     }
     return new Response(

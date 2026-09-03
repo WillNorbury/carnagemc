@@ -84,7 +84,7 @@ const Partners = () => {
 
   return (
     <>
-      <SEO title="Partners — CarnageMC" description="Our partner Minecraft servers and communities." />
+      <SEO title="Partners — Warden Network" description="Our partner Minecraft servers and communities." />
       <Navbar />
       <main className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 py-10 bg-background">
         <div className="w-full max-w-3xl">

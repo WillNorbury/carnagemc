@@ -48,8 +48,8 @@ export default function MeOrders() {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Helmet>
-        <title>My Orders — CarnageMC</title>
-        <meta name="description" content="View your CarnageMC store order history and fulfillment status." />
+        <title>My Orders — Warden Network</title>
+        <meta name="description" content="View your Warden Network store order history and fulfillment status." />
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet" />
       </Helmet>
       <Navbar />

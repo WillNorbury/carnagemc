@@ -177,7 +177,7 @@ export default function StoreCategory() {
         <title>{cat ? `${cat.name} — Store` : "Category — Store"}</title>
         <meta
           name="description"
-          content={cat?.description ?? `Browse ${cat?.name ?? "store"} items on CarnageMC.`}
+          content={cat?.description ?? `Browse ${cat?.name ?? "store"} items on Warden Network.`}
         />
         <link rel="canonical" href={`${window.location.origin}/store/category/${slug}`} />
       </Helmet>

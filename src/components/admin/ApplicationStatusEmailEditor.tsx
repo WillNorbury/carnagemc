@@ -14,7 +14,7 @@ type Variant = "approved" | "rejected" | "pending";
 
 const DEFAULTS: Record<Variant, { subject: string; body: string }> = {
   approved: {
-    subject: "Your CarnageMC {{applicationType}} application was approved",
+    subject: "Your Warden Network {{applicationType}} application was approved",
     body: `Hi **{{mcUsername}}**,
 
 Great news — your **{{applicationType}}** application has been **approved**! 🎉
@@ -24,7 +24,7 @@ Great news — your **{{applicationType}}** application has been **approved**! �
 Open your dashboard: {{dashboardUrl}}`,
   },
   rejected: {
-    subject: "Update on your CarnageMC {{applicationType}} application",
+    subject: "Update on your Warden Network {{applicationType}} application",
     body: `Hi **{{mcUsername}}**,
 
 Thanks for applying for **{{applicationType}}**. After review, we're unable to move forward with your application at this time.
@@ -34,7 +34,7 @@ Thanks for applying for **{{applicationType}}**. After review, we're unable to m
 You're welcome to reapply in the future.`,
   },
   pending: {
-    subject: "Your CarnageMC {{applicationType}} application is being reviewed",
+    subject: "Your Warden Network {{applicationType}} application is being reviewed",
     body: `Hi **{{mcUsername}}**,
 
 Your **{{applicationType}}** application is currently under review. We'll follow up as soon as a decision is made.

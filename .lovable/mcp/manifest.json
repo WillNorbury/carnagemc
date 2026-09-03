@@ -11,9 +11,9 @@
   },
   "mcp": {
     "server": {
-      "name": "havocsmp-mcp",
+      "name": "warden-network-mcp",
       "version": "0.1.0",
-      "title": "HavocSMP MCP"
+      "title": "Warden Network MCP"
     },
     "tools": [
       {

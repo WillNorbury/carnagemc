@@ -11,29 +11,29 @@ interface Props {
   changedBy?: string
 }
 
-const Email = ({ oldEmail = '', newEmail = '', changedBy = 'a CarnageMC administrator' }: Props) => (
+const Email = ({ oldEmail = '', newEmail = '', changedBy = 'a Warden Network administrator' }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your CarnageMC account email was changed</Preview>
+    <Preview>Your Warden Network account email was changed</Preview>
     <Body style={main}>
       <Container style={container}>
         <Heading style={h1}>Your account email was changed</Heading>
         <Text style={text}>
-          The email address on your CarnageMC account was updated by {changedBy}.
+          The email address on your Warden Network account was updated by {changedBy}.
         </Text>
         <Section style={box}>
           <Text style={row}><strong>Previous:</strong> {oldEmail || '(unknown)'}</Text>
           <Text style={row}><strong>New:</strong> {newEmail || '(unknown)'}</Text>
         </Section>
         <Text style={text}>
-          You will now receive all CarnageMC notifications, password resets, and security
+          You will now receive all Warden Network notifications, password resets, and security
           alerts at <strong>{newEmail}</strong>.
         </Text>
         <Text style={warn}>
-          If you did not request this change, please contact CarnageMC staff immediately —
+          If you did not request this change, please contact Warden Network staff immediately —
           your account may be compromised.
         </Text>
-        <Text style={footer}>— CarnageMC Staff</Text>
+        <Text style={footer}>— Warden Network Staff</Text>
       </Container>
     </Body>
   </Html>
@@ -41,7 +41,7 @@ const Email = ({ oldEmail = '', newEmail = '', changedBy = 'a CarnageMC administ
 
 export const template = {
   component: Email,
-  subject: 'Your CarnageMC account email was changed',
+  subject: 'Your Warden Network account email was changed',
   displayName: 'Email changed notification',
   previewData: { oldEmail: 'old@example.com', newEmail: 'new@example.com', changedBy: 'an administrator' },
 } satisfies TemplateEntry

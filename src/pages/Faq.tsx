@@ -44,7 +44,7 @@ const Faq = () => {
   const [myVotes, setMyVotes] = useState<Record<string, "helpful" | "not_helpful">>({});
 
   useEffect(() => {
-    document.title = "FAQ — CarnageMC";
+    document.title = "FAQ — Warden Network";
     (async () => {
       const { data } = await (supabase.from("faqs" as any) as any)
         .select("id,question,answer,category,sort_order,created_at")
@@ -137,8 +137,8 @@ const Faq = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEO
-        title="FAQ — CarnageMC"
-        description="Answers to the most common questions about CarnageMC — joining, ranks, Lifesteal mechanics, custom enchants, staff, and account support."
+        title="FAQ — Warden Network"
+        description="Answers to the most common questions about Warden Network — joining, ranks, Lifesteal mechanics, custom enchants, staff, and account support."
         path="/faq"
       />
       {items.length > 0 && (
@@ -169,7 +169,7 @@ const Faq = () => {
               Frequently Asked <span className="text-gradient">Questions</span>
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Answers to the most common questions about CarnageMC.
+              Answers to the most common questions about Warden Network.
             </p>
           </div>
         </section>

@@ -10,7 +10,7 @@ function wrapHtml(inner: string, accent: string) {
   return `<!doctype html><html><body style="background:#ffffff;font-family:Inter,Arial,sans-serif;margin:0;padding:0;">
   <div style="max-width:560px;margin:0 auto;padding:24px 28px;color:hsl(20,25%,15%);font-size:14px;line-height:1.6;border-top:4px solid ${accent};">
   ${inner}
-  <p style="font-size:12px;color:#999;margin:24px 0 0;">— CarnageMC Staff</p>
+  <p style="font-size:12px;color:#999;margin:24px 0 0;">— Warden Network Staff</p>
   </div></body></html>`
 }
 
@@ -128,7 +128,7 @@ Deno.serve(async (req) => {
         templateName: 'application-status',
         recipientEmail,
         idempotencyKey: `application-${app.id}-${body.status}`,
-        from: 'CarnageMC Applications <applications@carnagemc.net>',
+        from: 'Warden Network Applications <applications@carnagemc.net>',
         templateData,
         subjectOverride,
         bodyHtmlOverride,

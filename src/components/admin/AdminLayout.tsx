@@ -7,8 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import logoAsset from "@/assets/carnagemc-logo.png.asset.json";
-const logo = logoAsset.url;
+import logo from "@/assets/warden-network-icon.png";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
 import { LiveClock } from "@/components/admin/LiveClock";
 import {
@@ -307,9 +306,9 @@ export const AdminLayout = ({
         >
           {!isCollapsed && (
             <Link to="/" className="flex items-center gap-2 font-semibold" onClick={() => setMobileOpen(false)}>
-              <img src={logo} alt="CarnageMC" className="h-7 w-7" />
+              <img src={logo} alt="Warden Network" className="h-7 w-7" />
               <span className="text-lg">
-                CARNAGE<span className="text-gradient">MC</span>
+                WARDEN<span className="text-gradient"> NETWORK</span>
               </span>
             </Link>
           )}

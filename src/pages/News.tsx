@@ -47,7 +47,7 @@ const NewsPage = () => {
   const [priority, setPriority] = useState<Priority | "all">("all");
 
   useEffect(() => {
-    document.title = "News — CarnageMC";
+    document.title = "News — Warden Network";
     supabase
       .from("news")
       .select("id,title,excerpt,content,slug,cover_url,priority,created_at")
@@ -82,7 +82,7 @@ const NewsPage = () => {
           eyebrow={<><Megaphone className="h-3 w-3 mr-1" /> Announcements</>}
           title="Latest"
           highlight="News"
-          description="Updates, patch notes and announcements straight from the CarnageMC team."
+          description="Updates, patch notes and announcements straight from the Warden Network team."
         />
 
         <section className="container pb-24 max-w-6xl">

@@ -203,7 +203,7 @@ export const AllowedFromAddressesAdminSection = ({
         <div className="space-y-1">
           <Label>Display name (optional)</Label>
           <Input
-            placeholder="CarnageMC Updates"
+            placeholder="Warden Network Updates"
             value={displayName}
             aria-invalid={!!displayNameError}
             className={displayNameError ? "border-destructive focus-visible:ring-destructive" : ""}

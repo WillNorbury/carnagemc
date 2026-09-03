@@ -15,11 +15,11 @@ const SENDER_DOMAIN = 'notify.carnagemc.net'
 const FROM_DOMAIN = 'carnagemc.net'
 
 const ALLOWED_FROM = [
-  'CarnageMC <noreply@carnagemc.net>',
-  'CarnageMC Updates <updates@notify.carnagemc.net>',
-  '"William @ CarnageMC" <william@notify.carnagemc.net>',
-  '"William @ CarnageMC" <william@carnagemc.net>',
-  'CarnageMC Status <status@carnagemc.net>',
+  'Warden Network <noreply@carnagemc.net>',
+  'Warden Network Updates <updates@notify.carnagemc.net>',
+  '"William @ Warden Network" <william@notify.carnagemc.net>',
+  '"William @ Warden Network" <william@carnagemc.net>',
+  'Warden Network Status <status@carnagemc.net>',
 ]
 
 const extractEmail = (s: string): string | null => {

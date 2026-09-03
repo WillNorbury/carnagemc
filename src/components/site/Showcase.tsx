@@ -64,14 +64,14 @@ const Showcase = () => {
           <div className="text-center mb-6">
             <div className="text-[10px] font-mono tracking-widest uppercase text-primary mb-2">Watch</div>
             <h2 className="font-display text-3xl md:text-4xl font-bold">
-              {trailer.title || "See CarnageMC in action"}
+              {trailer.title || "See Warden Network in action"}
             </h2>
           </div>
           <div className="relative rounded-xl overflow-hidden border border-primary/20 bg-card aspect-video max-w-4xl mx-auto">
             {playing ? (
               <iframe
                 src={`${src}${src.includes("?") ? "&" : "?"}autoplay=1`}
-                title={trailer.title ?? "CarnageMC trailer"}
+                title={trailer.title ?? "Warden Network trailer"}
                 className="absolute inset-0 w-full h-full border-0"
                 allow="autoplay; fullscreen; picture-in-picture"
                 allowFullScreen
@@ -85,7 +85,7 @@ const Showcase = () => {
                 {trailer.image_url && (
                   <img
                     src={trailer.image_url}
-                    alt={trailer.title ?? "CarnageMC trailer thumbnail"}
+                    alt={trailer.title ?? "Warden Network trailer thumbnail"}
                     loading="lazy"
                     className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-90 transition"
                   />
@@ -123,7 +123,7 @@ const Showcase = () => {
               >
                 <img
                   src={s.image_url}
-                  alt={s.title || s.caption || "CarnageMC world screenshot"}
+                  alt={s.title || s.caption || "Warden Network world screenshot"}
                   loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500"
                 />

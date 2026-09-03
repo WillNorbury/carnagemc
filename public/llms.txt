@@ -1,8 +1,8 @@
-# CarnageMC
+# Warden Network
 
-> CarnageMC is a premium Minecraft Lifesteal, PvP, and player-driven economy server for Java and Bedrock, featuring custom enchants, ranked seasons, and weekly events.
+> Warden Network is a premium Minecraft Lifesteal, PvP, and player-driven economy server for Java and Bedrock, featuring custom enchants, ranked seasons, and weekly events.
 
-CarnageMC runs on Paper 1.21.x with heart-stealing PvP, custom enchantments, a full economy, and community events. Players can apply for staff, read the rules, browse news and changelog, watch live streams, and get support through Discord.
+Warden Network runs on Paper 1.21.x with heart-stealing PvP, custom enchantments, a full economy, and community events. Players can apply for staff, read the rules, browse news and changelog, watch live streams, and get support through Discord.
 
 ## Pages
 
@@ -24,11 +24,11 @@ CarnageMC runs on Paper 1.21.x with heart-stealing PvP, custom enchantments, a f
 - [Punishments](/punishments): Public ban, mute, and warning history.
 - [Ban Appeals](/appeals): Appeal a punishment.
 - [Apply](/apply): Staff applications.
-- [Live](/live): Live Twitch stream from the CarnageMC team.
+- [Live](/live): Live Twitch stream from the Warden Network team.
 - [Status](/status): Live network status and incident history.
 - [Plugins](/plugins): Public server plugins and integrations.
 - [Contact](/contact): Get in touch with the team.
-- [Discord](/discord): Join the CarnageMC Discord.
+- [Discord](/discord): Join the Warden Network Discord.
 
 ## Optional
 

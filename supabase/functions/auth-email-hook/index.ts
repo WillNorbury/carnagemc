@@ -15,7 +15,7 @@ const corsHeaders = {
 }
 
 // Configuration
-const SITE_NAME = "CarnageMC"
+const SITE_NAME = "Warden Network"
 const SENDER_DOMAIN = "notify.carnagemc.net"
 const ROOT_DOMAIN = "carnagemc.net"
 const FROM_DOMAIN = "carnagemc.net"

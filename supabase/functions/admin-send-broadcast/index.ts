@@ -190,7 +190,7 @@ Deno.serve(async (req) => {
         : category === 'test' ? 'Direct'
         : 'All Users'
 
-    const fromAddress = effectiveFrom ?? 'CarnageMC <noreply@carnagemc.net>'
+    const fromAddress = effectiveFrom ?? 'Warden Network <noreply@carnagemc.net>'
     const stamp = Date.now()
 
     let queued = 0
@@ -207,7 +207,7 @@ Deno.serve(async (req) => {
               subject,
               message,
               category: categoryLabel,
-              siteName: 'CarnageMC',
+              siteName: 'Warden Network',
             },
           },
         })

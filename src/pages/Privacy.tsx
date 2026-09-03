@@ -6,16 +6,16 @@ const doc: LegalDoc = {
   title: "Privacy",
   highlight: "Policy",
   intro:
-    "How CarnageMC collects, uses, and protects your information across our website, Discord, and Minecraft servers.",
+    "How Warden Network collects, uses, and protects your information across our website, Discord, and Minecraft servers.",
   seoDescription:
-    "CarnageMC privacy policy — what data we collect on the website and game servers, how it is used, how long it is kept, and how to request deletion.",
+    "Warden Network privacy policy — what data we collect on the website and game servers, how it is used, how long it is kept, and how to request deletion.",
   updated: "29 July 2026",
   sections: [
     {
       id: "overview",
       heading: "1. Overview",
       body: [
-        "This policy explains what information CarnageMC (\"we\", \"us\") collects when you use our website, our Minecraft servers, or our Discord community, and what we do with it.",
+        "This policy explains what information Warden Network (\"we\", \"us\") collects when you use our website, our Minecraft servers, or our Discord community, and what we do with it.",
         "By creating an account, joining a server, or purchasing from our store, you agree to the practices described here. If you do not agree, please do not use our services.",
       ],
     },
@@ -45,7 +45,7 @@ const doc: LegalDoc = {
       id: "sharing",
       heading: "4. Sharing and third parties",
       body: [
-        "We share data only with the service providers required to run CarnageMC: our hosting and database provider, our email delivery provider, our payment processor, and Discord where you have linked your account.",
+        "We share data only with the service providers required to run Warden Network: our hosting and database provider, our email delivery provider, our payment processor, and Discord where you have linked your account.",
         "We may disclose information where legally required, or where necessary to protect the safety of our players and staff.",
       ],
     },
@@ -70,7 +70,7 @@ const doc: LegalDoc = {
       id: "children",
       heading: "7. Children",
       body: [
-        "CarnageMC is not directed at children under 13. If you believe a child under 13 has provided us with personal information, contact us and we will remove it.",
+        "Warden Network is not directed at children under 13. If you believe a child under 13 has provided us with personal information, contact us and we will remove it.",
       ],
     },
     {

@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
           description,
           color: 0xef4444,
           timestamp: new Date(entry.entry_date ?? Date.now()).toISOString(),
-          footer: { text: 'CarnageMC Changelog' },
+          footer: { text: 'Warden Network Changelog' },
           fields,
         }],
         allowed_mentions: { parse: [] },
