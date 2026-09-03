@@ -109,22 +109,36 @@ export default function Install() {
           </Card>
         ) : (
           <>
-            {promptEvt && (
-              <Card className="mb-6 border-primary/40 glow">
-                <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 py-6">
-                  <div className="flex items-center gap-3">
-                    <Download className="h-6 w-6 text-primary" />
-                    <div className="text-left">
-                      <p className="font-semibold">One-click install</p>
-                      <p className="text-sm text-muted-foreground">Add CarnageMC to your device now.</p>
-                    </div>
+            <Card className="mb-6 border-primary/40 glow overflow-hidden">
+              {/* Browser chrome mockup */}
+              <div className="flex items-center gap-2 border-b border-border/60 bg-muted/40 px-3 py-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-destructive/70" />
+                <span className="h-2.5 w-2.5 rounded-full bg-primary/60" />
+                <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/40" />
+                <div className="ml-2 flex flex-1 items-center gap-2 rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs text-muted-foreground">
+                  {browser.icon}
+                  <span className="truncate">carnagemc.net</span>
+                </div>
+                <span className="hidden sm:inline text-[11px] text-muted-foreground">{browser.name}</span>
+              </div>
+              <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 py-6">
+                <div className="flex items-center gap-3">
+                  <Download className="h-6 w-6 text-primary" />
+                  <div className="text-left">
+                    <p className="font-semibold">
+                      {promptEvt ? "One-click install" : `Install with ${browser.name}`}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {promptEvt ? "Add CarnageMC to your device now." : browser.steps}
+                    </p>
                   </div>
-                  <Button size="lg" onClick={handleInstall} className="glow">
-                    <Download className="h-4 w-4" /> Install app
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+                </div>
+                <Button size="lg" onClick={handleInstall} className="glow shrink-0">
+                  <Download className="h-4 w-4" /> Install app
+                </Button>
+              </CardContent>
+            </Card>
+
 
             <div className="grid gap-4 md:grid-cols-2">
               <Card>
