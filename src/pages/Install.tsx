@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, Smartphone, Apple, Share, Plus, CheckCircle2 } from "lucide-react";
+import { Download, Smartphone, Apple, Share, Plus, CheckCircle2, Chrome, Globe, MonitorSmartphone } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import logo from "@/assets/xylo-logo.png";
 
 type BIPEvent = Event & {
@@ -21,14 +22,37 @@ const isStandalone = () =>
     // @ts-expect-error legacy iOS
     window.navigator.standalone === true);
 
+type BrowserInfo = { name: string; steps: string; icon: React.ReactNode };
+
+const detectBrowser = (): BrowserInfo => {
+  const ua = typeof navigator !== "undefined" ? navigator.userAgent : "";
+  if (/edg\//i.test(ua))
+    return { name: "Microsoft Edge", steps: 'Open the ⋯ menu → Apps → "Install this site as an app".', icon: <Globe className="h-4 w-4" /> };
+  if (/opr\/|opera/i.test(ua))
+    return { name: "Opera", steps: "Open the menu → Install CarnageMC.", icon: <Globe className="h-4 w-4" /> };
+  if (/samsungbrowser/i.test(ua))
+    return { name: "Samsung Internet", steps: "Open the menu → Add page to → Home screen.", icon: <Smartphone className="h-4 w-4" /> };
+  if (/firefox|fxios/i.test(ua))
+    return { name: "Firefox", steps: "Open the menu → Install / Add to Home screen.", icon: <Globe className="h-4 w-4" /> };
+  if (/crios/i.test(ua))
+    return { name: "Chrome on iOS", steps: "iOS only installs from Safari — open this page in Safari, then Share → Add to Home Screen.", icon: <Apple className="h-4 w-4" /> };
+  if (/safari/i.test(ua) && !/chrome|chromium/i.test(ua))
+    return { name: "Safari", steps: "Tap the Share button → Add to Home Screen → Add.", icon: <Apple className="h-4 w-4" /> };
+  if (/chrome|chromium/i.test(ua))
+    return { name: "Chrome", steps: 'Open the ⋮ menu → Cast, save & share → "Install page as app" (or the install icon in the address bar).', icon: <Chrome className="h-4 w-4" /> };
+  return { name: "your browser", steps: "Open the browser menu and choose Install app or Add to Home Screen.", icon: <MonitorSmartphone className="h-4 w-4" /> };
+};
+
 export default function Install() {
   const [promptEvt, setPromptEvt] = useState<BIPEvent | null>(null);
   const [installed, setInstalled] = useState(false);
   const [ios, setIos] = useState(false);
+  const [browser, setBrowser] = useState<BrowserInfo>({ name: "your browser", steps: "", icon: null });
 
   useEffect(() => {
     setIos(isIOS());
     setInstalled(isStandalone());
+    setBrowser(detectBrowser());
     const onBIP = (e: Event) => {
       e.preventDefault();
       setPromptEvt(e as BIPEvent);
@@ -43,12 +67,19 @@ export default function Install() {
   }, []);
 
   const handleInstall = async () => {
-    if (!promptEvt) return;
+    if (!promptEvt) {
+      toast({
+        title: `Install with ${browser.name}`,
+        description: browser.steps,
+      });
+      return;
+    }
     await promptEvt.prompt();
     const { outcome } = await promptEvt.userChoice;
     if (outcome === "accepted") setInstalled(true);
     setPromptEvt(null);
   };
+
 
   return (
     <>
@@ -78,22 +109,36 @@ export default function Install() {
           </Card>
         ) : (
           <>
-            {promptEvt && (
-              <Card className="mb-6 border-primary/40 glow">
-                <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 py-6">
-                  <div className="flex items-center gap-3">
-                    <Download className="h-6 w-6 text-primary" />
-                    <div className="text-left">
-                      <p className="font-semibold">One-click install</p>
-                      <p className="text-sm text-muted-foreground">Add CarnageMC to your device now.</p>
-                    </div>
+            <Card className="mb-6 border-primary/40 glow overflow-hidden">
+              {/* Browser chrome mockup */}
+              <div className="flex items-center gap-2 border-b border-border/60 bg-muted/40 px-3 py-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-destructive/70" />
+                <span className="h-2.5 w-2.5 rounded-full bg-primary/60" />
+                <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/40" />
+                <div className="ml-2 flex flex-1 items-center gap-2 rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs text-muted-foreground">
+                  {browser.icon}
+                  <span className="truncate">carnagemc.net</span>
+                </div>
+                <span className="hidden sm:inline text-[11px] text-muted-foreground">{browser.name}</span>
+              </div>
+              <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 py-6">
+                <div className="flex items-center gap-3">
+                  <Download className="h-6 w-6 text-primary" />
+                  <div className="text-left">
+                    <p className="font-semibold">
+                      {promptEvt ? "One-click install" : `Install with ${browser.name}`}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {promptEvt ? "Add CarnageMC to your device now." : browser.steps}
+                    </p>
                   </div>
-                  <Button size="lg" onClick={handleInstall} className="glow">
-                    <Download className="h-4 w-4" /> Install app
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+                </div>
+                <Button size="lg" onClick={handleInstall} className="glow shrink-0">
+                  <Download className="h-4 w-4" /> Install app
+                </Button>
+              </CardContent>
+            </Card>
+
 
             <div className="grid gap-4 md:grid-cols-2">
               <Card>
