@@ -2451,6 +2451,33 @@ export type Database = {
         }
         Relationships: []
       }
+      server_panel_settings: {
+        Row: {
+          created_at: string
+          id: string
+          motd: string
+          motd_color: string
+          server_ip: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          motd?: string
+          motd_color?: string
+          server_ip?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          motd?: string
+          motd_color?: string
+          server_ip?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       server_status: {
         Row: {
           id: number

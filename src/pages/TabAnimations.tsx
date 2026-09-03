@@ -316,18 +316,36 @@ const TabAnimations = () => {
 
   useEffect(() => {
     (async () => {
-      const { data } = await (supabase.from("tab_animations" as any) as any)
-        .select("id,name,change_interval,lines,sort_order")
-        .eq("published", true)
-        .is("user_id", null)
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: true });
-      setRows(
-        ((data ?? []) as any[]).map((r) => ({
-          ...r,
-          lines: Array.isArray(r.lines) ? r.lines.filter((l: any) => typeof l === "string") : [],
-        })),
-      );
+      const [{ data: animationData }, { data: serverSettings }] = await Promise.all([
+        (supabase.from("tab_animations" as any) as any)
+          .select("id,name,change_interval,lines,sort_order")
+          .eq("published", true)
+          .is("user_id", null)
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: true }),
+        supabase
+          .from("server_panel_settings")
+          .select("server_ip, motd, motd_color")
+          .order("created_at", { ascending: true })
+          .limit(1)
+          .maybeSingle(),
+      ]);
+
+      const animations = ((animationData ?? []) as any[]).map((r) => ({
+        ...r,
+        lines: Array.isArray(r.lines) ? r.lines.filter((l: any) => typeof l === "string") : [],
+      }));
+      const settings = serverSettings as { server_ip?: string; motd?: string; motd_color?: string } | null;
+      const serverLines = settings
+        ? [
+            settings.motd?.trim() ? `<${settings.motd_color || "#ff3b30"}>&l${settings.motd.trim()}` : "",
+            settings.server_ip?.trim() ? `<${settings.motd_color || "#ff3b30"}>&lIP &8• &f${settings.server_ip.trim()}` : "",
+          ].filter(Boolean)
+        : [];
+      const synced = animations.some((animation) => animation.name === "Server")
+        ? animations.map((animation) => animation.name === "Server" && serverLines.length ? { ...animation, lines: serverLines } : animation)
+        : animations;
+      setRows(synced);
       setLoading(false);
     })();
   }, []);
