@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, Smartphone, Apple, Share, Plus, CheckCircle2 } from "lucide-react";
+import { Download, Smartphone, Apple, Share, Plus, CheckCircle2, Chrome, Globe, MonitorSmartphone } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import logo from "@/assets/xylo-logo.png";
 
 type BIPEvent = Event & {
@@ -21,14 +22,37 @@ const isStandalone = () =>
     // @ts-expect-error legacy iOS
     window.navigator.standalone === true);
 
+type BrowserInfo = { name: string; steps: string; icon: React.ReactNode };
+
+const detectBrowser = (): BrowserInfo => {
+  const ua = typeof navigator !== "undefined" ? navigator.userAgent : "";
+  if (/edg\//i.test(ua))
+    return { name: "Microsoft Edge", steps: 'Open the ⋯ menu → Apps → "Install this site as an app".', icon: <Globe className="h-4 w-4" /> };
+  if (/opr\/|opera/i.test(ua))
+    return { name: "Opera", steps: "Open the menu → Install CarnageMC.", icon: <Globe className="h-4 w-4" /> };
+  if (/samsungbrowser/i.test(ua))
+    return { name: "Samsung Internet", steps: "Open the menu → Add page to → Home screen.", icon: <Smartphone className="h-4 w-4" /> };
+  if (/firefox|fxios/i.test(ua))
+    return { name: "Firefox", steps: "Open the menu → Install / Add to Home screen.", icon: <Globe className="h-4 w-4" /> };
+  if (/crios/i.test(ua))
+    return { name: "Chrome on iOS", steps: "iOS only installs from Safari — open this page in Safari, then Share → Add to Home Screen.", icon: <Apple className="h-4 w-4" /> };
+  if (/safari/i.test(ua) && !/chrome|chromium/i.test(ua))
+    return { name: "Safari", steps: "Tap the Share button → Add to Home Screen → Add.", icon: <Apple className="h-4 w-4" /> };
+  if (/chrome|chromium/i.test(ua))
+    return { name: "Chrome", steps: 'Open the ⋮ menu → Cast, save & share → "Install page as app" (or the install icon in the address bar).', icon: <Chrome className="h-4 w-4" /> };
+  return { name: "your browser", steps: "Open the browser menu and choose Install app or Add to Home Screen.", icon: <MonitorSmartphone className="h-4 w-4" /> };
+};
+
 export default function Install() {
   const [promptEvt, setPromptEvt] = useState<BIPEvent | null>(null);
   const [installed, setInstalled] = useState(false);
   const [ios, setIos] = useState(false);
+  const [browser, setBrowser] = useState<BrowserInfo>({ name: "your browser", steps: "", icon: null });
 
   useEffect(() => {
     setIos(isIOS());
     setInstalled(isStandalone());
+    setBrowser(detectBrowser());
     const onBIP = (e: Event) => {
       e.preventDefault();
       setPromptEvt(e as BIPEvent);
@@ -43,12 +67,19 @@ export default function Install() {
   }, []);
 
   const handleInstall = async () => {
-    if (!promptEvt) return;
+    if (!promptEvt) {
+      toast({
+        title: `Install with ${browser.name}`,
+        description: browser.steps,
+      });
+      return;
+    }
     await promptEvt.prompt();
     const { outcome } = await promptEvt.userChoice;
     if (outcome === "accepted") setInstalled(true);
     setPromptEvt(null);
   };
+
 
   return (
     <>
