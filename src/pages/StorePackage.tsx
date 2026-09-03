@@ -233,7 +233,7 @@ export default function StorePackage() {
                     {formatPrice(item.price, item.currency)}
                   </div>
                   {item.description && (
-                    <p className="text-[#cbd5e1] whitespace-pre-wrap leading-relaxed">
+                    <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
                       {item.description}
                     </p>
                   )}

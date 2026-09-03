@@ -155,7 +155,7 @@ export default function StoreCategory() {
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAdd(it); }}
         className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono tracking-widest uppercase border transition ${
           added
-            ? "bg-emerald-500 border-emerald-500 text-primary-foreground"
+            ? "bg-primary border-primary text-primary-foreground"
             : "border-primary text-primary hover:bg-primary hover:text-primary-foreground"
         }`}
       >
