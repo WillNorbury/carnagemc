@@ -112,7 +112,7 @@ export const ADMIN_SECTIONS: AdminSection[] = [
   "ban-appeals", "wiki", "gallery", "contact", "email-test", "send-email",
   "email-diagnostics", "quizzes", "reports", "bot-dashboard", "bot-management",
   "bot-config", "punishments", "console", "mysql", "servers-status", "store",
-  "vote-links", "partners", "tiers", "account-removals", "seasons", "tab-animations", "skripts", "game-modes", "site-pages",
+  "vote-links", "partners", "tiers", "account-removals", "seasons", "tab-animations", "server-panel", "skripts", "game-modes", "site-pages",
   "mod-skripts", "mod-servers", "mod-mods", "mod-reviews",
 ];
 
@@ -128,6 +128,8 @@ export const ADMIN_SECTION_ALIASES: Record<string, AdminSection> = {
   tab: "tab-animations",
   "tab-animation": "tab-animations",
   animations: "tab-animations",
+  "server-settings": "server-panel",
+  motd: "server-panel",
   votes: "vote-links",
   vote: "vote-links",
   servers: "servers-status",
@@ -208,6 +210,7 @@ const items: NavItem[] = [
   { kind: "link", id: "tiers", icon: Trophy, label: "Player Tiers" },
   { kind: "link", id: "seasons", icon: Trophy, label: "Seasons" },
   { kind: "link", id: "tab-animations", icon: Terminal, label: "Tab Animations" },
+  { kind: "link", id: "server-panel", icon: Server, label: "Server Panel" },
   { kind: "link", id: "skripts", icon: FileText, label: "Skripts" },
   { kind: "link", id: "applications", icon: ClipboardList, label: "Applications" },
   { kind: "link", id: "apply", icon: ClipboardList, label: "Apply (types)" },
