@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { parseMcText } from "@/lib/mcColors";
-import { Loader2, Save, Server } from "lucide-react";
+import { Loader2, RefreshCw, Save, Server, Signal, Users, Activity } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 type Settings = {
   id: string;
@@ -16,6 +17,20 @@ type Settings = {
 };
 
 const ANIMATION_NAME = "Server";
+
+type LiveStatus = {
+  ok: boolean;
+  ip?: string;
+  online?: boolean;
+  players?: number;
+  max?: number;
+  version?: string | null;
+  motd?: string;
+  latency_ms?: number | null;
+  uptime_pct?: number | null;
+  checked_at?: string;
+  error?: string;
+};
 
 const buildLines = (s: Pick<Settings, "server_ip" | "motd" | "motd_color">) => {
   const color = s.motd_color?.trim() || "#ff3b30";
@@ -32,6 +47,22 @@ export function ServerPanelAdminSection() {
   const [serverIp, setServerIp] = useState("");
   const [motd, setMotd] = useState("");
   const [motdColor, setMotdColor] = useState("#ff3b30");
+  const [status, setStatus] = useState<LiveStatus | null>(null);
+  const [checking, setChecking] = useState(false);
+
+  const refreshStatus = async () => {
+    setChecking(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("server-panel-status", { body: {} });
+      if (error) throw error;
+      setStatus(data as LiveStatus);
+      if ((data as LiveStatus)?.motd) setMotd((data as LiveStatus).motd as string);
+    } catch (e) {
+      setStatus({ ok: false, error: e instanceof Error ? e.message : "Status check failed" });
+    } finally {
+      setChecking(false);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -49,7 +80,11 @@ export function ServerPanelAdminSection() {
         setMotdColor(data.motd_color ?? "#ff3b30");
       }
       setLoading(false);
+      void refreshStatus();
     })();
+    const t = setInterval(() => void refreshStatus(), 60_000);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const save = async () => {
@@ -96,6 +131,7 @@ export function ServerPanelAdminSection() {
       }
 
       toast({ title: "Saved", description: "Server details updated and /tab animations synced." });
+      void refreshStatus();
     } catch (e) {
       toast({ title: "Save failed", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
     } finally {
@@ -113,8 +149,53 @@ export function ServerPanelAdminSection() {
 
   const preview = buildLines({ server_ip: serverIp, motd, motd_color: motdColor });
 
+  const statBox = (label: string, value: string, Icon: typeof Users) => (
+    <div className="rounded-lg border border-border bg-muted/30 p-4">
+      <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
+        <Icon className="h-3.5 w-3.5" /> {label}
+      </div>
+      <div className="mt-1 text-2xl font-semibold">{value}</div>
+    </div>
+  );
+
   return (
     <div className="grid gap-6 lg:grid-cols-2">
+      <Card className="lg:col-span-2">
+        <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5" /> Live server status
+              {status?.ok && (
+                <Badge variant={status.online ? "default" : "destructive"}>
+                  {status.online ? "Online" : "Offline"}
+                </Badge>
+              )}
+            </CardTitle>
+            <CardDescription>
+              {status?.checked_at
+                ? `Last checked ${new Date(status.checked_at).toLocaleTimeString()} • auto-refreshes every minute`
+                : "Pinging the configured server IP…"}
+            </CardDescription>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => void refreshStatus()} disabled={checking}>
+            {checking ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />} Refresh
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {status && !status.ok ? (
+            <p className="text-sm text-destructive">{status.error ?? "Unable to reach the server."}</p>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-3">
+              {statBox("Players online", status ? `${status.players ?? 0}/${status.max ?? 0}` : "—", Users)}
+              {statBox("Ping", status?.latency_ms != null ? `${status.latency_ms} ms` : "—", Signal)}
+              {statBox("Uptime (30d)", status?.uptime_pct != null ? `${status.uptime_pct}%` : "—", Activity)}
+            </div>
+          )}
+          {status?.version && (
+            <p className="mt-3 text-xs text-muted-foreground">Version: {status.version}</p>
+          )}
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
