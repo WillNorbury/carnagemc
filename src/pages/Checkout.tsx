@@ -427,9 +427,9 @@ export default function Checkout() {
                   {/* Creator code */}
                   <div className="space-y-2">
                     {cart.creatorCode ? (
-                      <div className="flex items-center justify-between gap-2 p-2 border border-fuchsia-400/50 bg-fuchsia-500/5">
+                      <div className="flex items-center justify-between gap-2 p-2 border border-cyan-400/50 bg-cyan-500/5">
                         <div className="flex items-center gap-2 text-sm min-w-0">
-                          <Sparkles className="h-4 w-4 text-fuchsia-300 shrink-0" />
+                          <Sparkles className="h-4 w-4 text-cyan-300 shrink-0" />
                           <span className="font-mono font-semibold truncate">
                             {cart.creatorCode.code}
                           </span>
@@ -440,7 +440,7 @@ export default function Checkout() {
                         <button
                           type="button"
                           onClick={cart.clearCreatorCode}
-                          className="text-muted-foreground hover:text-fuchsia-300"
+                          className="text-muted-foreground hover:text-cyan-300"
                           aria-label="Remove creator code"
                         >
                           <X className="h-4 w-4" />
@@ -458,14 +458,14 @@ export default function Checkout() {
                               if (e.key === "Enter") applyCreator();
                             }}
                             placeholder="CREATOR CODE"
-                            className="w-full pl-7 pr-2 py-2 bg-muted border border-white/10 focus:border-fuchsia-400 focus:outline-none text-xs font-mono uppercase tracking-widest text-foreground placeholder:text-muted-foreground"
+                            className="w-full pl-7 pr-2 py-2 bg-muted border border-white/10 focus:border-cyan-400 focus:outline-none text-xs font-mono uppercase tracking-widest text-foreground placeholder:text-muted-foreground"
                           />
                         </div>
                         <button
                           type="button"
                           onClick={applyCreator}
                           disabled={cart.applyingCreatorCode || !creatorInput.trim()}
-                          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-muted-foreground hover:border-fuchsia-400 hover:text-fuchsia-300 transition disabled:opacity-50"
+                          className="px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-white/10 text-muted-foreground hover:border-cyan-400 hover:text-cyan-300 transition disabled:opacity-50"
                         >
                           {cart.applyingCreatorCode ? "…" : "Apply"}
                         </button>
@@ -502,7 +502,7 @@ export default function Checkout() {
                       </div>
                     )}
                     {cart.creatorDiscount > 0 && cart.creatorCode && (
-                      <div className="flex items-center justify-between text-fuchsia-300">
+                      <div className="flex items-center justify-between text-cyan-300">
                         <span className="text-xs font-mono uppercase tracking-widest">
                           Creator {cart.creatorCode.discount_percent}%
                         </span>

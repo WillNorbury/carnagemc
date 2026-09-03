@@ -120,7 +120,7 @@ const Changelog = () => {
           {/* Header & Search */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
             <div className="space-y-2">
-              <span className="text-[#ff5722] font-mono text-sm tracking-widest uppercase">
+              <span className="text-[#0082A2] font-mono text-sm tracking-widest uppercase">
                 Server Updates
               </span>
               <h1 className="text-6xl md:text-8xl font-bold font-['Space_Grotesk'] tracking-tighter italic">
@@ -128,15 +128,15 @@ const Changelog = () => {
               </h1>
             </div>
             <div className="relative group max-w-md w-full">
-              <div className="absolute -inset-0.5 bg-[#ff5722] opacity-20 blur-sm group-focus-within:opacity-40 transition pointer-events-none" />
+              <div className="absolute -inset-0.5 bg-[#0082A2] opacity-20 blur-sm group-focus-within:opacity-40 transition pointer-events-none" />
               <input
                 type="text"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search patches, features, versions..."
-                className="relative w-full bg-[#1a1a24] border border-white/10 px-6 py-4 rounded-none focus:outline-none focus:border-[#ff5722] text-lg font-['Space_Grotesk'] tracking-wide text-slate-100 placeholder:text-[#5f6472]"
+                className="relative w-full bg-[#1a1a24] border border-white/10 px-6 py-4 rounded-none focus:outline-none focus:border-[#0082A2] text-lg font-['Space_Grotesk'] tracking-wide text-slate-100 placeholder:text-[#5f6472]"
               />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#ff5722] font-mono text-xs opacity-50 hidden sm:block">
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#0082A2] font-mono text-xs opacity-50 hidden sm:block">
                 [/]
               </div>
             </div>
@@ -154,7 +154,7 @@ const Changelog = () => {
               <span className="ml-1 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             </span>
             <span
-              className="inline-flex items-center gap-1.5 border border-white/10 bg-white/5 text-[#9ca3af] px-2.5 py-1 line-through decoration-[#ff5722]/60"
+              className="inline-flex items-center gap-1.5 border border-white/10 bg-white/5 text-[#9ca3af] px-2.5 py-1 line-through decoration-[#0082A2]/60"
               title="Automatic Discord posts are disabled — updates are sent manually."
             >
               <MessageSquareOff className="w-3 h-3" strokeWidth={1.5} /> Discord (manual only)
@@ -168,8 +168,8 @@ const Changelog = () => {
               onClick={() => setFilter("all")}
               className={`px-4 py-2 text-xs font-mono tracking-widest uppercase border transition ${
                 filter === "all"
-                  ? "bg-[#ff5722] border-[#ff5722] text-white"
-                  : "border-white/10 text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722]"
+                  ? "bg-[#0082A2] border-[#0082A2] text-white"
+                  : "border-white/10 text-[#9ca3af] hover:border-[#0082A2] hover:text-[#0082A2]"
               }`}
             >
               All
@@ -182,8 +182,8 @@ const Changelog = () => {
                   onClick={() => setFilter(c.key)}
                   className={`px-4 py-2 text-xs font-mono tracking-widest uppercase border transition inline-flex items-center gap-2 ${
                     filter === c.key
-                      ? "bg-[#ff5722] border-[#ff5722] text-white"
-                      : "border-white/10 text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722]"
+                      ? "bg-[#0082A2] border-[#0082A2] text-white"
+                      : "border-white/10 text-[#9ca3af] hover:border-[#0082A2] hover:text-[#0082A2]"
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" strokeWidth={1.5} />
@@ -205,7 +205,7 @@ const Changelog = () => {
               {featured && (
                 <Link
                   to={`/changelog/${changelogSlug(featured.title)}`}
-                  className="md:col-span-8 group relative bg-[#1a1a24] overflow-hidden min-h-[320px] md:min-h-[380px] flex flex-col justify-end p-8 border border-white/5 hover:border-[#ff5722]/40 transition-colors"
+                  className="md:col-span-8 group relative bg-[#1a1a24] overflow-hidden min-h-[320px] md:min-h-[380px] flex flex-col justify-end p-8 border border-white/5 hover:border-[#0082A2]/40 transition-colors"
                 >
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/70 to-transparent z-10" />
                   {featured.image_url ? (
@@ -219,7 +219,7 @@ const Changelog = () => {
                         type="button"
                         onClick={openLightbox(featured.image_url)}
                         aria-label="View image"
-                        className="absolute top-4 left-4 z-30 w-9 h-9 grid place-items-center bg-black/60 border border-white/20 text-white opacity-0 group-hover:opacity-100 hover:bg-[#ff5722] hover:border-[#ff5722] transition"
+                        className="absolute top-4 left-4 z-30 w-9 h-9 grid place-items-center bg-black/60 border border-white/20 text-white opacity-0 group-hover:opacity-100 hover:bg-[#0082A2] hover:border-[#0082A2] transition"
                       >
                         <Maximize2 className="w-4 h-4" />
                       </button>
@@ -239,21 +239,21 @@ const Changelog = () => {
                         v{featured.version}
                       </span>
                     )}
-                    <span className="bg-[#ff5722] text-white text-[10px] font-bold px-2 py-1 tracking-widest uppercase">
+                    <span className="bg-[#0082A2] text-white text-[10px] font-bold px-2 py-1 tracking-widest uppercase">
                       {catMeta(featured.category).label}
                     </span>
                   </div>
                   <div className="relative z-20 space-y-4">
-                    <div className="text-xs font-mono text-[#ff5722] tracking-widest uppercase">
+                    <div className="text-xs font-mono text-[#0082A2] tracking-widest uppercase">
                       {fmtDate(featured.entry_date)}
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-bold font-['Space_Grotesk'] leading-none group-hover:text-[#ff5722] transition-colors">
+                    <h2 className="text-4xl md:text-5xl font-bold font-['Space_Grotesk'] leading-none group-hover:text-[#0082A2] transition-colors">
                       {featured.title}
                     </h2>
                     <p className="text-[#9ca3af] max-w-md line-clamp-2">{featured.content}</p>
-                    <div className="flex items-center gap-4 text-xs font-mono text-[#ff5722] uppercase tracking-widest">
+                    <div className="flex items-center gap-4 text-xs font-mono text-[#0082A2] uppercase tracking-widest">
                       <span>Read Entry</span>
-                      <div className="h-px w-12 bg-[#ff5722] group-hover:w-20 transition-all" />
+                      <div className="h-px w-12 bg-[#0082A2] group-hover:w-20 transition-all" />
                     </div>
                   </div>
                 </Link>
@@ -270,8 +270,8 @@ const Changelog = () => {
                         to={`/changelog/${changelogSlug(e.title)}`}
                         className={`bg-[#1a1a24] border-l-4 flex flex-col justify-between min-h-[180px] hover:bg-[#23232f] transition-all group overflow-hidden ${
                           i === 0
-                            ? "border-[#ff5722]"
-                            : "border-white/10 hover:border-[#ff5722]"
+                            ? "border-[#0082A2]"
+                            : "border-white/10 hover:border-[#0082A2]"
                         }`}
                       >
                         {e.image_url && (
@@ -287,7 +287,7 @@ const Changelog = () => {
                               type="button"
                               onClick={openLightbox(e.image_url)}
                               aria-label="View image"
-                              className="absolute top-2 right-2 z-10 w-8 h-8 grid place-items-center bg-black/60 border border-white/20 text-white opacity-0 group-hover:opacity-100 hover:bg-[#ff5722] hover:border-[#ff5722] transition"
+                              className="absolute top-2 right-2 z-10 w-8 h-8 grid place-items-center bg-black/60 border border-white/20 text-white opacity-0 group-hover:opacity-100 hover:bg-[#0082A2] hover:border-[#0082A2] transition"
                             >
                               <Maximize2 className="w-3.5 h-3.5" />
                             </button>
@@ -295,11 +295,11 @@ const Changelog = () => {
                         )}
                         <div className="p-6 flex flex-col justify-between flex-1">
                           <div>
-                            <div className="text-[10px] font-mono text-[#ff5722] tracking-widest uppercase mb-2">
+                            <div className="text-[10px] font-mono text-[#0082A2] tracking-widest uppercase mb-2">
                               {meta.label}
                               {e.version ? ` · v${e.version}` : ""}
                             </div>
-                            <h3 className="text-xl font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                            <h3 className="text-xl font-bold font-['Space_Grotesk'] group-hover:text-[#0082A2] transition-colors">
                               {e.title}
                             </h3>
                             <p className="text-[#9ca3af] text-sm mt-2 line-clamp-2">{e.content}</p>
@@ -318,7 +318,7 @@ const Changelog = () => {
               {reference.length > 0 && (
                 <div className="md:col-span-12 mt-8">
                   <div className="flex items-center gap-4 mb-6">
-                    <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
+                    <h2 className="text-sm font-mono text-[#0082A2] uppercase tracking-[0.3em]">
                       Recent Patches
                     </h2>
                     <div className="flex-1 h-px bg-white/5" />
@@ -331,7 +331,7 @@ const Changelog = () => {
                         <Link
                           key={e.id}
                           to={`/changelog/${changelogSlug(e.title)}`}
-                          className="bg-[#1a1a24] border border-white/5 hover:border-[#ff5722]/30 transition group overflow-hidden flex flex-col"
+                          className="bg-[#1a1a24] border border-white/5 hover:border-[#0082A2]/30 transition group overflow-hidden flex flex-col"
                         >
                           {e.image_url && (
                             <div className="relative h-32 overflow-hidden">
@@ -346,14 +346,14 @@ const Changelog = () => {
                                 type="button"
                                 onClick={openLightbox(e.image_url)}
                                 aria-label="View image"
-                                className="absolute top-2 right-2 z-10 w-8 h-8 grid place-items-center bg-black/60 border border-white/20 text-white opacity-0 group-hover:opacity-100 hover:bg-[#ff5722] hover:border-[#ff5722] transition"
+                                className="absolute top-2 right-2 z-10 w-8 h-8 grid place-items-center bg-black/60 border border-white/20 text-white opacity-0 group-hover:opacity-100 hover:bg-[#0082A2] hover:border-[#0082A2] transition"
                               >
                                 <Maximize2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           )}
                           <div className="p-6 flex flex-col flex-1">
-                            <div className="text-[#ff5722] mb-4 flex items-center justify-between">
+                            <div className="text-[#0082A2] mb-4 flex items-center justify-between">
                               <Icon className="w-6 h-6" strokeWidth={1.5} />
                               {e.version && (
                                 <span className="text-[10px] font-mono text-[#9ca3af] tracking-widest">
@@ -361,7 +361,7 @@ const Changelog = () => {
                                 </span>
                               )}
                             </div>
-                            <h4 className="font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                            <h4 className="font-bold font-['Space_Grotesk'] group-hover:text-[#0082A2] transition-colors">
                               {e.title}
                             </h4>
                             <p className="text-sm text-[#9ca3af] mt-1 line-clamp-2">{e.content}</p>
@@ -380,7 +380,7 @@ const Changelog = () => {
               {Object.entries(restByDate).map(([date, arr]) => (
                 <div key={date} className="md:col-span-12 mt-4">
                   <div className="flex items-center gap-4 mb-6">
-                    <h2 className="text-sm font-mono text-[#ff5722] uppercase tracking-[0.3em]">
+                    <h2 className="text-sm font-mono text-[#0082A2] uppercase tracking-[0.3em]">
                       {fmtDate(date)}
                     </h2>
                     <div className="flex-1 h-px bg-white/5" />
@@ -393,10 +393,10 @@ const Changelog = () => {
                         <Link
                           key={e.id}
                           to={`/changelog/${changelogSlug(e.title)}`}
-                          className="p-6 bg-[#1a1a24] border border-white/5 hover:border-[#ff5722]/30 transition group flex flex-col"
+                          className="p-6 bg-[#1a1a24] border border-white/5 hover:border-[#0082A2]/30 transition group flex flex-col"
                         >
                           <div className="flex items-start justify-between gap-2 mb-2">
-                            <span className="inline-flex items-center gap-1.5 text-[10px] font-mono tracking-widest uppercase text-[#ff5722]">
+                            <span className="inline-flex items-center gap-1.5 text-[10px] font-mono tracking-widest uppercase text-[#0082A2]">
                               <Icon className="w-3 h-3" strokeWidth={1.8} />
                               {meta.label}
                             </span>
@@ -406,7 +406,7 @@ const Changelog = () => {
                               </span>
                             )}
                           </div>
-                          <h4 className="font-bold font-['Space_Grotesk'] group-hover:text-[#ff5722] transition-colors">
+                          <h4 className="font-bold font-['Space_Grotesk'] group-hover:text-[#0082A2] transition-colors">
                             {e.title}
                           </h4>
                           <p className="text-sm text-[#9ca3af] mt-1 line-clamp-2">{e.content}</p>
@@ -426,25 +426,25 @@ const Changelog = () => {
                 <div className="flex flex-wrap gap-6 md:gap-8">
                   <Link
                     to="/wiki"
-                    className="text-xs font-mono text-[#9ca3af] hover:text-[#ff5722] tracking-widest transition"
+                    className="text-xs font-mono text-[#9ca3af] hover:text-[#0082A2] tracking-widest transition"
                   >
                     WIKI
                   </Link>
                   <Link
                     to="/store"
-                    className="text-xs font-mono text-[#9ca3af] hover:text-[#ff5722] tracking-widest transition"
+                    className="text-xs font-mono text-[#9ca3af] hover:text-[#0082A2] tracking-widest transition"
                   >
                     STORE
                   </Link>
                   <Link
                     to="/servers-status"
-                    className="text-xs font-mono text-[#9ca3af] hover:text-[#ff5722] tracking-widest transition"
+                    className="text-xs font-mono text-[#9ca3af] hover:text-[#0082A2] tracking-widest transition"
                   >
                     SERVER STATUS
                   </Link>
                   <Link
                     to="/discord"
-                    className="text-xs font-mono text-[#ff5722] hover:text-white tracking-widest transition"
+                    className="text-xs font-mono text-[#0082A2] hover:text-white tracking-widest transition"
                   >
                     DISCORD
                   </Link>
