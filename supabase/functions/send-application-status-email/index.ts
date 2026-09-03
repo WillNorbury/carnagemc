@@ -128,7 +128,7 @@ Deno.serve(async (req) => {
         templateName: 'application-status',
         recipientEmail,
         idempotencyKey: `application-${app.id}-${body.status}`,
-        from: 'Warden Network Applications <applications@carnagemc.net>',
+        from: 'Warden Network Applications <applications@warden.rip>',
         templateData,
         subjectOverride,
         bodyHtmlOverride,

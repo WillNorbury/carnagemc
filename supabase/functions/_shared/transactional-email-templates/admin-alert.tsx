@@ -82,7 +82,7 @@ const Email = ({
           {link && <Button style={{ ...button, background: accent }} href={link}>{linkLabel}</Button>}
           {link !== STATUS_URL && <Button style={secondaryButton} href={STATUS_URL}>View Status</Button>}
           <Text style={muted}>
-            Sent from status@carnagemc.net{timestamp ? ` · ${timestamp}` : ''}
+            Sent from status@warden.rip{timestamp ? ` · ${timestamp}` : ''}
           </Text>
         </Container>
       </Body>
