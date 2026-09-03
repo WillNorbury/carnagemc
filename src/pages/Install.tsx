@@ -117,7 +117,7 @@ export default function Install() {
                 <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/40" />
                 <div className="ml-2 flex flex-1 items-center gap-2 rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs text-muted-foreground">
                   {browser.icon}
-                  <span className="truncate">carnagemc.net</span>
+                  <span className="truncate">wardennetwork.net</span>
                 </div>
                 <span className="hidden sm:inline text-[11px] text-muted-foreground">{browser.name}</span>
               </div>

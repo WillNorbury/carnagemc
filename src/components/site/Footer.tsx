@@ -4,9 +4,9 @@ import { Twitter, Youtube, MessageCircle, Twitch } from "lucide-react";
 
 const SOCIALS = [
   { icon: MessageCircle, href: "https://discord.gg/wD6K3nr2MG", label: "Discord" },
-  { icon: Twitter, href: "https://x.com/Warden Network", label: "Twitter" },
-  { icon: Youtube, href: "https://youtube.com/@WillNorbury", label: "YouTube" },
-  { icon: Twitch, href: "https://twitch.tv/Will_Norbury", label: "Twitch" },
+  { icon: Twitter, href: "https://x.com/wardennetwork", label: "Twitter" },
+  { icon: Youtube, href: "https://youtube.com/@wardennetwork", label: "YouTube" },
+  { icon: Twitch, href: "https://twitch.tv/wardennetwork", label: "Twitch" },
 ];
 
 const COLUMNS: { title: string; links: { to: string; label: string }[] }[] = [

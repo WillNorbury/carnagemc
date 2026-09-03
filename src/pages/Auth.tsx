@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
-import logoAsset from "@/assets/havocsmp-logo.png.asset.json";
+import logo from "@/assets/warden-network-icon.png";
 import { Link } from "react-router-dom";
 import { SEO } from "@/components/site/SEO";
 import { Mail, Loader2, ShieldCheck, KeyRound } from "lucide-react";
