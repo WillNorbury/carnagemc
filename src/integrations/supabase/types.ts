@@ -3711,6 +3711,7 @@ export type Database = {
         Returns: boolean
       }
       is_org_owner: { Args: { _org_id: string }; Returns: boolean }
+      is_organization_owner: { Args: { _org_id: string }; Returns: boolean }
       is_staff_user: { Args: { _uid: string }; Returns: boolean }
       list_public_coupons: {
         Args: { _limit?: number }
