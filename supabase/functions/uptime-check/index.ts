@@ -286,7 +286,7 @@ Deno.serve(async (req) => {
     /* ignore */
   }
 
-  const siteUrl = "https://carnagemc.lovable.app";
+  const siteUrl = "https://warden.rip";
   const apiHealth = `${SUPABASE_URL}/rest/v1/`;
   SERVICE_ENDPOINTS.website = siteUrl;
   SERVICE_ENDPOINTS.minecraft = mcHost;
