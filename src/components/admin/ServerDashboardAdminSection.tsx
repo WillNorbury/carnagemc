@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { Activity, Ban, Gauge, Map, MapPin, RefreshCw, Server, ShieldBan, UserRound, Users, Wifi } from "lucide-react";
@@ -106,4 +106,4 @@ export function ServerDashboardAdminSection() {
   </div>;
 }
 
-function Metric({ icon, label, value, detail, tone }: { icon: React.ReactNode; label: string; value: string; detail: string; tone?: string }) { return <Card><CardContent className="p-5"><div className="flex items-center gap-3 text-muted-foreground">{icon}<span className="text-sm">{label}</span></div><div className={`mt-3 text-2xl font-semibold ${tone ?? ""}`}>{value}</div><div className="mt-1 text-xs text-muted-foreground">{detail}</div></CardContent></Card>; }
+function Metric({ icon, label, value, detail, tone }: { icon: ReactNode; label: string; value: string; detail: string; tone?: string }) { return <Card><CardContent className="p-5"><div className="flex items-center gap-3 text-muted-foreground">{icon}<span className="text-sm">{label}</span></div><div className={`mt-3 text-2xl font-semibold ${tone ?? ""}`}>{value}</div><div className="mt-1 text-xs text-muted-foreground">{detail}</div></CardContent></Card>; }
