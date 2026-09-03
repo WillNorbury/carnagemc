@@ -75,7 +75,7 @@ Deno.serve(async (req) => {
   const started = Date.now();
   try {
     const res = await fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(ip)}`, {
-      headers: { "User-Agent": "CarnageMC-Status/1.0" },
+      headers: { "User-Agent": "Warden Network-Status/1.0" },
     });
     latencyMs = Date.now() - started;
     if (res.ok) {

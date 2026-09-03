@@ -81,10 +81,10 @@ export default function Wiki() {
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-slate-100">
       <Helmet>
-        <title>Wiki — CarnageMC Knowledge Hub</title>
+        <title>Wiki — Warden Network Knowledge Hub</title>
         <meta
           name="description"
-          content="CarnageMC wiki: guides, mechanics, commands, ranks, appeals and community how-tos."
+          content="Warden Network wiki: guides, mechanics, commands, ranks, appeals and community how-tos."
         />
         <link
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap"
@@ -281,7 +281,7 @@ export default function Wiki() {
                   </Link>
                 </div>
                 <div className="text-[10px] text-white/20 font-mono flex items-center gap-2">
-                  <BookOpen className="w-3 h-3" /> CARNAGEMC ARCHIVE
+                  <BookOpen className="w-3 h-3" /> WARDEN NETWORK ARCHIVE
                 </div>
               </div>
             </div>

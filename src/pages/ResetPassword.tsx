@@ -55,7 +55,7 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-grid">
-      <SEO title="Reset password — CarnageMC" description="Choose a new password for your CarnageMC account." path="/reset-password" />
+      <SEO title="Reset password — Warden Network" description="Choose a new password for your Warden Network account." path="/reset-password" />
       <div className="absolute inset-0 -z-10" style={{ background: "var(--gradient-hero)" }} />
       <Card className="w-full max-w-md p-8 backdrop-blur-xl bg-card/90 border-primary/20 shadow-elegant">
         <div className="mx-auto w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">

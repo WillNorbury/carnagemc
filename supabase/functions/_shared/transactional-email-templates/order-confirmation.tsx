@@ -41,7 +41,7 @@ const Email = ({
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your CarnageMC store order — {totalFormatted}</Preview>
+    <Preview>Your Warden Network store order — {totalFormatted}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Heading style={h1}>Order received</Heading>
@@ -94,7 +94,7 @@ const Email = ({
 export const template = {
   component: Email,
   subject: (d: Record<string, any>) =>
-    `Order received — ${d.totalFormatted ?? 'CarnageMC Store'}`,
+    `Order received — ${d.totalFormatted ?? 'Warden Network Store'}`,
   displayName: 'Store order confirmation',
   previewData: {
     recipientName: 'Steve',

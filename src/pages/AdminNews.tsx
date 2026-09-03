@@ -56,7 +56,7 @@ export const NewsAnnouncementsTab = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    document.title = "Announcements — Admin · CarnageMC";
+    document.title = "Announcements — Admin · Warden Network";
   }, []);
 
   const load = async () => {

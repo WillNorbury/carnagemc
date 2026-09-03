@@ -30,7 +30,7 @@ const Email = ({
   priority,
   coverUrl,
   link,
-  siteName = 'CarnageMC',
+  siteName = 'Warden Network',
   newsUnsubscribeUrl,
 }: Props) => (
   <Html lang="en" dir="ltr">
@@ -72,7 +72,7 @@ const Email = ({
 export const template = {
   component: Email,
   subject: (d: Record<string, any>) =>
-    `${d.siteName ?? 'CarnageMC'} announcement: ${d.title ?? 'New post'}`,
+    `${d.siteName ?? 'Warden Network'} announcement: ${d.title ?? 'New post'}`,
   displayName: 'News announcement',
   previewData: {
     title: 'Server-wide event this Saturday',
@@ -80,7 +80,7 @@ export const template = {
     priority: 'high',
     coverUrl: null,
     link: 'https://carnagemc.net/news',
-    siteName: 'CarnageMC',
+    siteName: 'Warden Network',
     newsUnsubscribeUrl: 'https://carnagemc.net/news/unsubscribe?token=demo',
   },
 } satisfies TemplateEntry

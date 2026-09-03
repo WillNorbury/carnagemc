@@ -86,7 +86,7 @@ export default function Contact() {
   }
 
   const ownerPreview = useMemo(() => {
-    const subject = ownerForm.reason ? `[CarnageMC] ${ownerForm.reason}` : "";
+    const subject = ownerForm.reason ? `[Warden Network] ${ownerForm.reason}` : "";
     const body = ownerForm.email || ownerForm.message
       ? `Reply-to: ${ownerForm.email}\n\n${ownerForm.message}`
       : "";
@@ -100,7 +100,7 @@ export default function Contact() {
       return null;
     }
     const d = parsed.data;
-    const subject = `[CarnageMC] ${d.reason}`;
+    const subject = `[Warden Network] ${d.reason}`;
     const body = `Reply-to: ${d.email}\n\n${d.message}`;
     return `mailto:${OWNER_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
@@ -131,7 +131,7 @@ export default function Contact() {
   async function copyOwnerEmail() {
     const parsed = ownerSchema.safeParse(ownerForm);
     const text = parsed.success
-      ? `To: ${OWNER_EMAIL}\nSubject: [CarnageMC] ${parsed.data.reason}\n\nReply-to: ${parsed.data.email}\n\n${parsed.data.message}`
+      ? `To: ${OWNER_EMAIL}\nSubject: [Warden Network] ${parsed.data.reason}\n\nReply-to: ${parsed.data.email}\n\n${parsed.data.message}`
       : OWNER_EMAIL;
     try {
       await navigator.clipboard.writeText(text);

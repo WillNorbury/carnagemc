@@ -12,7 +12,7 @@ const sections = [
   {
     icon: Shield,
     title: "Platform & Hosting",
-    body: "CarnageMC is built on Lovable Cloud, which uses Supabase for managed Postgres, authentication, storage, and edge functions. Row-Level Security is enabled across user-facing tables so each request only returns rows the caller is authorized to see. This is not an independent certification of the underlying platform.",
+    body: "Warden Network is built on Lovable Cloud, which uses Supabase for managed Postgres, authentication, storage, and edge functions. Row-Level Security is enabled across user-facing tables so each request only returns rows the caller is authorized to see. This is not an independent certification of the underlying platform.",
   },
   {
     icon: Database,
@@ -50,10 +50,10 @@ export default function Trust() {
   return (
     <main className="container mx-auto px-4 py-10 max-w-4xl">
       <Helmet>
-        <title>Trust & Security · CarnageMC</title>
+        <title>Trust & Security · Warden Network</title>
         <meta
           name="description"
-          content="How CarnageMC handles security, privacy, data, and integrations."
+          content="How Warden Network handles security, privacy, data, and integrations."
         />
       </Helmet>
 
@@ -62,7 +62,7 @@ export default function Trust() {
           TRUST & <span className="text-gradient">SECURITY</span>
         </h1>
         <p className="text-muted-foreground max-w-2xl">
-          This page is maintained by the CarnageMC team to answer common security and privacy
+          This page is maintained by the Warden Network team to answer common security and privacy
           questions about the site. It describes practices and controls that are currently in
           place — it is not an independent certification or audit.
         </p>
@@ -87,7 +87,7 @@ export default function Trust() {
       <section className="mt-10 rounded-lg border border-border/60 bg-muted/30 p-6 text-sm text-muted-foreground">
         <h2 className="font-semibold text-foreground mb-2">Shared responsibility</h2>
         <p>
-          CarnageMC operates the application and configures access controls, integrations, and
+          Warden Network operates the application and configures access controls, integrations, and
           content. The underlying cloud platform provides managed infrastructure, database, and
           authentication primitives. You are responsible for keeping your account credentials
           secure, choosing a strong password, and reporting suspected misuse to staff.

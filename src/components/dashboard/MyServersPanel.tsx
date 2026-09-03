@@ -179,7 +179,7 @@ const MyServersPanel = () => {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <Label>Server name *</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="CarnageMC" />
+              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Warden Network" />
             </div>
             <div>
               <Label>Server IP *</Label>

@@ -220,7 +220,7 @@ async function emailAdmins(
           body: {
             templateName: 'admin-alert',
             recipientEmail: to,
-            from: 'CarnageMC Status <status@carnagemc.net>',
+            from: 'Warden Network Status <status@carnagemc.net>',
             idempotencyKey: `${payload.idempotencyKey}-${to}`,
             templateData: {
               title: payload.title,

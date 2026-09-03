@@ -95,7 +95,7 @@ const SkriptDetail = () => {
         const s = data as unknown as Skript;
         setSk(s);
         setDownloadCount(s.downloads ?? 0);
-        document.title = `${s.name} — Skript — CarnageMC`;
+        document.title = `${s.name} — Skript — Warden Network`;
         if (s.uploaded_by) {
           const { data: prof } = await supabase
             .from("profiles")

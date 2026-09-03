@@ -79,7 +79,7 @@ export const EmailDiagnosticsSection = () => {
           category: "test",
           testEmail: testTo.trim(),
           from: fromValue,
-          subject: "[TEST] Email diagnostics from CarnageMC",
+          subject: "[TEST] Email diagnostics from Warden Network",
           message:
             `This is a diagnostics test sent from the Email Diagnostics panel.\n\nFrom: ${fromValue}\nTime: ${new Date().toISOString()}\n\nIf you received this, the From address works end-to-end.`,
         },
@@ -184,7 +184,7 @@ export const EmailDiagnosticsSection = () => {
         <CardContent className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-2">
             <Input
-              placeholder="William @ CarnageMC <william@notify.carnagemc.net>"
+              placeholder="William @ Warden Network <william@notify.carnagemc.net>"
               value={candidate}
               onChange={(e) => setCandidate(e.target.value)}
             />

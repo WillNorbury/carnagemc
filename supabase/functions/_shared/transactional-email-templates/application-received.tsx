@@ -14,12 +14,12 @@ interface Props {
 const Email = ({ mcUsername = 'there', applicationType = 'staff', why = '' }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>We received your CarnageMC {applicationType} application</Preview>
+    <Preview>We received your Warden Network {applicationType} application</Preview>
     <Body style={main}>
       <Container style={container}>
         <Heading style={h1}>Application received</Heading>
         <Text style={text}>
-          Hi {mcUsername}, thanks for applying to be a <strong>{applicationType}</strong> on CarnageMC.
+          Hi {mcUsername}, thanks for applying to be a <strong>{applicationType}</strong> on Warden Network.
           Our team will review your submission and get back to you soon.
         </Text>
         {why && (
@@ -27,7 +27,7 @@ const Email = ({ mcUsername = 'there', applicationType = 'staff', why = '' }: Pr
             <Text style={quoteText}>{why}</Text>
           </Section>
         )}
-        <Text style={footer}>— CarnageMC Staff</Text>
+        <Text style={footer}>— Warden Network Staff</Text>
       </Container>
     </Body>
   </Html>
@@ -35,7 +35,7 @@ const Email = ({ mcUsername = 'there', applicationType = 'staff', why = '' }: Pr
 
 export const template = {
   component: Email,
-  subject: (d: Record<string, any>) => `We received your CarnageMC ${d.applicationType ?? ''} application`.trim(),
+  subject: (d: Record<string, any>) => `We received your Warden Network ${d.applicationType ?? ''} application`.trim(),
   displayName: 'Application received',
   previewData: { mcUsername: 'Notch', applicationType: 'builder', why: 'I love building cathedrals.' },
 } satisfies TemplateEntry

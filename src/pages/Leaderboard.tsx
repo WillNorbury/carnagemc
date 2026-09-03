@@ -125,7 +125,7 @@ const Leaderboard = () => {
 
 
   useEffect(() => {
-    document.title = "Leaderboard — CarnageMC";
+    document.title = "Leaderboard — Warden Network";
   }, []);
 
   const isStreak = (TABS.some((t) => t.key === tab));
@@ -200,7 +200,7 @@ const Leaderboard = () => {
           eyebrow={<><Trophy className="h-3 w-3 mr-1" /> Top Players</>}
           title="Leader"
           highlight="board"
-          description="The most dedicated members on CarnageMC — ranked by streaks and gameplay stats."
+          description="The most dedicated members on Warden Network — ranked by streaks and gameplay stats."
         />
 
         <div className="container pb-24 max-w-4xl">

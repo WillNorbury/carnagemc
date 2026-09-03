@@ -41,7 +41,7 @@ export default function WikiArticle() {
         ) : (
           <>
             <Helmet>
-              <title>{article.title} — Wiki — CarnageMC</title>
+              <title>{article.title} — Wiki — Warden Network</title>
               {article.excerpt && <meta name="description" content={article.excerpt} />}
               <link rel="canonical" href={`https://www.carnagemc.net/wiki/${slug}`} />
               <meta property="og:title" content={`${article.title} — Wiki`} />
@@ -59,7 +59,7 @@ export default function WikiArticle() {
                 mainEntityOfPage: `https://www.carnagemc.net/wiki/${slug}`,
                 publisher: {
                   "@type": "Organization",
-                  name: "CarnageMC",
+                  name: "Warden Network",
                   logo: { "@type": "ImageObject", url: "https://www.carnagemc.net/icon-512.png" },
                 },
               })}</script>

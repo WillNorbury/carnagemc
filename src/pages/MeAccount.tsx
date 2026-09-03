@@ -133,8 +133,8 @@ export default function MeAccount() {
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
-        <title>My Account — CarnageMC</title>
-        <meta name="description" content="Your CarnageMC account: votes, purchases, appeals, tickets and in-game stats in one place." />
+        <title>My Account — Warden Network</title>
+        <meta name="description" content="Your Warden Network account: votes, purchases, appeals, tickets and in-game stats in one place." />
         <meta name="robots" content="noindex" />
       </Helmet>
       <Navbar />

@@ -69,17 +69,17 @@ export default function Join() {
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
-        <title>How to Join CarnageMC — Java, Bedrock & Console</title>
+        <title>How to Join Warden Network — Java, Bedrock & Console</title>
         <meta
           name="description"
-          content="Step-by-step guide to joining the CarnageMC Minecraft Lifesteal server on Java, Bedrock, mobile, Xbox, Switch and PlayStation."
+          content="Step-by-step guide to joining the Warden Network Minecraft Lifesteal server on Java, Bedrock, mobile, Xbox, Switch and PlayStation."
         />
         <link rel="canonical" href="https://carnagemc.net/join" />
       </Helmet>
       <Navbar />
       <main className="flex-1 w-full max-w-4xl mx-auto px-4 md:px-8 py-10 md:py-16">
         <div className="text-[10px] font-mono tracking-widest uppercase text-primary mb-2">Get started</div>
-        <h1 className="font-display text-3xl md:text-5xl font-bold mb-3">How to join CarnageMC</h1>
+        <h1 className="font-display text-3xl md:text-5xl font-bold mb-3">How to join Warden Network</h1>
         <p className="text-muted-foreground mb-8 max-w-2xl">
           Pick your platform below. Java and Bedrock players share the same world — console players need one
           extra step because Minecraft blocks custom servers by default.
@@ -162,7 +162,7 @@ export default function Join() {
                   server-list menu from the relay.
                 </p>
               </Step>
-              <Step n={4} title="Add CarnageMC">
+              <Step n={4} title="Add Warden Network">
                 <p>Choose <strong>Add Server</strong> in that menu and enter:</p>
                 <div className="grid sm:grid-cols-2 gap-3 pt-1">
                   <CopyRow label="Server address" value={bedrockIp} />

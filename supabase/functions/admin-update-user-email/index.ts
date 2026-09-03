@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
             templateData: {
               oldEmail: previousEmail ?? "(unknown)",
               newEmail: trimmed,
-              changedBy: "a CarnageMC administrator",
+              changedBy: "a Warden Network administrator",
             },
           },
         });

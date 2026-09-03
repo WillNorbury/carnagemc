@@ -90,7 +90,7 @@ const Seasons = () => {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "CarnageMC Seasons",
+    name: "Warden Network Seasons",
     itemListElement: seasons.map((s, i) => ({
       "@type": "ListItem",
       position: i + 1,
@@ -200,8 +200,8 @@ const Seasons = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <SEO
-        title="Seasons — CarnageMC Season History & Winners"
-        description="Every CarnageMC season: start and end dates, themes, highlights, and the players who topped the leaderboards."
+        title="Seasons — Warden Network Season History & Winners"
+        description="Every Warden Network season: start and end dates, themes, highlights, and the players who topped the leaderboards."
         path="/seasons"
       />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />

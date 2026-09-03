@@ -6,9 +6,9 @@ const doc: LegalDoc = {
   title: "Refund",
   highlight: "Policy",
   intro:
-    "When a CarnageMC store purchase can be refunded, how to request one, and what happens if you file a chargeback instead.",
+    "When a Warden Network store purchase can be refunded, how to request one, and what happens if you file a chargeback instead.",
   seoDescription:
-    "CarnageMC refund policy — eligibility, how to request a refund for ranks, keys, coins and bundles, delivery issues, and our chargeback rules.",
+    "Warden Network refund policy — eligibility, how to request a refund for ranks, keys, coins and bundles, delivery issues, and our chargeback rules.",
   updated: "29 July 2026",
   sections: [
     {

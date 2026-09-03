@@ -94,8 +94,8 @@ const Tiers = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SEO
-        title="Player Tier List | CarnageMC"
-        description="Official CarnageMC player tier list — see how our top players rank across kits and gamemodes."
+        title="Player Tier List | Warden Network"
+        description="Official Warden Network player tier list — see how our top players rank across kits and gamemodes."
       />
       <Navbar />
 
@@ -108,7 +108,7 @@ const Tiers = () => {
             </div>
             <h1 className="mt-4 text-4xl md:text-5xl font-bold tracking-tight">Player Tier List</h1>
             <p className="mt-3 max-w-2xl text-muted-foreground">
-              Staff-curated rankings of CarnageMC's strongest players. Tiers are reviewed regularly.
+              Staff-curated rankings of Warden Network's strongest players. Tiers are reviewed regularly.
             </p>
           </header>
 

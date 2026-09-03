@@ -56,11 +56,11 @@ const Navbar = () => {
         <Link
           to="/"
           className="flex items-center gap-2 group min-w-0 pr-1"
-          aria-label="CarnageMC home"
+          aria-label="Warden Network home"
         >
           <img src={logo} alt="" aria-hidden className="h-6 w-6 shrink-0 transition-transform duration-200 group-hover:scale-105" />
           <span className="font-display font-bold text-sm tracking-wider truncate hidden sm:inline">
-            CARNAGE<span className="text-gradient">MC</span>
+            WARDEN<span className="text-gradient"> NETWORK</span>
           </span>
         </Link>
       </div>

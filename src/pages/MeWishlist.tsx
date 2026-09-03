@@ -69,7 +69,7 @@ export default function MeWishlist() {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Helmet>
-        <title>My wishlist — CarnageMC</title>
+        <title>My wishlist — Warden Network</title>
         <meta name="description" content="Store items you've saved for later." />
       </Helmet>
       <Navbar />

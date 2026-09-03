@@ -104,8 +104,8 @@ export default function Gallery() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Helmet>
-        <title>Gallery — CarnageMC</title>
-        <meta name="description" content="Screenshots, builds, and event highlights from the CarnageMC community." />
+        <title>Gallery — Warden Network</title>
+        <meta name="description" content="Screenshots, builds, and event highlights from the Warden Network community." />
       </Helmet>
       <Navbar />
       <main className="flex-1">
@@ -113,7 +113,7 @@ export default function Gallery() {
           eyebrow={<><Images className="h-3 w-3 mr-1" /> Community</>}
           title="The"
           highlight="Gallery"
-          description="Screenshots, builds and event highlights captured by the CarnageMC community."
+          description="Screenshots, builds and event highlights captured by the Warden Network community."
         />
 
         <section className="container pb-24">

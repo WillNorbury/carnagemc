@@ -17,7 +17,7 @@ type Props = {
 
 /**
  * Polished, reusable "connect to the server" block.
- * One canonical place for the CarnageMC IP + copy interaction.
+ * One canonical place for the Warden Network IP + copy interaction.
  */
 export default function ServerIP({
   ip,
@@ -46,7 +46,7 @@ export default function ServerIP({
     <div className={cn("max-w-lg mx-auto w-full", className)}>
       <button
         onClick={copy}
-        aria-label={`Copy CarnageMC Java server IP ${ip} to clipboard`}
+        aria-label={`Copy Warden Network Java server IP ${ip} to clipboard`}
         className="group relative w-full rounded-2xl focus-visible:outline-none"
       >
         <span
@@ -56,7 +56,7 @@ export default function ServerIP({
         <span className="relative flex items-center justify-between gap-4 rounded-2xl border border-primary/30 bg-card px-5 py-4 sm:px-6">
           <span className="text-left min-w-0">
             <span className="block text-[10px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-              Play CarnageMC
+              Play Warden Network
             </span>
             <span className="block truncate font-mono text-lg font-bold sm:text-2xl">{ip}</span>
           </span>

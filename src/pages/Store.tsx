@@ -415,10 +415,10 @@ export default function Store() {
         <div className="absolute inset-x-0 top-0 h-72 opacity-[0.12]" style={{ background: "var(--gradient-fire)" }} />
       </div>
       <Helmet>
-        <title>Store — CarnageMC</title>
+        <title>Store — Warden Network</title>
         <meta
           name="description"
-          content="CarnageMC store: ranks, cosmetics, boosters, bundles, and in-game coins."
+          content="Warden Network store: ranks, cosmetics, boosters, bundles, and in-game coins."
         />
         <link
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap"
@@ -1049,7 +1049,7 @@ export default function Store() {
                   </Link>
                 </div>
                 <div className="text-[10px] text-primary-foreground/20 font-mono flex items-center gap-2">
-                  <ShoppingBag className="w-3 h-3" /> CARNAGEMC MARKETPLACE
+                  <ShoppingBag className="w-3 h-3" /> WARDEN NETWORK MARKETPLACE
                 </div>
               </div>
             </div>

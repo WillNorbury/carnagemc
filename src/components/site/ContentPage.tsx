@@ -88,8 +88,8 @@ const ContentPage = ({ slug }: { slug: string }) => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <SEO
-        title={`${page ? `${page.title} ${page.highlight}`.trim() : "Page"} — CarnageMC`}
-        description={page?.seo_description || "CarnageMC Minecraft network."}
+        title={`${page ? `${page.title} ${page.highlight}`.trim() : "Page"} — Warden Network`}
+        description={page?.seo_description || "Warden Network Minecraft network."}
         path={`/${slug}`}
       />
       <Navbar />

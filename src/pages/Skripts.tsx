@@ -85,7 +85,7 @@ const Skripts = () => {
   };
 
   useEffect(() => {
-    document.title = "Skripts — CarnageMC";
+    document.title = "Skripts — Warden Network";
     load();
   }, []);
 

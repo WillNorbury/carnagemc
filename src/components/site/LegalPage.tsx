@@ -41,7 +41,7 @@ const LegalPage = ({ doc }: { doc: LegalDoc }) => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <SEO title={`${doc.title} ${doc.highlight} — CarnageMC`} description={doc.seoDescription} path={doc.path} />
+      <SEO title={`${doc.title} ${doc.highlight} — Warden Network`} description={doc.seoDescription} path={doc.path} />
       <Navbar />
       <main className="flex-1">
         <PageHero

@@ -47,7 +47,7 @@ const ChangelogEntry = () => {
       const match = list.find((e) => changelogSlug(e.title) === slug);
       if (match) {
         setEntry(match);
-        document.title = `${match.title} — Changelog — CarnageMC`;
+        document.title = `${match.title} — Changelog — Warden Network`;
       } else {
         setNotFound(true);
       }

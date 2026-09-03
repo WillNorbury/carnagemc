@@ -48,7 +48,7 @@ export const template = {
     recipientName: 'Steve',
     subject: 'Cannot connect to server',
     reply: 'Hey Steve, please try clearing your DNS cache and reconnecting. Let us know if that helps!',
-    staffName: 'CarnageMC Support',
+    staffName: 'Warden Network Support',
   },
 } satisfies TemplateEntry
 

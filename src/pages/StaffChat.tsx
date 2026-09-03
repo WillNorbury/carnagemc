@@ -41,7 +41,7 @@ export default function StaffChat() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <SEO title="Staff Chat" description="Internal staff chat for CarnageMC" />
+      <SEO title="Staff Chat" description="Internal staff chat for Warden Network" />
       <Navbar />
       <div className="flex items-center justify-between px-4 py-2 border-b bg-background/50 backdrop-blur">
         <div className="flex items-center gap-2">

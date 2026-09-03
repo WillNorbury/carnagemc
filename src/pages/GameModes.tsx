@@ -31,8 +31,8 @@ const GameModes = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <SEO
-        title="Game Modes — CarnageMC"
-        description="Explore every CarnageMC game mode: Survival, Lifesteal, 4Dupe and Hub-2. Features, gameplay details and how to join each world."
+        title="Game Modes — Warden Network"
+        description="Explore every Warden Network game mode: Survival, Lifesteal, 4Dupe and Hub-2. Features, gameplay details and how to join each world."
         path="/gamemodes"
       />
       <Navbar />
@@ -45,7 +45,7 @@ const GameModes = () => {
           }
           title="Pick your"
           highlight="battlefield"
-          description="Four distinct worlds, one network. Whether you want to build for months or lose every heart in an afternoon, there's a CarnageMC mode for it."
+          description="Four distinct worlds, one network. Whether you want to build for months or lose every heart in an afternoon, there's a Warden Network mode for it."
         />
 
         <section className="container pb-24">

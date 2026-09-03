@@ -68,10 +68,10 @@ Deno.serve(async (req) => {
     const embed: any = {
       title: `🧩 New Mod: ${name}`,
       url,
-      description: description || "A new mod has just been published on CarnageMC.",
+      description: description || "A new mod has just been published on Warden Network.",
       color: 0xff7a1a,
       fields,
-      footer: { text: "CarnageMC · Mods" },
+      footer: { text: "Warden Network · Mods" },
       timestamp: new Date().toISOString(),
     };
     if (icon_url) embed.thumbnail = { url: icon_url };

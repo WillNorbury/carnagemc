@@ -16,7 +16,7 @@ export default function StatusUnsubscribe() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    document.title = "Unsubscribe — CarnageMC Status";
+    document.title = "Unsubscribe — Warden Network Status";
   }, []);
 
   const run = async () => {

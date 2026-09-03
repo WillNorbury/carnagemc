@@ -5,7 +5,7 @@ import { Twitter, Youtube, MessageCircle, Twitch } from "lucide-react";
 
 const SOCIALS = [
   { icon: MessageCircle, href: "https://discord.gg/wD6K3nr2MG", label: "Discord" },
-  { icon: Twitter, href: "https://x.com/CarnageMC", label: "Twitter" },
+  { icon: Twitter, href: "https://x.com/Warden Network", label: "Twitter" },
   { icon: Youtube, href: "https://youtube.com/@WillNorbury", label: "YouTube" },
   { icon: Twitch, href: "https://twitch.tv/Will_Norbury", label: "Twitch" },
 ];
@@ -66,7 +66,7 @@ const Footer = () => (
               className="h-8 w-8 transition-transform duration-200 group-hover:scale-105"
             />
             <span className="font-display text-lg font-bold tracking-wider">
-              CARNAGE<span className="text-gradient">MC</span>
+              WARDEN<span className="text-gradient"> NETWORK</span>
             </span>
           </Link>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
@@ -139,7 +139,7 @@ const Footer = () => (
     <div className="border-t border-border/60">
       <div className="container flex flex-col items-center justify-between gap-3 py-5 text-xs text-muted-foreground sm:flex-row">
         <p className="text-center sm:text-left">
-          © {new Date().getFullYear()} CarnageMC — Not affiliated with Mojang or Microsoft.
+          © {new Date().getFullYear()} Warden Network — Not affiliated with Mojang or Microsoft.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
           {LEGAL.map((l) => (

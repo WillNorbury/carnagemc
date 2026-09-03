@@ -19,7 +19,7 @@ interface Props {
   senderName?: string
 }
 
-const Email = ({ subject, message, category, siteName = 'CarnageMC', senderName }: Props) => (
+const Email = ({ subject, message, category, siteName = 'Warden Network', senderName }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>{`${siteName}: ${subject}`}</Preview>
@@ -42,13 +42,13 @@ const Email = ({ subject, message, category, siteName = 'CarnageMC', senderName 
 
 export const template = {
   component: Email,
-  subject: (d: Record<string, any>) => String(d.subject ?? 'Update from CarnageMC'),
+  subject: (d: Record<string, any>) => String(d.subject ?? 'Update from Warden Network'),
   displayName: 'Admin broadcast',
   previewData: {
     subject: 'Important announcement',
-    message: 'Hello, this is a message from the CarnageMC team.',
+    message: 'Hello, this is a message from the Warden Network team.',
     category: 'Owner Only',
-    siteName: 'CarnageMC',
+    siteName: 'Warden Network',
     senderName: 'William',
   },
 } satisfies TemplateEntry

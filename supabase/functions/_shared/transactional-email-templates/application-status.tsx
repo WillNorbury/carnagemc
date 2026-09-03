@@ -27,7 +27,7 @@ const Email = ({
   return (
     <Html lang="en" dir="ltr">
       <Head />
-      <Preview>Your CarnageMC {applicationType} application was {status}</Preview>
+      <Preview>Your Warden Network {applicationType} application was {status}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Heading style={{ ...h1, color: accent }}>Application {status}</Heading>
@@ -43,7 +43,7 @@ const Email = ({
           <Button style={{ ...button, backgroundColor: accent }} href={dashboardUrl}>
             Open dashboard
           </Button>
-          <Text style={footer}>— CarnageMC Staff</Text>
+          <Text style={footer}>— Warden Network Staff</Text>
         </Container>
       </Body>
     </Html>
@@ -52,7 +52,7 @@ const Email = ({
 
 export const template = {
   component: Email,
-  subject: (d: Record<string, any>) => `Your CarnageMC ${d.applicationType ?? ''} application was ${d.status ?? 'updated'}`.replace(/\s+/g, ' ').trim(),
+  subject: (d: Record<string, any>) => `Your Warden Network ${d.applicationType ?? ''} application was ${d.status ?? 'updated'}`.replace(/\s+/g, ' ').trim(),
   displayName: 'Application status update',
   previewData: { mcUsername: 'Notch', applicationType: 'builder', status: 'approved', reviewerNotes: 'Welcome aboard!' },
 } satisfies TemplateEntry

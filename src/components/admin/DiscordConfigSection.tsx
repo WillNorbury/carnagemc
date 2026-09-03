@@ -29,9 +29,9 @@ type ChannelEntry = { key: string; label: string; channelId: string };
 type Template = { key: string; label: string; content: string };
 
 const DEFAULT_COMMANDS: BotCommand[] = [
-  { name: "rules", description: "Show the CarnageMC server rules", enabled: true, kind: "builtin", response: "", ephemeral: false },
-  { name: "subscribe", description: "Subscribe to email notifications from CarnageMC", enabled: true, kind: "builtin", response: "", ephemeral: true },
-  { name: "unsubscribe", description: "Unsubscribe from email notifications from CarnageMC", enabled: true, kind: "builtin", response: "", ephemeral: true },
+  { name: "rules", description: "Show the Warden Network server rules", enabled: true, kind: "builtin", response: "", ephemeral: false },
+  { name: "subscribe", description: "Subscribe to email notifications from Warden Network", enabled: true, kind: "builtin", response: "", ephemeral: true },
+  { name: "unsubscribe", description: "Unsubscribe from email notifications from Warden Network", enabled: true, kind: "builtin", response: "", ephemeral: true },
 ];
 
 const DEFAULT_CHANNELS: ChannelEntry[] = [
@@ -45,8 +45,8 @@ const DEFAULT_CHANNELS: ChannelEntry[] = [
 
 const DEFAULT_TEMPLATES: Template[] = [
   { key: "announce", label: "Announcement", content: "📢 {message}" },
-  { key: "welcome", label: "Welcome message", content: "Welcome to CarnageMC, {user}!" },
-  { key: "status", label: "Status footer", content: "CarnageMC · Live status" },
+  { key: "welcome", label: "Welcome message", content: "Welcome to Warden Network, {user}!" },
+  { key: "status", label: "Status footer", content: "Warden Network · Live status" },
 ];
 
 const slugCmd = (s: string) =>

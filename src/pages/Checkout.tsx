@@ -185,7 +185,7 @@ export default function Checkout() {
         <div className="absolute inset-x-0 top-0 h-72 opacity-[0.12]" style={{ background: "var(--gradient-fire)" }} />
       </div>
       <Helmet>
-        <title>Checkout — CarnageMC Store</title>
+        <title>Checkout — Warden Network Store</title>
         <meta name="description" content="Review your cart, apply a coupon, and complete checkout." />
         <link
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap"

@@ -22,7 +22,7 @@ export const LoginVerificationEmail = ({
   code,
   ip,
   device,
-  siteName = 'CarnageMC',
+  siteName = 'Warden Network',
 }: LoginVerificationEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
@@ -76,6 +76,6 @@ export const template = {
     code: '482913',
     ip: '203.0.113.7',
     device: 'Chrome on macOS',
-    siteName: 'CarnageMC',
+    siteName: 'Warden Network',
   },
 }

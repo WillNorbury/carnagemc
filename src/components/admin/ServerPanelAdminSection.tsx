@@ -210,7 +210,7 @@ export function ServerPanelAdminSection() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="server-motd">MOTD</Label>
-            <Input id="server-motd" value={motd} onChange={(e) => setMotd(e.target.value)} placeholder="Welcome to CarnageMC" />
+            <Input id="server-motd" value={motd} onChange={(e) => setMotd(e.target.value)} placeholder="Welcome to Warden Network" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="server-motd-color">MOTD color</Label>

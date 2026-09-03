@@ -29,7 +29,7 @@ const detectBrowser = (): BrowserInfo => {
   if (/edg\//i.test(ua))
     return { name: "Microsoft Edge", steps: 'Open the ⋯ menu → Apps → "Install this site as an app".', icon: <Globe className="h-4 w-4" /> };
   if (/opr\/|opera/i.test(ua))
-    return { name: "Opera", steps: "Open the menu → Install CarnageMC.", icon: <Globe className="h-4 w-4" /> };
+    return { name: "Opera", steps: "Open the menu → Install Warden Network.", icon: <Globe className="h-4 w-4" /> };
   if (/samsungbrowser/i.test(ua))
     return { name: "Samsung Internet", steps: "Open the menu → Add page to → Home screen.", icon: <Smartphone className="h-4 w-4" /> };
   if (/firefox|fxios/i.test(ua))
@@ -84,19 +84,19 @@ export default function Install() {
   return (
     <>
       <Helmet>
-        <title>Install CarnageMC — Add to Home Screen</title>
-        <meta name="description" content="Install the CarnageMC web app to your phone or desktop for a fullscreen, app-like experience." />
+        <title>Install Warden Network — Add to Home Screen</title>
+        <meta name="description" content="Install the Warden Network web app to your phone or desktop for a fullscreen, app-like experience." />
         <link rel="canonical" href="/install" />
       </Helmet>
 
       <main className="container max-w-2xl py-10 px-4">
         <div className="flex flex-col items-center text-center mb-8">
-          <img src={logo} alt="CarnageMC logo" className="h-20 w-20 mb-4" />
+          <img src={logo} alt="Warden Network logo" className="h-20 w-20 mb-4" />
           <h1 className="font-display text-3xl md:text-4xl font-bold tracking-wider">
-            Install <span className="text-gradient">CarnageMC</span>
+            Install <span className="text-gradient">Warden Network</span>
           </h1>
           <p className="text-muted-foreground mt-2">
-            Get the full CarnageMC experience as an installable web app — fullscreen, fast, and right on your home screen.
+            Get the full Warden Network experience as an installable web app — fullscreen, fast, and right on your home screen.
           </p>
         </div>
 
@@ -104,7 +104,7 @@ export default function Install() {
           <Card className="border-primary/40">
             <CardContent className="flex items-center gap-3 py-6">
               <CheckCircle2 className="h-6 w-6 text-primary" />
-              <p className="font-medium">CarnageMC is installed. You're running the app version!</p>
+              <p className="font-medium">Warden Network is installed. You're running the app version!</p>
             </CardContent>
           </Card>
         ) : (
@@ -129,7 +129,7 @@ export default function Install() {
                       {promptEvt ? "One-click install" : `Install with ${browser.name}`}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {promptEvt ? "Add CarnageMC to your device now." : browser.steps}
+                      {promptEvt ? "Add Warden Network to your device now." : browser.steps}
                     </p>
                   </div>
                 </div>
@@ -155,7 +155,7 @@ export default function Install() {
                     Scroll down and tap <b>Add to Home Screen</b>.
                   </Step>
                   <Step n={3} icon={<CheckCircle2 className="h-4 w-4" />}>
-                    Tap <b>Add</b> — CarnageMC will appear on your home screen.
+                    Tap <b>Add</b> — Warden Network will appear on your home screen.
                   </Step>
                 </CardContent>
               </Card>

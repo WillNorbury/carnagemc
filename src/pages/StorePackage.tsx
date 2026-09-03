@@ -158,10 +158,10 @@ export default function StorePackage() {
         <div className="absolute inset-x-0 top-0 h-72 opacity-[0.12]" style={{ background: "var(--gradient-fire)" }} />
       </div>
       <Helmet>
-        <title>{item ? `${item.name} — Store` : "Store"} | CarnageMC</title>
+        <title>{item ? `${item.name} — Store` : "Store"} | Warden Network</title>
         <meta
           name="description"
-          content={item?.description ?? "CarnageMC store package details."}
+          content={item?.description ?? "Warden Network store package details."}
         />
         <link
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap"

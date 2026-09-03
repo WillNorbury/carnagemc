@@ -48,7 +48,7 @@ const GameModeDetail = () => {
   if (!mode) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        <SEO title="Game mode not found — CarnageMC" description="This game mode does not exist." path={`/gamemodes/${slug}`} />
+        <SEO title="Game mode not found — Warden Network" description="This game mode does not exist." path={`/gamemodes/${slug}`} />
         <Navbar />
         <main className="flex-1 container pt-32 pb-20 text-center">
           <h1 className="font-display text-3xl font-black mb-3">Game mode not found</h1>
@@ -67,8 +67,8 @@ const GameModeDetail = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <SEO
-        title={`${mode.name} — CarnageMC Game Modes`}
-        description={mode.description ?? `Play ${mode.name} on CarnageMC.`}
+        title={`${mode.name} — Warden Network Game Modes`}
+        description={mode.description ?? `Play ${mode.name} on Warden Network.`}
         path={`/gamemodes/${mode.slug}`}
         image={mode.banner_url ?? undefined}
         type="article"

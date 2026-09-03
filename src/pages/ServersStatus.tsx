@@ -72,7 +72,7 @@ const ServersStatus = () => {
         <header className="mb-8">
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-2">Server Status</h1>
           <p className="text-muted-foreground">
-            Live player counts, TPS, and uptime for every CarnageMC network server.
+            Live player counts, TPS, and uptime for every Warden Network network server.
           </p>
         </header>
 

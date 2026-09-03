@@ -47,7 +47,7 @@ async function extractCode(input: string): Promise<string | null> {
       // URL lands on a Discord-owned host.
       const r = await fetch(parsed.toString(), {
         redirect: "follow",
-        headers: { "User-Agent": "CarnageMC-Site/1.0" },
+        headers: { "User-Agent": "Warden Network-Site/1.0" },
       });
       const finalUrl = new URL(r.url);
       await r.body?.cancel();
@@ -77,7 +77,7 @@ Deno.serve(async (req) => {
       try {
         const r = await fetch(
           `https://discord.com/api/v10/invites/${encodeURIComponent(code)}?with_counts=true&with_expiration=true`,
-          { headers: { "User-Agent": "CarnageMC-Site/1.0" } },
+          { headers: { "User-Agent": "Warden Network-Site/1.0" } },
         );
         const j = await r.json().catch(() => null);
         if (!r.ok) {

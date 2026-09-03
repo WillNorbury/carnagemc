@@ -360,10 +360,10 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <Link to="/" className="flex items-center gap-2 px-2 py-1 group">
-          <img src={logo} alt="CarnageMC" className="h-8 w-8 transition-transform group-hover:scale-110" />
+          <img src={logo} alt="Warden Network" className="h-8 w-8 transition-transform group-hover:scale-110" />
           {!collapsed && (
             <span className="font-display font-bold text-base tracking-wider">
-              CARNAGE<span className="text-gradient">MC</span>
+              WARDEN<span className="text-gradient"> NETWORK</span>
             </span>
           )}
         </Link>

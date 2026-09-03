@@ -172,7 +172,7 @@ const PluginDetail = () => {
       else {
         const p = data as Plugin;
         setPlugin(p);
-        document.title = `${p.name} — Plugin — CarnageMC`;
+        document.title = `${p.name} — Plugin — Warden Network`;
         const [vsRes, dlRes, favRes, myFavRes]: any = await Promise.all([
           (supabase.from("plugin_versions" as any) as any)
             .select("*")

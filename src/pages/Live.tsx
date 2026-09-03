@@ -22,7 +22,7 @@ export default function Live() {
   const [showChat, setShowChat] = useState(true);
 
   useEffect(() => {
-    document.title = `${active.label} — Twitch Live — CarnageMC`;
+    document.title = `${active.label} — Twitch Live — Warden Network`;
     const hosts = new Set<string>();
     if (typeof window !== "undefined") hosts.add(window.location.hostname);
     [

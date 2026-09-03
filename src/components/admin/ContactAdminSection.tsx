@@ -86,12 +86,12 @@ export function ContactAdminSection() {
     setSendingId(msg.id);
     try {
       const { data: userData } = await supabase.auth.getUser();
-      const staffName = userData.user?.user_metadata?.display_name || userData.user?.user_metadata?.full_name || "CarnageMC Team";
+      const staffName = userData.user?.user_metadata?.display_name || userData.user?.user_metadata?.full_name || "Warden Network Team";
       const { error: emailErr } = await supabase.functions.invoke("send-app-email", {
         body: {
           templateName: "contact-reply",
           recipientEmail: msg.email,
-          from: "CarnageMC Contact <contact@carnagemc.net>",
+          from: "Warden Network Contact <contact@carnagemc.net>",
           idempotencyKey: `contact-reply-${msg.id}-${Date.now()}`,
           templateData: {
             recipientName: msg.name,

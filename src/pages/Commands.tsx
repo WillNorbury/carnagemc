@@ -76,9 +76,9 @@ const Commands = () => {
   const [rank, setRank] = useState<Cmd["rank"] | null>(null);
 
   useEffect(() => {
-    document.title = "Command Reference — CarnageMC";
+    document.title = "Command Reference — Warden Network";
     const desc =
-      "Every CarnageMC in-game command: teleports, economy, land claims, chat, rewards and staff tools, searchable by rank.";
+      "Every Warden Network in-game command: teleports, economy, land claims, chat, rewards and staff tools, searchable by rank.";
     let meta = document.querySelector('meta[name="description"]');
     if (!meta) {
       meta = document.createElement("meta");

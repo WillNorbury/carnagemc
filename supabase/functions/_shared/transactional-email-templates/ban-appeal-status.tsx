@@ -25,7 +25,7 @@ const Email = ({
   return (
     <Html lang="en" dir="ltr">
       <Head />
-      <Preview>Your CarnageMC appeal was {status}</Preview>
+      <Preview>Your Warden Network appeal was {status}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Heading style={{ ...h1, color: accent }}>Appeal {status}</Heading>
@@ -41,7 +41,7 @@ const Email = ({
           <Button style={{ ...button, backgroundColor: accent }} href={appealUrl}>
             View appeal
           </Button>
-          <Text style={footer}>— CarnageMC Staff</Text>
+          <Text style={footer}>— Warden Network Staff</Text>
         </Container>
       </Body>
     </Html>
@@ -50,7 +50,7 @@ const Email = ({
 
 export const template = {
   component: Email,
-  subject: (d: Record<string, any>) => `Your CarnageMC appeal was ${d.status ?? 'updated'}`,
+  subject: (d: Record<string, any>) => `Your Warden Network appeal was ${d.status ?? 'updated'}`,
   displayName: 'Ban appeal status update',
   previewData: { minecraftUsername: 'Notch', status: 'approved', adminResponse: 'Welcome back, behave!' },
 } satisfies TemplateEntry

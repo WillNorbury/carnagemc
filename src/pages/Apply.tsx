@@ -307,7 +307,7 @@ const ApplyForm = ({
       why: s.data.why,
       portfolioUrl: s.data.portfolio_url || "",
     };
-    const applicationsFrom = "CarnageMC Applications <applications@carnagemc.net>";
+    const applicationsFrom = "Warden Network Applications <applications@carnagemc.net>";
     if (user.email) {
       supabase.functions.invoke("send-app-email", {
         body: {
@@ -677,7 +677,7 @@ const PartnerApplyForm = ({
     if (error) return toast.error(error.message);
 
     const appId = inserted?.id;
-    const applicationsFrom = "CarnageMC Applications <applications@carnagemc.net>";
+    const applicationsFrom = "Warden Network Applications <applications@carnagemc.net>";
     const common = {
       mcUsername: mcFallback,
       applicationType: "partner",
@@ -758,7 +758,7 @@ const PartnerApplyForm = ({
   return (
     <Shell>
       <SEO
-        title="Become a Partner — CarnageMC"
+        title="Become a Partner — Warden Network"
         description="Apply to become an official partner server."
         path="/apply/partner"
       />

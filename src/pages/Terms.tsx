@@ -6,17 +6,17 @@ const doc: LegalDoc = {
   title: "Terms of",
   highlight: "Service",
   intro:
-    "The rules of the agreement between you and CarnageMC when you use our website, servers, Discord, or store.",
+    "The rules of the agreement between you and Warden Network when you use our website, servers, Discord, or store.",
   seoDescription:
-    "CarnageMC terms of service — account rules, acceptable use, purchases, moderation, liability, and termination for our Minecraft network.",
+    "Warden Network terms of service — account rules, acceptable use, purchases, moderation, liability, and termination for our Minecraft network.",
   updated: "29 July 2026",
   sections: [
     {
       id: "acceptance",
       heading: "1. Acceptance of terms",
       body: [
-        "By accessing the CarnageMC website, connecting to our Minecraft servers, joining our Discord, or purchasing from our store, you agree to these terms.",
-        "If you are under the age of majority where you live, you may only use CarnageMC with the permission of a parent or guardian.",
+        "By accessing the Warden Network website, connecting to our Minecraft servers, joining our Discord, or purchasing from our store, you agree to these terms.",
+        "If you are under the age of majority where you live, you may only use Warden Network with the permission of a parent or guardian.",
       ],
     },
     {
@@ -41,9 +41,9 @@ const doc: LegalDoc = {
       id: "content",
       heading: "4. Your content and our content",
       body: [
-        "You keep ownership of content you upload. By uploading it you grant CarnageMC a non-exclusive licence to host, display, and distribute it on our platform.",
-        "CarnageMC branding, builds, configurations, and custom systems remain our property. You may not redistribute them without permission.",
-        "Minecraft is a trademark of Mojang Studios. CarnageMC is not affiliated with, endorsed by, or associated with Mojang Studios or Microsoft.",
+        "You keep ownership of content you upload. By uploading it you grant Warden Network a non-exclusive licence to host, display, and distribute it on our platform.",
+        "Warden Network branding, builds, configurations, and custom systems remain our property. You may not redistribute them without permission.",
+        "Minecraft is a trademark of Mojang Studios. Warden Network is not affiliated with, endorsed by, or associated with Mojang Studios or Microsoft.",
       ],
     },
     {
@@ -76,7 +76,7 @@ const doc: LegalDoc = {
       id: "liability",
       heading: "8. Limitation of liability",
       body: [
-        "To the fullest extent permitted by law, CarnageMC is not liable for lost in-game items, lost progress, service interruptions, or indirect or consequential damages.",
+        "To the fullest extent permitted by law, Warden Network is not liable for lost in-game items, lost progress, service interruptions, or indirect or consequential damages.",
         "Where liability cannot be excluded, it is limited to the amount you paid us in the twelve months before the claim.",
       ],
     },
@@ -84,7 +84,7 @@ const doc: LegalDoc = {
       id: "termination",
       heading: "9. Termination and changes",
       body: [
-        "You may stop using CarnageMC at any time and request account deletion via a support ticket.",
+        "You may stop using Warden Network at any time and request account deletion via a support ticket.",
         "We may update these terms as the network changes. Continued use after an update means you accept the revised terms.",
       ],
     },

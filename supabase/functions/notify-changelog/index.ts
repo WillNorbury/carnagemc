@@ -111,7 +111,7 @@ Deno.serve(async (req) => {
       version: entry.version,
       entryDate: entry.entry_date,
       link: `${SITE_BASE}/changelog/${slug}`,
-      siteName: 'CarnageMC',
+      siteName: 'Warden Network',
     }
 
     // Discord auto-posting has been disabled — messages are sent manually.
@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
             templateName: 'changelog-update',
             recipientEmail: email,
             idempotencyKey,
-            from: 'CarnageMC Updates <updates@carnagemc.net>',
+            from: 'Warden Network Updates <updates@carnagemc.net>',
             templateData: testEmail
               ? { ...templateData, title: `[TEST] ${templateData.title}` }
               : templateData,

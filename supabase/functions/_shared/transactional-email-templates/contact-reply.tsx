@@ -18,7 +18,7 @@ const Email = ({
   originalSubject = 'your message',
   originalMessage = '',
   reply = '',
-  staffName = 'CarnageMC Team',
+  staffName = 'Warden Network Team',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
@@ -58,7 +58,7 @@ export const template = {
     originalSubject: 'Question about ranks',
     originalMessage: 'Hi, what ranks are available?',
     reply: 'Hey Steve, our ranks are listed on the Store page!',
-    staffName: 'CarnageMC Team',
+    staffName: 'Warden Network Team',
   },
 } satisfies TemplateEntry
 
