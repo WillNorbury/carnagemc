@@ -47,7 +47,7 @@ const Navbar = () => {
       <div
         className={cn(pill, "gap-2 px-2 py-1.5")}
         style={{
-          top: "max(0.75rem, env(safe-area-inset-top))",
+          top: "calc(var(--sale-bar-h, 0px) + max(0.75rem, env(safe-area-inset-top)))",
           left: "max(0.75rem, env(safe-area-inset-left))",
         }}
       >
@@ -68,7 +68,7 @@ const Navbar = () => {
       <div
         className={cn(pill, "gap-0.5 px-1.5 py-1.5")}
         style={{
-          top: "max(0.75rem, env(safe-area-inset-top))",
+          top: "calc(var(--sale-bar-h, 0px) + max(0.75rem, env(safe-area-inset-top)))",
           right: "max(0.75rem, env(safe-area-inset-right))",
           maxWidth: "calc(100vw - 2rem)",
         }}

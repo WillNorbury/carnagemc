@@ -388,7 +388,10 @@ const Index = () => {
       )}
 
       {alert && (
-        <div className="fixed top-16 inset-x-0 z-40 px-4 animate-in slide-in-from-top duration-300">
+        <div
+          className="fixed inset-x-0 z-40 px-4 animate-in slide-in-from-top duration-300"
+          style={{ top: "calc(var(--sale-bar-h, 0px) + 4rem)" }}
+        >
           <div
             className={`container max-w-3xl flex items-center gap-3 p-4 rounded-lg border backdrop-blur-xl shadow-elegant ${alert.type === "online" ? "bg-primary/15 border-primary/40" : "bg-destructive/15 border-destructive/40"}`}
           >
