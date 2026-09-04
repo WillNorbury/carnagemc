@@ -1376,6 +1376,63 @@ export type Database = {
         }
         Relationships: []
       }
+      membership_tiers: {
+        Row: {
+          badge_label: string | null
+          color: string
+          created_at: string
+          currency: string
+          description: string | null
+          featured: boolean
+          id: string
+          name: string
+          perks: string[]
+          price_lifetime: number | null
+          price_monthly: number | null
+          published: boolean
+          slug: string
+          sort_order: number
+          tagline: string | null
+          updated_at: string
+        }
+        Insert: {
+          badge_label?: string | null
+          color?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          featured?: boolean
+          id?: string
+          name: string
+          perks?: string[]
+          price_lifetime?: number | null
+          price_monthly?: number | null
+          published?: boolean
+          slug: string
+          sort_order?: number
+          tagline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          badge_label?: string | null
+          color?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          featured?: boolean
+          id?: string
+          name?: string
+          perks?: string[]
+          price_lifetime?: number | null
+          price_monthly?: number | null
+          published?: boolean
+          slug?: string
+          sort_order?: number
+          tagline?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       mod_likes: {
         Row: {
           created_at: string
