@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchStoreSale, isStoreSaleLive, type StoreSale } from "@/lib/storeSale";
 
 export type CartItem = {
   id: string;
@@ -44,6 +45,9 @@ type CartContextValue = {
   items: CartItem[];
   count: number;
   subtotal: number;
+  storeSale: StoreSale | null;
+  storeSalePercent: number;
+  storeSaleDiscount: number;
   discount: number;
   creatorDiscount: number;
   bundleDiscount: number;
@@ -123,6 +127,17 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [creatorCodeError, setCreatorCodeError] = useState<string | null>(null);
   const [applyingCreatorCode, setApplyingCreatorCode] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [storeSale, setStoreSale] = useState<StoreSale | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchStoreSale().then((sale) => {
+      if (!cancelled) setStoreSale(isStoreSaleLive(sale) ? sale : null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     try {
@@ -319,15 +334,18 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     const count = items.reduce((a, b) => a + b.quantity, 0);
     const subtotal = items.reduce((a, b) => a + (Number(b.price) || 0) * b.quantity, 0);
     const currency = (items.find((i) => i.currency)?.currency || "USD").toUpperCase();
+    const storeSalePercent = isStoreSaleLive(storeSale) ? storeSale.percent : 0;
+    const storeSaleDiscount = (subtotal * storeSalePercent) / 100;
+    const afterSale = Math.max(0, subtotal - storeSaleDiscount);
     let discount = 0;
-    if (coupon && subtotal >= coupon.min_subtotal) {
+    if (coupon && afterSale >= coupon.min_subtotal) {
       if (coupon.discount_type === "percent") {
-        discount = Math.min(subtotal, (subtotal * coupon.discount_value) / 100);
+        discount = Math.min(afterSale, (afterSale * coupon.discount_value) / 100);
       } else {
-        discount = Math.min(subtotal, coupon.discount_value);
+        discount = Math.min(afterSale, coupon.discount_value);
       }
     }
-    const afterCoupon = Math.max(0, subtotal - discount);
+    const afterCoupon = Math.max(0, afterSale - discount);
     const creatorDiscount = creatorCode
       ? (afterCoupon * creatorCode.discount_percent) / 100
       : 0;
@@ -341,6 +359,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       items,
       count,
       subtotal,
+      storeSale: storeSalePercent > 0 ? storeSale : null,
+      storeSalePercent,
+      storeSaleDiscount,
       discount,
       creatorDiscount,
       bundleDiscount,
@@ -370,6 +391,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, [
     items,
+    storeSale,
     coupon,
     couponError,
     applyingCoupon,

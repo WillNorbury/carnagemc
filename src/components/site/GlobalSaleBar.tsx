@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchStoreSale, isStoreSaleLive, type StoreSale } from "@/lib/storeSale";
 
 type Coupon = {
   code: string;
@@ -36,20 +37,49 @@ const useCountdown = (target: string | null) => {
 /** Thin site-wide banner shown on every page whenever a sale/coupon is live. */
 const GlobalSaleBar = () => {
   const [coupon, setCoupon] = useState<Coupon | null>(null);
+  const [storeSale, setStoreSale] = useState<StoreSale | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase.rpc("list_public_coupons", { _limit: 1 });
+      const [{ data }, sale] = await Promise.all([
+        supabase.rpc("list_public_coupons", { _limit: 1 }),
+        fetchStoreSale(),
+      ]);
       if (cancelled) return;
       setCoupon((((data as unknown as Coupon[]) ?? [])[0] as Coupon) ?? null);
+      setStoreSale(isStoreSaleLive(sale) ? sale : null);
     })();
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const countdown = useCountdown(coupon?.expires_at ?? null);
+  const countdown = useCountdown(storeSale?.ends_at ?? coupon?.expires_at ?? null);
+
+  if (storeSale) {
+    return (
+      <Link
+        to="/store"
+        className="relative z-50 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 bg-primary px-4 py-1.5 text-center text-primary-foreground transition hover:brightness-110"
+      >
+        <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Sale live</span>
+        <span className="opacity-60">•</span>
+        <span className="text-sm font-semibold">{storeSale.label}</span>
+        <span className="text-sm font-bold uppercase tracking-wide">
+          {storeSale.percent}% OFF EVERYTHING
+        </span>
+        <span className="rounded bg-primary-foreground/15 px-2 py-0.5 text-xs font-semibold">
+          No code needed
+        </span>
+        {countdown && (
+          <span className="rounded bg-primary-foreground/15 px-2 py-0.5 font-mono text-xs font-semibold">
+            Ends in {countdown}
+          </span>
+        )}
+      </Link>
+    );
+  }
 
   if (!coupon) return null;
 

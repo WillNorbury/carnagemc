@@ -973,6 +973,16 @@ export default function Store() {
                               {formatMoney(cart.subtotal, cart.currency)}
                             </span>
                           </div>
+                          {cart.storeSaleDiscount > 0 && (
+                            <div className="flex items-center gap-3 text-primary">
+                              <span className="text-xs font-mono uppercase tracking-widest w-24">
+                                Sale {cart.storeSalePercent}%
+                              </span>
+                              <span className="tabular-nums font-mono">
+                                −{formatMoney(cart.storeSaleDiscount, cart.currency)}
+                              </span>
+                            </div>
+                          )}
                           {cart.discount > 0 && (
                             <div className="flex items-center gap-3 text-primary">
                               <span className="text-xs font-mono uppercase tracking-widest w-24">

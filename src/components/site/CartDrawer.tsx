@@ -309,7 +309,16 @@ export function CartDrawer() {
                 <span className="text-muted-foreground">Subtotal</span>
                 <span className="tabular-nums">{formatMoney(cart.subtotal, cart.currency)}</span>
               </div>
+              {cart.storeSaleDiscount > 0 && (
+                <div className="flex items-center justify-between text-primary">
+                  <span>{cart.storeSale?.label || "Store sale"} ({cart.storeSalePercent}%)</span>
+                  <span className="tabular-nums">
+                    −{formatMoney(cart.storeSaleDiscount, cart.currency)}
+                  </span>
+                </div>
+              )}
               {cart.discount > 0 && (
+
                 <div className="flex items-center justify-between text-primary">
                   <span>Coupon ({cart.coupon?.code})</span>
                   <span className="tabular-nums">−{formatMoney(cart.discount, cart.currency)}</span>

@@ -16,6 +16,13 @@ import {
 import { toast } from "sonner";
 import { Pencil, Trash2, Plus } from "lucide-react";
 import { confirm } from "@/lib/confirm";
+import {
+  emptyStoreSale,
+  fetchStoreSale,
+  isStoreSaleLive,
+  saveStoreSale,
+  type StoreSale,
+} from "@/lib/storeSale";
 
 type Category = {
   id: string;
@@ -108,6 +115,12 @@ export function StoreAdminSection() {
   const [items, setItems] = useState<Item[]>([]);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [tab, setTab] = useState<"items" | "categories" | "coupons" | "sale">("items");
+  const [storeSale, setStoreSale] = useState<StoreSale>(emptyStoreSale);
+  const [savingStoreSale, setSavingStoreSale] = useState(false);
+
+  useEffect(() => {
+    fetchStoreSale().then((s) => setStoreSale(s ?? emptyStoreSale));
+  }, []);
   const [editingCat, setEditingCat] = useState<
     Category | (Omit<Category, "id"> & { id?: string }) | null
   >(null);
@@ -256,6 +269,19 @@ export function StoreAdminSection() {
         !(cp.expires_at && new Date(cp.expires_at) < now) &&
         !(cp.max_uses != null && cp.uses_count >= cp.max_uses)
     ) ?? null;
+
+  async function persistStoreSale(next: StoreSale) {
+    setStoreSale(next);
+    setSavingStoreSale(true);
+    const { error } = await saveStoreSale(next);
+    setSavingStoreSale(false);
+    if (error) return toast.error(error.message);
+    toast.success(
+      next.active && next.percent > 0
+        ? `Store-wide sale live — ${next.percent}% off everything`
+        : "Store-wide sale saved",
+    );
+  }
 
   async function toggleSaleBanner(cp: Coupon, enabled: boolean) {
     const { error } = await supabase
@@ -835,6 +861,92 @@ export function StoreAdminSection() {
 
       {tab === "sale" && (
         <>
+          <Card>
+            <CardHeader>
+              <CardTitle>Store-wide sale (no code needed)</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Automatically takes a percentage off every item in the cart — customers don't
+                need to enter a coupon.
+              </p>
+              <div className="flex items-center gap-3">
+                <Switch
+                  checked={storeSale.active}
+                  onCheckedChange={(v) => setStoreSale({ ...storeSale, active: v })}
+                />
+                <Label>Sale active</Label>
+                {isStoreSaleLive(storeSale) && (
+                  <span className="rounded bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary">
+                    Live · {storeSale.percent}% off
+                  </span>
+                )}
+              </div>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="space-y-1">
+                  <Label>Discount %</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={storeSale.percent}
+                    onChange={(e) =>
+                      setStoreSale({ ...storeSale, percent: Number(e.target.value) || 0 })
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>Banner text</Label>
+                  <Input
+                    value={storeSale.label}
+                    placeholder="Store-wide sale"
+                    onChange={(e) => setStoreSale({ ...storeSale, label: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>Ends at (optional)</Label>
+                  <Input
+                    type="datetime-local"
+                    value={
+                      storeSale.ends_at
+                        ? new Date(storeSale.ends_at).toISOString().slice(0, 16)
+                        : ""
+                    }
+                    onChange={(e) =>
+                      setStoreSale({
+                        ...storeSale,
+                        ends_at: e.target.value ? new Date(e.target.value).toISOString() : null,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button disabled={savingStoreSale} onClick={() => persistStoreSale(storeSale)}>
+                  Save sale
+                </Button>
+                <Button
+                  variant="outline"
+                  disabled={savingStoreSale}
+                  onClick={() =>
+                    persistStoreSale({ ...storeSale, active: true, percent: 35 })
+                  }
+                >
+                  Quick: 35% off everything
+                </Button>
+                {storeSale.active && (
+                  <Button
+                    variant="ghost"
+                    disabled={savingStoreSale}
+                    onClick={() => persistStoreSale({ ...storeSale, active: false })}
+                  >
+                    End sale
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Site-wide sale banner</CardTitle>
