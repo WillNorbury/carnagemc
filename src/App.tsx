@@ -317,8 +317,9 @@ const Shell = () => {
                    
                    <Route path="*" element={<NotFound />} />
           </Routes>
-        </SidebarInset>
-      </SidebarProvider>
+          </SidebarInset>
+        </SidebarProvider>
+      </div>
     </MaintenanceGate>
   );
 };
