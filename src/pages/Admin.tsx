@@ -90,6 +90,7 @@ import { VoteLinksAdminSection } from "@/components/admin/VoteLinksAdminSection"
 import { GameModesAdminSection } from "@/components/admin/GameModesAdminSection";
 import { PartnersAdminSection } from "@/components/admin/PartnersAdminSection";
 import { PlayerTiersAdminSection } from "@/components/admin/PlayerTiersAdminSection";
+import { MembershipTiersAdminSection } from "@/components/admin/MembershipTiersAdminSection";
 import { AccountRemovalsAdminSection } from "@/components/admin/AccountRemovalsAdminSection";
 import { SeasonsAdminSection } from "@/components/admin/SeasonsAdminSection";
 import { TabAnimationsAdminSection } from "@/components/admin/TabAnimationsAdminSection";
@@ -164,6 +165,7 @@ const sectionMeta: Record<AdminSection, { title: string; description: string }> 
   tiers: { title: "Player Tiers", description: "Add players to the public tier list at /tiers." },
   seasons: { title: "Seasons", description: "Manage seasons, dates, highlights and winners shown on /seasons." },
   "tab-animations": { title: "Tab Animations", description: "Manage animated TAB list lines shown on /tab." },
+  memberships: { title: "Membership Tiers", description: "Create paid membership tiers and perks sold on the store and dashboard." },
   "server-panel": { title: "Server Panel", description: "Monitor the live server, manage maps, and send player moderation commands." },
   skripts: { title: "Skripts", description: "Upload and download Skript (.sk) files staff can add to the server." },
   "site-pages": { title: "Site Pages", description: "Create and edit standalone content pages such as /guides, /about, /roadmap and /credits." },
@@ -333,6 +335,7 @@ const Admin = () => {
           {section === "vote-links" && <VoteLinksAdminSection />}
           {section === "partners" && <PartnersAdminSection />}
           {section === "tiers" && <PlayerTiersAdminSection />}
+          {section === "memberships" && <MembershipTiersAdminSection />}
           {section === "account-removals" && <AccountRemovalsAdminSection />}
            {section === "seasons" && <SeasonsAdminSection />}
            {section === "tab-animations" && <TabAnimationsAdminSection />}
