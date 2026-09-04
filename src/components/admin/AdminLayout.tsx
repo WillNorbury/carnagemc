@@ -49,6 +49,7 @@ import {
   Terminal,
   Trophy,
   UserX,
+  Crown,
 } from "lucide-react";
 
 export type AdminSection =
