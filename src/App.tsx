@@ -162,12 +162,13 @@ const Shell = () => {
   const hideSidebar = isAdmin || isWiki || isStore || isChangelog;
   return (
     <MaintenanceGate>
-      <SidebarProvider>
-        {!hideSidebar && <AppSidebar />}
-        {!hideSidebar && <SwipeToOpenSidebar />}
-        <SidebarInset>
-          {!isAdmin && <GlobalSaleBar />}
-          <Routes>
+      <div className="flex min-h-svh w-full flex-col">
+        {!isAdmin && <GlobalSaleBar />}
+        <SidebarProvider>
+          {!hideSidebar && <AppSidebar />}
+          {!hideSidebar && <SwipeToOpenSidebar />}
+          <SidebarInset>
+            <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
