@@ -1,382 +1,382 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://warden.rip/</loc>
+    <loc>https://carnagemc.net/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://warden.rip/auth</loc>
+    <loc>https://carnagemc.net/auth</loc>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://warden.rip/changelog</loc>
+    <loc>https://carnagemc.net/changelog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/dashboard</loc>
+    <loc>https://carnagemc.net/dashboard</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://warden.rip/link-account</loc>
+    <loc>https://carnagemc.net/link-account</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://warden.rip/apply</loc>
+    <loc>https://carnagemc.net/apply</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/news</loc>
+    <loc>https://carnagemc.net/news</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://warden.rip/announcements</loc>
+    <loc>https://carnagemc.net/announcements</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://warden.rip/staff</loc>
+    <loc>https://carnagemc.net/staff</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/vote</loc>
+    <loc>https://carnagemc.net/vote</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/community</loc>
+    <loc>https://carnagemc.net/community</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/rules</loc>
+    <loc>https://carnagemc.net/rules</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/support</loc>
+    <loc>https://carnagemc.net/support</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/tickets</loc>
+    <loc>https://carnagemc.net/tickets</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/profile</loc>
+    <loc>https://carnagemc.net/profile</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://warden.rip/users</loc>
+    <loc>https://carnagemc.net/users</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/mods</loc>
+    <loc>https://carnagemc.net/mods</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://warden.rip/plugins</loc>
+    <loc>https://carnagemc.net/plugins</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://warden.rip/resource-packs</loc>
+    <loc>https://carnagemc.net/resource-packs</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/data-packs</loc>
+    <loc>https://carnagemc.net/data-packs</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/shaders</loc>
+    <loc>https://carnagemc.net/shaders</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/modpacks</loc>
+    <loc>https://carnagemc.net/modpacks</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/servers</loc>
+    <loc>https://carnagemc.net/servers</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/features</loc>
+    <loc>https://carnagemc.net/features</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/leaderboard</loc>
+    <loc>https://carnagemc.net/leaderboard</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://warden.rip/faq</loc>
+    <loc>https://carnagemc.net/faq</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/events</loc>
+    <loc>https://carnagemc.net/events</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://warden.rip/install</loc>
+    <loc>https://carnagemc.net/install</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/status</loc>
+    <loc>https://carnagemc.net/status</loc>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://warden.rip/appeal</loc>
+    <loc>https://carnagemc.net/appeal</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://warden.rip/unsubscribe</loc>
+    <loc>https://carnagemc.net/unsubscribe</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://warden.rip/ban-appeals</loc>
+    <loc>https://carnagemc.net/ban-appeals</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://warden.rip/wiki</loc>
+    <loc>https://carnagemc.net/wiki</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/wiki/lifesteal-guide</loc>
+    <loc>https://carnagemc.net/wiki/lifesteal-guide</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/gallery</loc>
+    <loc>https://carnagemc.net/gallery</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/contact</loc>
+    <loc>https://carnagemc.net/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/guides</loc>
+    <loc>https://carnagemc.net/guides</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/ranks-comparison</loc>
+    <loc>https://carnagemc.net/ranks-comparison</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/how-to-join</loc>
+    <loc>https://carnagemc.net/how-to-join</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/server-map</loc>
+    <loc>https://carnagemc.net/server-map</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/achievements</loc>
+    <loc>https://carnagemc.net/achievements</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/hall-of-fame</loc>
+    <loc>https://carnagemc.net/hall-of-fame</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/clans</loc>
+    <loc>https://carnagemc.net/clans</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/suggestions</loc>
+    <loc>https://carnagemc.net/suggestions</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/polls</loc>
+    <loc>https://carnagemc.net/polls</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/media-team</loc>
+    <loc>https://carnagemc.net/media-team</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/about</loc>
+    <loc>https://carnagemc.net/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/roadmap</loc>
+    <loc>https://carnagemc.net/roadmap</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/press-kit</loc>
+    <loc>https://carnagemc.net/press-kit</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/credits</loc>
+    <loc>https://carnagemc.net/credits</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/sitemap</loc>
+    <loc>https://carnagemc.net/sitemap</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/anti-cheat</loc>
+    <loc>https://carnagemc.net/anti-cheat</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/staff-handbook</loc>
+    <loc>https://carnagemc.net/staff-handbook</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://warden.rip/bug-bounty</loc>
+    <loc>https://carnagemc.net/bug-bounty</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/discord-rules</loc>
+    <loc>https://carnagemc.net/discord-rules</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://warden.rip/appeals-guide</loc>
+    <loc>https://carnagemc.net/appeals-guide</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/pvp-guide</loc>
+    <loc>https://carnagemc.net/pvp-guide</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/economy-guide</loc>
+    <loc>https://carnagemc.net/economy-guide</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/building-guide</loc>
+    <loc>https://carnagemc.net/building-guide</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/community-standards</loc>
+    <loc>https://carnagemc.net/community-standards</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/glossary</loc>
+    <loc>https://carnagemc.net/glossary</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://warden.rip/network-history</loc>
+    <loc>https://carnagemc.net/network-history</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://warden.rip/safety</loc>
+    <loc>https://carnagemc.net/safety</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/brand-guidelines</loc>
+    <loc>https://carnagemc.net/brand-guidelines</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://warden.rip/support-guide</loc>
+    <loc>https://carnagemc.net/support-guide</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/tiers</loc>
+    <loc>https://carnagemc.net/tiers</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/seasons</loc>
+    <loc>https://carnagemc.net/seasons</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/search</loc>
+    <loc>https://carnagemc.net/search</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://warden.rip/skripts</loc>
+    <loc>https://carnagemc.net/skripts</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/partners</loc>
+    <loc>https://carnagemc.net/partners</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/live</loc>
+    <loc>https://carnagemc.net/live</loc>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://warden.rip/store</loc>
+    <loc>https://carnagemc.net/store</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://warden.rip/gamemodes</loc>
+    <loc>https://carnagemc.net/gamemodes</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://warden.rip/punishments</loc>
+    <loc>https://carnagemc.net/punishments</loc>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://warden.rip/quiz</loc>
+    <loc>https://carnagemc.net/quiz</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://warden.rip/discord</loc>
+    <loc>https://carnagemc.net/discord</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
