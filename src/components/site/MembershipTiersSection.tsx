@@ -49,7 +49,7 @@ const MembershipTiersSection = ({
         .eq("published", true)
         .order("sort_order", { ascending: true });
       if (cancelled) return;
-      setTiers(((data ?? []) as unknown as MembershipTier[]) ?? []);
+      setTiers((data ?? []) as unknown as MembershipTier[]);
       setLoading(false);
     })();
     return () => {
