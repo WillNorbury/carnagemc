@@ -107,7 +107,7 @@ export function StoreAdminSection() {
   const [cats, setCats] = useState<Category[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
-  const [tab, setTab] = useState<"items" | "categories" | "coupons">("items");
+  const [tab, setTab] = useState<"items" | "categories" | "coupons" | "sale">("items");
   const [editingCat, setEditingCat] = useState<
     Category | (Omit<Category, "id"> & { id?: string }) | null
   >(null);
@@ -247,6 +247,26 @@ export function StoreAdminSection() {
 
   const catName = (id: string) => cats.find((c) => c.id === id)?.name ?? "—";
 
+  const now = new Date();
+  const liveSale =
+    coupons.find(
+      (cp) =>
+        cp.public_listed &&
+        cp.active &&
+        !(cp.expires_at && new Date(cp.expires_at) < now) &&
+        !(cp.max_uses != null && cp.uses_count >= cp.max_uses)
+    ) ?? null;
+
+  async function toggleSaleBanner(cp: Coupon, enabled: boolean) {
+    const { error } = await supabase
+      .from("store_coupons")
+      .update({ public_listed: enabled })
+      .eq("id", cp.id);
+    if (error) return toast.error(error.message);
+    toast.success(enabled ? `Sale banner now showing "${cp.code}"` : `Removed "${cp.code}" from banner`);
+    load();
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
@@ -264,6 +284,9 @@ export function StoreAdminSection() {
           onClick={() => setTab("coupons")}
         >
           Coupons ({coupons.length})
+        </Button>
+        <Button variant={tab === "sale" ? "default" : "outline"} onClick={() => setTab("sale")}>
+          Sale
         </Button>
       </div>
 
@@ -798,6 +821,88 @@ export function StoreAdminSection() {
                       <Button size="sm" variant="ghost" onClick={() => removeCoupon(cp)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
+                    </div>
+                  </div>
+                );
+              })}
+              {coupons.length === 0 && (
+                <p className="p-4 text-muted-foreground">No coupons yet.</p>
+              )}
+            </CardContent>
+          </Card>
+        </>
+      )}
+
+      {tab === "sale" && (
+        <>
+          <Card>
+            <CardHeader>
+              <CardTitle>Site-wide sale banner</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {liveSale ? (
+                <div className="rounded-lg border border-primary/40 bg-primary/10 p-4">
+                  <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+                    Sale live
+                  </div>
+                  <div className="mt-1 font-semibold">
+                    {liveSale.description?.trim() || "Store Sale"}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Code <span className="font-mono">{liveSale.code}</span> ·{" "}
+                    {liveSale.discount_type === "percent"
+                      ? `${liveSale.discount_value}% off`
+                      : `${(liveSale.currency ?? "USD").toUpperCase()} ${Number(liveSale.discount_value).toFixed(2)} off`}
+                    {liveSale.expires_at
+                      ? ` · ends ${new Date(liveSale.expires_at).toLocaleString()}`
+                      : " · no end date"}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-muted-foreground">
+                  No sale is currently showing on the site. Feature an active coupon below to
+                  display the banner on every page.
+                </p>
+              )}
+              <Button
+                onClick={() => {
+                  setEditingCoupon({ ...emptyCoupon, public_listed: true });
+                  setTab("coupons");
+                }}
+              >
+                <Plus className="h-4 w-4 mr-1" /> New sale coupon
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-0 divide-y">
+              {coupons.map((cp) => {
+                const expired = cp.expires_at && new Date(cp.expires_at) < new Date();
+                return (
+                  <div key={cp.id} className="flex items-center justify-between gap-3 p-3">
+                    <div className="min-w-0">
+                      <div className="font-mono font-semibold truncate">
+                        {cp.code}
+                        {!cp.active && (
+                          <span className="ml-2 text-xs text-muted-foreground">(inactive)</span>
+                        )}
+                        {expired && (
+                          <span className="ml-2 text-[10px] uppercase tracking-widest text-destructive">
+                            expired
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate">
+                        {cp.description?.trim() || "No banner text"}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Label className="text-xs text-muted-foreground">Show in banner</Label>
+                      <Switch
+                        checked={cp.public_listed}
+                        onCheckedChange={(v) => toggleSaleBanner(cp, v)}
+                      />
                     </div>
                   </div>
                 );
