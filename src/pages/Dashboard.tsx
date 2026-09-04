@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import MembershipTiersSection from "@/components/site/MembershipTiersSection";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import { Card } from "@/components/ui/card";
@@ -131,6 +132,8 @@ const Dashboard = () => {
           </h1>
           <p className="text-muted-foreground mt-1">Your member dashboard and network activity hub</p>
         </header>
+
+        <MembershipTiersSection className="mb-8" title="Upgrade your membership" subtitle="Unlock perks in-game and support the network." />
 
         {/* Top: profile summary */}
         <Card className="p-6 mb-6 flex items-center gap-5 flex-wrap">

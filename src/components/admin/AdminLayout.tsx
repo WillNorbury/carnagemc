@@ -49,6 +49,7 @@ import {
   Terminal,
   Trophy,
   UserX,
+  Crown,
 } from "lucide-react";
 
 export type AdminSection =
@@ -91,6 +92,7 @@ export type AdminSection =
   | "vote-links"
   | "partners"
   | "tiers"
+  | "memberships"
   | "account-removals"
   | "seasons"
   | "tab-animations"
@@ -111,7 +113,7 @@ export const ADMIN_SECTIONS: AdminSection[] = [
   "ban-appeals", "wiki", "gallery", "contact", "email-test", "send-email",
   "email-diagnostics", "quizzes", "reports", "bot-dashboard", "bot-management",
   "bot-config", "punishments", "console", "mysql", "servers-status", "store",
-  "vote-links", "partners", "tiers", "account-removals", "seasons", "tab-animations", "server-panel", "skripts", "game-modes", "site-pages",
+  "vote-links", "partners", "tiers", "memberships", "account-removals", "seasons", "tab-animations", "server-panel", "skripts", "game-modes", "site-pages",
   "mod-skripts", "mod-servers", "mod-mods", "mod-reviews",
 ];
 
@@ -129,6 +131,9 @@ export const ADMIN_SECTION_ALIASES: Record<string, AdminSection> = {
   animations: "tab-animations",
   "server-settings": "server-panel",
   motd: "server-panel",
+  "membership-tiers": "memberships",
+  membership: "memberships",
+  ranks: "memberships",
   votes: "vote-links",
   vote: "vote-links",
   servers: "servers-status",
@@ -207,6 +212,7 @@ const items: NavItem[] = [
   { kind: "link", id: "vote-links", icon: ExternalLink, label: "Vote Links" },
   { kind: "link", id: "partners", icon: Users, label: "Partners" },
   { kind: "link", id: "tiers", icon: Trophy, label: "Player Tiers" },
+  { kind: "link", id: "memberships", icon: Crown, label: "Membership Tiers" },
   { kind: "link", id: "seasons", icon: Trophy, label: "Seasons" },
   { kind: "link", id: "tab-animations", icon: Terminal, label: "Tab Animations" },
   { kind: "link", id: "server-panel", icon: Server, label: "Server Panel" },

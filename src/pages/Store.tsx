@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import SaleBanner from "@/components/site/SaleBanner";
+import MembershipTiersSection from "@/components/site/MembershipTiersSection";
 import StickyCartBar from "@/components/site/StickyCartBar";
 import RankComparison from "@/components/site/RankComparison";
 
@@ -471,6 +472,8 @@ export default function Store() {
 
 
           <SaleBanner />
+
+          <MembershipTiersSection className="pt-2" />
 
           {/* Category tabs */}
           {cats.length > 0 && (

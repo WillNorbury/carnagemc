@@ -7,6 +7,7 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/site/AppSidebar";
 import { SwipeToOpenSidebar } from "@/components/site/SwipeToOpenSidebar";
 import { UpdatePrompt } from "@/components/site/UpdatePrompt";
+import GlobalSaleBar from "@/components/site/GlobalSaleBar";
 
 import { AuthProvider } from "@/lib/auth";
 import { CartProvider } from "@/lib/cart";
@@ -165,6 +166,7 @@ const Shell = () => {
         {!hideSidebar && <AppSidebar />}
         {!hideSidebar && <SwipeToOpenSidebar />}
         <SidebarInset>
+          {!isAdmin && <GlobalSaleBar />}
           <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
