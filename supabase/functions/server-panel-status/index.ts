@@ -33,7 +33,7 @@ function buildLines(opts: {
   players: number;
   max: number;
 }) {
-  const color = /^#[0-9a-fA-F]{6}$/.test(opts.color) ? opts.color : "#ff3b30";
+  const color = /^#[0-9a-fA-F]{6}$/.test(opts.color) ? opts.color : "#0082A2";
   const lines: string[] = [];
   if (opts.motd.trim()) lines.push(`<${color}>&l${opts.motd.trim()}`);
   if (opts.ip.trim()) lines.push(`<${color}>&lIP &8• &f${opts.ip.trim()}`);
@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
   const lines = buildLines({
     motd,
     ip,
-    color: String(settings.motd_color ?? "#ff3b30"),
+    color: String(settings.motd_color ?? "#0082A2"),
     online,
     players,
     max,

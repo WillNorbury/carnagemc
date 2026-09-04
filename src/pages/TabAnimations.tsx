@@ -338,8 +338,8 @@ const TabAnimations = () => {
       const settings = serverSettings as { server_ip?: string; motd?: string; motd_color?: string } | null;
       const serverLines = settings
         ? [
-            settings.motd?.trim() ? `<${settings.motd_color || "#ff3b30"}>&l${settings.motd.trim()}` : "",
-            settings.server_ip?.trim() ? `<${settings.motd_color || "#ff3b30"}>&lIP &8• &f${settings.server_ip.trim()}` : "",
+            settings.motd?.trim() ? `<${settings.motd_color || "#0082A2"}>&l${settings.motd.trim()}` : "",
+            settings.server_ip?.trim() ? `<${settings.motd_color || "#0082A2"}>&lIP &8• &f${settings.server_ip.trim()}` : "",
           ].filter(Boolean)
         : [];
       const synced = animations.some((animation) => animation.name === "Server")
