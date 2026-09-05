@@ -5,10 +5,43 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Broadcasts a maintenance notice to the site Discord webhook. Admin/owner only.
+async function requireStaff(req: Request): Promise<Response | null> {
+  const auth = req.headers.get("Authorization") ?? "";
+  if (!auth.startsWith("Bearer ")) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  try {
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+    const anon = createClient(SUPABASE_URL, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: { headers: { Authorization: auth } },
+    });
+    const { data } = await anon.auth.getUser();
+    if (!data?.user) throw new Error("no user");
+    const admin = createClient(SUPABASE_URL, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const { data: roles } = await admin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", data.user.id)
+      .in("role", ["admin", "owner"]);
+    if (roles?.length) return null;
+  } catch { /* fall through */ }
+  return new Response(JSON.stringify({ error: "forbidden" }), {
+    status: 403,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
+    const denied = await requireStaff(req);
+    if (denied) return denied;
+
     const { enabled, title, message } = await req.json().catch(() => ({}));
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;

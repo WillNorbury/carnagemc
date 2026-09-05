@@ -31,28 +31,82 @@ const ALLOWED_FETCH_HOSTS = new Set([
   "www.discordapp.com",
 ]);
 
+// Reject loopback/private/link-local/reserved targets so this function can't
+// be used to probe internal networks (SSRF guard).
+function isPrivateIp(ip: string): boolean {
+  const v4 = ip.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (v4) {
+    const a = Number(v4[1]);
+    const b = Number(v4[2]);
+    if (a === 0 || a === 10 || a === 127 || a >= 224) return true;
+    if (a === 100 && b >= 64 && b <= 127) return true;
+    if (a === 169 && b === 254) return true;
+    if (a === 172 && b >= 16 && b <= 31) return true;
+    if (a === 192 && b === 168) return true;
+    if (a === 192 && b === 0) return true;
+    return false;
+  }
+  const v6 = ip.toLowerCase();
+  return (
+    v6 === "::1" ||
+    v6 === "::" ||
+    v6.startsWith("fe80:") ||
+    v6.startsWith("fc") ||
+    v6.startsWith("fd") ||
+    v6.startsWith("::ffff:")
+  );
+}
+
+async function resolvesToPublicHost(hostname: string): Promise<boolean> {
+  try {
+    const ips = await Deno.resolveDns(hostname, "A");
+    if (!ips.length) return false;
+    return !ips.some(isPrivateIp);
+  } catch {
+    return false;
+  }
+}
+
+// Follow redirects hop by hop (max 4), validating every hop resolves to a
+// public IP. Returns the final URL or null.
+async function resolveVanity(start: URL): Promise<string | null> {
+  let current = start.toString();
+  for (let hop = 0; hop < 4; hop++) {
+    const u = new URL(current);
+    if (u.protocol !== "https:") return null;
+    if (!(await resolvesToPublicHost(u.hostname))) return null;
+    const r = await fetch(current, {
+      redirect: "manual",
+      headers: { "User-Agent": "Warden Network-Site/1.0" },
+    });
+    await r.body?.cancel();
+    if (r.status >= 300 && r.status < 400) {
+      const loc = r.headers.get("location");
+      if (!loc) return null;
+      current = new URL(loc, u).toString();
+      continue;
+    }
+    return current;
+  }
+  return null;
+}
+
 async function extractCode(input: string): Promise<string | null> {
   if (!input) return null;
   const trimmed = input.trim();
   const direct = extractCodeFromUrl(trimmed);
   if (direct) return direct;
-  // Vanity/redirect URL — allow any https origin, but only accept the code
-  // if the FINAL resolved URL lands on a Discord-owned host.
+  // Vanity/redirect URL — follow redirects hop-by-hop with SSRF guards, and
+  // only accept the code if the FINAL resolved URL lands on a Discord host.
   if (/^https?:\/\//i.test(trimmed)) {
     try {
       const parsed = new URL(trimmed);
       if (parsed.protocol !== "https:") return null;
-      // Follow redirects from arbitrary HTTPS hosts (vanity domains like
-      // discord.warden.rip), but only accept the code if the FINAL resolved
-      // URL lands on a Discord-owned host.
-      const r = await fetch(parsed.toString(), {
-        redirect: "follow",
-        headers: { "User-Agent": "Warden Network-Site/1.0" },
-      });
-      const finalUrl = new URL(r.url);
-      await r.body?.cancel();
-      if (!ALLOWED_FETCH_HOSTS.has(finalUrl.hostname)) return null;
-      const code = extractCodeFromUrl(r.url);
+      const finalUrl = await resolveVanity(parsed);
+      if (!finalUrl) return null;
+      const final = new URL(finalUrl);
+      if (!ALLOWED_FETCH_HOSTS.has(final.hostname)) return null;
+      const code = extractCodeFromUrl(finalUrl);
       if (code) return code;
     } catch (_) { /* ignore */ }
     return null;

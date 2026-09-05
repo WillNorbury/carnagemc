@@ -43,8 +43,22 @@ Deno.serve(async (req) => {
     const token = Deno.env.get("DISCORD_BOT_TOKEN");
     if (!token) return json({ ok: false, error: "DISCORD_BOT_TOKEN not configured" }, 500);
 
+    // Caller must be signed in, and either own the application or be staff.
+    const auth = req.headers.get("Authorization") ?? "";
+    if (!auth.startsWith("Bearer ")) return json({ ok: false, error: "unauthorized" }, 401);
+    const sb = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: auth } } },
+    );
+    const { data: userData } = await sb.auth.getUser();
+    if (!userData?.user) return json({ ok: false, error: "unauthorized" }, 401);
+    const callerId = userData.user.id;
+
     const { applicationId } = await req.json().catch(() => ({}));
-    if (!applicationId) return json({ ok: false, error: "applicationId required" }, 400);
+    if (!applicationId || typeof applicationId !== "string") {
+      return json({ ok: false, error: "applicationId required" }, 400);
+    }
 
     const admin = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -58,6 +72,16 @@ Deno.serve(async (req) => {
       .maybeSingle();
     if (appErr) return json({ ok: false, error: appErr.message }, 500);
     if (!app) return json({ ok: false, error: "Application not found" }, 404);
+
+    if (app.user_id !== callerId) {
+      const { data: staffRole } = await admin
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", callerId)
+        .in("role", ["owner", "manager", "admin"])
+        .limit(1);
+      if (!staffRole?.length) return json({ ok: false, error: "forbidden" }, 403);
+    }
 
     const { data: staffRows, error: rolesErr } = await admin
       .from("user_roles")
