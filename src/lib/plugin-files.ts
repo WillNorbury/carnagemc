@@ -23,3 +23,19 @@ export async function getJarDownloadUrl(
   if (error || !data?.url) return null;
   return data.url as string;
 }
+
+/**
+ * Resolves a download URL for a plugin version without exposing the internal
+ * storage path — the edge function looks the jar up server-side by version id.
+ * Use this for anonymous/public downloads where jar_path is not visible.
+ */
+export async function getVersionJarDownloadUrl(
+  versionId: string | null | undefined,
+): Promise<string | null> {
+  if (!versionId) return null;
+  const { data, error } = await supabase.functions.invoke("plugin-file-url", {
+    body: { version_id: versionId },
+  });
+  if (error || !data?.url) return null;
+  return data.url as string;
+}
