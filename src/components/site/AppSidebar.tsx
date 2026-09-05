@@ -83,6 +83,13 @@ const websiteGroup: NavGroup = {
   ],
 };
 
+const clientGroup: NavGroup = {
+  id: "client",
+  label: "Client",
+  icon: Link2,
+  items: [{ to: "https://spectorclient.com", label: "SpectorClient", icon: Link2 }],
+};
+
 const mainGroup: NavGroup = {
   id: "main",
   label: "Main",
