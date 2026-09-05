@@ -9,7 +9,7 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import PageLoader from "@/components/site/PageLoader";
 import { supabase } from "@/integrations/supabase/client";
-import { getJarDownloadUrl } from "@/lib/plugin-files";
+import { getJarDownloadUrl, getVersionJarDownloadUrl } from "@/lib/plugin-files";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
