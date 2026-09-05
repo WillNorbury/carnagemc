@@ -43,20 +43,28 @@ const PRIORITIES: (Priority | "all")[] = ["all", "urgent", "high", "normal", "lo
 const NewsPage = () => {
   const [items, setItems] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [query, setQuery] = useState("");
   const [priority, setPriority] = useState<Priority | "all">("all");
 
-  useEffect(() => {
-    document.title = "News — Warden Network";
+  const load = () => {
+    setLoading(true);
+    setLoadError(false);
     supabase
       .from("news")
       .select("id,title,excerpt,content,slug,cover_url,priority,created_at")
       .eq("published", true)
       .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setItems((data ?? []) as News[]);
+      .then(({ data, error }) => {
+        if (error) setLoadError(true);
+        else setItems((data ?? []) as News[]);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    document.title = "News — Warden Network";
+    load();
   }, []);
 
   const filtered = useMemo(() => {

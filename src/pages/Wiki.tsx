@@ -30,15 +30,25 @@ const iconFor = (title: string) => {
 export default function Wiki() {
   const [items, setItems] = useState<Article[]>([]);
   const [q, setQ] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
-  useEffect(() => {
-    supabase
+  const load = async () => {
+    setLoading(true);
+    setLoadError(false);
+    const { data, error } = await supabase
       .from("wiki_articles")
       .select("id, slug, title, category, excerpt, updated_at")
       .eq("published", true)
       .order("sort_order", { ascending: true })
-      .order("title", { ascending: true })
-      .then(({ data }) => setItems((data as Article[]) ?? []));
+      .order("title", { ascending: true });
+    if (error) setLoadError(true);
+    else setItems((data as Article[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
   }, []);
 
   const filtered = useMemo(() => {
