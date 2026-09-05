@@ -82,30 +82,33 @@ const Servers = () => {
       setLoading(false);
       return;
     }
-    {
-      const list = ((data as unknown) ?? []) as Row[];
-      setRows(list);
-      setLoading(false);
+    const list = ((data as unknown) ?? []) as Row[];
+    setRows(list);
+    setLoading(false);
 
-      list.forEach(async (r) => {
-        const host = r.port ? `${r.ip}:${r.port}` : r.ip;
-        try {
-          const res = await fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(host)}`);
-          const j = await res.json();
-          setLive((prev) => ({
-            ...prev,
-            [r.id]: {
-              online: !!j.online,
-              players: j.players?.online ?? 0,
-              max: j.players?.max ?? 0,
-              motd: j.motd?.clean?.join(" ") ?? null,
-            },
-          }));
-        } catch {
-          setLive((prev) => ({ ...prev, [r.id]: { online: false, players: 0, max: 0 } }));
-        }
-      });
-    })();
+    list.forEach(async (r) => {
+      const host = r.port ? `${r.ip}:${r.port}` : r.ip;
+      try {
+        const res = await fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(host)}`);
+        const j = await res.json();
+        setLive((prev) => ({
+          ...prev,
+          [r.id]: {
+            online: !!j.online,
+            players: j.players?.online ?? 0,
+            max: j.players?.max ?? 0,
+            motd: j.motd?.clean?.join(" ") ?? null,
+          },
+        }));
+      } catch {
+        setLive((prev) => ({ ...prev, [r.id]: { online: false, players: 0, max: 0 } }));
+      }
+    });
+  };
+
+  useEffect(() => {
+    document.title = "Servers — Warden Network";
+    load();
   }, []);
 
   const toggleTag = (t: string) =>
