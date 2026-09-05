@@ -91,13 +91,13 @@ Deno.serve(async (req) => {
     const payload = {
       embeds: [
         {
-          title: body.title,
-          description: body.detail ?? "",
-          color: body.color ?? 0x3b82f6,
-          url: body.url,
+          title,
+          description: detail ?? "",
+          color: typeof body.color === "number" ? body.color : 0x3b82f6,
+          url,
           fields: [
-            { name: "Event", value: body.kind, inline: true },
-            ...(body.actor ? [{ name: "By", value: body.actor, inline: true }] : []),
+            { name: "Event", value: kind, inline: true },
+            ...(actor ? [{ name: "By", value: actor, inline: true }] : []),
           ],
           timestamp: new Date().toISOString(),
         },
