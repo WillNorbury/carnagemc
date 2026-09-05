@@ -362,7 +362,17 @@ const Plugins = () => {
 
         {/* Grid */}
         {loading ? (
-          <p className="text-center text-muted-foreground py-12">Loading plugins...</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-44 rounded-lg border border-border/60 bg-card/40 animate-pulse" />
+            ))}
+          </div>
+        ) : loadError ? (
+          <Card className="p-12 text-center space-y-3">
+            <Puzzle className="h-10 w-10 text-muted-foreground/40 mx-auto" />
+            <p className="text-muted-foreground">Couldn't load the plugin list.</p>
+            <Button size="sm" variant="outline" onClick={load}>Try again</Button>
+          </Card>
         ) : filtered.length === 0 ? (
           <Card className="p-12 text-center">
             <Puzzle className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
