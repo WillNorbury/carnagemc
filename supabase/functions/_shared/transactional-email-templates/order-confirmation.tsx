@@ -33,6 +33,7 @@ const Email = ({
   orderId = '',
   items = [],
   subtotalFormatted = '',
+  storeSaleSummary = null,
   couponCode = null,
   couponSummary = null,
   discountFormatted = null,
@@ -72,6 +73,7 @@ const Email = ({
 
           <Section style={totals}>
             <Text style={totalRow}>Subtotal: <strong>{subtotalFormatted}</strong></Text>
+            {storeSaleSummary ? <Text style={totalRow}>Store-wide sale — {storeSaleSummary}</Text> : null}
             {couponSummary ? (
               <Text style={totalRow}>
                 Coupon {couponCode ? <strong>{couponCode}</strong> : null} — {couponSummary}
