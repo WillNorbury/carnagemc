@@ -62,21 +62,27 @@ const Servers = () => {
   const [rows, setRows] = useState<Row[]>([]);
   const [live, setLive] = useState<Record<string, Live>>({});
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<"featured" | "players" | "updated" | "name">("featured");
 
-  useEffect(() => {
-    document.title = "Servers — Warden Network";
-    (async () => {
-      const { data, error } = await supabase
-        .from("user_servers" as any)
-        .select("id, name, slug, ip, port, description, version, tags, icon_url, banner_url, website_url, discord_url, featured, updated_at")
-        .eq("published", true)
-        .order("featured", { ascending: false })
-        .order("updated_at", { ascending: false });
-      if (error) toast.error(error.message);
+  const load = async () => {
+    setLoading(true);
+    setLoadError(false);
+    const { data, error } = await supabase
+      .from("user_servers" as any)
+      .select("id, name, slug, ip, port, description, version, tags, icon_url, banner_url, website_url, discord_url, featured, updated_at")
+      .eq("published", true)
+      .order("featured", { ascending: false })
+      .order("updated_at", { ascending: false });
+    if (error) {
+      setLoadError(true);
+      setLoading(false);
+      return;
+    }
+    {
       const list = ((data as unknown) ?? []) as Row[];
       setRows(list);
       setLoading(false);
