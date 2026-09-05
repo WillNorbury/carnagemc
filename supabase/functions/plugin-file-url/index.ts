@@ -34,16 +34,60 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { path: rawPath } = await req.json();
+    const body = await req.json().catch(() => ({}));
     const bucket = "plugin-jars";
-    const path = normalisePath(bucket, String(rawPath ?? ""));
-    if (!path) return json({ error: "Missing file path" }, 400);
+    const versionId = typeof body?.version_id === "string" ? body.version_id : null;
 
     const admin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
       { auth: { persistSession: false } },
     );
+
+    let path: string | null = null;
+    let pluginId: string | null = null;
+
+    if (versionId) {
+      // Preferred flow: look the jar up server-side so internal storage paths
+      // are never exposed to anonymous clients.
+      const { data: ver } = await admin
+        .from("plugin_versions")
+        .select("plugin_id, jar_path, download_url")
+        .eq("id", versionId)
+        .maybeSingle();
+      if (!ver) return json({ error: "File not found" }, 404);
+      pluginId = ver.plugin_id;
+      if (ver.jar_path) {
+        path = ver.jar_path;
+      } else if (ver.download_url && /^https?:\/\//i.test(ver.download_url)) {
+        return json({ url: ver.download_url });
+      } else {
+        return json({ error: "File not found" }, 404);
+      }
+    } else {
+      // Legacy flow: caller supplies the storage path directly.
+      path = normalisePath(bucket, String(body?.path ?? ""));
+      if (!path) return json({ error: "Missing file path" }, 400);
+
+      // Find the plugin this file belongs to
+      const { data: direct } = await admin
+        .from("plugins")
+        .select("id")
+        .eq("jar_path", path)
+        .maybeSingle();
+      if (direct) pluginId = direct.id;
+
+      if (!pluginId) {
+        const { data: ver } = await admin
+          .from("plugin_versions")
+          .select("plugin_id")
+          .eq("jar_path", path)
+          .maybeSingle();
+        if (ver) pluginId = ver.plugin_id;
+      }
+
+      if (!pluginId) return json({ error: "File not found" }, 404);
+    }
 
     // Who is asking (optional)
     let userId: string | null = null;
@@ -52,26 +96,6 @@ Deno.serve(async (req) => {
       const { data } = await admin.auth.getUser(authHeader.replace("Bearer ", ""));
       userId = data.user?.id ?? null;
     }
-
-    // Find the plugin this file belongs to
-    let pluginId: string | null = null;
-    const { data: direct } = await admin
-      .from("plugins")
-      .select("id")
-      .eq("jar_path", path)
-      .maybeSingle();
-    if (direct) pluginId = direct.id;
-
-    if (!pluginId) {
-      const { data: ver } = await admin
-        .from("plugin_versions")
-        .select("plugin_id")
-        .eq("jar_path", path)
-        .maybeSingle();
-      if (ver) pluginId = ver.plugin_id;
-    }
-
-    if (!pluginId) return json({ error: "File not found" }, 404);
 
     const { data: plugin } = await admin
       .from("plugins")
