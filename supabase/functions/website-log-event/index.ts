@@ -64,8 +64,8 @@ Deno.serve(async (req) => {
 
     const title = cap(body.title, 120)!;
     const detail = cap(body.detail, 500);
-    let url = cap(body.url, 300);
-    if (url && !/^https?:\/\//i.test(url) && !url.startsWith("/")) url = undefined;
+    let linkUrl = cap(body.url, 300);
+    if (linkUrl && !/^https?:\/\//i.test(linkUrl) && !linkUrl.startsWith("/")) linkUrl = undefined;
     const actor = cap(body.actor, 80);
 
     const supabase = createClient(
@@ -94,7 +94,7 @@ Deno.serve(async (req) => {
           title,
           description: detail ?? "",
           color: typeof body.color === "number" ? body.color : 0x3b82f6,
-          url,
+          url: linkUrl,
           fields: [
             { name: "Event", value: kind, inline: true },
             ...(actor ? [{ name: "By", value: actor, inline: true }] : []),
