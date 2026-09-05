@@ -19,6 +19,7 @@ interface Props {
   orderId?: string
   items?: OrderLine[]
   subtotalFormatted?: string
+  storeSaleSummary?: string | null
   couponCode?: string | null
   couponSummary?: string | null
   discountFormatted?: string | null
@@ -32,6 +33,7 @@ const Email = ({
   orderId = '',
   items = [],
   subtotalFormatted = '',
+  storeSaleSummary = null,
   couponCode = null,
   couponSummary = null,
   discountFormatted = null,
@@ -71,6 +73,7 @@ const Email = ({
 
           <Section style={totals}>
             <Text style={totalRow}>Subtotal: <strong>{subtotalFormatted}</strong></Text>
+            {storeSaleSummary ? <Text style={totalRow}>Store-wide sale — {storeSaleSummary}</Text> : null}
             {couponSummary ? (
               <Text style={totalRow}>
                 Coupon {couponCode ? <strong>{couponCode}</strong> : null} — {couponSummary}
@@ -104,6 +107,7 @@ export const template = {
       { name: 'Crate Key', quantity: 3, priceFormatted: '$5.97' },
     ],
     subtotalFormatted: '$15.96',
+    storeSaleSummary: 'Spring Sale: 35% off everything (no code needed, −$5.59)',
     couponCode: 'SUMMER',
     couponSummary: '10% off',
     discountFormatted: '$1.60',
