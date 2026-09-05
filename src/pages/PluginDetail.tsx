@@ -9,7 +9,7 @@ import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import PageLoader from "@/components/site/PageLoader";
 import { supabase } from "@/integrations/supabase/client";
-import { getJarDownloadUrl } from "@/lib/plugin-files";
+import { getJarDownloadUrl, getVersionJarDownloadUrl } from "@/lib/plugin-files";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -268,7 +268,9 @@ const PluginDetail = () => {
 
   const downloadVersion = async (v: PluginVersion) => {
     if (!plugin) return;
-    const url = await getJarDownloadUrl(resolveVersionUrl(v));
+    // Anonymous visitors can't see jar_path (column-level grant) — resolve by version id instead.
+    const src = resolveVersionUrl(v);
+    const url = src ? await getJarDownloadUrl(src) : await getVersionJarDownloadUrl(v.id);
     if (!url) {
       toast.error("Could not create a download link");
       return;
