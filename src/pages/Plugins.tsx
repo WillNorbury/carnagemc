@@ -71,19 +71,26 @@ const Plugins = () => {
   const [favorites, setFavorites] = useState<Record<string, number>>({});
   const [trendingIds, setTrendingIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [q, setQ] = useState("");
   const [activeCats, setActiveCats] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<"featured" | "updated" | "name" | "downloads">("featured");
 
-  useEffect(() => {
-    document.title = "Plugins — Warden Network";
-    (async () => {
-      const { data } = await supabase
+  const load = async () => {
+    setLoading(true);
+    setLoadError(false);
+    {
+      const { data, error } = await supabase
         .from("plugins")
         .select("id, short_id, slug, name, description, version, author, icon_url, category, tags, platform, platforms, mc_versions, featured, updated_at")
         .eq("published", true)
         .order("featured", { ascending: false })
         .order("updated_at", { ascending: false });
+      if (error) {
+        setLoadError(true);
+        setLoading(false);
+        return;
+      }
       const rows = (data ?? []) as Plugin[];
       setPlugins(rows);
       const ids: string[] = [];

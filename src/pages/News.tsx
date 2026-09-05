@@ -127,6 +127,13 @@ const NewsPage = () => {
                 <Skeleton key={i} className="h-64 rounded-2xl" />
               ))}
             </div>
+          ) : loadError ? (
+            <GlassCard className="max-w-md mx-auto p-12 text-center">
+              <Megaphone className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+              <h2 className="text-lg font-medium">Couldn't load the news</h2>
+              <p className="text-muted-foreground text-sm mt-1">Check your connection and try again</p>
+              <Button variant="premium" size="sm" className="mt-4 rounded-full" onClick={load}>Try again</Button>
+            </GlassCard>
           ) : filtered.length === 0 ? (
             <GlassCard className="max-w-md mx-auto p-12 text-center">
               <Megaphone className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />

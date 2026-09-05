@@ -282,7 +282,16 @@ const Servers = () => {
 
         {/* Grid */}
         {loading ? (
-          <p className="text-muted-foreground">Loading…</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-44 rounded-lg border border-border/60 bg-card/40 animate-pulse" />
+            ))}
+          </div>
+        ) : loadError ? (
+          <Card className="p-10 text-center space-y-3">
+            <p className="text-muted-foreground">Couldn't load the server list.</p>
+            <Button size="sm" variant="outline" onClick={load}>Try again</Button>
+          </Card>
         ) : filtered.length === 0 ? (
           <Card className="p-10 text-center text-muted-foreground">
             No servers listed yet — add yours from your dashboard.
