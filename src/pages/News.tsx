@@ -43,20 +43,28 @@ const PRIORITIES: (Priority | "all")[] = ["all", "urgent", "high", "normal", "lo
 const NewsPage = () => {
   const [items, setItems] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [query, setQuery] = useState("");
   const [priority, setPriority] = useState<Priority | "all">("all");
 
-  useEffect(() => {
-    document.title = "News — Warden Network";
+  const load = () => {
+    setLoading(true);
+    setLoadError(false);
     supabase
       .from("news")
       .select("id,title,excerpt,content,slug,cover_url,priority,created_at")
       .eq("published", true)
       .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setItems((data ?? []) as News[]);
+      .then(({ data, error }) => {
+        if (error) setLoadError(true);
+        else setItems((data ?? []) as News[]);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    document.title = "News — Warden Network";
+    load();
   }, []);
 
   const filtered = useMemo(() => {
@@ -119,6 +127,13 @@ const NewsPage = () => {
                 <Skeleton key={i} className="h-64 rounded-2xl" />
               ))}
             </div>
+          ) : loadError ? (
+            <GlassCard className="max-w-md mx-auto p-12 text-center">
+              <Megaphone className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+              <h2 className="text-lg font-medium">Couldn't load the news</h2>
+              <p className="text-muted-foreground text-sm mt-1">Check your connection and try again</p>
+              <Button variant="premium" size="sm" className="mt-4 rounded-full" onClick={load}>Try again</Button>
+            </GlassCard>
           ) : filtered.length === 0 ? (
             <GlassCard className="max-w-md mx-auto p-12 text-center">
               <Megaphone className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />

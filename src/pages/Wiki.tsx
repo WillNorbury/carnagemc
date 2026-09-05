@@ -30,15 +30,25 @@ const iconFor = (title: string) => {
 export default function Wiki() {
   const [items, setItems] = useState<Article[]>([]);
   const [q, setQ] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
-  useEffect(() => {
-    supabase
+  const load = async () => {
+    setLoading(true);
+    setLoadError(false);
+    const { data, error } = await supabase
       .from("wiki_articles")
       .select("id, slug, title, category, excerpt, updated_at")
       .eq("published", true)
       .order("sort_order", { ascending: true })
-      .order("title", { ascending: true })
-      .then(({ data }) => setItems((data as Article[]) ?? []));
+      .order("title", { ascending: true });
+    if (error) setLoadError(true);
+    else setItems((data as Article[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
   }, []);
 
   const filtered = useMemo(() => {
@@ -119,7 +129,25 @@ export default function Wiki() {
             </div>
           </div>
 
-          {filtered.length === 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+              <div className="md:col-span-8 min-h-[320px] bg-[#1a1a24] border border-white/5 animate-pulse" />
+              <div className="md:col-span-4 flex flex-col gap-6">
+                <div className="flex-1 min-h-[150px] bg-[#1a1a24] border border-white/5 animate-pulse" />
+                <div className="flex-1 min-h-[150px] bg-[#1a1a24] border border-white/5 animate-pulse" />
+              </div>
+            </div>
+          ) : loadError ? (
+            <div className="border border-white/5 bg-[#1a1a24] p-10 text-center space-y-4">
+              <p className="text-[#9ca3af]">Couldn't load the wiki right now.</p>
+              <button
+                onClick={load}
+                className="px-5 py-2 bg-[#ff5722] text-white text-xs font-mono uppercase tracking-widest hover:opacity-90 transition"
+              >
+                Try again
+              </button>
+            </div>
+          ) : filtered.length === 0 ? (
             <p className="text-[#9ca3af]">
               {items.length === 0 ? "No articles yet." : "No articles match your search."}
             </p>

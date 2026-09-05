@@ -62,44 +62,53 @@ const Servers = () => {
   const [rows, setRows] = useState<Row[]>([]);
   const [live, setLive] = useState<Record<string, Live>>({});
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<"featured" | "players" | "updated" | "name">("featured");
 
+  const load = async () => {
+    setLoading(true);
+    setLoadError(false);
+    const { data, error } = await supabase
+      .from("user_servers" as any)
+      .select("id, name, slug, ip, port, description, version, tags, icon_url, banner_url, website_url, discord_url, featured, updated_at")
+      .eq("published", true)
+      .order("featured", { ascending: false })
+      .order("updated_at", { ascending: false });
+    if (error) {
+      setLoadError(true);
+      setLoading(false);
+      return;
+    }
+    const list = ((data as unknown) ?? []) as Row[];
+    setRows(list);
+    setLoading(false);
+
+    list.forEach(async (r) => {
+      const host = r.port ? `${r.ip}:${r.port}` : r.ip;
+      try {
+        const res = await fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(host)}`);
+        const j = await res.json();
+        setLive((prev) => ({
+          ...prev,
+          [r.id]: {
+            online: !!j.online,
+            players: j.players?.online ?? 0,
+            max: j.players?.max ?? 0,
+            motd: j.motd?.clean?.join(" ") ?? null,
+          },
+        }));
+      } catch {
+        setLive((prev) => ({ ...prev, [r.id]: { online: false, players: 0, max: 0 } }));
+      }
+    });
+  };
+
   useEffect(() => {
     document.title = "Servers — Warden Network";
-    (async () => {
-      const { data, error } = await supabase
-        .from("user_servers" as any)
-        .select("id, name, slug, ip, port, description, version, tags, icon_url, banner_url, website_url, discord_url, featured, updated_at")
-        .eq("published", true)
-        .order("featured", { ascending: false })
-        .order("updated_at", { ascending: false });
-      if (error) toast.error(error.message);
-      const list = ((data as unknown) ?? []) as Row[];
-      setRows(list);
-      setLoading(false);
-
-      list.forEach(async (r) => {
-        const host = r.port ? `${r.ip}:${r.port}` : r.ip;
-        try {
-          const res = await fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(host)}`);
-          const j = await res.json();
-          setLive((prev) => ({
-            ...prev,
-            [r.id]: {
-              online: !!j.online,
-              players: j.players?.online ?? 0,
-              max: j.players?.max ?? 0,
-              motd: j.motd?.clean?.join(" ") ?? null,
-            },
-          }));
-        } catch {
-          setLive((prev) => ({ ...prev, [r.id]: { online: false, players: 0, max: 0 } }));
-        }
-      });
-    })();
+    load();
   }, []);
 
   const toggleTag = (t: string) =>
@@ -273,7 +282,16 @@ const Servers = () => {
 
         {/* Grid */}
         {loading ? (
-          <p className="text-muted-foreground">Loading…</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-44 rounded-lg border border-border/60 bg-card/40 animate-pulse" />
+            ))}
+          </div>
+        ) : loadError ? (
+          <Card className="p-10 text-center space-y-3">
+            <p className="text-muted-foreground">Couldn't load the server list.</p>
+            <Button size="sm" variant="outline" onClick={load}>Try again</Button>
+          </Card>
         ) : filtered.length === 0 ? (
           <Card className="p-10 text-center text-muted-foreground">
             No servers listed yet — add yours from your dashboard.

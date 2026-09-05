@@ -71,19 +71,26 @@ const Plugins = () => {
   const [favorites, setFavorites] = useState<Record<string, number>>({});
   const [trendingIds, setTrendingIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [q, setQ] = useState("");
   const [activeCats, setActiveCats] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<"featured" | "updated" | "name" | "downloads">("featured");
 
-  useEffect(() => {
-    document.title = "Plugins — Warden Network";
-    (async () => {
-      const { data } = await supabase
+  const load = async () => {
+    setLoading(true);
+    setLoadError(false);
+    {
+      const { data, error } = await supabase
         .from("plugins")
         .select("id, short_id, slug, name, description, version, author, icon_url, category, tags, platform, platforms, mc_versions, featured, updated_at")
         .eq("published", true)
         .order("featured", { ascending: false })
         .order("updated_at", { ascending: false });
+      if (error) {
+        setLoadError(true);
+        setLoading(false);
+        return;
+      }
       const rows = (data ?? []) as Plugin[];
       setPlugins(rows);
       const ids: string[] = [];
@@ -121,7 +128,12 @@ const Plugins = () => {
       setTrendingIds(((trendRes.data ?? []) as any[]).map((r) => r.plugin_id));
 
       setLoading(false);
-    })();
+    }
+  };
+
+  useEffect(() => {
+    document.title = "Plugins — Warden Network";
+    load();
   }, []);
 
   const toggleCat = (c: string) =>
@@ -350,7 +362,17 @@ const Plugins = () => {
 
         {/* Grid */}
         {loading ? (
-          <p className="text-center text-muted-foreground py-12">Loading plugins...</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-44 rounded-lg border border-border/60 bg-card/40 animate-pulse" />
+            ))}
+          </div>
+        ) : loadError ? (
+          <Card className="p-12 text-center space-y-3">
+            <Puzzle className="h-10 w-10 text-muted-foreground/40 mx-auto" />
+            <p className="text-muted-foreground">Couldn't load the plugin list.</p>
+            <Button size="sm" variant="outline" onClick={load}>Try again</Button>
+          </Card>
         ) : filtered.length === 0 ? (
           <Card className="p-12 text-center">
             <Puzzle className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
