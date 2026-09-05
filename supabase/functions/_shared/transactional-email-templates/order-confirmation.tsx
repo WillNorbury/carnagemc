@@ -19,6 +19,7 @@ interface Props {
   orderId?: string
   items?: OrderLine[]
   subtotalFormatted?: string
+  storeSaleSummary?: string | null
   couponCode?: string | null
   couponSummary?: string | null
   discountFormatted?: string | null

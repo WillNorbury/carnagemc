@@ -77,6 +77,11 @@ export default function Checkout() {
       "",
       `Subtotal: ${formatMoney(cart.subtotal, cart.currency)}`,
     ];
+    if (cart.storeSaleDiscount > 0 && cart.storeSale) {
+      summary.push(
+        `Store-wide sale: ${cart.storeSale.label} (${cart.storeSalePercent}% off, no code needed, -${formatMoney(cart.storeSaleDiscount, cart.currency)})`,
+      );
+    }
     if (cart.coupon && cart.discount > 0) {
       summary.push(
         `Coupon: ${cart.coupon.code} (${
@@ -157,6 +162,10 @@ export default function Checkout() {
               orderId: data.id,
               items: emailItems,
               subtotalFormatted: formatMoney(cart.subtotal, currency),
+              storeSaleSummary:
+                cart.storeSaleDiscount > 0 && cart.storeSale
+                  ? `${cart.storeSale.label}: ${cart.storeSalePercent}% off everything (no code needed, −${formatMoney(cart.storeSaleDiscount, currency)})`
+                  : null,
               couponCode: cart.coupon?.code ?? null,
               couponSummary,
               discountFormatted:
@@ -491,6 +500,16 @@ export default function Checkout() {
                         {formatMoney(cart.subtotal, cart.currency)}
                       </span>
                     </div>
+                    {cart.storeSaleDiscount > 0 && cart.storeSale && (
+                      <div className="flex items-center justify-between text-primary">
+                        <span className="text-xs font-mono uppercase tracking-widest">
+                          Sale {cart.storeSalePercent}%
+                        </span>
+                        <span className="tabular-nums font-mono">
+                          −{formatMoney(cart.storeSaleDiscount, cart.currency)}
+                        </span>
+                      </div>
+                    )}
                     {cart.discount > 0 && (
                       <div className="flex items-center justify-between text-primary">
                         <span className="text-xs font-mono uppercase tracking-widest">
