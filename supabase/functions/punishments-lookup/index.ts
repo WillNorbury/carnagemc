@@ -214,8 +214,11 @@ Deno.serve(async (req) => {
       return json({ error: 'MySQL not configured' }, 500)
     }
 
-    // Debug mode: list every table in the connected DB with row counts
+    // Debug mode: list every table in the connected DB with row counts.
+    // Internal schema details — admin/owner only.
     if (debug) {
+      const gate = await requireAdmin(req)
+      if (!gate.ok) return gate.resp
       const conn = await connect()
       const [tbls] = await conn.query(
         `SELECT table_name AS name FROM information_schema.tables WHERE table_schema = ?`,
