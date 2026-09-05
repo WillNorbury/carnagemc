@@ -10,6 +10,30 @@ interface Payload {
   color?: number;
 }
 
+// Kinds an anonymous visitor may legitimately trigger (contact form, ban
+// appeal, owner mailto). Everything else (admin activity logs) requires a
+// valid user session so outsiders can't forge staff actions.
+const PUBLIC_KINDS = new Set(["contact_message", "ban_appeal_new", "owner_contact"]);
+
+const cap = (v: unknown, n: number): string | undefined =>
+  typeof v === "string" && v.length ? v.slice(0, n) : undefined;
+
+async function callerId(req: Request): Promise<string | null> {
+  const auth = req.headers.get("Authorization") ?? "";
+  if (!auth.startsWith("Bearer ")) return null;
+  try {
+    const sb = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: auth } } },
+    );
+    const { data } = await sb.auth.getUser();
+    return data?.user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -21,6 +45,28 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    const kind = String(body.kind).slice(0, 40);
+    if (!/^[a-z0-9_]+$/.test(kind)) {
+      return new Response(JSON.stringify({ error: "invalid kind" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const uid = await callerId(req);
+    if (!uid && !PUBLIC_KINDS.has(kind)) {
+      return new Response(JSON.stringify({ error: "unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const title = cap(body.title, 120)!;
+    const detail = cap(body.detail, 500);
+    let url = cap(body.url, 300);
+    if (url && !/^https?:\/\//i.test(url) && !url.startsWith("/")) url = undefined;
+    const actor = cap(body.actor, 80);
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
