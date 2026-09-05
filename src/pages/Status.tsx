@@ -221,6 +221,7 @@ const Status = () => {
   const [subDone, setSubDone] = useState(false);
   const [query, setQuery] = useState("");
   const [stateFilter, setStateFilter] = useState<"all" | DayStatus>("all");
+  const [loadError, setLoadError] = useState(false);
   const { toast } = useToast();
 
   const copyText = async (text: string, label: string) => {
@@ -316,10 +317,21 @@ const Status = () => {
 
   const loadData = async (days: Range) => {
     setLoading(true);
-    const { data } = await supabase.rpc("get_uptime_daily", { _days: days });
+    setLoadError(false);
+    const { data, error } = await supabase.rpc("get_uptime_daily", { _days: days });
+    if (error) {
+      setLoadError(true);
+      setLoading(false);
+      return;
+    }
     setRows((data ?? []) as DailyRow[]);
 
-    const { data: incidentRows } = await supabase.rpc("get_public_uptime_incidents", { _limit: 20 });
+    const { data: incidentRows, error: incError } = await supabase.rpc("get_public_uptime_incidents", { _limit: 20 });
+    if (incError) {
+      setLoadError(true);
+      setLoading(false);
+      return;
+    }
     setIncidents((incidentRows ?? []) as Incident[]);
     setLoading(false);
   };
@@ -739,6 +751,33 @@ const Status = () => {
             </div>
           </div>
 
+          {loadError && rows.length === 0 ? (
+            <div className="border border-white/5 bg-[#0f0f16] p-12 text-center">
+              <AlertTriangle className="h-6 w-6 mx-auto mb-3 text-amber-400" />
+              <p className="font-['JetBrains_Mono'] text-sm text-[#9ca3af] mb-5">
+                Couldn't load status data right now.
+              </p>
+              <button
+                type="button"
+                onClick={() => loadData(range)}
+                className="inline-flex items-center gap-2 border border-white/10 px-3 py-2 text-[10px] font-['JetBrains_Mono'] tracking-widest uppercase text-[#9ca3af] hover:border-[#ff5722] hover:text-[#ff5722] transition"
+              >
+                <RefreshCw className="h-3.5 w-3.5" /> Try again
+              </button>
+            </div>
+          ) : loading && rows.length === 0 ? (
+            <div className="border border-white/5 bg-[#0f0f16] divide-y divide-white/5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4 px-4 py-4">
+                  <div className="h-2 w-2 rounded-full bg-white/5" />
+                  <div className="h-4 w-32 bg-white/5 rounded" />
+                  <div className="flex-1 h-8 bg-white/5 rounded" />
+                  <div className="h-5 w-16 bg-white/5 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <>
           {/* Services table */}
           <section className="border border-white/5 bg-[#0f0f16]">
             <div className="hidden lg:grid grid-cols-[2rem_16rem_minmax(0,1fr)_6rem_7rem_10rem] items-center gap-4 px-4 py-2 border-b border-white/5 text-[10px] font-['JetBrains_Mono'] uppercase tracking-[0.25em] text-[#5f6472]">
@@ -943,6 +982,8 @@ const Status = () => {
             <p className="whitespace-pre-wrap text-center text-xs text-[#5f6472] font-['JetBrains_Mono']">
               {pageFootnote}
             </p>
+          )}
+            </>
           )}
         </div>
       </main>
