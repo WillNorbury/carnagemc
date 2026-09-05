@@ -219,7 +219,7 @@ const accountGroup: NavGroup = {
   ],
 };
 
-const staticPublicGroupsBefore: NavGroup[] = [websiteGroup, mainGroup, communityGroup];
+const staticPublicGroupsBefore: NavGroup[] = [websiteGroup, clientGroup, mainGroup, communityGroup];
 const staticPublicGroupsAfter: NavGroup[] = [
   helpGroup,
   actionsGroup,
