@@ -123,7 +123,7 @@ Deno.serve(async (req) => {
     const latency_ms = Date.now() - started;
 
     await supabase.from("website_webhook_deliveries").insert({
-      kind: body.kind,
+      kind,
       url_host: (() => {
         try { return new URL(url).host; } catch { return null; }
       })(),

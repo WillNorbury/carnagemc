@@ -14,6 +14,26 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
+    // Caller must be signed in, and either be the report's author or staff.
+    const auth = req.headers.get("Authorization") ?? "";
+    if (!auth.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const sb = createClient(SUPABASE_URL, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: { headers: { Authorization: auth } },
+    });
+    const { data: userData } = await sb.auth.getUser();
+    if (!userData?.user) {
+      return new Response(JSON.stringify({ error: "unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const callerId = userData.user.id;
+
     const { report_id } = await req.json().catch(() => ({}));
     if (!report_id || typeof report_id !== "string") {
       return new Response(JSON.stringify({ error: "report_id required" }), {
@@ -35,6 +55,21 @@ Deno.serve(async (req) => {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    if (report.reporter_id !== callerId) {
+      const { data: staffRole } = await admin
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", callerId)
+        .in("role", ["admin", "owner"])
+        .limit(1);
+      if (!staffRole?.length) {
+        return new Response(JSON.stringify({ error: "forbidden" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     if (!ALERT_EMAIL) {
