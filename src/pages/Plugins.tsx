@@ -128,7 +128,12 @@ const Plugins = () => {
       setTrendingIds(((trendRes.data ?? []) as any[]).map((r) => r.plugin_id));
 
       setLoading(false);
-    })();
+    }
+  };
+
+  useEffect(() => {
+    document.title = "Plugins — Warden Network";
+    load();
   }, []);
 
   const toggleCat = (c: string) =>
