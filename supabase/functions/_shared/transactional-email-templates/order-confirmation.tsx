@@ -107,6 +107,7 @@ export const template = {
       { name: 'Crate Key', quantity: 3, priceFormatted: '$5.97' },
     ],
     subtotalFormatted: '$15.96',
+    storeSaleSummary: 'Spring Sale: 35% off everything (no code needed, −$5.59)',
     couponCode: 'SUMMER',
     couponSummary: '10% off',
     discountFormatted: '$1.60',
