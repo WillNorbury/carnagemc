@@ -268,7 +268,9 @@ const PluginDetail = () => {
 
   const downloadVersion = async (v: PluginVersion) => {
     if (!plugin) return;
-    const url = await getJarDownloadUrl(resolveVersionUrl(v));
+    // Anonymous visitors can't see jar_path (column-level grant) — resolve by version id instead.
+    const src = resolveVersionUrl(v);
+    const url = src ? await getJarDownloadUrl(src) : await getVersionJarDownloadUrl(v.id);
     if (!url) {
       toast.error("Could not create a download link");
       return;
